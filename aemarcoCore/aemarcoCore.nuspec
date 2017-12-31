@@ -2,14 +2,14 @@
 <package >
   <metadata>
     <id>aemarcoCore</id>
-    <version>1.0.0.4</version>
-    <title>aemarcoCore</title>
+    <version>$version$</version>
+    <title>$title$</title>
     <authors>aemarco</authors>
     <owners>aemarco</owners>
-    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
-    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
-    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/aemarco/aemarcoCore/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>https://github.com/aemarco/aemarcoCore</projectUrl>
+    <iconUrl>https://github.com/aemarco/aemarcoCore/blob/master/girl.ico</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Some stuff</description>
     <releaseNotes></releaseNotes>
     <copyright>Copyright 2017</copyright>
