@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>aemarco.aemarcoCore</id>
-    <version>1.0.0.0</version>
+    <id>aemarcoCore</id>
+    <version>1.0.0.4</version>
     <title>aemarcoCore</title>
     <authors>aemarco</authors>
     <owners>aemarco</owners>
@@ -15,8 +15,7 @@
     <copyright>Copyright 2017</copyright>
     <tags>aemarco</tags>
   </metadata>
-  <files>
-    <file src="bin\Release\aemarcoCore.dll" target="lib"></file>
-    <file src="bin\Release\aemarcoCore.dll.config" target="lib"></file>
+  <files>    
+    <file src="bin\Release\aemarcoCore.dll.config" target="lib\net461"></file>
   </files>
 </package>
