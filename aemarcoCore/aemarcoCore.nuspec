@@ -8,8 +8,8 @@
     <owners>aemarco</owners>
     <licenseUrl>https://github.com/aemarco/aemarcoCore/blob/master/LICENSE.md</licenseUrl>
     <projectUrl>https://github.com/aemarco/aemarcoCore</projectUrl>
-    <iconUrl>https://github.com/aemarco/aemarcoCore/blob/master/girl.ico</iconUrl>
-    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <iconUrl>https://github.com/aemarco/aemarcoCore/blob/master/girl.ico?raw=true</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Some stuff</description>
     <releaseNotes></releaseNotes>
     <copyright>Copyright 2017</copyright>
