@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="CrawlerData" Type="System.String" Scope="User">
-      <Value Profile="(Default)">\\nas\web\aemarcoCentral\Core\JSON</Value>
+      <Value Profile="(Default)">\\nas\Code\aemarcoCore\Crawler\JSON</Value>
     </Setting>
   </Settings>
 </SettingsFile>

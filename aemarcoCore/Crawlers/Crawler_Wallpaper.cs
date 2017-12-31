@@ -162,24 +162,24 @@ namespace aemarcoCore.Crawlers
 
             switch (search)
             {
-                case "http://ftopx.com/---girls-cars":
+                case "http://ftopx.com/---Girls & Cars":
                     {
                         return "Autos";
                     }
-                case "http://ftopx.com/---girls-bikes":
+                case "http://ftopx.com/---Girls & Bikes":
                     {
                         return "Motorräder";
                     }
-                case "http://ftopx.com/---fantasy-girls":
-                case "http://ftopx.com/---vect":
+                case "http://ftopx.com/---Fantasy Girls":
+                case "http://ftopx.com/---3D & Vector Girls":
                     {
                         return "Fantasy";
                     }
-                case "http://ftopx.com/---celebrity-fakes":
+                case "http://ftopx.com/---Celebrity Fakes":
                     {
                         return "Celebrityfakes";
                     }
-                case "http://ftopx.com/---fetish-girls":
+                case "http://ftopx.com/---Fetish Girls":
                     {
                         return "Fetischgirls";
                     }

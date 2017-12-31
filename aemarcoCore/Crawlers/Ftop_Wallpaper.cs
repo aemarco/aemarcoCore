@@ -11,7 +11,7 @@ namespace aemarcoCore.Crawlers
     public class Ftop_Wallpaper : Crawler_Wallpaper
     {
         const string _url = "http://ftopx.com/";
-
+        const string _filePrefix = "ftopx";
 
 
         public override ICrawlerResult Start()
@@ -29,9 +29,6 @@ namespace aemarcoCore.Crawlers
         {
             return await Task.Factory.StartNew(Start);
         }
-
-
-
 
 
         private void GetCategories()
@@ -69,16 +66,16 @@ namespace aemarcoCore.Crawlers
         private void GetCategory(string categoryUrl, string categoryName)
         {
             //starte bei 1
-            int page = 51;
-            bool pageValid = true;
+            int page = 1;
+            bool pageContainsNews = true;
             do
             {
                 //z.B. "http://ftopx.com/celebrities/page/1/?sort=p.approvedAt&direction=desc"
                 string pageUrl = $"{categoryUrl}page/{page}/?sort=p.approvedAt&direction=desc";
-                pageValid = GetPage(pageUrl, categoryName);
+                pageContainsNews = GetPage(pageUrl, categoryName);
                 page++;
 
-            } while (page <= 51 && pageValid);
+            } while (page <= 1 && pageContainsNews);
 
         }
 
@@ -137,7 +134,7 @@ namespace aemarcoCore.Crawlers
             //z.B. "https://ftopx.com/images/201712/ftopx.com_5a4482e5acc2d.jpg"
             string url = GetImageUrl($"{_url}{id}/0_0");
             wallEntry.Url = url;
-            wallEntry.FileName = GetFileName(href);
+            wallEntry.FileName = GetFileName(id);
             wallEntry.Extension = Path.GetExtension(url);
 
 
@@ -155,18 +152,9 @@ namespace aemarcoCore.Crawlers
             return false;
         }
 
-        private string GetFileName(string href)
+        private string GetFileName(string id)
         {
-            //z.B. "/celebrities/211314-suzanne-a-metart-grafiti-wall-flowerdress.html"
-
-            //z.B. "211314-suzanne-a-metart-grafiti-wall-flowerdress.html"
-            string fileName = href.Substring(href.LastIndexOf("/") + 1);
-            //z.B. "suzanne-a-metart-grafiti-wall-flowerdress.html"
-            fileName = href.Substring(href.IndexOf("-") + 1);
-            //z.B. "suzanne-a-metart-grafiti-wall-flowerdress"
-            fileName = fileName.Substring(0, fileName.LastIndexOf("."));
-            //z.B. "suzanne a metart grafiti wall flowerdress"
-            return fileName.Replace('-', ' ');
+            return $"{_filePrefix}_{id}";
         }
 
         private string GetID(string href)

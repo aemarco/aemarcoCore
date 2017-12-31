@@ -25,7 +25,7 @@ namespace aemarcoCore.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("\\\\nas\\web\\aemarcoCentral\\Core\\JSON")]
+        [global::System.Configuration.DefaultSettingValueAttribute("\\\\nas\\Code\\aemarcoCore\\Crawler\\JSON")]
         public string CrawlerData {
             get {
                 return ((string)(this["CrawlerData"]));
