@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>aemarco.aemarcoCore</id>
+    <version>1.0.0.0</version>
+    <title>aemarcoCore</title>
+    <authors>aemarco</authors>
+    <owners>aemarco</owners>
+    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
+    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
+    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Some stuff</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>aemarco</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\aemarcoCore.dll" target="lib"></file>
+    <file src="bin\Release\aemarcoCore.dll.config" target="lib"></file>
+  </files>
+</package>
