@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aemarcoCore", "aemarcoCore\aemarcoCore.csproj", "{13FFECB7-BBA1-4F7F-B629-8DBE7230BF3E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestNuget", "TestNuget\TestNuget.csproj", "{4CD12746-590A-459D-B097-0D438D63DF0B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +15,6 @@ Global
 		{13FFECB7-BBA1-4F7F-B629-8DBE7230BF3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13FFECB7-BBA1-4F7F-B629-8DBE7230BF3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13FFECB7-BBA1-4F7F-B629-8DBE7230BF3E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4CD12746-590A-459D-B097-0D438D63DF0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4CD12746-590A-459D-B097-0D438D63DF0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4CD12746-590A-459D-B097-0D438D63DF0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4CD12746-590A-459D-B097-0D438D63DF0B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
