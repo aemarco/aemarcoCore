@@ -8,6 +8,7 @@ namespace aemarcoCore.Crawlers
         string FileName { get; }
         string Extension { get; }
         string Kategorie { get; }
+        IContentCategory ContentCategory { get; }
         string SeitenKategorie { get; }
         List<string> Tags { get; }
 

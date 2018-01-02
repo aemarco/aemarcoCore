@@ -48,11 +48,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Crawlers\AdultWalls_Wallpaper.cs" />
     <Compile Include="Crawlers\Crawler_Wallpaper.cs" />
     <Compile Include="Crawlers\Ftop_Wallpaper.cs" />
+    <Compile Include="Crawlers\IContentCategory.cs" />
     <Compile Include="Crawlers\ICrawlerResult.cs" />
     <Compile Include="Crawlers\IWallEntry.cs" />
+    <Compile Include="Crawlers\Types\Category.cs" />
+    <Compile Include="Crawlers\Types\ContentCategory.cs" />
     <Compile Include="Crawlers\Types\CrawlerResult.cs" />
+    <Compile Include="Crawlers\Types\CrawlerData.cs" />
     <Compile Include="Crawlers\Types\WallEntry.cs" />
     <Compile Include="Picture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -61,6 +66,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Tools\FileExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="aemarcoCore.nuspec">

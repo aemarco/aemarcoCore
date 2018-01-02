@@ -1,90 +1,120 @@
 ﻿using aemarcoCore.Crawlers.Types;
-using aemarcoCore.Properties;
+using aemarcoCore.Tools;
 using HtmlAgilityPack;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace aemarcoCore.Crawlers
 {
     public abstract class Crawler_Wallpaper
     {
-        private DirectoryInfo _dataPath;
-        private List<string> _knownUrls;
+        #region fields
+
         private CrawlerResult _result;
 
+        private bool _onlyNews;
+        private int _knownEntryStreak;
+        private int _startPage;
+        private int _lastPage;
 
-        public Crawler_Wallpaper()
+        private IProgress<int> _progress;
+        private CancellationToken _cancellationToken;
+        private int _numberOfCategories;
+        private int _numberOfCategoriesDone;
+        private int _numberOfPages;
+        private int _numberOfPagesDone;
+        private int _numberOfEntries;
+        private int _numberOfEntriesDone;
+        #endregion
+
+
+        #region ctor
+
+        public Crawler_Wallpaper(
+            string siteName,
+            IProgress<int> progress,
+            CancellationToken cancellationToken)
         {
-            LoadDataPath();
-            LoadKnownUrls();
-            _result = new CrawlerResult();
+
+            _result = new CrawlerResult(siteName);
+
+            _onlyNews = true;
+            _knownEntryStreak = 0;
+            _startPage = 1;
+            _lastPage = 10;
+
+            _progress = progress;
+            _cancellationToken = cancellationToken;
+            _numberOfCategories = 0;
+            _numberOfCategoriesDone = 0;
+            _numberOfPages = _lastPage - _startPage + 1;
+            _numberOfPagesDone = 0;
+            _numberOfEntries = 0;
+            _numberOfEntriesDone = 0;
+        }
+        public Crawler_Wallpaper(
+            string siteName,
+            int startPage,
+            int lastPage,
+            IProgress<int> progress,
+            CancellationToken cancellationToken)
+            : this(siteName, progress, cancellationToken)
+        {
+            _onlyNews = false;
+            _startPage = startPage;
+            _lastPage = lastPage;
+            _numberOfPages = _lastPage - _startPage + 1;
         }
 
-        private void LoadDataPath()
+        #endregion
+
+
+        #region Starting the thing
+
+        protected abstract void DoWork();
+        public ICrawlerResult Start()
         {
-            DirectoryInfo di = null;
-            try
-            {
-                di = new DirectoryInfo(Settings.Default.CrawlerData);
-                if (!di.Exists) di.Create();
-
-            }
-            catch
-            {
-                di = new DirectoryInfo($"{Environment.CurrentDirectory}\\JSON");
-                if (!di.Exists) di.Create();
-
-            }
-            finally
-            {
-                _dataPath = di;
-            }
+            DoWork();
+            CrawlerData.Save(_result);
+            OnCompleted();
+            return _result;
         }
-        private void LoadKnownUrls()
+        public void StartAsync()
         {
-            string file = $"{_dataPath.FullName}\\known.json";
-            if (File.Exists(file))
-            {
-                _knownUrls = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(file));
-            }
-            else
-            {
-                _knownUrls = new List<string>();
-            }
+            Task.Factory.StartNew(Start);
+        }
+        public async Task<ICrawlerResult> StartAsyncTask()
+        {
+            return await Task.Factory.StartNew(Start);
         }
 
+        #endregion
 
 
-        public abstract ICrawlerResult Start();
-        public abstract void StartAsync();
-        public abstract Task<ICrawlerResult> StartAsyncTask();
+        #region Events
 
-
-
-        protected bool AddEntry(IWallEntry entry)
+        public event EventHandler<IWallEntry> KnownEntry;
+        protected virtual void OnKnownEntry(IWallEntry entry)
         {
-            //Entry darf noch nicht bekannt sein
-            if (_knownUrls.Contains(entry.Url))
+            if (KnownEntry != null)
             {
-                return false;
+                foreach (Delegate d in KnownEntry.GetInvocationList())
+                {
+                    ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
+                    if (syncer == null)
+                    {
+                        d.DynamicInvoke(this, entry);
+                    }
+                    else
+                    {
+                        syncer.BeginInvoke(d, new object[] { this, entry });  // cleanup omitted
+                    }
+                }
+
             }
-
-            //url als bekannte Url merken
-            _knownUrls.Add(entry.Url);
-
-            //Resultat befüllen
-            _result.AddEntry(entry);
-
-
-            OnNewEntry(entry);
-            return true;
         }
-
 
         public event EventHandler<IWallEntry> NewEntry;
         protected virtual void OnNewEntry(IWallEntry entry)
@@ -107,12 +137,9 @@ namespace aemarcoCore.Crawlers
             }
         }
 
-
         public event EventHandler<ICrawlerResult> Completed;
-        protected virtual ICrawlerResult OnCompleted()
+        protected virtual void OnCompleted()
         {
-            Save();
-
             if (Completed != null)
             {
                 foreach (Delegate d in Completed.GetInvocationList())
@@ -128,26 +155,134 @@ namespace aemarcoCore.Crawlers
                     }
                 }
             }
-            return _result;
         }
 
 
+        #endregion
 
+        #region Progress
 
-        private void Save()
+        protected void ReportNumberOfCategories(int count)
         {
-            // save the List of known Urls so the Crawler may consider them next time            
-            string file = $"{_dataPath.FullName}\\known.json";
-            File.WriteAllText(file, JsonConvert.SerializeObject(
-                _knownUrls.Distinct().ToList(),
-                Formatting.Indented));
+            _numberOfCategories = count;
+
+        }
+        protected void ReportNumberOfEntries(int count)
+        {
+            if (count > _numberOfEntries)
+            {
+                _numberOfEntries = count;
+            }
+        }
+        protected void ReportCategoryDone()
+        {
+            _numberOfCategoriesDone++;
+            _numberOfPagesDone = 0;
+            if (_progress != null)
+            {
+                _progress.Report(CalculateProgress());
+            }
+        }
+        protected void ReportPageDone()
+        {
+            _numberOfPagesDone++;
+            _numberOfEntriesDone = 0;
+
+            if (_progress != null)
+            {
+                _progress.Report(CalculateProgress());
+            }
+
+        }
+        protected void ReportEntryDone()
+        {
+            _numberOfEntriesDone++;
+            if (_progress != null)
+            {
+                _progress.Report(CalculateProgress());
+            }
+        }
+        private int CalculateProgress()
+        {
+            int a = _numberOfCategoriesDone * _numberOfPages * _numberOfEntries +
+                    _numberOfPagesDone * _numberOfEntries +
+                    _numberOfEntriesDone;
+            int b = _numberOfCategories * _numberOfPages * _numberOfEntries;
+            double result = (100.0 * a) / (b);
+            return (int)result;
+        }
+
+        #endregion
+
+        #region Cancellation
+
+        protected bool IShallGoAheadWithCategories()
+        {
+            return !_cancellationToken.IsCancellationRequested;
+        }
+        protected int GetStartingPage()
+        {
+            _knownEntryStreak = 0;
+            return _startPage;
+        }
+        protected bool IShallGoAheadWithPages(int currPage)
+        {
+            return !_cancellationToken.IsCancellationRequested &&
+                currPage <= _lastPage &&
+                (!_onlyNews || _knownEntryStreak < 10);
+        }
+        protected bool IShallGoAheadWithEntries()
+        {
+            return !_cancellationToken.IsCancellationRequested &&
+                (!_onlyNews || _knownEntryStreak < 10);
+        }
+
+        #endregion
 
 
-            // save result in a result file
-            // z.B. \\\\nas\\web\\aemarcoCentral\\Core\\JSON\\21:36:41.result
-            string resFile = $"{_dataPath.FullName}\\{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.result";
-            File.WriteAllText(resFile, _result.GetJSON());
 
+        #region Crawling
+
+
+        protected bool IsValidEntry(IWallEntry wallEntry)
+        {
+            //TODO: Some more validation
+
+            if (
+                wallEntry == null || //Entry darf nicht null sein
+                String.IsNullOrEmpty(wallEntry.Url) || //Entry muss Url haben
+                !FileExtension.IsCrawlerExtension(wallEntry.Extension) //Extension muss erlaubt sein
+                )
+            {
+                return false;
+            }
+
+            return true;
+        }
+        protected void AddEntry(IWallEntry entry)
+        {
+
+            //bekanntes Entry
+            if (CrawlerData.IsKnownEntry(entry))
+            {
+                //Streak mitzählen
+                _knownEntryStreak++;
+
+                _result.AddKnownEntry(entry);
+                OnKnownEntry(entry);
+            }
+            //neues Entry
+            else
+            {
+                //Streak beenden
+                _knownEntryStreak = 0;
+
+                //url als bekannte Url merken
+                CrawlerData.AddNewEntry(entry);
+
+                _result.AddNewEntry(entry);
+                OnNewEntry(entry);
+            }
         }
 
         protected HtmlDocument GetDocument(string url)
@@ -155,7 +290,6 @@ namespace aemarcoCore.Crawlers
             HtmlWeb web = new HtmlWeb();
             return web.Load(url);
         }
-
         protected string GetEntryCategory(string url, string categoryName)
         {
             string search = $"{url}---{categoryName}";
@@ -190,7 +324,88 @@ namespace aemarcoCore.Crawlers
             }
         }
 
+        internal ContentCategory GetEntryContentCategory(string siteName, string categoryName)
+        {
+            switch (siteName)
+            {
+                case "ftopx":
+                    {
+                        return GetFtopCategory(categoryName);
+                    }
+                default:
+                    {
+                        ContentCategory result = new ContentCategory();
+                        result.SetMainCategory(Category.Unknown);
+                        result.SetSubCategory(Category.Unknown);
+                        return result;
+                    }
+            }
+        }
 
+        private ContentCategory GetFtopCategory(string categoryName)
+        {
+            ContentCategory result = new ContentCategory();
+            result.SetMainCategory(Category.Girls);
+
+            switch (categoryName)
+            {
+                case "Celebrities":
+                    {
+                        result.SetSubCategory(Category.Celebrities);
+                        break;
+                    }
+                case "Girls & Beaches":
+                    {
+                        result.SetSubCategory(Category.Beaches);
+                        break;
+                    }
+                case "Girls & Cars":
+                    {
+                        result.SetSubCategory(Category.Cars);
+                        break;
+                    }
+                case "Girls & Bikes":
+                    {
+                        result.SetSubCategory(Category.Bikes);
+                        break;
+                    }
+                case "Lingerie Girls":
+                    {
+                        result.SetSubCategory(Category.Lingerie);
+                        break;
+                    }
+                case "Asian Girls":
+                    {
+                        result.SetSubCategory(Category.Asian);
+                        break;
+                    }
+                case "Holidays":
+                    {
+                        result.SetSubCategory(Category.Holidays);
+                        break;
+                    }
+                case "Fantasy Girls":
+                case "3D & Vector Girls":
+                    {
+                        result.SetSubCategory(Category.Fantasy);
+                        break;
+                    }
+                case "Celebrity Fakes":
+                    {
+                        result.SetSubCategory(Category.CelebrityFakes);
+                        break;
+                    }
+                case "Fetish Girls":
+                    {
+                        result.SetSubCategory(Category.Fetish);
+                        break;
+                    }
+            }
+            return result;
+        }
+
+
+        #endregion
 
 
 

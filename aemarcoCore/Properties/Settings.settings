@@ -5,5 +5,8 @@
     <Setting Name="CrawlerData" Type="System.String" Scope="User">
       <Value Profile="(Default)">\\nas\Code\aemarcoCore\Crawler\JSON</Value>
     </Setting>
+    <Setting Name="CrawlerFileExtensions" Type="System.String" Scope="User">
+      <Value Profile="(Default)">bmp,jpg,jpeg,png,gif</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

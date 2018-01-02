@@ -8,21 +8,21 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers
 {
-    public class Ftop_Wallpaper : Crawler_Wallpaper
+    public class AdultWalls_Wallpaper : Crawler_Wallpaper
     {
-        const string _url = "http://ftopx.com/";
-        const string _siteName = "ftopx";
+        const string _url = "http://adultwalls.com/";
+        const string _siteName = "adultwalls";
 
 
 
-        public Ftop_Wallpaper(
+        public AdultWalls_Wallpaper(
             IProgress<int> progress = null,
             CancellationToken cancellationToken = default(CancellationToken))
             : base(_siteName, progress, cancellationToken)
         {
 
         }
-        public Ftop_Wallpaper(
+        public AdultWalls_Wallpaper(
             int startPage,
             int lastPage,
             IProgress<int> progress = null,
@@ -248,6 +248,9 @@ namespace aemarcoCore.Crawlers
             }
             return node.Attributes["href"]?.Value;
         }
+
+
+
 
 
     }

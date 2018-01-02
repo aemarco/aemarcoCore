@@ -4,7 +4,9 @@ namespace aemarcoCore.Crawlers
 {
     public interface ICrawlerResult
     {
-        List<IWallEntry> Entries { get; }
+        string ResultName { get; }
+        List<IWallEntry> NewEntries { get; }
+        List<IWallEntry> KnownEntries { get; }
         string GetJSON();
     }
 }

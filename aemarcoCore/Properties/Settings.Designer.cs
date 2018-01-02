@@ -34,5 +34,17 @@ namespace aemarcoCore.Properties {
                 this["CrawlerData"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("bmp,jpg,jpeg,png,gif")]
+        public string CrawlerFileExtensions {
+            get {
+                return ((string)(this["CrawlerFileExtensions"]));
+            }
+            set {
+                this["CrawlerFileExtensions"] = value;
+            }
+        }
     }
 }
