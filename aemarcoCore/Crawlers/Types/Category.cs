@@ -21,6 +21,8 @@
         Planes,
         Animals,
         Trash,
-        Unknown
+        Unknown,
+        Blowjob,
+        Lesbians
     }
 }

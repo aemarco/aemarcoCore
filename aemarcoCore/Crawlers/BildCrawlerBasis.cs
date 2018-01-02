@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace aemarcoCore.Crawlers
 {
-    public abstract class Crawler_Wallpaper
+    public abstract class BildCrawlerBasis
     {
         #region fields
 
@@ -32,7 +32,7 @@ namespace aemarcoCore.Crawlers
 
         #region ctor
 
-        public Crawler_Wallpaper(
+        public BildCrawlerBasis(
             string siteName,
             IProgress<int> progress,
             CancellationToken cancellationToken)
@@ -54,7 +54,7 @@ namespace aemarcoCore.Crawlers
             _numberOfEntries = 0;
             _numberOfEntriesDone = 0;
         }
-        public Crawler_Wallpaper(
+        public BildCrawlerBasis(
             string siteName,
             int startPage,
             int lastPage,
@@ -332,6 +332,14 @@ namespace aemarcoCore.Crawlers
                     {
                         return GetFtopCategory(categoryName);
                     }
+                case "adultwalls":
+                    {
+                        return GetAdultwallsCategory(categoryName);
+                    }
+                case "erowall":
+                    {
+                        return getErowallCategory(categoryName);
+                    }
                 default:
                     {
                         ContentCategory result = new ContentCategory();
@@ -340,6 +348,21 @@ namespace aemarcoCore.Crawlers
                         return result;
                     }
             }
+        }
+
+        private ContentCategory GetAdultwallsCategory(string categoryName)
+        {
+            ContentCategory result = new ContentCategory();
+            result.SetMainCategory(Category.Girls);
+            switch (categoryName)
+            {
+                case "Lingerie Models":
+                    {
+                        result.SetSubCategory(Category.Lingerie);
+                        break;
+                    }
+            }
+            return result;
         }
 
         private ContentCategory GetFtopCategory(string categoryName)
@@ -404,6 +427,49 @@ namespace aemarcoCore.Crawlers
             return result;
         }
 
+        private ContentCategory getErowallCategory(string categoryName)
+        {
+            ContentCategory result = new ContentCategory();
+            result.SetMainCategory(Category.Girls);
+
+            switch (categoryName)
+            {
+
+                case "Blowjob":
+                    {
+                        result.SetSubCategory(Category.Blowjob);
+                        break;
+                    }
+                case "Lesbians":
+                    {
+                        result.SetSubCategory(Category.Lesbians);
+                        break;
+                    }
+                case "Lingerie":
+                    {
+                        result.SetSubCategory(Category.Lingerie);
+                        break;
+                    }
+                case "Beach":
+                    {
+                        result.SetSubCategory(Category.Beaches);
+                        break;
+                    }
+                case "Asian":
+                    {
+                        result.SetSubCategory(Category.Asian);
+                        break;
+                    }
+                case "Anime":
+                    {
+                        result.SetSubCategory(Category.Fantasy);
+                        break;
+                    }
+
+            }
+
+            return result;
+        }
 
         #endregion
 

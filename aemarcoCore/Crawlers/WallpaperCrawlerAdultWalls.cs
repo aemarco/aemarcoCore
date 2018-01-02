@@ -8,21 +8,21 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers
 {
-    public class Ftop_Wallpaper : Crawler_Wallpaper
+    public class WallpaperCrawlerAdultWalls : BildCrawlerBasis
     {
-        const string _url = "http://ftopx.com/";
-        const string _siteName = "ftopx";
+        const string _url = "http://adultwalls.com/";
+        const string _siteName = "adultwalls";
 
 
 
-        public Ftop_Wallpaper(
+        public WallpaperCrawlerAdultWalls(
             IProgress<int> progress = null,
             CancellationToken cancellationToken = default(CancellationToken))
             : base(_siteName, progress, cancellationToken)
         {
 
         }
-        public Ftop_Wallpaper(
+        public WallpaperCrawlerAdultWalls(
             int startPage,
             int lastPage,
             IProgress<int> progress = null,
@@ -43,33 +43,33 @@ namespace aemarcoCore.Crawlers
 
         private void GetCategories()
         {
-
             Dictionary<string, string> cats = new Dictionary<string, string>();
 
             //main page
             var doc = GetDocument(_url);
 
-            foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
+            //foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
+            foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//li[@class='sub-menu-item']/a"))
             {
 
-                //z.B. "Celebrities"
+                //z.B. "Erotic Wallpapers"
                 string text = WebUtility.HtmlDecode(node.InnerText).Trim();
-                if (String.IsNullOrEmpty(text) || text == "Sandbox")
+                if (String.IsNullOrEmpty(text))
                 {
                     continue;
                 }
 
-                //z.B. "/celebrities/
+                //z.B. "/wallpapers/erotic-wallpapers"
                 string href = node.Attributes["href"]?.Value;
                 if (String.IsNullOrEmpty(href))
                 {
                     continue;
                 }
 
-                //z.B. "celebrities/"
+                //z.B. "wallpapers/erotic-wallpapers"
                 href = href.Substring(1);
-                //z.B. "https://ftopx.com/celebrities"
-                string url = $"{_url}{href}";
+                //z.B. "http://adultwalls.com/wallpapers/erotic-wallpapers"
+                string url = $"{_url}{href}/";
 
                 cats.Add(url, text);
             }
@@ -99,8 +99,8 @@ namespace aemarcoCore.Crawlers
             bool pageValid = true;
             do
             {
-                //z.B. "http://ftopx.com/celebrities/page/1/?sort=p.approvedAt&direction=desc"
-                string pageUrl = $"{categoryUrl}page/{page}/?sort=p.approvedAt&direction=desc";
+                //z.B. "http://adultwalls.com/wallpapers/erotic-wallpapers/1?order=publish-date-newest&resolution=all&search="                
+                string pageUrl = $"{categoryUrl}{page}?order=publish-date-newest&resolution=all&search=";
                 pageValid = GetPage(pageUrl, categoryName);
                 page++;
 
@@ -120,8 +120,7 @@ namespace aemarcoCore.Crawlers
             bool result = false;
             //Seite mit Wallpaperliste
             HtmlDocument doc = GetDocument(pageUrl);
-            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//div[@class='thumbnail']/a");
-
+            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//div[@class='thumb-container']/a");
             //non Valid Page
             if (nodes == null || nodes.Count == 0)
             {
@@ -159,19 +158,17 @@ namespace aemarcoCore.Crawlers
         /// </summary>
         private bool AddWallEntry(HtmlNode node, string categoryName)
         {
-            // z.B. "/celebrities/211314-suzanne-a-metart-grafiti-wall-flowerdress.html"
-            string href = node.Attributes["href"]?.Value;
-            if (String.IsNullOrEmpty(href))
+            // z.B. "wallpaper/shot-jeans-topless-brunette-model"
+            string detailsHref = node.Attributes["href"]?.Value?.Substring(1);
+            if (String.IsNullOrEmpty(detailsHref))
             {
                 return false;
             }
 
-            //z.B. "211314"
-            string id = GetID(href);
-            //z.B. "https://ftopx.com/211314/0_0"
-            string wallPage = $"{_url}{id}/0_0";
-            //z.B. "https://ftopx.com/images/201712/ftopx.com_5a4482e5acc2d.jpg"
-            string url = GetImageUrl($"{_url}{id}/0_0");
+            HtmlDocument detailsDoc = GetDocument($"{_url}{detailsHref}");
+
+            //z.B. "http://adultwalls.com/web/wallpapers/shot-jeans-topless-brunette-model/1920x1080.jpg"
+            string url = GetImageUrl(detailsDoc);
 
 
             //jeder node = 1 Wallpaper
@@ -180,9 +177,9 @@ namespace aemarcoCore.Crawlers
                 SeitenKategorie = categoryName,
                 Kategorie = GetEntryCategory(_url, categoryName),
                 ContentCategory = GetEntryContentCategory(_siteName, categoryName),
-                Tags = GetTags(node.SelectSingleNode("./img")?.Attributes["alt"]?.Value),
+                Tags = GetTags(detailsDoc),
                 Url = url,
-                FileName = GetFileName(id),
+                FileName = GetFileName(url),
                 Extension = FileExtension.GetFileExtension(url)
             };
 
@@ -200,35 +197,24 @@ namespace aemarcoCore.Crawlers
         }
 
 
-        private string GetFileName(string id)
+        private string GetFileName(string url)
         {
-            return $"{_siteName}_{id}";
+            string name = url.Substring(url.IndexOf("papers/") + 7);
+            name = name.Substring(0, name.IndexOf("/"));
+            return name;
         }
 
-        private string GetID(string href)
-        {
-            //z.B. "211314-suzanne-a-metart-grafiti-wall-flowerdress.html"
-            string id = href.Substring(href.LastIndexOf("/") + 1);
-            //z.B. "211314"
-            return id.Substring(0, id.IndexOf('-'));
-        }
 
-        private List<string> GetTags(string tagString)
+        private List<string> GetTags(HtmlDocument doc)
         {
-            //z.B. "flowerdress, nadia p, susi r, suzanna, suzanna a, brunette, boobs, big tits"
 
             List<string> result = new List<string>();
-            if (String.IsNullOrEmpty(tagString))
+            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//div[@class='col-md-12']/a");
+            if (nodes != null && nodes.Count > 0)
             {
-                return result;
-            }
-            else
-            {
-                string[] tags = tagString.Split(',');
-                foreach (string tag in tags)
+                foreach (var node in nodes)
                 {
-                    //z.B. "flowerdress"
-                    string entry = tag.Trim();
+                    string entry = node.InnerText.Trim();
                     if (entry.Length > 0)
                     {
                         result.Add(entry);
@@ -238,16 +224,48 @@ namespace aemarcoCore.Crawlers
             return result;
         }
 
-        private string GetImageUrl(string wallPage)
+
+        private string GetImageUrl(HtmlDocument doc)
         {
-            HtmlDocument doc = GetDocument(wallPage);
-            HtmlNode node = doc.DocumentNode.SelectSingleNode("//a[@type='button']");
+            HtmlNode node = doc.DocumentNode.SelectSingleNode("//a[@class='btn btn-danger']");
             if (node == null)
             {
                 return null;
             }
-            return node.Attributes["href"]?.Value;
+
+            // z.B. "wallpaper/shot-jeans-topless-brunette-model/1920x1080"
+            string href = node.Attributes["href"]?.Value?.Substring(1);
+            if (String.IsNullOrEmpty(href))
+            {
+                return null;
+            }
+
+            //z.B. "http://adultwalls.com/wallpaper/shot-jeans-topless-brunette-model/1920x1080"
+            string page = $"{_url}{href}";
+
+
+            HtmlDocument doc2 = GetDocument(page);
+            HtmlNode urlnode = doc2.DocumentNode.SelectSingleNode("//div[@class='wallpaper-preview-container']/a/img");
+            if (urlnode == null)
+            {
+                return null;
+            }
+
+            // z.B. "web/wallpapers/shot-jeans-topless-brunette-model/1920x1080.jpg"
+            string urlHref = urlnode.Attributes["src"]?.Value?.Substring(1);
+            if (String.IsNullOrEmpty(urlHref))
+            {
+                return null;
+            }
+
+            // z.B. "http://adultwalls.com/web/wallpapers/shot-jeans-topless-brunette-model/1920x1080.jpg"
+            string url = _url + urlHref;
+
+            return url;
         }
+
+
+
 
 
     }

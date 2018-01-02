@@ -48,9 +48,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Crawlers\AdultWalls_Wallpaper.cs" />
-    <Compile Include="Crawlers\Crawler_Wallpaper.cs" />
-    <Compile Include="Crawlers\Ftop_Wallpaper.cs" />
+    <Compile Include="Crawlers\WallpaperCrawlerAdultWalls.cs" />
+    <Compile Include="Crawlers\BildCrawlerBasis.cs" />
+    <Compile Include="Crawlers\WallpaperCrawlerErowall.cs" />
+    <Compile Include="Crawlers\WallpaperCrawlerFtop.cs" />
     <Compile Include="Crawlers\IContentCategory.cs" />
     <Compile Include="Crawlers\ICrawlerResult.cs" />
     <Compile Include="Crawlers\IWallEntry.cs" />
