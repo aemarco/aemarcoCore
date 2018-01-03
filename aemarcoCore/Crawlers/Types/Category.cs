@@ -23,6 +23,7 @@
         Trash,
         Unknown,
         Blowjob,
-        Lesbians
+        Lesbians,
+        Hardcore
     }
 }

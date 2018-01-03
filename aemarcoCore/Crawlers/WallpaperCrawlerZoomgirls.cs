@@ -3,26 +3,26 @@ using aemarcoCore.Tools;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
-using System.Net;
+using System.IO;
 using System.Threading;
 
 namespace aemarcoCore.Crawlers
 {
-    public class WallpaperCrawlerAdultWalls : BildCrawlerBasis
+    public class WallpaperCrawlerZoomgirls : BildCrawlerBasis
     {
-        const string _url = "http://adultwalls.com/";
-        const string _siteName = "adultwalls";
+        const string _url = "https://zoomgirls.net/";
+        const string _siteName = "zoomgirls";
 
 
 
-        public WallpaperCrawlerAdultWalls(
+        public WallpaperCrawlerZoomgirls(
             IProgress<int> progress = null,
             CancellationToken cancellationToken = default(CancellationToken))
             : base(_siteName, progress, cancellationToken)
         {
 
         }
-        public WallpaperCrawlerAdultWalls(
+        public WallpaperCrawlerZoomgirls(
             int startPage,
             int lastPage,
             IProgress<int> progress = null,
@@ -43,36 +43,21 @@ namespace aemarcoCore.Crawlers
 
         private void GetCategories()
         {
+
             Dictionary<string, string> cats = new Dictionary<string, string>();
 
-            //main page
-            var doc = GetDocument(_url);
 
-            //foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
-            foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//li[@class='sub-menu-item']/a"))
-            {
 
-                //z.B. "Erotic Wallpapers"
-                string text = WebUtility.HtmlDecode(node.InnerText).Trim();
-                if (String.IsNullOrEmpty(text))
-                {
-                    continue;
-                }
 
-                //z.B. "/wallpapers/erotic-wallpapers"
-                string href = node.Attributes["href"]?.Value;
-                if (String.IsNullOrEmpty(href))
-                {
-                    continue;
-                }
+            //z.B. "Latest Wallpapers"
+            string text = "Latest Wallpapers";
+            //z.B. "latest_wallpapers"
+            string href = "latest_wallpapers";
+            //z.B. "https://zoomgirls.net/latest_wallpapers"
+            string url = $"{_url}{href}";
 
-                //z.B. "wallpapers/erotic-wallpapers"
-                href = href.Substring(1);
-                //z.B. "http://adultwalls.com/wallpapers/erotic-wallpapers"
-                string url = $"{_url}{href}/";
+            cats.Add(url, text);
 
-                cats.Add(url, text);
-            }
 
             ReportNumberOfCategories(cats.Count);
 
@@ -88,8 +73,6 @@ namespace aemarcoCore.Crawlers
 
         }
 
-
-
         private void GetCategory(string categoryUrl, string categoryName)
         {
             int page = GetStartingPage();
@@ -99,8 +82,8 @@ namespace aemarcoCore.Crawlers
             bool pageValid = true;
             do
             {
-                //z.B. "http://adultwalls.com/wallpapers/erotic-wallpapers/1?order=publish-date-newest&resolution=all&search="                
-                string pageUrl = $"{categoryUrl}{page}?order=publish-date-newest&resolution=all&search=";
+                //z.B. "https://zoomgirls.net/latest_wallpapers/page/1"
+                string pageUrl = $"{categoryUrl}/page/{page}";
                 pageValid = GetPage(pageUrl, categoryName);
                 page++;
 
@@ -110,8 +93,6 @@ namespace aemarcoCore.Crawlers
             ReportCategoryDone();
         }
 
-
-
         /// <summary>
         /// return true if page contains minimum 1 valid Entry
         /// </summary>        
@@ -120,7 +101,8 @@ namespace aemarcoCore.Crawlers
             bool result = false;
             //Seite mit Wallpaperliste
             HtmlDocument doc = GetDocument(pageUrl);
-            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//div[@class='thumb-container']/a");
+            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//div[@class='thumb']/a");
+
             //non Valid Page
             if (nodes == null || nodes.Count == 0)
             {
@@ -149,10 +131,6 @@ namespace aemarcoCore.Crawlers
             return result;
         }
 
-
-
-
-
         /// <summary>
         /// returns true if Entry is valid
         /// </summary>
@@ -160,17 +138,23 @@ namespace aemarcoCore.Crawlers
         {
             HtmlNode imageNode = node.SelectSingleNode("./img");
 
-            // z.B. "wallpaper/shot-jeans-topless-brunette-model"
-            string detailsHref = node.Attributes["href"]?.Value?.Substring(1);
-            if (String.IsNullOrEmpty(detailsHref))
+            // z.B. "amy-addison--wallpapers.html"
+            string href = node.Attributes["href"]?.Value?.Substring(1);
+            if (String.IsNullOrEmpty(href))
             {
                 return false;
             }
 
-            HtmlDocument detailsDoc = GetDocument($"{_url}{detailsHref}");
+            string docURL = _url + href;
+            HtmlDocument doc = GetDocument(docURL);
 
-            //z.B. "http://adultwalls.com/web/wallpapers/shot-jeans-topless-brunette-model/1920x1080.jpg"
-            string url = GetImageUrl(detailsDoc);
+
+            //z.B. "https://zoomgirls.net/wallpapers/amy-addison--1920x1200.jpg"
+            string url = GetImageUrl(doc);
+            if (String.IsNullOrEmpty(url))
+            {
+                return false;
+            }
 
 
             //jeder node = 1 Wallpaper
@@ -179,7 +163,7 @@ namespace aemarcoCore.Crawlers
                 SiteCategory = categoryName,
                 Kategorie = GetEntryCategory(_url, categoryName),
                 ContentCategory = GetEntryContentCategory(_siteName, categoryName),
-                Tags = GetTags(detailsDoc),
+                Tags = GetTags(doc),
                 Url = url,
                 ThumbnailUrl = $"{_url}{imageNode?.Attributes["src"]?.Value?.Substring(1)}",
                 FileName = GetFileName(url),
@@ -199,77 +183,91 @@ namespace aemarcoCore.Crawlers
             return true;
         }
 
-
         private string GetFileName(string url)
         {
-            string name = url.Substring(url.IndexOf("papers/") + 7);
-            name = name.Substring(0, name.IndexOf("/"));
-            return name;
+            string fileName = url.Substring(url.LastIndexOf('/') + 1);
+            return Path.GetFileNameWithoutExtension(fileName);
         }
-
 
         private List<string> GetTags(HtmlDocument doc)
         {
-
             List<string> result = new List<string>();
-            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//div[@class='col-md-12']/a");
-            if (nodes != null && nodes.Count > 0)
+            var nodes = doc.DocumentNode.SelectNodes("//ul[@class='tagcloud']/span/a");
+            if (nodes == null)
             {
-                foreach (var node in nodes)
+                return result;
+            }
+
+            foreach (var tagNode in nodes)
+            {
+
+                string entry = tagNode.InnerText.Trim();
+                if (entry.Length > 0)
                 {
-                    string entry = node.InnerText.Trim();
-                    if (entry.Length > 0)
-                    {
-                        result.Add(entry);
-                    }
+                    result.Add(entry);
                 }
             }
+
             return result;
         }
 
-
         private string GetImageUrl(HtmlDocument doc)
         {
-            HtmlNode node = doc.DocumentNode.SelectSingleNode("//a[@class='btn btn-danger']");
-            if (node == null)
+            HtmlNode targetNode = null;
+
+            //select all resolution nodes
+            var allNodes = doc.DocumentNode.SelectNodes("//div[@class='tagcloud']/span/a");
+            if (allNodes == null)
+            {
+                return null;
+            }
+            //search for node with highest resolution
+            int maxSum = 0;
+            foreach (var node in allNodes)
+            {
+                //get both number values
+                string[] txt = node.Attributes["title"]?.Value?.Split('x');
+                if (txt != null && txt.Length == 2)
+                {
+                    int sum = 0;
+
+                    try
+                    {
+                        //do the math
+                        sum = int.Parse(txt[0].Trim()) * int.Parse(txt[1].Trim());
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+
+                    //set to targetNode if sum is highest
+                    if (sum > maxSum)
+                    {
+                        maxSum = sum;
+                        targetNode = node;
+                    }
+                }
+            }
+
+            if (targetNode == null)
             {
                 return null;
             }
 
-            // z.B. "wallpaper/shot-jeans-topless-brunette-model/1920x1080"
-            string href = node.Attributes["href"]?.Value?.Substring(1);
-            if (String.IsNullOrEmpty(href))
-            {
-                return null;
-            }
 
-            //z.B. "http://adultwalls.com/wallpaper/shot-jeans-topless-brunette-model/1920x1080"
-            string page = $"{_url}{href}";
+            //z.B. "/view-jana-jordan--1920x1200.html"
+            string url = targetNode.Attributes["href"]?.Value;
+            //z.B. "jana-jordan--1920x1200.html"
+            url = url.Substring(url.IndexOf("view") + 5);
+            //z.B. "jana-jordan--1920x1200"
+            url = url.Substring(0, url.IndexOf(".html"));
+            //z.B. "https://zoomgirls.net/wallpapers/jana-jordan--1920x1200.jpg"
+            url = _url + @"wallpapers/" + url + ".jpg";
 
-
-            HtmlDocument doc2 = GetDocument(page);
-            HtmlNode urlnode = doc2.DocumentNode.SelectSingleNode("//div[@class='wallpaper-preview-container']/a/img");
-            if (urlnode == null)
-            {
-                return null;
-            }
-
-            // z.B. "web/wallpapers/shot-jeans-topless-brunette-model/1920x1080.jpg"
-            string urlHref = urlnode.Attributes["src"]?.Value?.Substring(1);
-            if (String.IsNullOrEmpty(urlHref))
-            {
-                return null;
-            }
-
-            // z.B. "http://adultwalls.com/web/wallpapers/shot-jeans-topless-brunette-model/1920x1080.jpg"
-            string url = _url + urlHref;
 
             return url;
+
         }
-
-
-
-
-
     }
 }

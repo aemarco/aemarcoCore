@@ -10,7 +10,7 @@ namespace aemarcoCore.Crawlers
 {
     public class WallpaperCrawlerFtop : BildCrawlerBasis
     {
-        const string _url = "http://ftopx.com/";
+        const string _url = "https://ftopx.com/";
         const string _siteName = "ftopx";
 
 
@@ -159,6 +159,9 @@ namespace aemarcoCore.Crawlers
         /// </summary>
         private bool AddWallEntry(HtmlNode node, string categoryName)
         {
+            HtmlNode imageNode = node.SelectSingleNode("./img");
+
+
             // z.B. "/celebrities/211314-suzanne-a-metart-grafiti-wall-flowerdress.html"
             string href = node.Attributes["href"]?.Value;
             if (String.IsNullOrEmpty(href))
@@ -177,11 +180,12 @@ namespace aemarcoCore.Crawlers
             //jeder node = 1 Wallpaper
             WallEntry wallEntry = new WallEntry
             {
-                SeitenKategorie = categoryName,
+                SiteCategory = categoryName,
                 Kategorie = GetEntryCategory(_url, categoryName),
                 ContentCategory = GetEntryContentCategory(_siteName, categoryName),
-                Tags = GetTags(node.SelectSingleNode("./img")?.Attributes["alt"]?.Value),
+                Tags = GetTags(imageNode?.Attributes["alt"]?.Value),
                 Url = url,
+                ThumbnailUrl = imageNode?.Attributes["src"]?.Value,
                 FileName = GetFileName(id),
                 Extension = FileExtension.GetFileExtension(url)
             };

@@ -177,6 +177,8 @@ namespace aemarcoCore.Crawlers
         /// </summary>
         private bool AddWallEntry(HtmlNode node, string categoryName)
         {
+            HtmlNode imageNode = node.SelectSingleNode("./img");
+
             // z.B. "/w/24741/"
             string href = node.Attributes["href"]?.Value;
             if (String.IsNullOrEmpty(href))
@@ -196,11 +198,12 @@ namespace aemarcoCore.Crawlers
             //jeder node = 1 Wallpaper
             WallEntry wallEntry = new WallEntry
             {
-                SeitenKategorie = categoryName,
+                SiteCategory = categoryName,
                 Kategorie = GetEntryCategory(_url, categoryName),
                 ContentCategory = GetEntryContentCategory(_siteName, categoryName),
                 Tags = GetTags(node),
                 Url = url,
+                ThumbnailUrl = $"{_url}{imageNode?.Attributes["src"]?.Value?.Substring(1)}",
                 FileName = GetFileName(url, categoryName),
                 Extension = FileExtension.GetFileExtension(url)
             };

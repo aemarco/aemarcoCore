@@ -340,15 +340,29 @@ namespace aemarcoCore.Crawlers
                     {
                         return getErowallCategory(categoryName);
                     }
+                case "zoomgirls":
+                    {
+                        ContentCategory result = new ContentCategory();
+                        result.SetMainCategory(Category.Girls);
+                        return result;
+                    }
+                case "pornomass":
+                case "gifpornomass":
+                    {
+                        ContentCategory result = new ContentCategory();
+                        result.SetMainCategory(Category.Girls);
+                        result.SetSubCategory(Category.Hardcore);
+                        return result;
+                    }
                 default:
                     {
                         ContentCategory result = new ContentCategory();
-                        result.SetMainCategory(Category.Unknown);
-                        result.SetSubCategory(Category.Unknown);
                         return result;
                     }
             }
         }
+
+
 
         private ContentCategory GetAdultwallsCategory(string categoryName)
         {
