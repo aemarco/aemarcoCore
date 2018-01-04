@@ -1,9 +1,9 @@
 ﻿using aemarcoCore.Crawlers.Types;
 using aemarcoCore.Tools;
+using aemarcoCore.Types;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -39,15 +39,9 @@ namespace aemarcoCore.Crawlers
 
 
 
-        protected override void DoWork()
+        protected override Dictionary<string, string> GetCategoriesDict()
         {
-            GetCategories();
-        }
-
-
-        private void GetCategories()
-        {
-            Dictionary<string, string> cats = new Dictionary<string, string>();
+            Dictionary<string, string> result = new Dictionary<string, string>();
 
             //main page
             var doc = GetDocument(_url);
@@ -65,7 +59,7 @@ namespace aemarcoCore.Crawlers
                 else
                 {
                     //z.B. "brunette"
-                    text = text.Substring(1);                    
+                    text = text.Substring(1);
                     if (String.IsNullOrEmpty(text))
                     {
                         continue;
@@ -84,100 +78,78 @@ namespace aemarcoCore.Crawlers
                 }
 
                 //z.B. "search/brunette/"
-                href = href.Substring(1).Replace("search","teg");
+                href = href.Substring(1).Replace("search", "teg");
 
 
                 //z.B. "https://erowall.com/search/brunette/"
                 string url = $"{_url}{href}";
 
-                cats.Add(url, text);
+                result.Add(url, text);
             }
 
-            ReportNumberOfCategories(cats.Count);
-
-            foreach (string cat in cats.Keys)
-            {
-                if (!IShallGoAheadWithCategories())
-                {
-                    break;
-                }
-                GetCategory(cat, cats[cat]);
-            }
-
-
-        }
-
-
-
-        private void GetCategory(string categoryUrl, string categoryName)
-        {
-            int page = GetStartingPage();
-            if (page == 0) page = 1;
-
-
-            bool pageValid = true;
-            do
-            {
-                //z.B. "https://erowall.com/teg/brunette/page/1"                
-                string pageUrl = $"{categoryUrl}page/{page}";
-                pageValid = GetPage(pageUrl, categoryName);
-                page++;
-
-
-                //} while (page <= 1 && pageContainsNews);
-            } while (pageValid && IShallGoAheadWithPages(page));
-            ReportCategoryDone();
-        }
-
-
-
-        /// <summary>
-        /// return true if page contains minimum 1 valid Entry
-        /// </summary>        
-        private bool GetPage(string pageUrl, string categoryName)
-        {
-            bool result = false;
-            //Seite mit Wallpaperliste
-            HtmlDocument doc = GetDocument(pageUrl);
-            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//div[@class='wpmini']/a");
-            //non Valid Page
-            if (nodes == null || nodes.Count == 0)
-            {
-                return result;
-            }
-
-            ReportNumberOfEntries(nodes.Count);
-
-            foreach (HtmlNode node in nodes)
-            {
-                if (!IShallGoAheadWithEntries())
-                {
-                    result = false;
-                    break;
-                }
-
-                if (AddWallEntry(node, categoryName))
-                {
-                    result = true;
-                }
-                ReportEntryDone();
-            }
-
-            //valid Page contains minimum 1 valid Entry
-            ReportPageDone();
             return result;
         }
 
+        protected override string GetSiteUrlForCategory(string categoryUrl, int page)
+        {
+            //z.B. "https://erowall.com/teg/brunette/page/1"       
+            return $"{categoryUrl}page/{page}";
+        }
 
+        protected override string GetSearchStringGorEntry()
+        {
+            return "//div[@class='wpmini']/a";
+        }
 
+        protected override IContentCategory GetContentCategory(string categoryName)
+        {
+            ContentCategory result = new ContentCategory();
+            result.SetMainCategory(Category.Girls);
+            switch (categoryName)
+            {
+
+                case "Blowjob":
+                    {
+                        result.SetSubCategory(Category.Blowjob);
+                        break;
+                    }
+                case "Lesbians":
+                    {
+                        result.SetSubCategory(Category.Lesbians);
+                        break;
+                    }
+                case "Lingerie":
+                    {
+                        result.SetSubCategory(Category.Lingerie);
+                        break;
+                    }
+                case "Beach":
+                    {
+                        result.SetSubCategory(Category.Beaches);
+                        break;
+                    }
+                case "Asian":
+                    {
+                        result.SetSubCategory(Category.Asian);
+                        break;
+                    }
+                case "Anime":
+                    {
+                        result.SetSubCategory(Category.Fantasy);
+                        break;
+                    }
+
+            }
+            return result;
+        }
 
 
         /// <summary>
         /// returns true if Entry is valid
         /// </summary>
-        private bool AddWallEntry(HtmlNode node, string categoryName)
+        protected override bool AddWallEntry(HtmlNode node, string categoryName)
         {
-            HtmlNode imageNode = node.SelectSingleNode("./img");
+
 
             // z.B. "/w/24741/"
             string href = node.Attributes["href"]?.Value;
@@ -199,19 +171,18 @@ namespace aemarcoCore.Crawlers
             WallEntry wallEntry = new WallEntry
             {
                 SiteCategory = categoryName,
-                Kategorie = GetEntryCategory(_url, categoryName),
-                ContentCategory = GetEntryContentCategory(_siteName, categoryName),
-                Tags = GetTags(node),
+                ContentCategory = GetContentCategory(categoryName),
+                Tags = GetTagsFromTagString(node.Attributes["title"]?.Value),
                 Url = url,
-                ThumbnailUrl = $"{_url}{imageNode?.Attributes["src"]?.Value?.Substring(1)}",
-                FileName = GetFileName(url, categoryName),
+                ThumbnailUrl = GetThumbnailUrlRelative(_url, node),
+                FileName = GetFileName(url, $"{categoryName}_"),
                 Extension = FileExtension.GetFileExtension(url)
             };
 
 
 
             //Entry muss valid sein
-            if (!IsValidEntry(wallEntry))
+            if (!wallEntry.IsValid())
             {
                 return false;
             }
@@ -222,37 +193,8 @@ namespace aemarcoCore.Crawlers
         }
 
 
-        private string GetFileName(string url, string categoryName)
-        {
-            string fileName =  categoryName + "_" + url.Substring(url.LastIndexOf("/") + 1);
-            return Path.GetFileNameWithoutExtension(fileName);
-        }
 
 
-        private List<string> GetTags(HtmlNode node)
-        {
-            List<string> result = new List<string>();
-
-            string tagString = node.Attributes["title"]?.Value;            
-            if (String.IsNullOrEmpty(tagString))
-            {
-                return result;
-            }
-            else
-            {
-                string[] tags = tagString.Split(',');
-                foreach (string tag in tags)
-                {
-                    //z.B. "flowerdress"
-                    string entry = tag.Trim();
-                    if (entry.Length > 0)
-                    {
-                        result.Add(entry);
-                    }
-                }
-            }
-            return result;
-        }
 
 
         private string GetImageUrl(string href)

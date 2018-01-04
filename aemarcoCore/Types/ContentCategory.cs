@@ -1,6 +1,6 @@
-﻿namespace aemarcoCore.Crawlers.Types
+﻿namespace aemarcoCore.Types
 {
-    internal class ContentCategory : IContentCategory
+    public class ContentCategory : IContentCategory
     {
         private string _mainCategory;
         private string _subCategory;

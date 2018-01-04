@@ -1,9 +1,9 @@
 ﻿using aemarcoCore.Crawlers.Types;
 using aemarcoCore.Tools;
+using aemarcoCore.Types;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 
 namespace aemarcoCore.Crawlers
@@ -35,19 +35,9 @@ namespace aemarcoCore.Crawlers
 
 
 
-
-        protected override void DoWork()
+        protected override Dictionary<string, string> GetCategoriesDict()
         {
-            GetCategories();
-        }
-
-        private void GetCategories()
-        {
-
-            Dictionary<string, string> cats = new Dictionary<string, string>();
-
-
-
+            Dictionary<string, string> result = new Dictionary<string, string>();
 
             //z.B. "Latest Wallpapers"
             string text = "Latest Wallpapers";
@@ -55,88 +45,37 @@ namespace aemarcoCore.Crawlers
             string href = "latest_wallpapers";
             //z.B. "https://zoomgirls.net/latest_wallpapers"
             string url = $"{_url}{href}";
+            result.Add(url, text);
 
-            cats.Add(url, text);
-
-
-            ReportNumberOfCategories(cats.Count);
-
-            foreach (string cat in cats.Keys)
-            {
-                if (!IShallGoAheadWithCategories())
-                {
-                    break;
-                }
-                GetCategory(cat, cats[cat]);
-            }
-
-
-        }
-
-        private void GetCategory(string categoryUrl, string categoryName)
-        {
-            int page = GetStartingPage();
-            if (page == 0) page = 1;
-
-
-            bool pageValid = true;
-            do
-            {
-                //z.B. "https://zoomgirls.net/latest_wallpapers/page/1"
-                string pageUrl = $"{categoryUrl}/page/{page}";
-                pageValid = GetPage(pageUrl, categoryName);
-                page++;
-
-
-                //} while (page <= 1 && pageContainsNews);
-            } while (pageValid && IShallGoAheadWithPages(page));
-            ReportCategoryDone();
-        }
-
-        /// <summary>
-        /// return true if page contains minimum 1 valid Entry
-        /// </summary>        
-        private bool GetPage(string pageUrl, string categoryName)
-        {
-            bool result = false;
-            //Seite mit Wallpaperliste
-            HtmlDocument doc = GetDocument(pageUrl);
-            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//div[@class='thumb']/a");
-
-            //non Valid Page
-            if (nodes == null || nodes.Count == 0)
-            {
-                return result;
-            }
-
-            ReportNumberOfEntries(nodes.Count);
-
-            foreach (HtmlNode node in nodes)
-            {
-                if (!IShallGoAheadWithEntries())
-                {
-                    result = false;
-                    break;
-                }
-
-                if (AddWallEntry(node, categoryName))
-                {
-                    result = true;
-                }
-                ReportEntryDone();
-            }
-
-            //valid Page contains minimum 1 valid Entry
-            ReportPageDone();
             return result;
         }
+
+        protected override string GetSiteUrlForCategory(string categoryUrl, int page)
+        {
+            //z.B. "https://zoomgirls.net/latest_wallpapers/page/1"
+            return $"{categoryUrl}/page/{page}";
+        }
+
+        protected override string GetSearchStringGorEntry()
+        {
+            return "//div[@class='thumb']/a";
+        }
+
+        protected override IContentCategory GetContentCategory(string categoryName)
+        {
+            ContentCategory result = new ContentCategory();
+            result.SetMainCategory(Category.Girls);
+            return result;
+        }
+
+
 
         /// <summary>
         /// returns true if Entry is valid
         /// </summary>
-        private bool AddWallEntry(HtmlNode node, string categoryName)
+        protected override bool AddWallEntry(HtmlNode node, string categoryName)
         {
-            HtmlNode imageNode = node.SelectSingleNode("./img");
+
 
             // z.B. "amy-addison--wallpapers.html"
             string href = node.Attributes["href"]?.Value?.Substring(1);
@@ -161,19 +100,18 @@ namespace aemarcoCore.Crawlers
             WallEntry wallEntry = new WallEntry
             {
                 SiteCategory = categoryName,
-                Kategorie = GetEntryCategory(_url, categoryName),
-                ContentCategory = GetEntryContentCategory(_siteName, categoryName),
-                Tags = GetTags(doc),
+                ContentCategory = GetContentCategory(categoryName),
+                Tags = GetTagsFromNodes(doc.DocumentNode.SelectNodes("//ul[@class='tagcloud']/span/a")),
                 Url = url,
-                ThumbnailUrl = $"{_url}{imageNode?.Attributes["src"]?.Value?.Substring(1)}",
-                FileName = GetFileName(url),
+                ThumbnailUrl = GetThumbnailUrlRelative(_url, node),
+                FileName = GetFileName(url, string.Empty),
                 Extension = FileExtension.GetFileExtension(url)
             };
 
 
 
             //Entry muss valid sein
-            if (!IsValidEntry(wallEntry))
+            if (!wallEntry.IsValid())
             {
                 return false;
             }
@@ -183,33 +121,11 @@ namespace aemarcoCore.Crawlers
             return true;
         }
 
-        private string GetFileName(string url)
-        {
-            string fileName = url.Substring(url.LastIndexOf('/') + 1);
-            return Path.GetFileNameWithoutExtension(fileName);
-        }
 
-        private List<string> GetTags(HtmlDocument doc)
-        {
-            List<string> result = new List<string>();
-            var nodes = doc.DocumentNode.SelectNodes("//ul[@class='tagcloud']/span/a");
-            if (nodes == null)
-            {
-                return result;
-            }
 
-            foreach (var tagNode in nodes)
-            {
 
-                string entry = tagNode.InnerText.Trim();
-                if (entry.Length > 0)
-                {
-                    result.Add(entry);
-                }
-            }
 
-            return result;
-        }
+
 
         private string GetImageUrl(HtmlDocument doc)
         {
@@ -269,5 +185,8 @@ namespace aemarcoCore.Crawlers
             return url;
 
         }
+
+
+
     }
 }

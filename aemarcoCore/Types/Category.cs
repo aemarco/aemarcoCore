@@ -1,6 +1,7 @@
-﻿namespace aemarcoCore.Crawlers.Types
+﻿namespace aemarcoCore.Types
 {
-    internal enum Category
+
+    public enum Category
     {
         Cars,
         Bikes,

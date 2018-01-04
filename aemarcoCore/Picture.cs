@@ -116,6 +116,7 @@ namespace aemarcoCore
             //speichern
             _save(this, newBytes);
         }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Objekte nicht mehrmals verwerfen")]
         public string GetLocalFile()
         {
             //noPicture
@@ -160,6 +161,7 @@ namespace aemarcoCore
 
 
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Objekte nicht mehrmals verwerfen")]
         private byte[] GetBytes(string argFilepath)
         {
 

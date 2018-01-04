@@ -1,4 +1,4 @@
-﻿namespace aemarcoCore.Crawlers
+﻿namespace aemarcoCore.Types
 {
     public interface IContentCategory
     {

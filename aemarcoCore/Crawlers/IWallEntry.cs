@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using aemarcoCore.Types;
+using System.Collections.Generic;
 
 namespace aemarcoCore.Crawlers
 {
@@ -14,6 +15,6 @@ namespace aemarcoCore.Crawlers
         List<string> Tags { get; }
 
 
-        string getJSON();
+        string GetJSON();
     }
 }

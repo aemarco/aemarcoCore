@@ -1,8 +1,10 @@
 ﻿using aemarcoCore.Crawlers.Types;
-using aemarcoCore.Tools;
+using aemarcoCore.Types;
 using HtmlAgilityPack;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -73,7 +75,7 @@ namespace aemarcoCore.Crawlers
 
         #region Starting the thing
 
-        protected abstract void DoWork();
+
         public ICrawlerResult Start()
         {
             DoWork();
@@ -95,6 +97,7 @@ namespace aemarcoCore.Crawlers
 
         #region Events
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event EventHandler<IWallEntry> KnownEntry;
         protected virtual void OnKnownEntry(IWallEntry entry)
         {
@@ -116,9 +119,11 @@ namespace aemarcoCore.Crawlers
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event EventHandler<IWallEntry> NewEntry;
         protected virtual void OnNewEntry(IWallEntry entry)
         {
+
             if (NewEntry != null)
             {
                 foreach (Delegate d in NewEntry.GetInvocationList())
@@ -137,6 +142,7 @@ namespace aemarcoCore.Crawlers
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event EventHandler<ICrawlerResult> Completed;
         protected virtual void OnCompleted()
         {
@@ -243,21 +249,90 @@ namespace aemarcoCore.Crawlers
 
         #region Crawling
 
-
-        protected bool IsValidEntry(IWallEntry wallEntry)
+        protected virtual void DoWork()
         {
-            //TODO: Some more validation
+            Dictionary<string, string> categoriesToCrawl = GetCategoriesDict();
 
-            if (
-                wallEntry == null || //Entry darf nicht null sein
-                String.IsNullOrEmpty(wallEntry.Url) || //Entry muss Url haben
-                !FileExtension.IsCrawlerExtension(wallEntry.Extension) //Extension muss erlaubt sein
-                )
+            ReportNumberOfCategories(categoriesToCrawl.Count);
+
+            foreach (string cat in categoriesToCrawl.Keys)
             {
-                return false;
+                if (!IShallGoAheadWithCategories())
+                {
+                    break;
+                }
+                GetCategory(cat, categoriesToCrawl[cat]);
+            }
+        }
+        protected abstract Dictionary<string, string> GetCategoriesDict();
+        protected virtual HtmlDocument GetDocument(string url)
+        {
+            HtmlWeb web = new HtmlWeb();
+            return web.Load(url);
+        }
+        protected virtual void GetCategory(string categoryUrl, string categoryName)
+        {
+            int page = GetStartingPage();
+            if (page == 0) page = 1;
+
+            bool pageValid = true;
+            do
+            {
+                pageValid = GetPage(GetSiteUrlForCategory(categoryUrl, page), categoryName);
+                page++;
+
+
+                //} while (page <= 1 && pageContainsNews);
+            } while (pageValid && IShallGoAheadWithPages(page));
+            ReportCategoryDone();
+        }
+        protected abstract string GetSiteUrlForCategory(string categoryUrl, int page);
+        /// <summary>
+        /// return true if page contains minimum 1 valid Entry
+        /// </summary>        
+        protected virtual bool GetPage(string pageUrl, string categoryName)
+        {
+            bool result = false;
+            //Seite mit Wallpaperliste
+            HtmlDocument doc = GetDocument(pageUrl);
+            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes(GetSearchStringGorEntry());
+
+            //non Valid Page
+            if (nodes == null || nodes.Count == 0)
+            {
+                return result;
             }
 
-            return true;
+            ReportNumberOfEntries(nodes.Count);
+
+            foreach (HtmlNode node in nodes)
+            {
+                if (!IShallGoAheadWithEntries())
+                {
+                    result = false;
+                    break;
+                }
+
+                if (AddWallEntry(node, categoryName))
+                {
+                    result = true;
+                }
+                ReportEntryDone();
+            }
+
+            //valid Page contains minimum 1 valid Entry
+            ReportPageDone();
+            return result;
+        }
+
+        protected abstract string GetSearchStringGorEntry();
+        /// <summary>
+        /// returns true if Entry is valid
+        /// </summary>
+        protected virtual bool AddWallEntry(HtmlNode node, string categoryName)
+        {
+            return false;
+
         }
         protected void AddEntry(IWallEntry entry)
         {
@@ -285,207 +360,98 @@ namespace aemarcoCore.Crawlers
             }
         }
 
-        protected HtmlDocument GetDocument(string url)
+        protected virtual string GetFileName(string url, string prefix)
         {
-            HtmlWeb web = new HtmlWeb();
-            return web.Load(url);
+            return Path.GetFileNameWithoutExtension($"{prefix}{url.Substring(url.LastIndexOf("/") + 1)}");
         }
-        protected string GetEntryCategory(string url, string categoryName)
+        protected virtual List<string> GetTagsFromTagString(string tagString)
         {
-            string search = $"{url}---{categoryName}";
+            //z.B. "flowerdress, nadia p, susi r, suzanna, suzanna a, brunette, boobs, big tits"
+            List<string> result = new List<string>();
 
-            switch (search)
+            if (String.IsNullOrEmpty(tagString))
             {
-                case "http://ftopx.com/---Girls & Cars":
-                    {
-                        return "Autos";
-                    }
-                case "http://ftopx.com/---Girls & Bikes":
-                    {
-                        return "Motorräder";
-                    }
-                case "http://ftopx.com/---Fantasy Girls":
-                case "http://ftopx.com/---3D & Vector Girls":
-                    {
-                        return "Fantasy";
-                    }
-                case "http://ftopx.com/---Celebrity Fakes":
-                    {
-                        return "Celebrityfakes";
-                    }
-                case "http://ftopx.com/---Fetish Girls":
-                    {
-                        return "Fetischgirls";
-                    }
-                default:
-                    {
-                        return "Girls";
-                    }
+                return result;
             }
-        }
-
-        internal ContentCategory GetEntryContentCategory(string siteName, string categoryName)
-        {
-            switch (siteName)
+            else
             {
-                case "ftopx":
+                string[] tags = tagString.Split(',');
+                foreach (string tag in tags)
+                {
+                    //z.B. "flowerdress"
+                    string entry = tag.Trim();
+                    if (entry.Length > 0)
                     {
-                        return GetFtopCategory(categoryName);
+                        result.Add(entry);
                     }
-                case "adultwalls":
-                    {
-                        return GetAdultwallsCategory(categoryName);
-                    }
-                case "erowall":
-                    {
-                        return getErowallCategory(categoryName);
-                    }
-                case "zoomgirls":
-                    {
-                        ContentCategory result = new ContentCategory();
-                        result.SetMainCategory(Category.Girls);
-                        return result;
-                    }
-                case "pornomass":
-                case "gifpornomass":
-                    {
-                        ContentCategory result = new ContentCategory();
-                        result.SetMainCategory(Category.Girls);
-                        result.SetSubCategory(Category.Hardcore);
-                        return result;
-                    }
-                default:
-                    {
-                        ContentCategory result = new ContentCategory();
-                        return result;
-                    }
-            }
-        }
-
-
-
-        private ContentCategory GetAdultwallsCategory(string categoryName)
-        {
-            ContentCategory result = new ContentCategory();
-            result.SetMainCategory(Category.Girls);
-            switch (categoryName)
-            {
-                case "Lingerie Models":
-                    {
-                        result.SetSubCategory(Category.Lingerie);
-                        break;
-                    }
+                }
             }
             return result;
         }
-
-        private ContentCategory GetFtopCategory(string categoryName)
+        protected virtual List<string> GetTagsFromNodes(HtmlNodeCollection nodes)
         {
-            ContentCategory result = new ContentCategory();
-            result.SetMainCategory(Category.Girls);
 
-            switch (categoryName)
+            List<string> result = new List<string>();
+            if (nodes == null)
             {
-                case "Celebrities":
-                    {
-                        result.SetSubCategory(Category.Celebrities);
-                        break;
-                    }
-                case "Girls & Beaches":
-                    {
-                        result.SetSubCategory(Category.Beaches);
-                        break;
-                    }
-                case "Girls & Cars":
-                    {
-                        result.SetSubCategory(Category.Cars);
-                        break;
-                    }
-                case "Girls & Bikes":
-                    {
-                        result.SetSubCategory(Category.Bikes);
-                        break;
-                    }
-                case "Lingerie Girls":
-                    {
-                        result.SetSubCategory(Category.Lingerie);
-                        break;
-                    }
-                case "Asian Girls":
-                    {
-                        result.SetSubCategory(Category.Asian);
-                        break;
-                    }
-                case "Holidays":
-                    {
-                        result.SetSubCategory(Category.Holidays);
-                        break;
-                    }
-                case "Fantasy Girls":
-                case "3D & Vector Girls":
-                    {
-                        result.SetSubCategory(Category.Fantasy);
-                        break;
-                    }
-                case "Celebrity Fakes":
-                    {
-                        result.SetSubCategory(Category.CelebrityFakes);
-                        break;
-                    }
-                case "Fetish Girls":
-                    {
-                        result.SetSubCategory(Category.Fetish);
-                        break;
-                    }
+                return result;
             }
-            return result;
-        }
 
-        private ContentCategory getErowallCategory(string categoryName)
-        {
-            ContentCategory result = new ContentCategory();
-            result.SetMainCategory(Category.Girls);
-
-            switch (categoryName)
+            foreach (var node in nodes)
             {
-
-                case "Blowjob":
-                    {
-                        result.SetSubCategory(Category.Blowjob);
-                        break;
-                    }
-                case "Lesbians":
-                    {
-                        result.SetSubCategory(Category.Lesbians);
-                        break;
-                    }
-                case "Lingerie":
-                    {
-                        result.SetSubCategory(Category.Lingerie);
-                        break;
-                    }
-                case "Beach":
-                    {
-                        result.SetSubCategory(Category.Beaches);
-                        break;
-                    }
-                case "Asian":
-                    {
-                        result.SetSubCategory(Category.Asian);
-                        break;
-                    }
-                case "Anime":
-                    {
-                        result.SetSubCategory(Category.Fantasy);
-                        break;
-                    }
-
+                string entry = node.InnerText.Trim();
+                if (entry.Length > 0)
+                {
+                    result.Add(entry);
+                }
             }
 
             return result;
         }
+        protected virtual string GetThumbnailUrlRelative(string url, HtmlNode node)
+        {
+            HtmlNode imageNode = node.SelectSingleNode("./img");
+            return $"{url}{imageNode?.Attributes["src"]?.Value?.Substring(1)}";
+        }
+        protected virtual string GetThumbnailUrlAbsolute(HtmlNode node)
+        {
+            HtmlNode imageNode = node.SelectSingleNode("./img");
+            return imageNode?.Attributes["src"]?.Value;
+        }
+        protected virtual IContentCategory GetContentCategory(string categoryName)
+        {
+            return new ContentCategory();
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         #endregion
+
+
+
+
 
 
 

@@ -1,9 +1,9 @@
 ﻿using aemarcoCore.Crawlers.Types;
 using aemarcoCore.Tools;
+using aemarcoCore.Types;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 
 namespace aemarcoCore.Crawlers
@@ -38,95 +38,52 @@ namespace aemarcoCore.Crawlers
 
 
 
-
-        protected override void DoWork()
+        protected override Dictionary<string, string> GetCategoriesDict()
         {
-            GetCategories();
+            Dictionary<string, string> result = new Dictionary<string, string>
+            {
+                { _url, "Pornomass" },
+                { _url2, "Gifpornomass" }
+            };
+
+            return result;
         }
 
-        private void GetCategories()
+        protected override string GetSiteUrlForCategory(string categoryUrl, int page)
         {
-
-            Dictionary<string, string> cats = new Dictionary<string, string>();
-
-
-            cats.Add(_url, "Pornomass");
-            cats.Add(_url2, "Gifpornomass");
-
-
-            ReportNumberOfCategories(cats.Count);
-
-            foreach (string cat in cats.Keys)
-            {
-                if (!IShallGoAheadWithCategories())
-                {
-                    break;
-                }
-                GetCategory(cat, cats[cat]);
-            }
-
-
+            //z.B. "http://pornomass.com/page/1"
+            return $"{categoryUrl}page/{page}";
         }
 
-
-
-        private void GetCategory(string categoryUrl, string categoryName)
+        protected override string GetSearchStringGorEntry()
         {
-            int page = GetStartingPage();
-            if (page == 0) page = 1;
-
-
-            bool pageValid = true;
-            do
-            {
-                //z.B. "http://pornomass.com/page/1"
-                string pageUrl = $"{categoryUrl}page/{page}";
-                pageValid = GetPage(pageUrl, categoryName);
-                page++;
-
-
-                //} while (page <= 1 && pageContainsNews);
-            } while (pageValid && IShallGoAheadWithPages(page));
-            ReportCategoryDone();
+            return "//div[@class='fit-box']/a[@class='fit-wrapper']";
         }
 
-
-
-        /// <summary>
-        /// return true if page contains minimum 1 valid Entry
-        /// </summary>        
-        private bool GetPage(string pageUrl, string categoryName)
+        protected override string GetThumbnailUrlRelative(string url, HtmlNode node)
         {
-            bool result = false;
-            //Seite mit Wallpaperliste
-            HtmlDocument doc = GetDocument(pageUrl);
-            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//div[@class='fit-box']/a[@class='fit-wrapper']");
-
-            //non Valid Page
-            if (nodes == null || nodes.Count == 0)
+            HtmlNode imageNode;
+            string attribute;
+            if (url == _url)
             {
-                return result;
+                imageNode = node.SelectSingleNode("./img");
+                attribute = "src";
             }
-
-            ReportNumberOfEntries(nodes.Count);
-
-            foreach (HtmlNode node in nodes)
+            else if (url == _url2)
             {
-                if (!IShallGoAheadWithEntries())
-                {
-                    result = false;
-                    break;
-                }
-
-                if (AddWallEntry(node, categoryName))
-                {
-                    result = true;
-                }
-                ReportEntryDone();
+                imageNode = node.SelectSingleNode(".video");
+                attribute = "poster";
             }
+            else { return string.Empty; }
 
-            //valid Page contains minimum 1 valid Entry
-            ReportPageDone();
+            return $"{url}{imageNode?.Attributes[attribute]?.Value?.Substring(1)}";
+        }
+
+        protected override IContentCategory GetContentCategory(string categoryName)
+        {
+            ContentCategory result = new ContentCategory();
+            result.SetMainCategory(Category.Girls);
+            result.SetSubCategory(Category.Hardcore);
             return result;
         }
 
@@ -137,7 +94,7 @@ namespace aemarcoCore.Crawlers
         /// <summary>
         /// returns true if Entry is valid
         /// </summary>
-        private bool AddWallEntry(HtmlNode node, string categoryName)
+        protected override bool AddWallEntry(HtmlNode node, string categoryName)
         {
 
             // z.B. "photo/1949-xxx.html" -- "Pornomass"
@@ -155,18 +112,16 @@ namespace aemarcoCore.Crawlers
             {
                 site = _url;
                 siteName = _siteName;
-                HtmlNode imageNode = node.SelectSingleNode("./img");
-                thumbnail = $"{site}{imageNode?.Attributes["src"]?.Value?.Substring(1)}";
+                thumbnail = GetThumbnailUrlRelative(_url, node);
             }
             else
             {
                 site = _url2;
                 siteName = _siteName2;
-                HtmlNode imageNode = node.SelectSingleNode("./video");
-                thumbnail = $"{site}{imageNode?.Attributes["poster"]?.Value?.Substring(1)}";
+                thumbnail = GetThumbnailUrlRelative(_url2, node);
             }
 
-            
+
 
 
             // z.B. "http://pornomass.com/uploads/photo/original/1949-xxx.jpg" -- "Pornomass"
@@ -178,19 +133,18 @@ namespace aemarcoCore.Crawlers
             WallEntry wallEntry = new WallEntry
             {
                 SiteCategory = categoryName,
-                Kategorie = GetEntryCategory(_url, categoryName),
-                ContentCategory = GetEntryContentCategory(siteName, categoryName),
+                ContentCategory = GetContentCategory(categoryName),
                 Tags = new List<string>(),
                 Url = url,
                 ThumbnailUrl = thumbnail,
-                FileName = GetFileName(url),
+                FileName = GetFileName(url, string.Empty),
                 Extension = FileExtension.GetFileExtension(url)
             };
 
 
 
             //Entry muss valid sein
-            if (!IsValidEntry(wallEntry))
+            if (!wallEntry.IsValid())
             {
                 return false;
             }
@@ -201,18 +155,15 @@ namespace aemarcoCore.Crawlers
         }
 
 
-        private string GetFileName(string url)
-        {
-            //z.B. "http://pornomass.com/uploads/photo/original/1949-xxx.jpg" -- "Pornomass"
-            //z.B. "http://gif.pornomass.com/uploads/photo/original/614-beautiful-girl-anal-gif.gif" -- "Gifpornomass"
 
-            //z.B. "1949-xxx.jpg" -- "Pornomass"
-            //z.B. "614-beautiful-girl-anal-gif.gif" -- "Gifpornomass"
-            string fileName = url.Substring(url.LastIndexOf("/") + 1);
-            //z.B. "1949-xxx" -- "Pornomass"
-            //z.B. "614-beautiful-girl-anal-gif" -- "Gifpornomass"
-            return Path.GetFileNameWithoutExtension(fileName); ;
-        }
+
+
+
+
+
+
+
+
 
         private string GetImageUrl(string site, string href)
         {
