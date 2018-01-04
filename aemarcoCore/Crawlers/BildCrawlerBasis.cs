@@ -31,7 +31,6 @@ namespace aemarcoCore.Crawlers
         private int _numberOfEntriesDone;
         #endregion
 
-
         #region ctor
 
         public BildCrawlerBasis(
@@ -72,7 +71,6 @@ namespace aemarcoCore.Crawlers
 
         #endregion
 
-
         #region Starting the thing
 
 
@@ -93,7 +91,6 @@ namespace aemarcoCore.Crawlers
         }
 
         #endregion
-
 
         #region Events
 
@@ -245,8 +242,6 @@ namespace aemarcoCore.Crawlers
 
         #endregion
 
-
-
         #region Crawling
 
         protected virtual void DoWork()
@@ -332,8 +327,8 @@ namespace aemarcoCore.Crawlers
         protected virtual bool AddWallEntry(HtmlNode node, string categoryName)
         {
             return false;
-
         }
+
         protected void AddEntry(IWallEntry entry)
         {
 
@@ -359,10 +354,9 @@ namespace aemarcoCore.Crawlers
                 OnNewEntry(entry);
             }
         }
-
         protected virtual string GetFileName(string url, string prefix)
         {
-            return Path.GetFileNameWithoutExtension($"{prefix}{url.Substring(url.LastIndexOf("/") + 1)}");
+            return Path.GetFileNameWithoutExtension($"{prefix}{url?.Substring(url.LastIndexOf("/") + 1)}");
         }
         protected virtual List<string> GetTagsFromTagString(string tagString)
         {
@@ -420,32 +414,8 @@ namespace aemarcoCore.Crawlers
         }
         protected virtual IContentCategory GetContentCategory(string categoryName)
         {
-            return new ContentCategory();
+            return new ContentCategory(Category.None, Category.None);
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         #endregion
 

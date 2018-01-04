@@ -2,27 +2,17 @@
 {
     public class ContentCategory : IContentCategory
     {
-        private string _mainCategory;
-        private string _subCategory;
+        private Category _mainCategory;
+        private Category _subCategory;
 
-        internal ContentCategory()
+        public ContentCategory(Category mainCategory, Category subCategory)
         {
-            _mainCategory = string.Empty;
-            _subCategory = string.Empty;
+            _mainCategory = mainCategory;
+            _subCategory = subCategory;
         }
 
-        internal void SetMainCategory(Category cat)
-        {
-            _mainCategory = cat.ToString();
-        }
-        internal void SetSubCategory(Category cat)
-        {
-            _subCategory = cat.ToString();
-        }
-
-
-        public string MainCategory { get { return _mainCategory; } }
-        public string SubCategory { get { return _subCategory; } }
+        public Category MainCategory { get { return _mainCategory; } }
+        public Category SubCategory { get { return _subCategory; } }
 
 
     }

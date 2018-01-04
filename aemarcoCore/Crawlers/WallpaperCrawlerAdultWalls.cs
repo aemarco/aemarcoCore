@@ -15,7 +15,6 @@ namespace aemarcoCore.Crawlers
         const string _siteName = "adultwalls";
 
 
-
         public WallpaperCrawlerAdultWalls(
             IProgress<int> progress = null,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -32,8 +31,6 @@ namespace aemarcoCore.Crawlers
         {
 
         }
-
-
 
 
         protected override Dictionary<string, string> GetCategoriesDict()
@@ -93,17 +90,13 @@ namespace aemarcoCore.Crawlers
 
         protected override IContentCategory GetContentCategory(string categoryName)
         {
-            ContentCategory result = new ContentCategory();
-            result.SetMainCategory(Category.Girls);
             switch (categoryName)
             {
                 case "Lingerie Models":
-                    {
-                        result.SetSubCategory(Category.Lingerie);
-                        break;
-                    }
+                    return new ContentCategory(Category.Girls, Category.Lingerie);
+                default:
+                    return new ContentCategory(Category.Girls, Category.None);
             }
-            return result;
         }
 
         /// <summary>
@@ -111,21 +104,20 @@ namespace aemarcoCore.Crawlers
         /// </summary>
         protected override bool AddWallEntry(HtmlNode node, string categoryName)
         {
-
             // z.B. "wallpaper/shot-jeans-topless-brunette-model"
             string detailsHref = node.Attributes["href"]?.Value?.Substring(1);
             if (String.IsNullOrEmpty(detailsHref))
             {
                 return false;
             }
-
             HtmlDocument detailsDoc = GetDocument($"{_url}{detailsHref}");
-
-
 
             //z.B. "http://adultwalls.com/web/wallpapers/shot-jeans-topless-brunette-model/1920x1080.jpg"
             string url = GetImageUrl(detailsDoc);
-
+            if (String.IsNullOrEmpty(url))
+            {
+                return false;
+            }
 
             //jeder node = 1 Wallpaper
             WallEntry wallEntry = new WallEntry
@@ -139,8 +131,6 @@ namespace aemarcoCore.Crawlers
                 Extension = FileExtension.GetFileExtension(url)
             };
 
-
-
             //Entry muss valid sein
             if (!wallEntry.IsValid())
             {
@@ -148,19 +138,12 @@ namespace aemarcoCore.Crawlers
             }
 
             AddEntry(wallEntry);
-
             return true;
         }
 
-
-
-
-
-
-
         private string GetImageUrl(HtmlDocument doc)
         {
-            HtmlNode node = doc.DocumentNode.SelectSingleNode("//a[@class='btn btn-danger']");
+            HtmlNode node = doc?.DocumentNode.SelectSingleNode("//a[@class='btn btn-danger']");
             if (node == null)
             {
                 return null;

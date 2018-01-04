@@ -14,7 +14,6 @@ namespace aemarcoCore.Crawlers
         const string _siteName = "zoomgirls";
 
 
-
         public WallpaperCrawlerZoomgirls(
             IProgress<int> progress = null,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -31,8 +30,6 @@ namespace aemarcoCore.Crawlers
         {
 
         }
-
-
 
 
         protected override Dictionary<string, string> GetCategoriesDict()
@@ -63,30 +60,20 @@ namespace aemarcoCore.Crawlers
 
         protected override IContentCategory GetContentCategory(string categoryName)
         {
-            ContentCategory result = new ContentCategory();
-            result.SetMainCategory(Category.Girls);
-            return result;
+            return new ContentCategory(Category.Girls, Category.None);
         }
-
-
 
         /// <summary>
         /// returns true if Entry is valid
         /// </summary>
         protected override bool AddWallEntry(HtmlNode node, string categoryName)
         {
-
-
-            // z.B. "amy-addison--wallpapers.html"
-            string href = node.Attributes["href"]?.Value?.Substring(1);
-            if (String.IsNullOrEmpty(href))
+            string docURL = _url + node.Attributes["href"]?.Value?.Substring(1);
+            if (String.IsNullOrEmpty(docURL))
             {
                 return false;
             }
-
-            string docURL = _url + href;
             HtmlDocument doc = GetDocument(docURL);
-
 
             //z.B. "https://zoomgirls.net/wallpapers/amy-addison--1920x1200.jpg"
             string url = GetImageUrl(doc);
@@ -94,7 +81,6 @@ namespace aemarcoCore.Crawlers
             {
                 return false;
             }
-
 
             //jeder node = 1 Wallpaper
             WallEntry wallEntry = new WallEntry
@@ -107,9 +93,6 @@ namespace aemarcoCore.Crawlers
                 FileName = GetFileName(url, string.Empty),
                 Extension = FileExtension.GetFileExtension(url)
             };
-
-
-
             //Entry muss valid sein
             if (!wallEntry.IsValid())
             {
@@ -117,15 +100,8 @@ namespace aemarcoCore.Crawlers
             }
 
             AddEntry(wallEntry);
-
             return true;
         }
-
-
-
-
-
-
 
         private string GetImageUrl(HtmlDocument doc)
         {

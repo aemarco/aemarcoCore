@@ -1,9 +1,14 @@
-﻿namespace aemarcoCore.Types
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace aemarcoCore.Types
 {
     public interface IContentCategory
     {
-        string MainCategory { get; }
-        string SubCategory { get; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        Category MainCategory { get; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        Category SubCategory { get; }
 
     }
 }

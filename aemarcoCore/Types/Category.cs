@@ -22,7 +22,7 @@
         Planes,
         Animals,
         Trash,
-        Unknown,
+        None,
         Blowjob,
         Lesbians,
         Hardcore

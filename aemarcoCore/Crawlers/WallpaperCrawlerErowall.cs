@@ -17,7 +17,6 @@ namespace aemarcoCore.Crawlers
         const string _siteName = "erowall";
 
 
-
         public WallpaperCrawlerErowall(
             IProgress<int> progress = null,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -34,9 +33,6 @@ namespace aemarcoCore.Crawlers
         {
 
         }
-
-
-
 
 
         protected override Dictionary<string, string> GetCategoriesDict()
@@ -103,69 +99,36 @@ namespace aemarcoCore.Crawlers
 
         protected override IContentCategory GetContentCategory(string categoryName)
         {
-            ContentCategory result = new ContentCategory();
-            result.SetMainCategory(Category.Girls);
             switch (categoryName)
             {
-
                 case "Blowjob":
-                    {
-                        result.SetSubCategory(Category.Blowjob);
-                        break;
-                    }
+                    return new ContentCategory(Category.Girls, Category.Blowjob);
                 case "Lesbians":
-                    {
-                        result.SetSubCategory(Category.Lesbians);
-                        break;
-                    }
+                    return new ContentCategory(Category.Girls, Category.Lesbians);
                 case "Lingerie":
-                    {
-                        result.SetSubCategory(Category.Lingerie);
-                        break;
-                    }
+                    return new ContentCategory(Category.Girls, Category.Lingerie);
                 case "Beach":
-                    {
-                        result.SetSubCategory(Category.Beaches);
-                        break;
-                    }
+                    return new ContentCategory(Category.Girls, Category.Beaches);
                 case "Asian":
-                    {
-                        result.SetSubCategory(Category.Asian);
-                        break;
-                    }
+                    return new ContentCategory(Category.Girls, Category.Asian);
                 case "Anime":
-                    {
-                        result.SetSubCategory(Category.Fantasy);
-                        break;
-                    }
-
+                    return new ContentCategory(Category.Girls, Category.Fantasy);
+                default:
+                    return new ContentCategory(Category.Girls, Category.None);
             }
-            return result;
         }
-
 
         /// <summary>
         /// returns true if Entry is valid
         /// </summary>
         protected override bool AddWallEntry(HtmlNode node, string categoryName)
         {
-
-
-            // z.B. "/w/24741/"
-            string href = node.Attributes["href"]?.Value;
-            if (String.IsNullOrEmpty(href))
-            {
-                return false;
-            }
-
             // z.B. "https://erowall.com//wallpapers/original/24741.jpg"
-            string url = GetImageUrl(href);
+            string url = GetImageUrl(node.Attributes["href"]?.Value);
             if (String.IsNullOrEmpty(url))
             {
                 return false;
             }
-
-
 
             //jeder node = 1 Wallpaper
             WallEntry wallEntry = new WallEntry
@@ -179,8 +142,6 @@ namespace aemarcoCore.Crawlers
                 Extension = FileExtension.GetFileExtension(url)
             };
 
-
-
             //Entry muss valid sein
             if (!wallEntry.IsValid())
             {
@@ -188,17 +149,16 @@ namespace aemarcoCore.Crawlers
             }
 
             AddEntry(wallEntry);
-
             return true;
         }
 
-
-
-
-
-
         private string GetImageUrl(string href)
         {
+            if (href == null)
+            {
+                return null;
+            }
+
             Match match = Regex.Match(href, @"/(\d+)/$");
             // z.B. "24741"
             string imageLink = match.Groups[1].Value;

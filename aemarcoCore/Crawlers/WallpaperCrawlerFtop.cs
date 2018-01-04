@@ -15,7 +15,6 @@ namespace aemarcoCore.Crawlers
         const string _siteName = "ftopx";
 
 
-
         public WallpaperCrawlerFtop(
             IProgress<int> progress = null,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -32,8 +31,6 @@ namespace aemarcoCore.Crawlers
         {
 
         }
-
-
 
 
         protected override Dictionary<string, string> GetCategoriesDict()
@@ -84,106 +81,57 @@ namespace aemarcoCore.Crawlers
 
         protected override IContentCategory GetContentCategory(string categoryName)
         {
-            ContentCategory result = new ContentCategory();
-            result.SetMainCategory(Category.Girls);
             switch (categoryName)
             {
                 case "Celebrities":
-                    {
-                        result.SetSubCategory(Category.Celebrities);
-                        break;
-                    }
+                    return new ContentCategory(Category.Girls, Category.Celebrities);
                 case "Girls & Beaches":
-                    {
-                        result.SetSubCategory(Category.Beaches);
-                        break;
-                    }
+                    return new ContentCategory(Category.Girls, Category.Beaches);
                 case "Girls & Cars":
-                    {
-                        result.SetSubCategory(Category.Cars);
-                        break;
-                    }
+                    return new ContentCategory(Category.Girls, Category.Cars);
                 case "Girls & Bikes":
-                    {
-                        result.SetSubCategory(Category.Bikes);
-                        break;
-                    }
+                    return new ContentCategory(Category.Girls, Category.Bikes);
                 case "Lingerie Girls":
-                    {
-                        result.SetSubCategory(Category.Lingerie);
-                        break;
-                    }
+                    return new ContentCategory(Category.Girls, Category.Lingerie);
                 case "Asian Girls":
-                    {
-                        result.SetSubCategory(Category.Asian);
-                        break;
-                    }
+                    return new ContentCategory(Category.Girls, Category.Asian);
                 case "Holidays":
-                    {
-                        result.SetSubCategory(Category.Holidays);
-                        break;
-                    }
+                    return new ContentCategory(Category.Girls, Category.Holidays);
                 case "Fantasy Girls":
                 case "3D & Vector Girls":
-                    {
-                        result.SetSubCategory(Category.Fantasy);
-                        break;
-                    }
+                    return new ContentCategory(Category.Girls, Category.Fantasy);
                 case "Celebrity Fakes":
-                    {
-                        result.SetSubCategory(Category.CelebrityFakes);
-                        break;
-                    }
+                    return new ContentCategory(Category.Girls, Category.CelebrityFakes);
                 case "Fetish Girls":
-                    {
-                        result.SetSubCategory(Category.Fetish);
-                        break;
-                    }
+                    return new ContentCategory(Category.Girls, Category.Fetish);
+                default:
+                    return new ContentCategory(Category.Girls, Category.None);
             }
-            return result;
         }
-
 
         /// <summary>
         /// returns true if Entry is valid
         /// </summary>
         protected override bool AddWallEntry(HtmlNode node, string categoryName)
         {
-
-            // z.B. "/celebrities/211314-suzanne-a-metart-grafiti-wall-flowerdress.html"
-            string href = node.Attributes["href"]?.Value;
-            if (String.IsNullOrEmpty(href))
+            //z.B. "https://ftopx.com/images/201712/ftopx.com_5a4482e5acc2d.jpg"
+            string url = GetImageUrl(node.Attributes["href"]?.Value);
+            if (String.IsNullOrEmpty(url))
             {
                 return false;
             }
-
-            //z.B. "211314"
-            string id = GetID(href);
-            //z.B. "https://ftopx.com/211314/0_0"
-            string wallPage = $"{_url}{id}/0_0";
-            //z.B. "https://ftopx.com/images/201712/ftopx.com_5a4482e5acc2d.jpg"
-            string url = GetImageUrl($"{_url}{id}/0_0");
-
-
-
-
-            HtmlNode imageNode = node.SelectSingleNode("./img");
-
 
             //jeder node = 1 Wallpaper
             WallEntry wallEntry = new WallEntry
             {
                 SiteCategory = categoryName,
-                Kategorie = GetEntryCategory(_url, categoryName),
                 ContentCategory = GetContentCategory(categoryName),
-                Tags = GetTagsFromTagString(imageNode?.Attributes["alt"]?.Value),
+                Tags = GetTagsFromTagString(node.SelectSingleNode("./img")?.Attributes["alt"]?.Value),
                 Url = url,
                 ThumbnailUrl = GetThumbnailUrlAbsolute(node),
                 FileName = GetFileName(url, $"{categoryName}_"),
                 Extension = FileExtension.GetFileExtension(url)
             };
-
-
 
             //Entry muss valid sein
             if (!wallEntry.IsValid())
@@ -192,63 +140,24 @@ namespace aemarcoCore.Crawlers
             }
 
             AddEntry(wallEntry);
-
             return true;
         }
 
-
-        protected string GetEntryCategory(string url, string categoryName)
+        private string GetImageUrl(string href)
         {
-            string search = $"{url}---{categoryName}";
-
-            switch (search)
+            if (String.IsNullOrEmpty(href))
             {
-                case "http://ftopx.com/---Girls & Cars":
-                    {
-                        return "Autos";
-                    }
-                case "http://ftopx.com/---Girls & Bikes":
-                    {
-                        return "Motorräder";
-                    }
-                case "http://ftopx.com/---Fantasy Girls":
-                case "http://ftopx.com/---3D & Vector Girls":
-                    {
-                        return "Fantasy";
-                    }
-                case "http://ftopx.com/---Celebrity Fakes":
-                    {
-                        return "Celebrityfakes";
-                    }
-                case "http://ftopx.com/---Fetish Girls":
-                    {
-                        return "Fetischgirls";
-                    }
-                default:
-                    {
-                        return "Girls";
-                    }
+                return null;
             }
 
-
-        }
-
-
-
-
-
-
-        private string GetID(string href)
-        {
             //z.B. "211314-suzanne-a-metart-grafiti-wall-flowerdress.html"
             string id = href.Substring(href.LastIndexOf("/") + 1);
             //z.B. "211314"
-            return id.Substring(0, id.IndexOf('-'));
-        }
+            id = id.Substring(0, id.IndexOf('-'));
 
+            //z.B. "https://ftopx.com/211314/0_0"
+            string wallPage = $"{_url}{id}/0_0";
 
-        private string GetImageUrl(string wallPage)
-        {
             HtmlDocument doc = GetDocument(wallPage);
             HtmlNode node = doc.DocumentNode.SelectSingleNode("//a[@type='button']");
             if (node == null)

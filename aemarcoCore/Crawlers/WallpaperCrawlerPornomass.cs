@@ -10,12 +10,10 @@ namespace aemarcoCore.Crawlers
 {
     public class WallpaperCrawlerPornomass : BildCrawlerBasis
     {
-
         const string _url = "http://pornomass.com/";
         const string _url2 = "http://gif.pornomass.com/";
         const string _siteName = "pornomass";
         const string _siteName2 = "gifpornomass";
-
 
 
         public WallpaperCrawlerPornomass(
@@ -34,8 +32,6 @@ namespace aemarcoCore.Crawlers
         {
 
         }
-
-
 
 
         protected override Dictionary<string, string> GetCategoriesDict()
@@ -71,7 +67,7 @@ namespace aemarcoCore.Crawlers
             }
             else if (url == _url2)
             {
-                imageNode = node.SelectSingleNode(".video");
+                imageNode = node.SelectSingleNode("./video");
                 attribute = "poster";
             }
             else { return string.Empty; }
@@ -81,30 +77,14 @@ namespace aemarcoCore.Crawlers
 
         protected override IContentCategory GetContentCategory(string categoryName)
         {
-            ContentCategory result = new ContentCategory();
-            result.SetMainCategory(Category.Girls);
-            result.SetSubCategory(Category.Hardcore);
-            return result;
+            return new ContentCategory(Category.Girls, Category.Hardcore);
         }
-
-
-
-
 
         /// <summary>
         /// returns true if Entry is valid
         /// </summary>
         protected override bool AddWallEntry(HtmlNode node, string categoryName)
         {
-
-            // z.B. "photo/1949-xxx.html" -- "Pornomass"
-            // z.B. "photo/614-beautiful-girl-anal-gif.html" -- "Gifpornomass"
-            string href = node.Attributes["href"]?.Value?.Substring(1);
-            if (String.IsNullOrEmpty(href))
-            {
-                return false;
-            }
-
             string site = string.Empty;
             string siteName = string.Empty;
             string thumbnail = string.Empty;
@@ -121,13 +101,13 @@ namespace aemarcoCore.Crawlers
                 thumbnail = GetThumbnailUrlRelative(_url2, node);
             }
 
-
-
-
             // z.B. "http://pornomass.com/uploads/photo/original/1949-xxx.jpg" -- "Pornomass"
             // z.B. "http://gif.pornomass.com/uploads/photo/original/614-beautiful-girl-anal-gif.gif" -- "Gifpornomass"
-            string url = GetImageUrl(site, href);
-
+            string url = GetImageUrl(site, node.Attributes["href"]?.Value?.Substring(1));
+            if (String.IsNullOrEmpty(url))
+            {
+                return false;
+            }
 
             //jeder node = 1 Wallpaper
             WallEntry wallEntry = new WallEntry
@@ -141,8 +121,6 @@ namespace aemarcoCore.Crawlers
                 Extension = FileExtension.GetFileExtension(url)
             };
 
-
-
             //Entry muss valid sein
             if (!wallEntry.IsValid())
             {
@@ -150,23 +128,16 @@ namespace aemarcoCore.Crawlers
             }
 
             AddEntry(wallEntry);
-
             return true;
         }
 
-
-
-
-
-
-
-
-
-
-
-
         private string GetImageUrl(string site, string href)
         {
+            if (href == null)
+            {
+                return null;
+            }
+
             //z.B. "http://pornomass.com/photo/1949-xxx.html" -- "Pornomass"
             //z.B. "http://gif.pornomass.com/photo/614-beautiful-girl-anal-gif.html" -- "Gifpornomass"
             string targetUrl = $"{site}{href}";
@@ -189,9 +160,6 @@ namespace aemarcoCore.Crawlers
             //z.B. "http://pornomass.com/uploads/photo/original/1949-xxx.jpg" -- "Pornomass"
             //z.B. "http://gif.pornomass.com/uploads/photo/original/614-beautiful-girl-anal-gif.gif" -- "Gifpornomass"
             return $"{site}{targetHref}";
-
-
-
         }
 
 

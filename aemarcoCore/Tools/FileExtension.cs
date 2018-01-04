@@ -1,4 +1,5 @@
 ﻿using aemarcoCore.Properties;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -19,6 +20,11 @@ namespace aemarcoCore.Tools
 
         internal static string GetFileExtension(string input)
         {
+            if (String.IsNullOrEmpty(input))
+            {
+                return null;
+            }
+
             return Path.GetExtension(input).ToLower();
         }
 
