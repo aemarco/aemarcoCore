@@ -5,6 +5,9 @@
         private Category _mainCategory;
         private Category _subCategory;
 
+        public ContentCategory(Category mainCategory) : this(mainCategory, Category.None)
+        {
+        }
         public ContentCategory(Category mainCategory, Category subCategory)
         {
             _mainCategory = mainCategory;

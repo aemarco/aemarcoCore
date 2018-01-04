@@ -414,7 +414,7 @@ namespace aemarcoCore.Crawlers
         }
         protected virtual IContentCategory GetContentCategory(string categoryName)
         {
-            return new ContentCategory(Category.None, Category.None);
+            return new ContentCategory(Category.None);
         }
 
         #endregion
