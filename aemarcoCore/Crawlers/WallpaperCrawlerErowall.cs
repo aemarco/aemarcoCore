@@ -11,7 +11,7 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers
 {
-    public class WallpaperCrawlerErowall : BildCrawlerBasis
+    public class WallpaperCrawlerErowall : WallpaperCrawlerBasis
     {
         const string _url = "https://erowall.com/";
         const string _siteName = "erowall";

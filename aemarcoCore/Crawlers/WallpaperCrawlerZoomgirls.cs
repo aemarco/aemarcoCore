@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers
 {
-    public class WallpaperCrawlerZoomgirls : BildCrawlerBasis
+    public class WallpaperCrawlerZoomgirls : WallpaperCrawlerBasis
     {
         const string _url = "https://zoomgirls.net/";
         const string _siteName = "zoomgirls";

@@ -49,7 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Crawlers\WallpaperCrawlerAdultWalls.cs" />
-    <Compile Include="Crawlers\BildCrawlerBasis.cs" />
+    <Compile Include="Crawlers\WallpaperCrawlerBasis.cs" />
     <Compile Include="Crawlers\WallpaperCrawlerErowall.cs" />
     <Compile Include="Crawlers\WallpaperCrawlerFtop.cs" />
     <Compile Include="Types\IContentCategory.cs" />

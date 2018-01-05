@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace aemarcoCore.Crawlers
 {
-    public abstract class BildCrawlerBasis
+    public abstract class WallpaperCrawlerBasis
     {
         #region fields
 
@@ -33,7 +33,7 @@ namespace aemarcoCore.Crawlers
 
         #region ctor
 
-        public BildCrawlerBasis(
+        public WallpaperCrawlerBasis(
             string siteName,
             IProgress<int> progress,
             CancellationToken cancellationToken)
@@ -55,7 +55,7 @@ namespace aemarcoCore.Crawlers
             _numberOfEntries = 0;
             _numberOfEntriesDone = 0;
         }
-        public BildCrawlerBasis(
+        public WallpaperCrawlerBasis(
             string siteName,
             int startPage,
             int lastPage,

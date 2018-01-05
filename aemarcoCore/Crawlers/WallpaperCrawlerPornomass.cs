@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers
 {
-    public class WallpaperCrawlerPornomass : BildCrawlerBasis
+    public class WallpaperCrawlerPornomass : WallpaperCrawlerBasis
     {
         const string _url = "http://pornomass.com/";
         const string _url2 = "http://gif.pornomass.com/";

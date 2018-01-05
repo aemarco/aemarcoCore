@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers
 {
-    public class WallpaperCrawlerFtop : BildCrawlerBasis
+    public class WallpaperCrawlerFtop : WallpaperCrawlerBasis
     {
         const string _url = "https://ftopx.com/";
         const string _siteName = "ftopx";

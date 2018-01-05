@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers
 {
-    public class WallpaperCrawlerAdultWalls : BildCrawlerBasis
+    public class WallpaperCrawlerAdultWalls : WallpaperCrawlerBasis
     {
         const string _url = "http://adultwalls.com/";
         const string _siteName = "adultwalls";
