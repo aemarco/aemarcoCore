@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -73,7 +74,6 @@ namespace aemarcoCore.Crawlers
 
         #region Starting the thing
 
-
         public ICrawlerResult Start()
         {
             DoWork();
@@ -93,6 +93,41 @@ namespace aemarcoCore.Crawlers
         #endregion
 
         #region Events
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
+        public event EventHandler<int> Progress;
+        protected virtual void OnProgress()
+        {
+            //muss nur gerechnet werden wenn Event oder IProgress genutzt wird
+            if (_progress != null || Progress != null)
+            {
+                int progress = CalculateProgress();
+
+                //falls IProgress
+                if (_progress != null)
+                {
+                    _progress.Report(progress);
+                }
+
+                //falls Event
+                if (Progress != null)
+                {
+                    foreach (Delegate d in Progress.GetInvocationList())
+                    {
+                        ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
+                        if (syncer == null)
+                        {
+                            d.DynamicInvoke(this, progress);
+                        }
+                        else
+                        {
+                            syncer.BeginInvoke(d, new object[] { this, progress });  // cleanup omitted
+                        }
+                    }
+
+                }
+            }
+        }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event EventHandler<IWallEntry> KnownEntry;
@@ -160,51 +195,10 @@ namespace aemarcoCore.Crawlers
             }
         }
 
-
         #endregion
 
         #region Progress
 
-        protected void ReportNumberOfCategories(int count)
-        {
-            _numberOfCategories = count;
-
-        }
-        protected void ReportNumberOfEntries(int count)
-        {
-            if (count > _numberOfEntries)
-            {
-                _numberOfEntries = count;
-            }
-        }
-        protected void ReportCategoryDone()
-        {
-            _numberOfCategoriesDone++;
-            _numberOfPagesDone = 0;
-            if (_progress != null)
-            {
-                _progress.Report(CalculateProgress());
-            }
-        }
-        protected void ReportPageDone()
-        {
-            _numberOfPagesDone++;
-            _numberOfEntriesDone = 0;
-
-            if (_progress != null)
-            {
-                _progress.Report(CalculateProgress());
-            }
-
-        }
-        protected void ReportEntryDone()
-        {
-            _numberOfEntriesDone++;
-            if (_progress != null)
-            {
-                _progress.Report(CalculateProgress());
-            }
-        }
         private int CalculateProgress()
         {
             int a = _numberOfCategoriesDone * _numberOfPages * _numberOfEntries +
@@ -244,11 +238,10 @@ namespace aemarcoCore.Crawlers
 
         #region Crawling
 
-        protected virtual void DoWork()
+        private void DoWork()
         {
             Dictionary<string, string> categoriesToCrawl = GetCategoriesDict();
-
-            ReportNumberOfCategories(categoriesToCrawl.Count);
+            _numberOfCategories = categoriesToCrawl.Count;
 
             foreach (string cat in categoriesToCrawl.Keys)
             {
@@ -257,15 +250,29 @@ namespace aemarcoCore.Crawlers
                     break;
                 }
                 GetCategory(cat, categoriesToCrawl[cat]);
+                _numberOfCategoriesDone++;
+                _numberOfPagesDone = 0;
+                OnProgress();
             }
         }
         protected abstract Dictionary<string, string> GetCategoriesDict();
-        protected virtual HtmlDocument GetDocument(string url)
+        protected HtmlDocument GetDocument(string url)
         {
             HtmlWeb web = new HtmlWeb();
-            return web.Load(url);
+            try
+            {
+                return web.Load(url);
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.TrustFailure)
+                {
+                    return web.Load(url.Replace("https", "http"));
+                }
+                throw;
+            }
         }
-        protected virtual void GetCategory(string categoryUrl, string categoryName)
+        private void GetCategory(string categoryUrl, string categoryName)
         {
             int page = GetStartingPage();
             if (page == 0) page = 1;
@@ -274,23 +281,22 @@ namespace aemarcoCore.Crawlers
             do
             {
                 pageValid = GetPage(GetSiteUrlForCategory(categoryUrl, page), categoryName);
+                _numberOfPagesDone++;
+                _numberOfEntriesDone = 0;
+                OnProgress();
                 page++;
-
-
-                //} while (page <= 1 && pageContainsNews);
             } while (pageValid && IShallGoAheadWithPages(page));
-            ReportCategoryDone();
         }
         protected abstract string GetSiteUrlForCategory(string categoryUrl, int page);
         /// <summary>
         /// return true if page contains minimum 1 valid Entry
         /// </summary>        
-        protected virtual bool GetPage(string pageUrl, string categoryName)
+        private bool GetPage(string pageUrl, string categoryName)
         {
             bool result = false;
             //Seite mit Wallpaperliste
             HtmlDocument doc = GetDocument(pageUrl);
-            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes(GetSearchStringGorEntry());
+            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes(GetSearchStringGorEntryNodes());
 
             //non Valid Page
             if (nodes == null || nodes.Count == 0)
@@ -298,7 +304,10 @@ namespace aemarcoCore.Crawlers
                 return result;
             }
 
-            ReportNumberOfEntries(nodes.Count);
+            if (nodes.Count > _numberOfEntries)
+            {
+                _numberOfEntries = nodes.Count;
+            }
 
             foreach (HtmlNode node in nodes)
             {
@@ -312,15 +321,15 @@ namespace aemarcoCore.Crawlers
                 {
                     result = true;
                 }
-                ReportEntryDone();
+                _numberOfEntriesDone++;
+                OnProgress();
             }
 
             //valid Page contains minimum 1 valid Entry
-            ReportPageDone();
             return result;
         }
 
-        protected abstract string GetSearchStringGorEntry();
+        protected abstract string GetSearchStringGorEntryNodes();
         /// <summary>
         /// returns true if Entry is valid
         /// </summary>
@@ -354,6 +363,7 @@ namespace aemarcoCore.Crawlers
                 OnNewEntry(entry);
             }
         }
+
         protected virtual string GetFileName(string url, string prefix)
         {
             return Path.GetFileNameWithoutExtension($"{prefix}{url?.Substring(url.LastIndexOf("/") + 1)}");
@@ -412,10 +422,8 @@ namespace aemarcoCore.Crawlers
             HtmlNode imageNode = node.SelectSingleNode("./img");
             return imageNode?.Attributes["src"]?.Value;
         }
-        protected virtual IContentCategory GetContentCategory(string categoryName)
-        {
-            return new ContentCategory(Category.None);
-        }
+        protected abstract IContentCategory GetContentCategory(string categoryName);
+
 
         #endregion
 

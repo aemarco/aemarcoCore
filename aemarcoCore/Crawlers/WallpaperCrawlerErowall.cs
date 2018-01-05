@@ -22,7 +22,6 @@ namespace aemarcoCore.Crawlers
             CancellationToken cancellationToken = default(CancellationToken))
             : base(_siteName, progress, cancellationToken)
         {
-
         }
         public WallpaperCrawlerErowall(
             int startPage,
@@ -31,7 +30,6 @@ namespace aemarcoCore.Crawlers
             CancellationToken cancellationToken = default(CancellationToken))
             : base(_siteName, startPage, lastPage, progress, cancellationToken)
         {
-
         }
 
 
@@ -92,7 +90,7 @@ namespace aemarcoCore.Crawlers
             return $"{categoryUrl}page/{page}";
         }
 
-        protected override string GetSearchStringGorEntry()
+        protected override string GetSearchStringGorEntryNodes()
         {
             return "//div[@class='wpmini']/a";
         }

@@ -32,8 +32,8 @@
     </DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="HtmlAgilityPack, Version=1.6.10.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>D:\VisualStudio_Projekte\aemarcoCentral\packages\HtmlAgilityPack.1.6.10\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    <Reference Include="HtmlAgilityPack, Version=1.6.11.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\..\aemarcoCentral\packages\HtmlAgilityPack.1.6.11\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>D:\VisualStudio_Projekte\aemarcoCentral\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -52,6 +52,7 @@
     <Compile Include="Crawlers\WallpaperCrawlerBasis.cs" />
     <Compile Include="Crawlers\WallpaperCrawlerErowall.cs" />
     <Compile Include="Crawlers\WallpaperCrawlerFtop.cs" />
+    <Compile Include="Crawlers\WallpaperCrawlerWallCraft.cs" />
     <Compile Include="Types\IContentCategory.cs" />
     <Compile Include="Crawlers\ICrawlerResult.cs" />
     <Compile Include="Crawlers\IWallEntry.cs" />

@@ -53,7 +53,7 @@ namespace aemarcoCore.Crawlers
             return $"{categoryUrl}/page/{page}";
         }
 
-        protected override string GetSearchStringGorEntry()
+        protected override string GetSearchStringGorEntryNodes()
         {
             return "//div[@class='thumb']/a";
         }

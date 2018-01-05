@@ -75,7 +75,7 @@ namespace aemarcoCore.Crawlers
             return $"{categoryUrl}{page}?order=publish-date-newest&resolution=all&search=";
         }
 
-        protected override string GetSearchStringGorEntry()
+        protected override string GetSearchStringGorEntryNodes()
         {
             return "//div[@class='thumb-container']/a";
         }
