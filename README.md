@@ -5,7 +5,7 @@ Crawlers:
 in namespace aemarcoCore.Crawler
 
 Usage:
-Create any Crawler object derived from BildCrawlerBasis and start it.
+Create any Crawler object derived from WallpaperCrawlerBasis and start it.
 Start(), returns ICrawlerResult once completed
 StartAsync(), fire and forget. Events may be used to capture Results.
 StartAsyncTask(), returns Task<ICrawlerResult>.
