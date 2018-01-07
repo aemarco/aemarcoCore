@@ -1,6 +1,7 @@
 ﻿using aemarcoCore.Crawlers.Types;
 using aemarcoCore.Tools;
 using aemarcoCore.Types;
+using aemarcoCore.Enums;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -132,14 +133,28 @@ namespace aemarcoCore.Crawlers
                     return new ContentCategory(Category.Animals);
                 case "Cars":
                     return new ContentCategory(Category.Cars);
+                case "City":
+                    return new ContentCategory(Category.Environment, Category.City);
                 case "Fantasy":
                     return new ContentCategory(Category.Fantasy);
+                case "Flowers":
+                    return new ContentCategory(Category.Environment, Category.Flowers);
                 case "Games":
                     return new ContentCategory(Category.Games);
+                case "Holidays":
+                    return new ContentCategory(Category.Holidays);
+                case "Men":
+                    return new ContentCategory(Category.Men);
                 case "Movies":
                     return new ContentCategory(Category.Movies);
                 case "Music":
                     return new ContentCategory(Category.Music);
+                case "Nature":
+                    return new ContentCategory(Category.Environment, Category.Landscape);
+                case "Space":
+                    return new ContentCategory(Category.Environment, Category.Space);
+                case "Sport":
+                    return new ContentCategory(Category.Sport);
                 case "TV Series":
                     return new ContentCategory(Category.TVSeries);
                 default:

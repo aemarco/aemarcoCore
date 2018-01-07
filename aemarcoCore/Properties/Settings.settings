@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="CrawlerData" Type="System.String" Scope="User">
-      <Value Profile="(Default)">\\nas\home\Drive\Code_Data\Crawler\JSON</Value>
+      <Value Profile="(Default)">\\nas\home\Code_Data\Crawler\JSON</Value>
     </Setting>
     <Setting Name="CrawlerFileExtensions" Type="System.String" Scope="User">
       <Value Profile="(Default)">bmp,jpg,jpeg,png,gif</Value>

@@ -56,7 +56,7 @@
     <Compile Include="Types\IContentCategory.cs" />
     <Compile Include="Crawlers\ICrawlerResult.cs" />
     <Compile Include="Crawlers\IWallEntry.cs" />
-    <Compile Include="Types\Category.cs" />
+    <Compile Include="Enums\Category.cs" />
     <Compile Include="Types\ContentCategory.cs" />
     <Compile Include="Crawlers\Types\CrawlerResult.cs" />
     <Compile Include="Crawlers\Types\CrawlerData.cs" />

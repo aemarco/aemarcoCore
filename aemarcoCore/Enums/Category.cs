@@ -1,4 +1,4 @@
-﻿namespace aemarcoCore.Types
+﻿namespace aemarcoCore.Enums
 {
 
     public enum Category
@@ -25,6 +25,13 @@
         None,
         Blowjob,
         Lesbians,
-        Hardcore
+        Hardcore,
+        Sport,
+        Men,
+        Environment,
+        Flowers,
+        Landscape,
+        Space,
+        City
     }
 }

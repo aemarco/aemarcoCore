@@ -1,4 +1,6 @@
-﻿namespace aemarcoCore.Types
+﻿using aemarcoCore.Enums;
+
+namespace aemarcoCore.Types
 {
     public class ContentCategory : IContentCategory
     {

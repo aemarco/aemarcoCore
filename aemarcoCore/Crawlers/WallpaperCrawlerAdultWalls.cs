@@ -1,4 +1,5 @@
 ﻿using aemarcoCore.Crawlers.Types;
+using aemarcoCore.Enums;
 using aemarcoCore.Tools;
 using aemarcoCore.Types;
 using HtmlAgilityPack;

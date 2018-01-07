@@ -1,6 +1,7 @@
 ﻿using aemarcoCore.Crawlers.Types;
 using aemarcoCore.Tools;
 using aemarcoCore.Types;
+using aemarcoCore.Enums;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
