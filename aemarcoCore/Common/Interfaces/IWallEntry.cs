@@ -1,7 +1,7 @@
-﻿using aemarcoCore.Types;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace aemarcoCore.Crawlers
+namespace aemarcoCore.Common
 {
     public interface IWallEntry
     {
@@ -13,7 +13,7 @@ namespace aemarcoCore.Crawlers
         string SiteCategory { get; }
         List<string> Tags { get; }
 
-
-        string GetJSON();
+        [JsonIgnore]
+        string JSON { get; }
     }
 }

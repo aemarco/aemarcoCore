@@ -1,10 +1,8 @@
-﻿using aemarcoCore.Crawlers.Types;
-using aemarcoCore.Enums;
-using aemarcoCore.Tools;
-using aemarcoCore.Types;
+﻿using aemarcoCore.Common;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Threading;
 
@@ -18,8 +16,9 @@ namespace aemarcoCore.Crawlers
 
         public WallpaperCrawlerAdultWalls(
             IProgress<int> progress = null,
-            CancellationToken cancellationToken = default(CancellationToken))
-            : base(_siteName, progress, cancellationToken)
+            CancellationToken cancellationToken = default(CancellationToken),
+            DirectoryInfo reportpath = null)
+            : base(_siteName, reportpath, progress, cancellationToken)
         {
 
         }
@@ -27,8 +26,9 @@ namespace aemarcoCore.Crawlers
             int startPage,
             int lastPage,
             IProgress<int> progress = null,
-            CancellationToken cancellationToken = default(CancellationToken))
-            : base(_siteName, startPage, lastPage, progress, cancellationToken)
+            CancellationToken cancellationToken = default(CancellationToken),
+            DirectoryInfo reportpath = null)
+            : base(_siteName, startPage, lastPage, reportpath, progress, cancellationToken)
         {
 
         }
@@ -122,18 +122,18 @@ namespace aemarcoCore.Crawlers
 
             //jeder node = 1 Wallpaper
             WallEntry wallEntry = new WallEntry
-            {
-                SiteCategory = categoryName,
-                ContentCategory = GetContentCategory(categoryName),
-                Tags = GetTagsFromNodes(detailsDoc.DocumentNode.SelectNodes("//div[@class='col-md-12']/a")),
-                Url = url,
-                ThumbnailUrl = GetThumbnailUrlRelative(_url, node),
-                FileName = GetFileName(url, string.Empty),
-                Extension = FileExtension.GetFileExtension(url)
-            };
+                (
+                url,
+                GetThumbnailUrlRelative(_url, node),
+                GetFileName(url, string.Empty),
+                GetContentCategory(categoryName),
+                categoryName,
+                GetTagsFromNodes(detailsDoc.DocumentNode.SelectNodes("//div[@class='col-md-12']/a"))
+                );
+
 
             //Entry muss valid sein
-            if (!wallEntry.IsValid())
+            if (!wallEntry.IsValid)
             {
                 return false;
             }

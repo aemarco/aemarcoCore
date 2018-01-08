@@ -1,13 +1,12 @@
-﻿using aemarcoCore.Crawlers.Types;
-using aemarcoCore.Tools;
-using aemarcoCore.Types;
+﻿using aemarcoCore.Common;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
-using aemarcoCore.Enums;
+
 
 
 namespace aemarcoCore.Crawlers
@@ -20,17 +19,21 @@ namespace aemarcoCore.Crawlers
 
         public WallpaperCrawlerErowall(
             IProgress<int> progress = null,
-            CancellationToken cancellationToken = default(CancellationToken))
-            : base(_siteName, progress, cancellationToken)
+            CancellationToken cancellationToken = default(CancellationToken),
+            DirectoryInfo reportpath = null)
+            : base(_siteName, reportpath, progress, cancellationToken)
         {
+
         }
         public WallpaperCrawlerErowall(
             int startPage,
             int lastPage,
             IProgress<int> progress = null,
-            CancellationToken cancellationToken = default(CancellationToken))
-            : base(_siteName, startPage, lastPage, progress, cancellationToken)
+            CancellationToken cancellationToken = default(CancellationToken),
+            DirectoryInfo reportpath = null)
+            : base(_siteName, startPage, lastPage, reportpath, progress, cancellationToken)
         {
+
         }
 
 
@@ -131,18 +134,17 @@ namespace aemarcoCore.Crawlers
 
             //jeder node = 1 Wallpaper
             WallEntry wallEntry = new WallEntry
-            {
-                SiteCategory = categoryName,
-                ContentCategory = GetContentCategory(categoryName),
-                Tags = GetTagsFromTagString(node.Attributes["title"]?.Value),
-                Url = url,
-                ThumbnailUrl = GetThumbnailUrlRelative(_url, node),
-                FileName = GetFileName(url, $"{categoryName}_"),
-                Extension = FileExtension.GetFileExtension(url)
-            };
+                (
+                url,
+                GetThumbnailUrlRelative(_url, node),
+                GetFileName(url, $"{categoryName}_"),
+                GetContentCategory(categoryName),
+                categoryName,
+                GetTagsFromTagString(node.Attributes["title"]?.Value)
+                );
 
             //Entry muss valid sein
-            if (!wallEntry.IsValid())
+            if (!wallEntry.IsValid)
             {
                 return false;
             }

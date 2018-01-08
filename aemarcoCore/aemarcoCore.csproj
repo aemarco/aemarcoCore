@@ -53,14 +53,14 @@
     <Compile Include="Crawlers\WallpaperCrawlerErowall.cs" />
     <Compile Include="Crawlers\WallpaperCrawlerFtop.cs" />
     <Compile Include="Crawlers\WallpaperCrawlerWallCraft.cs" />
-    <Compile Include="Types\IContentCategory.cs" />
-    <Compile Include="Crawlers\ICrawlerResult.cs" />
-    <Compile Include="Crawlers\IWallEntry.cs" />
-    <Compile Include="Enums\Category.cs" />
-    <Compile Include="Types\ContentCategory.cs" />
-    <Compile Include="Crawlers\Types\CrawlerResult.cs" />
-    <Compile Include="Crawlers\Types\CrawlerData.cs" />
-    <Compile Include="Crawlers\Types\WallEntry.cs" />
+    <Compile Include="Common\Interfaces\IContentCategory.cs" />
+    <Compile Include="Common\Interfaces\IWallCrawlerResult.cs" />
+    <Compile Include="Common\Interfaces\IWallEntry.cs" />
+    <Compile Include="Common\Enums\Category.cs" />
+    <Compile Include="Common\Types\ContentCategory.cs" />
+    <Compile Include="Common\Types\WallCrawlerResult.cs" />
+    <Compile Include="Tools\CrawlerData.cs" />
+    <Compile Include="Common\Types\WallEntry.cs" />
     <Compile Include="Crawlers\WallpaperCrawlerPornomass.cs" />
     <Compile Include="Crawlers\WallpaperCrawlerZoomgirls.cs" />
     <Compile Include="Picture.cs" />
@@ -70,7 +70,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Tools\FileExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="aemarcoCore.nuspec">
@@ -82,6 +81,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Types\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

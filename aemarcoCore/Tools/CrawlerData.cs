@@ -1,11 +1,12 @@
-﻿using aemarcoCore.Properties;
+﻿using aemarcoCore.Common;
+using aemarcoCore.Properties;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace aemarcoCore.Crawlers.Types
+namespace aemarcoCore.Tools
 {
     internal static class CrawlerData
     {
@@ -65,7 +66,7 @@ namespace aemarcoCore.Crawlers.Types
         }
 
 
-        internal static void Save(ICrawlerResult result)
+        internal static void Save(IWallCrawlerResult result)
         {
             lock (_lock)
             {
@@ -76,12 +77,6 @@ namespace aemarcoCore.Crawlers.Types
                 File.WriteAllText(file, JsonConvert.SerializeObject(
                     _knownUrls.Distinct().ToList(),
                     Formatting.Indented));
-
-
-                // save result in a result file
-                // z.B. \\\\nas\\web\\aemarcoCentral\\Core\\JSON\\21:36:41.result
-                string resFile = $"{_dataPath.FullName}\\{result.ResultName}_{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.result";
-                File.WriteAllText(resFile, result.GetJSON());
             }
         }
 

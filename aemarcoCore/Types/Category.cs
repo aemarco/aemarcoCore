@@ -1,4 +1,4 @@
-﻿namespace aemarcoCore.Enums
+﻿namespace aemarcoCore.Types
 {
 
     public enum Category

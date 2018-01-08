@@ -1,5 +1,5 @@
-﻿using aemarcoCore.Crawlers.Types;
-using aemarcoCore.Types;
+﻿using aemarcoCore.Common;
+using aemarcoCore.Tools;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,8 @@ namespace aemarcoCore.Crawlers
     {
         #region fields
 
-        private CrawlerResult _result;
+        private WallCrawlerResult _result;
+        private DirectoryInfo _reportPath;
 
         private bool _onlyNews;
         private int _knownEntryStreak;
@@ -36,11 +37,12 @@ namespace aemarcoCore.Crawlers
 
         public WallpaperCrawlerBasis(
             string siteName,
+            DirectoryInfo reportpath,
             IProgress<int> progress,
             CancellationToken cancellationToken)
         {
-
-            _result = new CrawlerResult(siteName);
+            _result = new WallCrawlerResult(siteName);
+            _reportPath = reportpath;
 
             _onlyNews = true;
             _knownEntryStreak = 0;
@@ -60,9 +62,10 @@ namespace aemarcoCore.Crawlers
             string siteName,
             int startPage,
             int lastPage,
+            DirectoryInfo reportpath,
             IProgress<int> progress,
             CancellationToken cancellationToken)
-            : this(siteName, progress, cancellationToken)
+            : this(siteName, reportpath, progress, cancellationToken)
         {
             _onlyNews = false;
             _startPage = startPage;
@@ -74,10 +77,29 @@ namespace aemarcoCore.Crawlers
 
         #region Starting the thing
 
-        public ICrawlerResult Start()
+        public IWallCrawlerResult Start()
         {
+            //Crawling
             DoWork();
+
+            //Writing Report
             CrawlerData.Save(_result);
+            if (_reportPath != null)
+            {
+                try
+                {
+                    if (!_reportPath.Exists)
+                    {
+                        _reportPath.Create();
+                    }
+                    File.WriteAllText
+                        (
+                        $"{_reportPath.FullName}\\{_result.ResultName}_{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.json",
+                        _result.JSON
+                        );
+                }
+                catch { }
+            }
             OnCompleted();
             return _result;
         }
@@ -85,7 +107,7 @@ namespace aemarcoCore.Crawlers
         {
             Task.Factory.StartNew(Start);
         }
-        public async Task<ICrawlerResult> StartAsyncTask()
+        public async Task<IWallCrawlerResult> StartAsyncTask()
         {
             return await Task.Factory.StartNew(Start);
         }
@@ -175,7 +197,7 @@ namespace aemarcoCore.Crawlers
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
-        public event EventHandler<ICrawlerResult> Completed;
+        public event EventHandler<IWallCrawlerResult> Completed;
         protected virtual void OnCompleted()
         {
             if (Completed != null)

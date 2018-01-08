@@ -1,6 +1,8 @@
-﻿using aemarcoCore.Enums;
+﻿
 
-namespace aemarcoCore.Types
+using Newtonsoft.Json;
+
+namespace aemarcoCore.Common
 {
     public class ContentCategory : IContentCategory
     {
@@ -16,8 +18,15 @@ namespace aemarcoCore.Types
             _subCategory = subCategory;
         }
 
-        public Category MainCategory { get { return _mainCategory; } }
-        public Category SubCategory { get { return _subCategory; } }
+
+        public Category MainCategory
+        { get { return _mainCategory; } }
+        public Category SubCategory
+        { get { return _subCategory; } }
+        [JsonIgnore]
+        public string JSON
+        { get { return JsonConvert.SerializeObject(this, Formatting.Indented); } }
+
 
 
     }

@@ -1,8 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using aemarcoCore.Enums;
 
-namespace aemarcoCore.Types
+namespace aemarcoCore.Common
 {
     public interface IContentCategory
     {
@@ -10,6 +9,7 @@ namespace aemarcoCore.Types
         Category MainCategory { get; }
         [JsonConverter(typeof(StringEnumConverter))]
         Category SubCategory { get; }
-
+        [JsonIgnore]
+        string JSON { get; }
     }
 }
