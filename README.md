@@ -1,12 +1,15 @@
 # aemarcoCore
 
-always use namespace aemarcoCore.Common
-
-Crawlers: 
-in namespace aemarcoCore.Crawler
+Nuget: Be aware that the available Nuget package is always a bit behind with changes...
 
 Usage:
-Create any Crawler object derived from WallpaperCrawlerBasis and start it.
+
+always use namespace aemarcoCore.Common
+
+Crawlers: in namespace aemarcoCore.Crawler
+
+Create any Crawler object derived from WallpaperCrawlerBasis and start it or
+use the WallpaperCrawlerAll which internally use all available crawlers.
 Start(), returns IWallCrawlerResult once completed
 StartAsync(), fire and forget. Events may be used to capture Results.
 StartAsyncTask(), returns Task<IWallCrawlerResult>.

@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Crawlers\WallpaperCrawlerAdultWalls.cs" />
+    <Compile Include="Crawlers\WallpaperCrawlerAll.cs" />
     <Compile Include="Crawlers\WallpaperCrawlerBasis.cs" />
     <Compile Include="Crawlers\WallpaperCrawlerErowall.cs" />
     <Compile Include="Crawlers\WallpaperCrawlerFtop.cs" />
@@ -59,7 +60,7 @@
     <Compile Include="Common\Enums\Category.cs" />
     <Compile Include="Common\Types\ContentCategory.cs" />
     <Compile Include="Common\Types\WallCrawlerResult.cs" />
-    <Compile Include="Tools\CrawlerData.cs" />
+    <Compile Include="Tools\WallCrawlerData.cs" />
     <Compile Include="Common\Types\WallEntry.cs" />
     <Compile Include="Crawlers\WallpaperCrawlerPornomass.cs" />
     <Compile Include="Crawlers\WallpaperCrawlerZoomgirls.cs" />
@@ -82,9 +83,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Types\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

@@ -83,7 +83,7 @@ namespace aemarcoCore.Crawlers
             DoWork();
 
             //Writing Report
-            CrawlerData.Save(_result);
+            WallCrawlerData.Save();
             if (_reportPath != null)
             {
                 try
@@ -278,7 +278,7 @@ namespace aemarcoCore.Crawlers
             }
         }
         protected abstract Dictionary<string, string> GetCategoriesDict();
-        protected HtmlDocument GetDocument(string url)
+        protected HtmlDocument GetDocument(string url, int retry = 0)
         {
             HtmlWeb web = new HtmlWeb();
             try
@@ -290,6 +290,14 @@ namespace aemarcoCore.Crawlers
                 if (ex.Status == WebExceptionStatus.TrustFailure)
                 {
                     return web.Load(url.Replace("https", "http"));
+                }
+                else if (ex.Status == WebExceptionStatus.Timeout)
+                {
+                    if (retry >= 5)
+                    {
+                        throw;
+                    }
+                    return GetDocument(url, retry++);
                 }
                 throw;
             }
@@ -364,7 +372,7 @@ namespace aemarcoCore.Crawlers
         {
 
             //bekanntes Entry
-            if (CrawlerData.IsKnownEntry(entry))
+            if (WallCrawlerData.IsKnownEntry(entry))
             {
                 //Streak mitzählen
                 _knownEntryStreak++;
@@ -379,7 +387,7 @@ namespace aemarcoCore.Crawlers
                 _knownEntryStreak = 0;
 
                 //url als bekannte Url merken
-                CrawlerData.AddNewEntry(entry);
+                WallCrawlerData.AddNewEntry(entry);
 
                 _result.AddNewEntry(entry);
                 OnNewEntry(entry);

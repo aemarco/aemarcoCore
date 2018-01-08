@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace aemarcoCore.Tools
 {
-    internal static class CrawlerData
+    internal static class WallCrawlerData
     {
         private static bool _isInitiallized = false;
         private static DirectoryInfo _dataPath;
@@ -55,7 +55,6 @@ namespace aemarcoCore.Tools
                 return _knownUrls.Contains(entry.Url);
             }
         }
-
         internal static void AddNewEntry(IWallEntry entry)
         {
             lock (_lock)
@@ -64,9 +63,7 @@ namespace aemarcoCore.Tools
                 _knownUrls.Add(entry.Url);
             }
         }
-
-
-        internal static void Save(IWallCrawlerResult result)
+        internal static void Save()
         {
             lock (_lock)
             {
