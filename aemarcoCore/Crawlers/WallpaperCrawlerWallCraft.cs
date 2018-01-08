@@ -68,8 +68,8 @@ namespace aemarcoCore.Crawlers
                 return categoryUrl;
             }
 
-            //z.B. "https://wallpaperscraft.com/catalog/girls/page2"       
-            return $"{categoryUrl}/page{page}";
+            //z.B. "https://wallpaperscraft.com/catalog/girls/date/page2"       
+            return $"{categoryUrl}/date/page{page}";
         }
 
         protected override string GetSearchStringGorEntryNodes()
