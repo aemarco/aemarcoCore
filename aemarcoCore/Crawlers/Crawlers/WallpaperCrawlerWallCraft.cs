@@ -1,18 +1,20 @@
 ﻿using aemarcoCore.Common;
+using aemarcoCore.Crawlers.Base;
+using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 
-namespace aemarcoCore.Crawlers
+namespace aemarcoCore.Crawlers.Crawlers
 {
     internal class WallpaperCrawlerWallCraft : WallpaperCrawlerBasis
     {
         const string _url = "https://wallpaperscraft.com/";
 
 
-        internal WallpaperCrawlerWallCraft(
+        public WallpaperCrawlerWallCraft(
             int startPage,
             int lastPage,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -47,6 +49,47 @@ namespace aemarcoCore.Crawlers
                 result.Add(url, text);
             }
             return result;
+        }
+
+        protected override List<CrawlOffer> GetCrawlsOffers()
+        {
+            List<CrawlOffer> result = new List<CrawlOffer>();
+
+            //main page
+            var doc = GetDocument(_url);
+
+            foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@class='left_category']/li/a"))
+            {
+                string text = WebUtility.HtmlDecode(node.InnerText).Trim();
+                if (String.IsNullOrEmpty(text) || text == "All" || text == "Wallpapers for Android")
+                {
+                    continue;
+                }
+
+                string href = node.Attributes["href"]?.Value;
+                if (String.IsNullOrEmpty(href))
+                {
+                    continue;
+                }
+                string url = $"{_url.Substring(0, _url.IndexOf("//"))}{href}";
+
+
+
+                IContentCategory cat = GetContentCategory(text);
+
+
+                CrawlOffer offer = new CrawlOffer
+                {
+                    Name = text,
+                    Url = url,
+                    MainCategory = cat?.MainCategory,
+                    SubCategory = cat?.SubCategory
+                };
+
+                result.Add(offer);
+            }
+            return result;
+
         }
 
         protected override string GetSiteUrlForCategory(string categoryUrl, int page)
@@ -123,11 +166,11 @@ namespace aemarcoCore.Crawlers
                 case "Cars":
                     return new ContentCategory(Category.Cars);
                 case "City":
-                    return new ContentCategory(Category.Environment, Category.City);
+                    return new ContentCategory(Category.Environment_City);
                 case "Fantasy":
                     return new ContentCategory(Category.Fantasy);
                 case "Flowers":
-                    return new ContentCategory(Category.Environment, Category.Flowers);
+                    return new ContentCategory(Category.Environment_Flowers);
                 case "Games":
                     return new ContentCategory(Category.Games);
                 case "Holidays":
@@ -139,15 +182,15 @@ namespace aemarcoCore.Crawlers
                 case "Music":
                     return new ContentCategory(Category.Music);
                 case "Nature":
-                    return new ContentCategory(Category.Environment, Category.Landscape);
+                    return new ContentCategory(Category.Environment_Landscape);
                 case "Space":
-                    return new ContentCategory(Category.Environment, Category.Space);
+                    return new ContentCategory(Category.Environment_Space);
                 case "Sport":
                     return new ContentCategory(Category.Sport);
                 case "TV Series":
                     return new ContentCategory(Category.TVSeries);
                 default:
-                    return new ContentCategory(Category.None);
+                    return null;
 
             }
         }
@@ -167,7 +210,6 @@ namespace aemarcoCore.Crawlers
             return url;
 
         }
-
 
 
     }

@@ -1,10 +1,12 @@
 ﻿using aemarcoCore.Common;
+using aemarcoCore.Crawlers.Base;
+using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace aemarcoCore.Crawlers
+namespace aemarcoCore.Crawlers.Crawlers
 {
     internal class WallpaperCrawlerPornomass : WallpaperCrawlerBasis
     {
@@ -12,7 +14,7 @@ namespace aemarcoCore.Crawlers
         const string _url2 = "http://gif.pornomass.com/";
 
 
-        internal WallpaperCrawlerPornomass(
+        public WallpaperCrawlerPornomass(
             int startPage,
             int lastPage,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -29,6 +31,30 @@ namespace aemarcoCore.Crawlers
                 { _url, "Pornomass" },
                 { _url2, "Gifpornomass" }
             };
+
+            return result;
+        }
+
+        protected override List<CrawlOffer> GetCrawlsOffers()
+        {
+            List<CrawlOffer> result = new List<CrawlOffer>();
+
+            IContentCategory cat1 = GetContentCategory("Pornomass");
+            result.Add(new CrawlOffer
+            {
+                Name = "Pornomass",
+                Url = _url,
+                MainCategory = cat1.MainCategory,
+                SubCategory = cat1.SubCategory
+            });
+            IContentCategory cat2 = GetContentCategory("Gifpornomass");
+            result.Add(new CrawlOffer
+            {
+                Name = "Gifpornomass",
+                Url = _url2,
+                MainCategory = cat2.MainCategory,
+                SubCategory = cat2.SubCategory
+            });
 
             return result;
         }
@@ -65,7 +91,7 @@ namespace aemarcoCore.Crawlers
 
         protected override IContentCategory GetContentCategory(string categoryName)
         {
-            return new ContentCategory(Category.Girls, Category.Hardcore);
+            return new ContentCategory(Category.Girls_Hardcore);
         }
 
 
@@ -149,9 +175,6 @@ namespace aemarcoCore.Crawlers
             //z.B. "http://gif.pornomass.com/uploads/photo/original/614-beautiful-girl-anal-gif.gif" -- "Gifpornomass"
             return $"{site}{targetHref}";
         }
-
-
-
 
 
     }

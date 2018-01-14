@@ -1,4 +1,6 @@
 ﻿using aemarcoCore.Common;
+using aemarcoCore.Crawlers.Base;
+using aemarcoCore.Crawlers.Types;
 using aemarcoCore.Tools;
 using System;
 using System.Collections.Generic;
@@ -19,6 +21,7 @@ namespace aemarcoCore.Crawlers
 
         private Dictionary<WallpaperCrawlerBasis, int> _crawlers;
         private WallCrawlerResult _result;
+        private List<string> _filterCategories;
 
         private DirectoryInfo _reportPath;
 
@@ -42,7 +45,7 @@ namespace aemarcoCore.Crawlers
 
             _crawlers = new Dictionary<WallpaperCrawlerBasis, int>();
             _result = new WallCrawlerResult();
-
+            _filterCategories = new List<string>();
 
             var crawlerTypes = System.Reflection.Assembly
                 .GetAssembly(typeof(WallpaperCrawlerBasis))
@@ -53,9 +56,6 @@ namespace aemarcoCore.Crawlers
             foreach (Type type in crawlerTypes)
             {
                 var instance = (WallpaperCrawlerBasis)Activator.CreateInstance(type, startPage, lastPage, cancellationToken);
-                instance.Progress += Instance_Progress;
-                instance.NewEntry += Instance_NewEntry;
-                instance.KnownEntry += Instance_KnownEntry;
                 _crawlers.Add(instance, 0);
             }
         }
@@ -82,18 +82,17 @@ namespace aemarcoCore.Crawlers
 
         /// <summary>
         /// Used to filter which results beeing of interest to crawl
+        /// Not using this means everything will be crawled
+        /// Using this means only added categories will be crawled
         /// </summary>
-        public void AddCategoryFilter()
+        public void AddCategoryFilter(Category category)
         {
-
-
-
-
+            string cat = category.ToString();
+            if (!_filterCategories.Contains(cat))
+            {
+                _filterCategories.Add(cat);
+            }
         }
-
-
-
-
 
 
         /// <summary>
@@ -102,6 +101,22 @@ namespace aemarcoCore.Crawlers
         /// <returns>IWallCrawlerResult</returns>
         public IWallCrawlerResult Start()
         {
+            //reduce to crawlers which requires to run
+            var crawlersToUse = new Dictionary<WallpaperCrawlerBasis, int>();
+            foreach (var crawler in _crawlers.Keys)
+            {
+                crawler.LimitAsPerFilterlist(_filterCategories);
+                if (crawler.HasWorkingOffers)
+                {
+                    crawler.Progress += Instance_Progress;
+                    crawler.NewEntry += Instance_NewEntry;
+                    crawler.KnownEntry += Instance_KnownEntry;
+                    crawlersToUse.Add(crawler, 0);
+                }
+            }
+            _crawlers = crawlersToUse;
+
+
             //Crawling
             List<Task> tasks = new List<Task>();
             foreach (var crawler in _crawlers.Keys)
@@ -255,8 +270,6 @@ namespace aemarcoCore.Crawlers
                 _result.AddNewEntry(e);
 
 
-
-
                 if (NewEntry != null)
                 {
                     foreach (Delegate d in NewEntry.GetInvocationList())
@@ -299,13 +312,6 @@ namespace aemarcoCore.Crawlers
                 }
             }
         }
-
-
-
-
-
-
-
 
     }
 }

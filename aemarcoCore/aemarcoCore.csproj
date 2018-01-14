@@ -48,24 +48,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\Enums\MainCategory.cs" />
-    <Compile Include="Common\Enums\SubCategory.cs" />
-    <Compile Include="Crawlers\WallpaperCrawlerAdultWalls.cs" />
+    <Compile Include="Common\Enums\CCategory.cs" />
+    <Compile Include="Crawlers\Crawlers\WallpaperCrawlerAdultWalls.cs" />
+    <Compile Include="Crawlers\Types\CrawlOffer.cs" />
     <Compile Include="Crawlers\WallpaperCrawler.cs" />
-    <Compile Include="Crawlers\WallpaperCrawlerBasis.cs" />
-    <Compile Include="Crawlers\WallpaperCrawlerErowall.cs" />
-    <Compile Include="Crawlers\WallpaperCrawlerFtop.cs" />
-    <Compile Include="Crawlers\WallpaperCrawlerWallCraft.cs" />
+    <Compile Include="Crawlers\Base\WallpaperCrawlerBasis.cs" />
+    <Compile Include="Crawlers\Crawlers\WallpaperCrawlerErowall.cs" />
+    <Compile Include="Crawlers\Crawlers\WallpaperCrawlerFtop.cs" />
+    <Compile Include="Crawlers\Crawlers\WallpaperCrawlerWallCraft.cs" />
     <Compile Include="Common\Interfaces\IContentCategory.cs" />
     <Compile Include="Common\Interfaces\IWallCrawlerResult.cs" />
     <Compile Include="Common\Interfaces\IWallEntry.cs" />
-    <Compile Include="Common\Enums\Category.cs" />
-    <Compile Include="Common\Types\ContentCategory.cs" />
-    <Compile Include="Common\Types\WallCrawlerResult.cs" />
+    <Compile Include="Crawlers\Types\ContentCategory.cs" />
+    <Compile Include="Crawlers\Types\WallCrawlerResult.cs" />
     <Compile Include="Tools\WallCrawlerData.cs" />
-    <Compile Include="Common\Types\WallEntry.cs" />
-    <Compile Include="Crawlers\WallpaperCrawlerPornomass.cs" />
-    <Compile Include="Crawlers\WallpaperCrawlerZoomgirls.cs" />
+    <Compile Include="Crawlers\Types\WallEntry.cs" />
+    <Compile Include="Crawlers\Crawlers\WallpaperCrawlerPornomass.cs" />
+    <Compile Include="Crawlers\Crawlers\WallpaperCrawlerZoomgirls.cs" />
     <Compile Include="Picture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -85,7 +84,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Common\Types\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

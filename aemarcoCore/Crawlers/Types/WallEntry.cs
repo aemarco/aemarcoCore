@@ -1,10 +1,11 @@
-﻿using aemarcoCore.Properties;
+﻿using aemarcoCore.Common;
+using aemarcoCore.Properties;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace aemarcoCore.Common
+namespace aemarcoCore.Crawlers.Types
 {
     internal class WallEntry : IWallEntry
     {

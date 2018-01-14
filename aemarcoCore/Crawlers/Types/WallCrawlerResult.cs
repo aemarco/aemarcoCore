@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using aemarcoCore.Common;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace aemarcoCore.Common
+namespace aemarcoCore.Crawlers.Types
 {
     internal class WallCrawlerResult : IWallCrawlerResult
     {

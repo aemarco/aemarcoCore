@@ -1,14 +1,16 @@
 ﻿using aemarcoCore.Common;
+using aemarcoCore.Crawlers.Types;
 using aemarcoCore.Tools;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
 
-namespace aemarcoCore.Crawlers
+namespace aemarcoCore.Crawlers.Base
 {
     internal abstract class WallpaperCrawlerBasis
     {
@@ -26,6 +28,8 @@ namespace aemarcoCore.Crawlers
         private int _numberOfPagesDone;
         private int _numberOfEntries;
         private int _numberOfEntriesDone;
+
+        private List<CrawlOffer> _offers;
 
         #endregion
 
@@ -63,13 +67,71 @@ namespace aemarcoCore.Crawlers
 
         #endregion
 
+        #region props
+        
+        internal bool HasWorkingOffers
+        {
+            get
+            {
+                return _offers == null ||
+                      _offers.Count > 0;
+            }
+        }
+        
+        #endregion
+
         #region Starting 
+
+
+        public void LimitAsPerFilterlist(List<string> categorys)
+        {
+            //no Filtration leaves _offers null
+            if (categorys == null || categorys.Count == 0)
+            {
+                return;
+            }
+
+
+            //get offers
+            if (_offers == null)
+            {
+                _offers = GetCrawlsOffers();
+            }
+
+            //new list with offers which will be used
+            var used = new List<CrawlOffer>();
+
+            foreach (var offer in _offers)
+            {
+                //offers with no mainCategory cant match any filter
+                if (String.IsNullOrEmpty(offer.MainCategory))
+                {
+                    continue;
+                }
+
+                string filterString = offer.MainCategory;
+                if (!String.IsNullOrEmpty(offer.SubCategory))
+                {
+                    filterString += $"_{offer.SubCategory}";
+                }
+
+                if (categorys.Where(x => filterString.StartsWith(x)).FirstOrDefault() != null &&
+                    !used.Contains(offer))
+                {
+                    used.Add(offer);
+                }
+            }
+            _offers = used;
+        }
+
+
 
         public void Start()
         {
             //Crawling
             DoWork();
         }
+
 
         #endregion
 
@@ -172,16 +234,19 @@ namespace aemarcoCore.Crawlers
 
         private void DoWork()
         {
-            Dictionary<string, string> categoriesToCrawl = GetCategoriesDict();
-            _numberOfCategories = categoriesToCrawl.Count;
+            if (_offers == null)
+            {
+                _offers = GetCrawlsOffers();
+            }
 
-            foreach (string cat in categoriesToCrawl.Keys)
+            _numberOfCategories = _offers.Count;
+            foreach (var offer in _offers)
             {
                 if (!IShallGoAheadWithCategories())
                 {
                     break;
                 }
-                GetCategory(cat, categoriesToCrawl[cat]);
+                GetCategory(offer.Url, offer.Name);
                 _numberOfCategoriesDone++;
                 _numberOfPagesDone = 0;
 
@@ -189,6 +254,7 @@ namespace aemarcoCore.Crawlers
             }
         }
         protected abstract Dictionary<string, string> GetCategoriesDict();
+        protected abstract List<CrawlOffer> GetCrawlsOffers();
         protected HtmlDocument GetDocument(string url, int retry = 0)
         {
             HtmlWeb web = new HtmlWeb();

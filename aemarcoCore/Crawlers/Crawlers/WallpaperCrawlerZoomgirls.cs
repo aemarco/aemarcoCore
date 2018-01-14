@@ -1,17 +1,19 @@
 ﻿using aemarcoCore.Common;
+using aemarcoCore.Crawlers.Base;
+using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace aemarcoCore.Crawlers
+namespace aemarcoCore.Crawlers.Crawlers
 {
     internal class WallpaperCrawlerZoomgirls : WallpaperCrawlerBasis
     {
         const string _url = "https://zoomgirls.net/";
 
 
-        internal WallpaperCrawlerZoomgirls(
+        public WallpaperCrawlerZoomgirls(
             int startPage,
             int lastPage,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -35,6 +37,32 @@ namespace aemarcoCore.Crawlers
             return result;
         }
 
+        protected override List<CrawlOffer> GetCrawlsOffers()
+        {
+            List<CrawlOffer> result = new List<CrawlOffer>();
+
+            //z.B. "Latest Wallpapers"
+            string text = "Latest Wallpapers";
+            //z.B. "latest_wallpapers"
+            string href = "latest_wallpapers";
+            //z.B. "https://zoomgirls.net/latest_wallpapers"
+            string url = $"{_url}{href}";
+
+
+            IContentCategory cat = GetContentCategory(text);
+            result.Add(new CrawlOffer
+            {
+                Name = text,
+                Url = url,
+                MainCategory = cat.MainCategory,
+                SubCategory = cat.SubCategory
+            });
+
+
+            return result;
+        }
+
+
         protected override string GetSiteUrlForCategory(string categoryUrl, int page)
         {
             //z.B. "https://zoomgirls.net/latest_wallpapers/page/1"
@@ -48,7 +76,7 @@ namespace aemarcoCore.Crawlers
 
         protected override IContentCategory GetContentCategory(string categoryName)
         {
-            return new ContentCategory(Category.Girls, Category.None);
+            return new ContentCategory(Category.Girls);
         }
 
         /// <summary>
@@ -149,7 +177,6 @@ namespace aemarcoCore.Crawlers
             return url;
 
         }
-
 
 
     }
