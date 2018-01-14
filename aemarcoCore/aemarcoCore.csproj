@@ -49,6 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Enums\CCategory.cs" />
+    <Compile Include="Common\EventArgs\IWallCrawlerResultEventArgs.cs" />
+    <Compile Include="Common\EventArgs\IWallEntryEventArgs.cs" />
     <Compile Include="Crawlers\Crawlers\WallpaperCrawlerAdultWalls.cs" />
     <Compile Include="Crawlers\Types\CrawlOffer.cs" />
     <Compile Include="Crawlers\WallpaperCrawler.cs" />

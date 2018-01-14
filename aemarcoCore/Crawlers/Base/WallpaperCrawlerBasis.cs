@@ -68,7 +68,7 @@ namespace aemarcoCore.Crawlers.Base
         #endregion
 
         #region props
-        
+
         internal bool HasWorkingOffers
         {
             get
@@ -77,7 +77,7 @@ namespace aemarcoCore.Crawlers.Base
                       _offers.Count > 0;
             }
         }
-        
+
         #endregion
 
         #region Starting 
@@ -137,15 +137,15 @@ namespace aemarcoCore.Crawlers.Base
 
         #region Events
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
-        public event EventHandler<int> Progress;
+
+        public event EventHandler<ProgressChangedEventArgs> Progress;
         protected virtual void OnProgress()
         {
-            Progress?.Invoke(this, CalculateProgress());
+            Progress?.Invoke(this, new ProgressChangedEventArgs(CalculateProgress(), null));
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
-        public event EventHandler<IWallEntry> KnownEntry;
+
+        public event EventHandler<IWallEntryEventArgs> KnownEntry;
         protected virtual void OnKnownEntry(IWallEntry entry)
         {
             if (KnownEntry != null)
@@ -155,19 +155,19 @@ namespace aemarcoCore.Crawlers.Base
                     ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
                     if (syncer == null)
                     {
-                        d.DynamicInvoke(this, entry);
+                        d.DynamicInvoke(this, new IWallEntryEventArgs { Entry = entry });
                     }
                     else
                     {
-                        syncer.BeginInvoke(d, new object[] { this, entry });  // cleanup omitted
+                        syncer.BeginInvoke(d, new object[] { this, new IWallEntryEventArgs { Entry = entry } });  // cleanup omitted
                     }
                 }
 
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
-        public event EventHandler<IWallEntry> NewEntry;
+
+        public event EventHandler<IWallEntryEventArgs> NewEntry;
         protected virtual void OnNewEntry(IWallEntry entry)
         {
 
@@ -178,11 +178,11 @@ namespace aemarcoCore.Crawlers.Base
                     ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
                     if (syncer == null)
                     {
-                        d.DynamicInvoke(this, entry);
+                        d.DynamicInvoke(this, new IWallEntryEventArgs { Entry = entry });
                     }
                     else
                     {
-                        syncer.BeginInvoke(d, new object[] { this, entry });  // cleanup omitted
+                        syncer.BeginInvoke(d, new object[] { this, new IWallEntryEventArgs { Entry = entry } });  // cleanup omitted
                     }
                 }
 

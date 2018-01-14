@@ -108,9 +108,9 @@ namespace aemarcoCore.Crawlers
                 crawler.LimitAsPerFilterlist(_filterCategories);
                 if (crawler.HasWorkingOffers)
                 {
-                    crawler.Progress += Instance_Progress;
-                    crawler.NewEntry += Instance_NewEntry;
-                    crawler.KnownEntry += Instance_KnownEntry;
+                    crawler.Progress += Instance_OnProgress;
+                    crawler.NewEntry += Instance_OnNewEntry;
+                    crawler.KnownEntry += Instance_OnKnownEntry;
                     crawlersToUse.Add(crawler, 0);
                 }
             }
@@ -184,9 +184,8 @@ namespace aemarcoCore.Crawlers
         /// <summary>
         /// Delivers the progress of crawling 0...100
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
-        public event EventHandler<int> Progress;
-        private void Instance_Progress(object sender, int e)
+        public event EventHandler<ProgressChangedEventArgs> Progress;
+        private void Instance_OnProgress(object sender, ProgressChangedEventArgs e)
         {
             //muss nur gerechnet werden wenn Event oder IProgress genutzt wird
             if (_progress != null || Progress != null)
@@ -194,7 +193,7 @@ namespace aemarcoCore.Crawlers
                 lock (_progressLock)
                 {
                     WallpaperCrawlerBasis instance = (WallpaperCrawlerBasis)sender;
-                    _crawlers[instance] = e;
+                    _crawlers[instance] = e.ProgressPercentage;
 
                     int progress = _crawlers.Values.Sum() / _crawlers.Values.Count;
 
@@ -213,11 +212,11 @@ namespace aemarcoCore.Crawlers
                             ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
                             if (syncer == null)
                             {
-                                d.DynamicInvoke(this, progress);
+                                d.DynamicInvoke(this, new ProgressChangedEventArgs(progress, null));
                             }
                             else
                             {
-                                syncer.BeginInvoke(d, new object[] { this, progress });  // cleanup omitted
+                                syncer.BeginInvoke(d, new object[] { this, new ProgressChangedEventArgs(progress, null) });  // cleanup omitted
                             }
                         }
 
@@ -230,13 +229,12 @@ namespace aemarcoCore.Crawlers
         /// <summary>
         /// Delivers entries which are already known by the crawler
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
-        public event EventHandler<IWallEntry> KnownEntry;
-        private void Instance_KnownEntry(object sender, IWallEntry e)
+        public event EventHandler<IWallEntryEventArgs> KnownEntry;
+        private void Instance_OnKnownEntry(object sender, IWallEntryEventArgs e)
         {
             lock (_entryLock)
             {
-                _result.AddKnownEntry(e);
+                _result.AddKnownEntry(e.Entry);
 
 
 
@@ -261,13 +259,12 @@ namespace aemarcoCore.Crawlers
         /// <summary>
         /// Delivers entries which are new to the crawler
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
-        public event EventHandler<IWallEntry> NewEntry;
-        private void Instance_NewEntry(object sender, IWallEntry e)
+        public event EventHandler<IWallEntryEventArgs> NewEntry;
+        private void Instance_OnNewEntry(object sender, IWallEntryEventArgs e)
         {
             lock (_entryLock)
             {
-                _result.AddNewEntry(e);
+                _result.AddNewEntry(e.Entry);
 
 
                 if (NewEntry != null)
@@ -289,11 +286,11 @@ namespace aemarcoCore.Crawlers
             }
         }
 
+
         /// <summary>
         /// Delivers the IWallCrawlerResult once crawling is completed
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
-        public event EventHandler<IWallCrawlerResult> Completed;
+        public event EventHandler<IWallCrawlerResultEventArgs> Completed;
         protected virtual void OnCompleted()
         {
             if (Completed != null)
@@ -303,11 +300,11 @@ namespace aemarcoCore.Crawlers
                     ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
                     if (syncer == null)
                     {
-                        d.DynamicInvoke(this, _result);
+                        d.DynamicInvoke(this, new IWallCrawlerResultEventArgs { Result = _result });
                     }
                     else
                     {
-                        syncer.BeginInvoke(d, new object[] { this, _result });  // cleanup omitted
+                        syncer.BeginInvoke(d, new object[] { this, new IWallCrawlerResultEventArgs { Result = _result } });  // cleanup omitted
                     }
                 }
             }
