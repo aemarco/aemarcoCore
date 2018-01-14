@@ -2,29 +2,26 @@
 
 Nuget: Be aware that the available Nuget package is always a bit behind with changes...
 
-Usage:
+Frequent changes may ocure, even with already done code and interfaces.
 
 always use namespace aemarcoCore.Common
 
-Crawlers: in namespace aemarcoCore.Crawler
+Crawler Usage:
+in namespace aemarcoCore.Crawler
 
-Create any Crawler object derived from WallpaperCrawlerBasis and start it or
-use the WallpaperCrawlerAll which internally use all available crawlers.
-Start(), returns IWallCrawlerResult once completed
-StartAsync(), fire and forget. Events may be used to capture Results.
-StartAsyncTask(), returns Task<IWallCrawlerResult>.
-Events deliver either IWallEntry or IWallCrawlerResult, both of which provide JSON options.
-Progress event deliver the current progress 0...100
-  
-Options:
-Setting File inlcudes:
--CrawlerFileExtensions limitation for limitation of FileExtensions.
--CrawlerData for Definition of a datapath for saving known stuff.
-By constructor following behaviour:
--No start- and lastpage input yield to automatic mode, where only News are crawled (till 10 pages or 10 known entries in sequence)
--IProgress may be tossed in, to report Progress
--CancellationToken may be tossed in, for cancellation
--DirectoryInfo my be tossed in, where the IWallCrawlerResult will be saved as .json
+Create a WallpaperCrawler for usage.
 
+	No start- and lastpage input yield to automatic mode, where only News are crawled (till 10 pages or 10 known entries in sequence).
+	IProgress may be tossed in, to report Progress.
+	CancellationToken may be tossed in, for cancellation.
 
+	ReportPath can be set to receive a file report at the set Destination
+	AddCategoryFilter may be used to limit crawling to the desired categories.
+
+	Start(), StartAsync(), StartAsyncTask() are availabe for starting the thing.
+
+	Progress event delivers the current progress 0...100, safe for GUI-Use
+	NewEntry and KnownEntry events deliver IWallEntry.
+	Completed event delivers IWallCrawlerResult on completion.
+	
 
