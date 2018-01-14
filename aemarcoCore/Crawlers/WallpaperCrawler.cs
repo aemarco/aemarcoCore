@@ -10,28 +10,39 @@ using System.Threading.Tasks;
 
 namespace aemarcoCore.Crawlers
 {
-    public class WallpaperCrawlerAll
+    public class WallpaperCrawler
     {
 
-        private Dictionary<WallpaperCrawlerBasis, int> _crawlers;
         private IProgress<int> _progress;
-        WallCrawlerResult _result;
-        DirectoryInfo _reportPath;
         private object _progressLock;
         private object _entryLock;
 
-        public WallpaperCrawlerAll(
-            IProgress<int> progress = null,
-            CancellationToken cancellationToken = default(CancellationToken),
-            DirectoryInfo reportpath = null)
-        {
-            _crawlers = new Dictionary<WallpaperCrawlerBasis, int>();
+        private Dictionary<WallpaperCrawlerBasis, int> _crawlers;
+        private WallCrawlerResult _result;
 
+        private DirectoryInfo _reportPath;
+
+
+        /// <summary>
+        /// Used to crawl various Websites for Wallpapers
+        /// </summary>
+        /// <param name="cancellationToken">can be used for cancellation</param>
+        /// <param name="progress">can be used to report progress (there is also a Event for this)</param>
+        /// <param name="startPage">can be used in conjuction with lastPage to set first page where the crawler starts crawling</param>
+        /// <param name="lastPage">can be used in conjuction with firstPage to set last page which the crawler crawls</param>
+        public WallpaperCrawler(
+            CancellationToken cancellationToken = default(CancellationToken),
+            IProgress<int> progress = null,
+            int startPage = 0,
+            int lastPage = 0)
+        {
             _progress = progress;
-            _result = new WallCrawlerResult("All Crawlers");
-            _reportPath = reportpath;
             _progressLock = new object();
             _entryLock = new object();
+
+            _crawlers = new Dictionary<WallpaperCrawlerBasis, int>();
+            _result = new WallCrawlerResult();
+
 
             var crawlerTypes = System.Reflection.Assembly
                 .GetAssembly(typeof(WallpaperCrawlerBasis))
@@ -41,7 +52,7 @@ namespace aemarcoCore.Crawlers
 
             foreach (Type type in crawlerTypes)
             {
-                var instance = (WallpaperCrawlerBasis)Activator.CreateInstance(type, null, cancellationToken, null);
+                var instance = (WallpaperCrawlerBasis)Activator.CreateInstance(type, startPage, lastPage, cancellationToken);
                 instance.Progress += Instance_Progress;
                 instance.NewEntry += Instance_NewEntry;
                 instance.KnownEntry += Instance_KnownEntry;
@@ -50,6 +61,45 @@ namespace aemarcoCore.Crawlers
         }
 
 
+
+        /// <summary>
+        /// if set, IWallCrawlerResult will be saved there as json
+        /// </summary>
+        public string ReportPath
+        {
+            set { _reportPath = new DirectoryInfo(value); }
+        }
+
+        /// <summary>
+        /// if set, the name will be set in the IWallCrawlerResult and
+        /// used as prefix if a report is written
+        /// </summary>
+        public string ReportName
+        {
+            set { _result.ResultName = value; }
+        }
+
+
+        /// <summary>
+        /// Used to filter which results beeing of interest to crawl
+        /// </summary>
+        public void AddCategoryFilter()
+        {
+
+
+
+
+        }
+
+
+
+
+
+
+        /// <summary>
+        /// Starts crawling, returns on completion
+        /// </summary>
+        /// <returns>IWallCrawlerResult</returns>
         public IWallCrawlerResult Start()
         {
             //Crawling
@@ -62,8 +112,33 @@ namespace aemarcoCore.Crawlers
             Task.WaitAll(tasks.ToArray());
 
 
-            //Writing Report
+            //persist results for Deduplication
             WallCrawlerData.Save();
+            //Writing Report
+            WriteReport();
+
+
+            OnCompleted();
+            return _result;
+        }
+        /// <summary>
+        /// Starts crawling by fire and forget
+        /// </summary>
+        public void StartAsync()
+        {
+            Task.Factory.StartNew(Start);
+        }
+        /// <summary>
+        /// Starts crawling, returns Task<IWallCrawlerResult> on completion
+        /// </summary>
+        /// <returns>IWallCrawlerResult</returns>
+        public async Task<IWallCrawlerResult> StartAsyncTask()
+        {
+            return await Task.Factory.StartNew(Start);
+        }
+
+        private void WriteReport()
+        {
             if (_reportPath != null)
             {
                 try
@@ -72,27 +147,28 @@ namespace aemarcoCore.Crawlers
                     {
                         _reportPath.Create();
                     }
+
+                    string prefix = string.Empty;
+                    if (_result.ResultName.Length > 0)
+                    {
+                        prefix = $"{_result.ResultName}_";
+                    }
+
                     File.WriteAllText
                         (
-                        $"{_reportPath.FullName}\\{_result.ResultName}_{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.json",
+                        $"{_reportPath.FullName}\\{prefix}{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.json",
                         _result.JSON
                         );
                 }
                 catch { }
             }
-            OnCompleted();
-            return _result;
-        }
-        public void StartAsync()
-        {
-            Task.Factory.StartNew(Start);
-        }
-        public async Task<IWallCrawlerResult> StartAsyncTask()
-        {
-            return await Task.Factory.StartNew(Start);
         }
 
 
+
+        /// <summary>
+        /// Delivers the progress of crawling 0...100
+        /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event EventHandler<int> Progress;
         private void Instance_Progress(object sender, int e)
@@ -135,6 +211,10 @@ namespace aemarcoCore.Crawlers
             }
         }
 
+
+        /// <summary>
+        /// Delivers entries which are already known by the crawler
+        /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event EventHandler<IWallEntry> KnownEntry;
         private void Instance_KnownEntry(object sender, IWallEntry e)
@@ -142,6 +222,9 @@ namespace aemarcoCore.Crawlers
             lock (_entryLock)
             {
                 _result.AddKnownEntry(e);
+
+
+
                 if (KnownEntry != null)
                 {
                     foreach (Delegate d in KnownEntry.GetInvocationList())
@@ -160,6 +243,9 @@ namespace aemarcoCore.Crawlers
             }
         }
 
+        /// <summary>
+        /// Delivers entries which are new to the crawler
+        /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event EventHandler<IWallEntry> NewEntry;
         private void Instance_NewEntry(object sender, IWallEntry e)
@@ -167,6 +253,10 @@ namespace aemarcoCore.Crawlers
             lock (_entryLock)
             {
                 _result.AddNewEntry(e);
+
+
+
+
                 if (NewEntry != null)
                 {
                     foreach (Delegate d in NewEntry.GetInvocationList())
@@ -186,6 +276,9 @@ namespace aemarcoCore.Crawlers
             }
         }
 
+        /// <summary>
+        /// Delivers the IWallCrawlerResult once crawling is completed
+        /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event EventHandler<IWallCrawlerResult> Completed;
         protected virtual void OnCompleted()
@@ -206,6 +299,13 @@ namespace aemarcoCore.Crawlers
                 }
             }
         }
+
+
+
+
+
+
+
 
     }
 }

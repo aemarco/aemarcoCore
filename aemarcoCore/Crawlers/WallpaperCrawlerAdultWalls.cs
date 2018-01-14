@@ -2,33 +2,21 @@
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Threading;
 
 namespace aemarcoCore.Crawlers
 {
-    public class WallpaperCrawlerAdultWalls : WallpaperCrawlerBasis
+    internal class WallpaperCrawlerAdultWalls : WallpaperCrawlerBasis
     {
         const string _url = "http://adultwalls.com/";
-        const string _siteName = "adultwalls";
 
 
-        public WallpaperCrawlerAdultWalls(
-            IProgress<int> progress = null,
-            CancellationToken cancellationToken = default(CancellationToken),
-            DirectoryInfo reportpath = null)
-            : base(_siteName, reportpath, progress, cancellationToken)
-        {
-
-        }
-        public WallpaperCrawlerAdultWalls(
+        internal WallpaperCrawlerAdultWalls(
             int startPage,
             int lastPage,
-            IProgress<int> progress = null,
-            CancellationToken cancellationToken = default(CancellationToken),
-            DirectoryInfo reportpath = null)
-            : base(_siteName, startPage, lastPage, reportpath, progress, cancellationToken)
+            CancellationToken cancellationToken = default(CancellationToken))
+            : base(startPage, lastPage, cancellationToken)
         {
 
         }

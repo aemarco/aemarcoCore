@@ -2,33 +2,21 @@
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Threading;
 
 namespace aemarcoCore.Crawlers
 {
-    public class WallpaperCrawlerFtop : WallpaperCrawlerBasis
+    internal class WallpaperCrawlerFtop : WallpaperCrawlerBasis
     {
         const string _url = "https://ftopx.com/";
-        const string _siteName = "ftopx";
 
 
-        public WallpaperCrawlerFtop(
-            IProgress<int> progress = null,
-            CancellationToken cancellationToken = default(CancellationToken),
-            DirectoryInfo reportpath = null)
-            : base(_siteName, reportpath, progress, cancellationToken)
-        {
-
-        }
-        public WallpaperCrawlerFtop(
+        internal WallpaperCrawlerFtop(
             int startPage,
             int lastPage,
-            IProgress<int> progress = null,
-            CancellationToken cancellationToken = default(CancellationToken),
-            DirectoryInfo reportpath = null)
-            : base(_siteName, startPage, lastPage, reportpath, progress, cancellationToken)
+            CancellationToken cancellationToken = default(CancellationToken))
+            : base(startPage, lastPage, cancellationToken)
         {
 
         }

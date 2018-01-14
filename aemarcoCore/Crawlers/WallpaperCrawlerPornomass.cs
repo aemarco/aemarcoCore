@@ -2,34 +2,21 @@
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 
 namespace aemarcoCore.Crawlers
 {
-    public class WallpaperCrawlerPornomass : WallpaperCrawlerBasis
+    internal class WallpaperCrawlerPornomass : WallpaperCrawlerBasis
     {
         const string _url = "http://pornomass.com/";
         const string _url2 = "http://gif.pornomass.com/";
-        const string _siteName = "pornomass";
-        const string _siteName2 = "gifpornomass";
 
 
-        public WallpaperCrawlerPornomass(
-            IProgress<int> progress = null,
-            CancellationToken cancellationToken = default(CancellationToken),
-            DirectoryInfo reportpath = null)
-            : base(_siteName, reportpath, progress, cancellationToken)
-        {
-
-        }
-        public WallpaperCrawlerPornomass(
+        internal WallpaperCrawlerPornomass(
             int startPage,
             int lastPage,
-            IProgress<int> progress = null,
-            CancellationToken cancellationToken = default(CancellationToken),
-            DirectoryInfo reportpath = null)
-            : base(_siteName, startPage, lastPage, reportpath, progress, cancellationToken)
+            CancellationToken cancellationToken = default(CancellationToken))
+            : base(startPage, lastPage, cancellationToken)
         {
 
         }
@@ -81,6 +68,9 @@ namespace aemarcoCore.Crawlers
             return new ContentCategory(Category.Girls, Category.Hardcore);
         }
 
+
+
+
         /// <summary>
         /// returns true if Entry is valid
         /// </summary>
@@ -92,13 +82,11 @@ namespace aemarcoCore.Crawlers
             if (categoryName == "Pornomass")
             {
                 site = _url;
-                siteName = _siteName;
                 thumbnail = GetThumbnailUrlRelative(_url, node);
             }
             else
             {
                 site = _url2;
-                siteName = _siteName2;
                 thumbnail = GetThumbnailUrlRelative(_url2, node);
             }
 

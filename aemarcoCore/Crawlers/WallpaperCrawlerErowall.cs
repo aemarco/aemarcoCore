@@ -2,7 +2,6 @@
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -11,27 +10,16 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers
 {
-    public class WallpaperCrawlerErowall : WallpaperCrawlerBasis
+    internal class WallpaperCrawlerErowall : WallpaperCrawlerBasis
     {
         const string _url = "https://erowall.com/";
-        const string _siteName = "erowall";
 
 
-        public WallpaperCrawlerErowall(
-            IProgress<int> progress = null,
-            CancellationToken cancellationToken = default(CancellationToken),
-            DirectoryInfo reportpath = null)
-            : base(_siteName, reportpath, progress, cancellationToken)
-        {
-
-        }
-        public WallpaperCrawlerErowall(
+        internal WallpaperCrawlerErowall(
             int startPage,
             int lastPage,
-            IProgress<int> progress = null,
-            CancellationToken cancellationToken = default(CancellationToken),
-            DirectoryInfo reportpath = null)
-            : base(_siteName, startPage, lastPage, reportpath, progress, cancellationToken)
+            CancellationToken cancellationToken = default(CancellationToken))
+            : base(startPage, lastPage, cancellationToken)
         {
 
         }

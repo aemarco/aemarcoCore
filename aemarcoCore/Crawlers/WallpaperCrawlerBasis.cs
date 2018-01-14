@@ -7,23 +7,18 @@ using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace aemarcoCore.Crawlers
 {
-    public abstract class WallpaperCrawlerBasis
+    internal abstract class WallpaperCrawlerBasis
     {
         #region fields
-
-        private WallCrawlerResult _result;
-        private DirectoryInfo _reportPath;
 
         private bool _onlyNews;
         private int _knownEntryStreak;
         private int _startPage;
         private int _lastPage;
 
-        private IProgress<int> _progress;
         private CancellationToken _cancellationToken;
         private int _numberOfCategories;
         private int _numberOfCategoriesDone;
@@ -31,26 +26,32 @@ namespace aemarcoCore.Crawlers
         private int _numberOfPagesDone;
         private int _numberOfEntries;
         private int _numberOfEntriesDone;
+
         #endregion
 
         #region ctor
 
-        public WallpaperCrawlerBasis(
-            string siteName,
-            DirectoryInfo reportpath,
-            IProgress<int> progress,
+        internal WallpaperCrawlerBasis(
+            int startPage,
+            int lastPage,
             CancellationToken cancellationToken)
         {
-            _result = new WallCrawlerResult(siteName);
-            _reportPath = reportpath;
+            _knownEntryStreak = 0;
+
 
             _onlyNews = true;
-            _knownEntryStreak = 0;
             _startPage = 1;
             _lastPage = 10;
-
-            _progress = progress;
+            if (startPage != 0 && lastPage != 0)
+            {
+                _onlyNews = false;
+                _startPage = startPage;
+                _lastPage = lastPage;
+            }
             _cancellationToken = cancellationToken;
+
+
+
             _numberOfCategories = 0;
             _numberOfCategoriesDone = 0;
             _numberOfPages = _lastPage - _startPage + 1;
@@ -58,58 +59,16 @@ namespace aemarcoCore.Crawlers
             _numberOfEntries = 0;
             _numberOfEntriesDone = 0;
         }
-        public WallpaperCrawlerBasis(
-            string siteName,
-            int startPage,
-            int lastPage,
-            DirectoryInfo reportpath,
-            IProgress<int> progress,
-            CancellationToken cancellationToken)
-            : this(siteName, reportpath, progress, cancellationToken)
-        {
-            _onlyNews = false;
-            _startPage = startPage;
-            _lastPage = lastPage;
-            _numberOfPages = _lastPage - _startPage + 1;
-        }
+
 
         #endregion
 
-        #region Starting the thing
+        #region Starting 
 
-        public IWallCrawlerResult Start()
+        public void Start()
         {
             //Crawling
             DoWork();
-
-            //Writing Report
-            WallCrawlerData.Save();
-            if (_reportPath != null)
-            {
-                try
-                {
-                    if (!_reportPath.Exists)
-                    {
-                        _reportPath.Create();
-                    }
-                    File.WriteAllText
-                        (
-                        $"{_reportPath.FullName}\\{_result.ResultName}_{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.json",
-                        _result.JSON
-                        );
-                }
-                catch { }
-            }
-            OnCompleted();
-            return _result;
-        }
-        public void StartAsync()
-        {
-            Task.Factory.StartNew(Start);
-        }
-        public async Task<IWallCrawlerResult> StartAsyncTask()
-        {
-            return await Task.Factory.StartNew(Start);
         }
 
         #endregion
@@ -120,35 +79,7 @@ namespace aemarcoCore.Crawlers
         public event EventHandler<int> Progress;
         protected virtual void OnProgress()
         {
-            //muss nur gerechnet werden wenn Event oder IProgress genutzt wird
-            if (_progress != null || Progress != null)
-            {
-                int progress = CalculateProgress();
-
-                //falls IProgress
-                if (_progress != null)
-                {
-                    _progress.Report(progress);
-                }
-
-                //falls Event
-                if (Progress != null)
-                {
-                    foreach (Delegate d in Progress.GetInvocationList())
-                    {
-                        ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
-                        if (syncer == null)
-                        {
-                            d.DynamicInvoke(this, progress);
-                        }
-                        else
-                        {
-                            syncer.BeginInvoke(d, new object[] { this, progress });  // cleanup omitted
-                        }
-                    }
-
-                }
-            }
+            Progress?.Invoke(this, CalculateProgress());
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
@@ -193,27 +124,6 @@ namespace aemarcoCore.Crawlers
                     }
                 }
 
-            }
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
-        public event EventHandler<IWallCrawlerResult> Completed;
-        protected virtual void OnCompleted()
-        {
-            if (Completed != null)
-            {
-                foreach (Delegate d in Completed.GetInvocationList())
-                {
-                    ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
-                    if (syncer == null)
-                    {
-                        d.DynamicInvoke(this, _result);
-                    }
-                    else
-                    {
-                        syncer.BeginInvoke(d, new object[] { this, _result });  // cleanup omitted
-                    }
-                }
             }
         }
 
@@ -274,6 +184,7 @@ namespace aemarcoCore.Crawlers
                 GetCategory(cat, categoriesToCrawl[cat]);
                 _numberOfCategoriesDone++;
                 _numberOfPagesDone = 0;
+
                 OnProgress();
             }
         }
@@ -377,7 +288,6 @@ namespace aemarcoCore.Crawlers
                 //Streak mitzählen
                 _knownEntryStreak++;
 
-                _result.AddKnownEntry(entry);
                 OnKnownEntry(entry);
             }
             //neues Entry
@@ -389,7 +299,6 @@ namespace aemarcoCore.Crawlers
                 //url als bekannte Url merken
                 WallCrawlerData.AddNewEntry(entry);
 
-                _result.AddNewEntry(entry);
                 OnNewEntry(entry);
             }
         }

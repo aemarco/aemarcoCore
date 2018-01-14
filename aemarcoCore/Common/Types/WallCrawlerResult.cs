@@ -9,20 +9,25 @@ namespace aemarcoCore.Common
         private List<IWallEntry> _newEntries;
         private List<IWallEntry> _knownEntries;
 
-        internal WallCrawlerResult(string resultName)
+        internal WallCrawlerResult()
         {
-            _resultName = resultName;
+            _resultName = string.Empty;
             _newEntries = new List<IWallEntry>();
             _knownEntries = new List<IWallEntry>();
         }
 
 
         public string ResultName
-        { get { return _resultName; } }
+        {
+            get { return _resultName; }
+            set { _resultName = value; }
+        }
         public List<IWallEntry> NewEntries
         { get { return _newEntries; } }
         public List<IWallEntry> KnownEntries
         { get { return _knownEntries; } }
+
+
 
         [JsonIgnore]
         public string JSON

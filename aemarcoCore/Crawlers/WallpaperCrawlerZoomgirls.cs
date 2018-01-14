@@ -2,32 +2,20 @@
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 
 namespace aemarcoCore.Crawlers
 {
-    public class WallpaperCrawlerZoomgirls : WallpaperCrawlerBasis
+    internal class WallpaperCrawlerZoomgirls : WallpaperCrawlerBasis
     {
         const string _url = "https://zoomgirls.net/";
-        const string _siteName = "zoomgirls";
 
 
-        public WallpaperCrawlerZoomgirls(
-            IProgress<int> progress = null,
-            CancellationToken cancellationToken = default(CancellationToken),
-            DirectoryInfo reportpath = null)
-            : base(_siteName, reportpath, progress, cancellationToken)
-        {
-
-        }
-        public WallpaperCrawlerZoomgirls(
+        internal WallpaperCrawlerZoomgirls(
             int startPage,
             int lastPage,
-            IProgress<int> progress = null,
-            CancellationToken cancellationToken = default(CancellationToken),
-            DirectoryInfo reportpath = null)
-            : base(_siteName, startPage, lastPage, reportpath, progress, cancellationToken)
+            CancellationToken cancellationToken = default(CancellationToken))
+            : base(startPage, lastPage, cancellationToken)
         {
 
         }

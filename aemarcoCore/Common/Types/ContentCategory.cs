@@ -19,10 +19,11 @@ namespace aemarcoCore.Common
         }
 
 
-        public Category MainCategory
-        { get { return _mainCategory; } }
-        public Category SubCategory
-        { get { return _subCategory; } }
+        public string MainCategory
+        { get { return _mainCategory.ToString(); } }
+        public string SubCategory
+        { get { return _subCategory.ToString(); } }
+
         [JsonIgnore]
         public string JSON
         { get { return JsonConvert.SerializeObject(this, Formatting.Indented); } }

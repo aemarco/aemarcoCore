@@ -48,8 +48,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Enums\MainCategory.cs" />
+    <Compile Include="Common\Enums\SubCategory.cs" />
     <Compile Include="Crawlers\WallpaperCrawlerAdultWalls.cs" />
-    <Compile Include="Crawlers\WallpaperCrawlerAll.cs" />
+    <Compile Include="Crawlers\WallpaperCrawler.cs" />
     <Compile Include="Crawlers\WallpaperCrawlerBasis.cs" />
     <Compile Include="Crawlers\WallpaperCrawlerErowall.cs" />
     <Compile Include="Crawlers\WallpaperCrawlerFtop.cs" />
