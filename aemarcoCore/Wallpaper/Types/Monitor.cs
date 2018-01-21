@@ -1,5 +1,6 @@
 ﻿using aemarcoCore.Common;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -12,7 +13,7 @@ namespace aemarcoCore.Wallpaper.Types
         private Image _wallpaper;
         private string _deviceName;
         private WallpaperMode _wallMode;
-
+        private List<string> _sourceFiles;
 
         internal Monitor(Screen screen, string backgroundFile, WallpaperMode mode)
         {
@@ -24,6 +25,7 @@ namespace aemarcoCore.Wallpaper.Types
             //set mandatory fields            
             _deviceName = screen.DeviceName;
             _wallMode = mode;
+            _sourceFiles = new List<string>();
             _rectangle = new Rectangle(0, 0, screen.Bounds.Width, screen.Bounds.Height);
 
 
@@ -158,5 +160,21 @@ namespace aemarcoCore.Wallpaper.Types
 
 
 
+        internal void SetWallpaperSourceList(List<string> files)
+        {
+            _sourceFiles = files;
+        }
+
+        internal void SetRandomWallpaper(Func<string, Image> getImage, Random rand)
+        {
+            if (_sourceFiles.Count < 1)
+            {
+                return;
+            }
+
+            int index = rand.Next(0, _sourceFiles.Count);
+            Image wall = getImage(_sourceFiles[index]);
+            SetWallpaper(wall);
+        }
     }
 }

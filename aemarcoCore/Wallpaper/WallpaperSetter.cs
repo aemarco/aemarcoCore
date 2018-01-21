@@ -19,6 +19,7 @@ namespace aemarcoCore.Wallpaper
         private string _defaultBackgroundFile;
         private List<Monitor> _monitors;
         private WallpaperMode _wallMode;
+        Random _rand;
 
         private static int percentLeftRightCutAllowed;
         private static int percentTopBottomCutAllowed;
@@ -35,7 +36,7 @@ namespace aemarcoCore.Wallpaper
         {
             _defaultBackgroundFile = new FileInfo("CurrentWallpaper.jpg").FullName;
             _wallMode = mode;
-
+            _rand = new Random();
             _monitors = new List<Monitor>();
             foreach (Screen scr in Screen.AllScreens)
             {
@@ -150,7 +151,7 @@ namespace aemarcoCore.Wallpaper
         /// Sets given Wallpapers to given Screens
         /// </summary>
         /// <param name="screens">Screen Device names</param>
-        /// <param name="images">Bitmap to set on those screens</param>
+        /// <param name="images">Image to set on those screens</param>
         public void SetWallsForScreens(List<string> screens, List<Image> images)
         {
             if (screens == null || images == null ||
@@ -213,7 +214,41 @@ namespace aemarcoCore.Wallpaper
         }
 
 
+        /// <summary>
+        /// Sets a list for Random Wallpaper Function
+        /// </summary>
+        /// <param name="screen">Screen Device name</param>
+        /// <param name="files">Wallpapers to set</param>
+        public void SetWallpaperSourceList(string screen, List<string> files)
+        {
+            if (screen == null || files == null ||
+                files.Count < 1 || files.Contains(null))
+            {
+                throw new ArgumentException("Screens or Wallpapers not provided correctly.");
+            }
 
+            Monitor mon = _monitors.Where(x => x.DeviceName == screen).FirstOrDefault();
+            if (mon == null)
+            {
+                throw new ArgumentException($"Monitor {screen} not found.");
+            }
+
+            mon.SetWallpaperSourceList(files);
+
+        }
+
+        /// <summary>
+        /// Sets a random Wallpaper on each Screen a list was provided
+        /// </summary>
+        public void SetRandomWallpaper()
+        {
+            foreach (var mon in _monitors)
+            {
+                mon.SetRandomWallpaper(GetImage, _rand);
+            }
+
+            SetBackgroundImage();
+        }
 
 
     }
