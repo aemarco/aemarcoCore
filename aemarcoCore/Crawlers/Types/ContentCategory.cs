@@ -20,6 +20,10 @@ namespace aemarcoCore.Crawlers.Types
             {
                 _subCategory = strings[1];
             }
+            else
+            {
+                _subCategory = string.Empty;
+            }
         }
 
 

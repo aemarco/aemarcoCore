@@ -1,4 +1,5 @@
 ﻿using aemarcoCore.Common;
+using aemarcoCore.Tools;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -169,7 +170,8 @@ namespace aemarcoCore.Wallpaper.Types
         {
             if (_sourceFiles.Count < 1)
             {
-                return;
+                _sourceFiles = WallCrawlerData.GetKnownUrls();
+                //return;
             }
 
             int index = rand.Next(0, _sourceFiles.Count);

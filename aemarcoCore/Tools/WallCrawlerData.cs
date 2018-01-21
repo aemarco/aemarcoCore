@@ -77,5 +77,12 @@ namespace aemarcoCore.Tools
             }
         }
 
+
+        internal static List<string> GetKnownUrls()
+        {
+            if (!_isInitiallized) Init();
+            return _knownUrls;
+        }
+
     }
 }

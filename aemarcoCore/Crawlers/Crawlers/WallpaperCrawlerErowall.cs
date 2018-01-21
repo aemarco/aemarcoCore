@@ -216,7 +216,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             // z.B. "24741"
             string imageLink = match.Groups[1].Value;
             // z.B. "https://erowall.com//wallpapers/original/24741.jpg"
-            string url = _url + "/wallpapers/original/" + imageLink + ".jpg";
+            string url = _url + "wallpapers/original/" + imageLink + ".jpg";
 
             return url;
         }
