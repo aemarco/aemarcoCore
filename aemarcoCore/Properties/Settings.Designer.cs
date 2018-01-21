@@ -46,5 +46,29 @@ namespace aemarcoCore.Properties {
                 this["CrawlerFileExtensions"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        public int WallpaperPercentCutAllowedLeftRight {
+            get {
+                return ((int)(this["WallpaperPercentCutAllowedLeftRight"]));
+            }
+            set {
+                this["WallpaperPercentCutAllowedLeftRight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("15")]
+        public int WallpaperPercentCutAllowedTopBottom {
+            get {
+                return ((int)(this["WallpaperPercentCutAllowedTopBottom"]));
+            }
+            set {
+                this["WallpaperPercentCutAllowedTopBottom"] = value;
+            }
+        }
     }
 }

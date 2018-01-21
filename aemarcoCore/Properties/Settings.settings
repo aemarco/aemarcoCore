@@ -8,5 +8,11 @@
     <Setting Name="CrawlerFileExtensions" Type="System.String" Scope="User">
       <Value Profile="(Default)">bmp,jpg,jpeg,png,gif</Value>
     </Setting>
+    <Setting Name="WallpaperPercentCutAllowedLeftRight" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">25</Value>
+    </Setting>
+    <Setting Name="WallpaperPercentCutAllowedTopBottom" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">15</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
