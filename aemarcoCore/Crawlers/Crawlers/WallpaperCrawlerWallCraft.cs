@@ -123,20 +123,28 @@ namespace aemarcoCore.Crawlers.Crawlers
             }
             HtmlDocument doc = GetDocument(docURL);
 
-
             //z.B. "https://wallpaperscraft.com/image/diane_kruger_actress_blonde_face_make_up_109818_1920x1200.jpg"
-            string url = GetImageUrl(doc);
-            if (String.IsNullOrEmpty(url))
+            var imageUrl = GetImageUrls(doc);
+            if (String.IsNullOrEmpty(imageUrl))
             {
                 return false;
             }
 
+            var detailsNode = node?.SelectSingleNode("./a");
+            string detailsUrl = $"{_url.Substring(0, _url.IndexOf("//"))}{detailsNode.Attributes["href"]?.Value}";
+            var detailsDoc = GetDocument(detailsUrl);
+            var imageNode = detailsDoc?.DocumentNode.SelectSingleNode("//div[@class='wb_preview']/a/img");
+            var thumbnailUrl = $"{_url.Substring(0, _url.IndexOf("//"))}{imageNode.Attributes["src"]?.Value}";
+
+
+
+
             //jeder node = 1 Wallpaper
             WallEntry wallEntry = new WallEntry
                 (
-                url,
-                GetThumbnailUrlRelative(_url.Substring(0, _url.IndexOf("//") + 1), node.SelectSingleNode("./a")),
-                GetFileName(url, string.Empty),
+                imageUrl,
+                thumbnailUrl,
+                GetFileName(imageUrl, string.Empty),
                 GetContentCategory(categoryName),
                 categoryName,
                 GetTagsFromNodes(doc.DocumentNode.SelectNodes("//div[@class='wb_tags']/a"))
@@ -197,7 +205,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
 
 
-        private string GetImageUrl(HtmlDocument doc)
+        private string GetImageUrls(HtmlDocument doc)
         {
             HtmlNode targetNode = doc.DocumentNode.SelectSingleNode("//div[@class='wb_preview']/a[@class='wd_zoom']/img");
             if (targetNode == null)

@@ -152,8 +152,9 @@ namespace aemarcoCore.Crawlers.Crawlers
         protected override bool AddWallEntry(HtmlNode node, string categoryName)
         {
             //z.B. "https://ftopx.com/images/201712/ftopx.com_5a4482e5acc2d.jpg"
-            string url = GetImageUrl(node.Attributes["href"]?.Value);
-            if (String.IsNullOrEmpty(url))
+            var (ThumbnailUrl, ImageUrl) = GetImageUrls(node.Attributes["href"]?.Value);
+
+            if (String.IsNullOrEmpty(ImageUrl))
             {
                 return false;
             }
@@ -161,9 +162,9 @@ namespace aemarcoCore.Crawlers.Crawlers
             //jeder node = 1 Wallpaper
             WallEntry wallEntry = new WallEntry
                 (
-                url,
-                GetThumbnailUrlAbsolute(node),
-                GetFileName(url, $"{categoryName}_"),
+                ImageUrl,
+                ThumbnailUrl,
+                GetFileName(ImageUrl, $"{categoryName}_"),
                 GetContentCategory(categoryName),
                 categoryName,
                 GetTagsFromTagString(node.SelectSingleNode("./img")?.Attributes["alt"]?.Value)
@@ -179,12 +180,23 @@ namespace aemarcoCore.Crawlers.Crawlers
             return true;
         }
 
-        private string GetImageUrl(string href)
+        private (string ThumbnailUrl, string ImageUrl) GetImageUrls(string href)
         {
             if (String.IsNullOrEmpty(href))
             {
-                return null;
+                return (null, null);
             }
+
+            #region Photo Details site
+
+            string detailsUrl = $"{_url}{href.Substring(1)}";
+            var detailsDoc = GetDocument(detailsUrl);
+            var imageNode = detailsDoc?.DocumentNode.SelectSingleNode("//img[@class='img-responsive img-rounded']");
+            var thumbnailUrl = imageNode?.Attributes["src"]?.Value;
+
+            #endregion
+
+            #region Download Photo site
 
             //z.B. "211314-suzanne-a-metart-grafiti-wall-flowerdress.html"
             string id = href.Substring(href.LastIndexOf("/") + 1);
@@ -198,9 +210,15 @@ namespace aemarcoCore.Crawlers.Crawlers
             HtmlNode node = doc.DocumentNode.SelectSingleNode("//a[@type='button']");
             if (node == null)
             {
-                return null;
+                return (thumbnailUrl, null);
             }
-            return node.Attributes["href"]?.Value;
+            string imageUrl = node.Attributes["href"]?.Value;
+
+            #endregion
+
+            return (thumbnailUrl, imageUrl);
+
+
         }
 
 

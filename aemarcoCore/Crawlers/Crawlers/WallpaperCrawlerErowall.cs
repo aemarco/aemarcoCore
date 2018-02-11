@@ -178,8 +178,9 @@ namespace aemarcoCore.Crawlers.Crawlers
         protected override bool AddWallEntry(HtmlNode node, string categoryName)
         {
             // z.B. "https://erowall.com//wallpapers/original/24741.jpg"
-            string url = GetImageUrl(node.Attributes["href"]?.Value);
-            if (String.IsNullOrEmpty(url))
+            var (ThumbnailUrl, ImageUrl) = GetImageUrl(node.Attributes["href"]?.Value);
+
+            if (String.IsNullOrEmpty(ImageUrl))
             {
                 return false;
             }
@@ -187,9 +188,9 @@ namespace aemarcoCore.Crawlers.Crawlers
             //jeder node = 1 Wallpaper
             WallEntry wallEntry = new WallEntry
                 (
-                url,
-                GetThumbnailUrlRelative(_url, node),
-                GetFileName(url, $"{categoryName}_"),
+                ImageUrl,
+                ThumbnailUrl,
+                GetFileName(ImageUrl, $"{categoryName}_"),
                 GetContentCategory(categoryName),
                 categoryName,
                 GetTagsFromTagString(node.Attributes["title"]?.Value)
@@ -205,12 +206,21 @@ namespace aemarcoCore.Crawlers.Crawlers
             return true;
         }
 
-        private string GetImageUrl(string href)
+        private (string ThumbnailUrl, string ImageUrl) GetImageUrl(string href)
         {
             if (href == null)
             {
-                return null;
+                return (null, null);
             }
+
+            string detailsUrl = $"{_url}{href.Substring(1)}";
+            var detailsDoc = GetDocument(detailsUrl);
+            var imageNode = detailsDoc?.DocumentNode.SelectSingleNode("//div[@class='view-left']/a/img");
+            var thumbnailUrl = $"{_url}{imageNode?.Attributes["src"]?.Value.Substring(1)}";
+
+
+
+
 
             Match match = Regex.Match(href, @"/(\d+)/$");
             // z.B. "24741"
@@ -218,7 +228,9 @@ namespace aemarcoCore.Crawlers.Crawlers
             // z.B. "https://erowall.com//wallpapers/original/24741.jpg"
             string url = _url + "wallpapers/original/" + imageLink + ".jpg";
 
-            return url;
+
+
+            return (thumbnailUrl, url);
         }
 
 

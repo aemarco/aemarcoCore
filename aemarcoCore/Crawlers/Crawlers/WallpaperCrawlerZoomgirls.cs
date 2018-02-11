@@ -123,6 +123,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             HtmlNode targetNode = null;
 
+
             //select all resolution nodes
             var allNodes = doc.DocumentNode.SelectNodes("//div[@class='tagcloud']/span/a");
             if (allNodes == null)
@@ -164,6 +165,9 @@ namespace aemarcoCore.Crawlers.Crawlers
             }
 
 
+
+            #region Image Url
+
             //z.B. "/view-jana-jordan--1920x1200.html"
             string url = targetNode.Attributes["href"]?.Value;
             //z.B. "jana-jordan--1920x1200.html"
@@ -173,6 +177,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             //z.B. "https://zoomgirls.net/wallpapers/jana-jordan--1920x1200.jpg"
             url = _url + @"wallpapers/" + url + ".jpg";
 
+            #endregion
 
             return url;
 
