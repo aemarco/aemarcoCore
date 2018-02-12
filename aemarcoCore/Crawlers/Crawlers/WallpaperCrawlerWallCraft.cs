@@ -81,8 +81,16 @@ namespace aemarcoCore.Crawlers.Crawlers
 
             switch (categoryName)
             {
+                case "3D":
+                    return new ContentCategory(Category.Fantasy_3D);
+                case "Abstract":
+                    return new ContentCategory(Category.Fantasy_Abstract);
                 case "Animals":
-                    return new ContentCategory(Category.Animals);
+                    return new ContentCategory(Category.Hobbies_Animals);
+                case "Anime":
+                    return new ContentCategory(Category.Fantasy_Anime);
+                case "Brands":
+                    return new ContentCategory(Category.Other_Brands);
                 case "Cars":
                     return new ContentCategory(Category.Vehicle_Cars);
                 case "City":
@@ -91,12 +99,18 @@ namespace aemarcoCore.Crawlers.Crawlers
                     return new ContentCategory(Category.Fantasy);
                 case "Flowers":
                     return new ContentCategory(Category.Environment_Flowers);
+                case "Food":
+                    return new ContentCategory(Category.Hobbies_Food);
                 case "Games":
                     return new ContentCategory(Category.Media_Games);
                 case "Girls":
                     return new ContentCategory(Category.Girls);
+                case "Hi-Tech":
+                    return new ContentCategory(Category.Hobbies_HiTech);
                 case "Holidays":
-                    return new ContentCategory(Category.Holidays);
+                    return new ContentCategory(Category.Other_Holidays);
+                case "Macro":
+                    return new ContentCategory(Category.Environment_Macro);
                 case "Men":
                     return new ContentCategory(Category.Men);
                 case "Movies":
@@ -105,12 +119,18 @@ namespace aemarcoCore.Crawlers.Crawlers
                     return new ContentCategory(Category.Media_Music);
                 case "Nature":
                     return new ContentCategory(Category.Environment_Landscape);
+                case "Other":
+                    return new ContentCategory(Category.Other);
                 case "Space":
                     return new ContentCategory(Category.Environment_Space);
                 case "Sport":
-                    return new ContentCategory(Category.Sport);
+                    return new ContentCategory(Category.Hobbies_Sport);
+                case "Textures":
+                    return new ContentCategory(Category.Other_Textures);
                 case "TV Series":
                     return new ContentCategory(Category.Media_TVSeries);
+                case "Vector":
+                    return new ContentCategory(Category.Fantasy_Vector);
                 default:
                     return null;
 
