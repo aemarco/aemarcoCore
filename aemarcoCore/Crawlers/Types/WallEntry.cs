@@ -3,7 +3,6 @@ using aemarcoCore.Properties;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace aemarcoCore.Crawlers.Types
 {
@@ -21,21 +20,16 @@ namespace aemarcoCore.Crawlers.Types
 
 
         internal WallEntry(
-            string url, string thumbnailUrl, string fileName,
+            string url, string thumbnailUrl, string fileName, string extension,
             IContentCategory contentCategory, string siteCategory, List<string> tags)
         {
             _url = url;
             _thumbnailUrl = thumbnailUrl;
             _fileName = fileName;
+            _extension = extension;
             _contentCategory = contentCategory;
             _siteCategory = siteCategory;
             _tags = tags;
-
-            if (!String.IsNullOrEmpty(url))
-            {
-                _extension = Path.GetExtension(url).ToLower();
-            }
-
         }
 
 

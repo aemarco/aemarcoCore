@@ -62,6 +62,7 @@
     <Compile Include="Common\Events\IWallEntryEventArgs.cs" />
     <Compile Include="Crawlers\Crawlers\WallpaperCrawlerAdultWalls.cs" />
     <Compile Include="Crawlers\Types\CrawlOffer.cs" />
+    <Compile Include="Crawlers\Types\WallEntrySource.cs" />
     <Compile Include="Crawlers\WallpaperCrawler.cs" />
     <Compile Include="Crawlers\Base\WallpaperCrawlerBasis.cs" />
     <Compile Include="Crawlers\Crawlers\WallpaperCrawlerErowall.cs" />

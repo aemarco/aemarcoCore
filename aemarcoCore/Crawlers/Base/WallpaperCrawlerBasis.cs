@@ -5,7 +5,6 @@ using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -232,7 +231,7 @@ namespace aemarcoCore.Crawlers.Base
 
         #region Crawling
 
-        private void DoWork()
+        protected virtual void DoWork()
         {
             if (_offers == null)
             {
@@ -253,9 +252,8 @@ namespace aemarcoCore.Crawlers.Base
                 OnProgress();
             }
         }
-        protected abstract Dictionary<string, string> GetCategoriesDict();
         protected abstract List<CrawlOffer> GetCrawlsOffers();
-        protected HtmlDocument GetDocument(string url, int retry = 0)
+        protected virtual HtmlDocument GetDocument(string url, int retry = 0)
         {
             HtmlWeb web = new HtmlWeb();
             try
@@ -279,7 +277,7 @@ namespace aemarcoCore.Crawlers.Base
                 throw;
             }
         }
-        private void GetCategory(string categoryUrl, string categoryName)
+        protected virtual void GetCategory(string categoryUrl, string categoryName)
         {
             int page = GetStartingPage();
             if (page == 0) page = 1;
@@ -295,10 +293,7 @@ namespace aemarcoCore.Crawlers.Base
             } while (pageValid && IShallGoAheadWithPages(page));
         }
         protected abstract string GetSiteUrlForCategory(string categoryUrl, int page);
-        /// <summary>
-        /// return true if page contains minimum 1 valid Entry
-        /// </summary>        
-        private bool GetPage(string pageUrl, string categoryName)
+        protected virtual bool GetPage(string pageUrl, string categoryName)
         {
             bool result = false;
             //Seite mit Wallpaperliste
@@ -335,16 +330,9 @@ namespace aemarcoCore.Crawlers.Base
             //valid Page contains minimum 1 valid Entry
             return result;
         }
-
         protected abstract string GetSearchStringGorEntryNodes();
-        /// <summary>
-        /// returns true if Entry is valid
-        /// </summary>
-        protected virtual bool AddWallEntry(HtmlNode node, string categoryName)
-        {
-            return false;
-        }
-
+        protected abstract IContentCategory GetContentCategory(string categoryName);
+        protected abstract bool AddWallEntry(HtmlNode node, string categoryName);
         protected void AddEntry(IWallEntry entry)
         {
 
@@ -369,70 +357,7 @@ namespace aemarcoCore.Crawlers.Base
             }
         }
 
-        protected virtual string GetFileName(string url, string prefix)
-        {
-            return Path.GetFileNameWithoutExtension($"{prefix}{url?.Substring(url.LastIndexOf("/") + 1)}");
-        }
-        protected virtual List<string> GetTagsFromTagString(string tagString)
-        {
-            //z.B. "flowerdress, nadia p, susi r, suzanna, suzanna a, brunette, boobs, big tits"
-            List<string> result = new List<string>();
-
-            if (String.IsNullOrEmpty(tagString))
-            {
-                return result;
-            }
-            else
-            {
-                string[] tags = tagString.Split(',');
-                foreach (string tag in tags)
-                {
-                    //z.B. "flowerdress"
-                    string entry = tag.Trim();
-                    if (entry.Length > 0)
-                    {
-                        result.Add(entry);
-                    }
-                }
-            }
-            return result;
-        }
-        protected virtual List<string> GetTagsFromNodes(HtmlNodeCollection nodes)
-        {
-
-            List<string> result = new List<string>();
-            if (nodes == null)
-            {
-                return result;
-            }
-
-            foreach (var node in nodes)
-            {
-                string entry = node.InnerText.Trim();
-                if (entry.Length > 0)
-                {
-                    result.Add(entry);
-                }
-            }
-
-            return result;
-        }
-        protected virtual string GetThumbnailUrlRelative(string url, HtmlNode node)
-        {
-            HtmlNode imageNode = node.SelectSingleNode("./img");
-            return $"{url}{imageNode?.Attributes["src"]?.Value?.Substring(1)}";
-        }
-        protected virtual string GetThumbnailUrlAbsolute(HtmlNode node)
-        {
-            HtmlNode imageNode = node.SelectSingleNode("./img");
-            return imageNode?.Attributes["src"]?.Value;
-        }
-        protected abstract IContentCategory GetContentCategory(string categoryName);
-
-
         #endregion
-
-
 
 
 

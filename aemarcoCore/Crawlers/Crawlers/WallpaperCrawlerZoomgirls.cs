@@ -12,7 +12,6 @@ namespace aemarcoCore.Crawlers.Crawlers
     {
         const string _url = "https://zoomgirls.net/";
 
-
         public WallpaperCrawlerZoomgirls(
             int startPage,
             int lastPage,
@@ -20,21 +19,6 @@ namespace aemarcoCore.Crawlers.Crawlers
             : base(startPage, lastPage, cancellationToken)
         {
 
-        }
-
-        protected override Dictionary<string, string> GetCategoriesDict()
-        {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-
-            //z.B. "Latest Wallpapers"
-            string text = "Latest Wallpapers";
-            //z.B. "latest_wallpapers"
-            string href = "latest_wallpapers";
-            //z.B. "https://zoomgirls.net/latest_wallpapers"
-            string url = $"{_url}{href}";
-            result.Add(url, text);
-
-            return result;
         }
 
         protected override List<CrawlOffer> GetCrawlsOffers()
@@ -61,64 +45,41 @@ namespace aemarcoCore.Crawlers.Crawlers
 
             return result;
         }
-
-
         protected override string GetSiteUrlForCategory(string categoryUrl, int page)
         {
             //z.B. "https://zoomgirls.net/latest_wallpapers/page/1"
             return $"{categoryUrl}/page/{page}";
         }
-
         protected override string GetSearchStringGorEntryNodes()
         {
             return "//div[@class='thumb']/a";
         }
-
         protected override IContentCategory GetContentCategory(string categoryName)
         {
             return new ContentCategory(Category.Girls);
         }
-
-        /// <summary>
-        /// returns true if Entry is valid
-        /// </summary>
         protected override bool AddWallEntry(HtmlNode node, string categoryName)
         {
-            string docURL = _url + node.Attributes["href"]?.Value?.Substring(1);
-            if (String.IsNullOrEmpty(docURL))
+            var source = new WallEntrySource(new Uri(_url), node, categoryName);
+
+            //docs
+            source.DetailsDoc = source.GetDetailsDocFromNode(node);
+
+            //details
+            source.ImageUri = new Uri(GetImageUrl(source.DetailsDoc));
+            source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='wallpaper-thumb']/img", "src");
+            (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
+            source.ContentCategory = GetContentCategory(categoryName);
+            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//ul[@class='tagcloud']/span/a", new Func<HtmlNode, string>(x => x.InnerText.Trim()));
+
+            WallEntry wallEntry = source.WallEntry;
+            if (wallEntry == null)
             {
                 return false;
             }
-            HtmlDocument doc = GetDocument(docURL);
-
-            //z.B. "https://zoomgirls.net/wallpapers/amy-addison--1920x1200.jpg"
-            string url = GetImageUrl(doc);
-            if (String.IsNullOrEmpty(url))
-            {
-                return false;
-            }
-
-            //jeder node = 1 Wallpaper
-            WallEntry wallEntry = new WallEntry
-                (
-                url,
-                GetThumbnailUrlRelative(_url, node),
-                GetFileName(url, string.Empty),
-                GetContentCategory(categoryName),
-                categoryName,
-                GetTagsFromNodes(doc.DocumentNode.SelectNodes("//ul[@class='tagcloud']/span/a"))
-                );
-
-            //Entry muss valid sein
-            if (!wallEntry.IsValid)
-            {
-                return false;
-            }
-
             AddEntry(wallEntry);
             return true;
         }
-
         private string GetImageUrl(HtmlDocument doc)
         {
             HtmlNode targetNode = null;
