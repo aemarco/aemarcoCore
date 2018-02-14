@@ -31,25 +31,16 @@ namespace aemarcoCore.Crawlers.Crawlers
             //z.B. "latest_wallpapers"
             string href = "latest_wallpapers";
             //z.B. "https://zoomgirls.net/latest_wallpapers"
-            string url = $"{_url}{href}";
-
-
+            Uri uri = new Uri($"{_url}{href}");
             IContentCategory cat = GetContentCategory(text);
-            result.Add(new CrawlOffer
-            {
-                Name = text,
-                Url = url,
-                MainCategory = cat.MainCategory,
-                SubCategory = cat.SubCategory
-            });
 
-
+            result.Add(CreateCrawlOffer(text, uri, cat));
             return result;
         }
-        protected override string GetSiteUrlForCategory(string categoryUrl, int page)
+        protected override string GetSiteUrlForCategory(CrawlOffer catJob)
         {
             //z.B. "https://zoomgirls.net/latest_wallpapers/page/1"
-            return $"{categoryUrl}/page/{page}";
+            return $"{catJob.CategoryUri.AbsoluteUri}/page/{catJob.CurrentPage}";
         }
         protected override string GetSearchStringGorEntryNodes()
         {
@@ -59,9 +50,9 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             return new ContentCategory(Category.Girls);
         }
-        protected override bool AddWallEntry(HtmlNode node, string categoryName)
+        protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
-            var source = new WallEntrySource(new Uri(_url), node, categoryName);
+            var source = new WallEntrySource(new Uri(_url), node, catJob.SiteCategoryName);
 
             //docs
             source.DetailsDoc = source.GetDetailsDocFromNode(node);
@@ -70,7 +61,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             source.ImageUri = new Uri(GetImageUrl(source.DetailsDoc));
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='wallpaper-thumb']/img", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
-            source.ContentCategory = GetContentCategory(categoryName);
+            source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
             source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//ul[@class='tagcloud']/span/a", new Func<HtmlNode, string>(x => x.InnerText.Trim()));
 
             WallEntry wallEntry = source.WallEntry;
@@ -78,7 +69,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 return false;
             }
-            AddEntry(wallEntry);
+            AddEntry(wallEntry, catJob);
             return true;
         }
         private string GetImageUrl(HtmlDocument doc)

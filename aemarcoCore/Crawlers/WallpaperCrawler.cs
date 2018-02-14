@@ -14,23 +14,29 @@ namespace aemarcoCore.Crawlers
 {
     public class WallpaperCrawler
     {
-        CancellationToken _cancellationToken;
+        #region fields
+
+        private Dictionary<WallpaperCrawlerBasis, int> _crawlers = new Dictionary<WallpaperCrawlerBasis, int>();
+
+        //ctor
+        private bool _onlyNews;
         int _startPage;
         int _lastPage;
+        CancellationToken _cancellationToken;
         private IProgress<int> _progress;
 
-        private bool _onlyNews;
+        //settings
+        private WallCrawlerResult _result = new WallCrawlerResult();
+        private DirectoryInfo _reportPath = null;
+        private List<string> _filterCategories = new List<string>();
 
-
+        //events
         private object _progressLock = new object();
         private object _entryLock = new object();
 
-        private Dictionary<WallpaperCrawlerBasis, int> _crawlers = new Dictionary<WallpaperCrawlerBasis, int>();
-        private WallCrawlerResult _result = new WallCrawlerResult();
-        private List<string> _filterCategories = new List<string>();
+        #endregion
 
-        private DirectoryInfo _reportPath = null;
-
+        #region ctor
 
         /// <summary>
         /// Used to crawl various Websites for Wallpapers
@@ -73,7 +79,9 @@ namespace aemarcoCore.Crawlers
             _progress = progress;
         }
 
+        #endregion
 
+        #region Settings
 
         /// <summary>
         /// if set, IWallCrawlerResult will be saved there as json
@@ -85,13 +93,12 @@ namespace aemarcoCore.Crawlers
 
         /// <summary>
         /// if set, the name will be set in the IWallCrawlerResult and
-        /// used as prefix if a report is written
+        /// used as filename prefix if a file is requested by "ReportPath"
         /// </summary>
         public string ReportName
         {
             set { _result.ResultName = value; }
         }
-
 
         /// <summary>
         /// Used to filter which results beeing of interest to crawl
@@ -107,12 +114,68 @@ namespace aemarcoCore.Crawlers
             }
         }
 
+        #endregion
+
+        #region Working
+
+        /// <summary>
+        /// Starts crawling by fire and forget
+        /// </summary>
+        public void StartAsync()
+        {
+            Task.Factory.StartNew(Start);
+        }
+
+        /// <summary>
+        /// Starts crawling, returns Task<IWallCrawlerResult> on completion
+        /// </summary>
+        /// <returns>IWallCrawlerResult</returns>
+        public async Task<IWallCrawlerResult> StartAsyncTask()
+        {
+            return await Task.Factory.StartNew(Start);
+        }
 
         /// <summary>
         /// Starts crawling, returns on completion
         /// </summary>
         /// <returns>IWallCrawlerResult</returns>
         public IWallCrawlerResult Start()
+        {
+            PrepareCrawlerList();
+
+
+            //start all crawlers
+            List<Task<bool>> tasks = new List<Task<bool>>();
+            foreach (var crawler in _crawlers.Keys)
+            {
+                var task = Task<bool>.Factory.StartNew(crawler.Start);
+                tasks.Add(task);
+            }
+
+            try
+            {
+                //awaiting end of crawling
+                Task.WaitAll(tasks.ToArray());
+                if (!tasks.All(x => x.Result) == true)
+                {
+                    _result.HasBeenAborted = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                _result.Exception = ex;
+            }
+
+            //persist results for Deduplication
+            WallCrawlerData.Save();
+            //Writing Report
+            WriteReport();
+
+            OnCompleted();
+            return _result;
+        }
+
+        private void PrepareCrawlerList()
         {
             //creates all available crawlers and adds them if applicable
             var crawlerTypes = System.Reflection.Assembly
@@ -134,59 +197,6 @@ namespace aemarcoCore.Crawlers
                     _crawlers.Add(instance, 0);
                 }
             }
-
-
-            //start Crawling
-            List<Task> tasks = new List<Task>();
-            foreach (var crawler in _crawlers.Keys)
-            {
-                var task = Task.Factory.StartNew(crawler.Start);
-                tasks.Add(task);
-            }
-            Task.WaitAll(tasks.ToArray());
-
-            bool sucess = true;
-            foreach (var t in tasks)
-            {
-                if (!t.IsCompleted)
-                {
-                    sucess = false;
-                }
-            }
-
-            if (sucess)
-            {
-
-            }
-            else
-            {
-
-            }
-
-
-            //persist results for Deduplication
-            WallCrawlerData.Save();
-            //Writing Report
-            WriteReport();
-
-
-            OnCompleted();
-            return _result;
-        }
-        /// <summary>
-        /// Starts crawling by fire and forget
-        /// </summary>
-        public void StartAsync()
-        {
-            Task.Factory.StartNew(Start);
-        }
-        /// <summary>
-        /// Starts crawling, returns Task<IWallCrawlerResult> on completion
-        /// </summary>
-        /// <returns>IWallCrawlerResult</returns>
-        public async Task<IWallCrawlerResult> StartAsyncTask()
-        {
-            return await Task.Factory.StartNew(Start);
         }
 
         private void WriteReport()
@@ -201,7 +211,7 @@ namespace aemarcoCore.Crawlers
                     }
 
                     string prefix = string.Empty;
-                    if (_result.ResultName.Length > 0)
+                    if (!String.IsNullOrWhiteSpace(_result.ResultName))
                     {
                         prefix = $"{_result.ResultName}_";
                     }
@@ -216,7 +226,9 @@ namespace aemarcoCore.Crawlers
             }
         }
 
+        #endregion
 
+        #region Events
 
         /// <summary>
         /// Delivers the progress of crawling 0...100
@@ -262,7 +274,6 @@ namespace aemarcoCore.Crawlers
             }
         }
 
-
         /// <summary>
         /// Delivers entries which are already known by the crawler
         /// </summary>
@@ -272,8 +283,6 @@ namespace aemarcoCore.Crawlers
             lock (_entryLock)
             {
                 _result.AddKnownEntry(e.Entry);
-
-
 
                 if (KnownEntry != null)
                 {
@@ -323,7 +332,6 @@ namespace aemarcoCore.Crawlers
             }
         }
 
-
         /// <summary>
         /// Delivers the IWallCrawlerResult once crawling is completed
         /// </summary>
@@ -347,5 +355,6 @@ namespace aemarcoCore.Crawlers
             }
         }
 
+        #endregion
     }
 }

@@ -67,28 +67,18 @@ namespace aemarcoCore.Crawlers.Crawlers
 
 
                 //z.B. "https://erowall.com/search/brunette/"
-                string url = $"{_url}{href}";
-
+                Uri uri = new Uri($"{_url}{href}");
                 IContentCategory cat = GetContentCategory(text);
-
-                CrawlOffer offer = new CrawlOffer
-                {
-                    Name = text,
-                    Url = url,
-                    MainCategory = cat.MainCategory,
-                    SubCategory = cat.SubCategory
-                };
-
-                result.Add(offer);
+                result.Add(CreateCrawlOffer(text, uri, cat));
             }
 
             return result;
 
         }
-        protected override string GetSiteUrlForCategory(string categoryUrl, int page)
+        protected override string GetSiteUrlForCategory(CrawlOffer catJob)
         {
             //z.B. "https://erowall.com/teg/brunette/page/1"       
-            return $"{categoryUrl}page/{page}";
+            return $"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}";
         }
         protected override string GetSearchStringGorEntryNodes()
         {
@@ -114,7 +104,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                     return new ContentCategory(Category.Girls);
             }
         }
-        protected override bool AddWallEntry(HtmlNode node, string categoryName)
+        protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
             //details
             Match match = Regex.Match(node.Attributes["href"]?.Value, @"/(\d+)/$");
@@ -125,7 +115,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
 
 
-            var source = new WallEntrySource(new Uri(_url), node, categoryName);
+            var source = new WallEntrySource(new Uri(_url), node, catJob.SiteCategoryName);
 
             //docs
             source.DetailsDoc = source.GetDetailsDocFromNode(node);
@@ -133,8 +123,8 @@ namespace aemarcoCore.Crawlers.Crawlers
             //details
             source.ImageUri = new Uri(_url + "wallpapers/original/" + imageLink + ".jpg");
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@class='view-left']/a/img", "src");
-            (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, categoryName);
-            source.ContentCategory = GetContentCategory(categoryName);
+            (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
+            source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
             source.Tags = source.GetTagsFromNode(node, "title");
 
 
@@ -143,7 +133,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 return false;
             }
-            AddEntry(wallEntry);
+            AddEntry(wallEntry, catJob);
             return true;
         }
 

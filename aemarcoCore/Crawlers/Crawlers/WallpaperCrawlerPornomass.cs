@@ -28,28 +28,17 @@ namespace aemarcoCore.Crawlers.Crawlers
             List<CrawlOffer> result = new List<CrawlOffer>();
 
             IContentCategory cat1 = GetContentCategory("Pornomass");
-            result.Add(new CrawlOffer
-            {
-                Name = "Pornomass",
-                Url = _url,
-                MainCategory = cat1.MainCategory,
-                SubCategory = cat1.SubCategory
-            });
+            result.Add(CreateCrawlOffer("Pornomass", new Uri(_url), cat1));
+
             IContentCategory cat2 = GetContentCategory("Gifpornomass");
-            result.Add(new CrawlOffer
-            {
-                Name = "Gifpornomass",
-                Url = _url2,
-                MainCategory = cat2.MainCategory,
-                SubCategory = cat2.SubCategory
-            });
+            result.Add(CreateCrawlOffer("Gifpornomass", new Uri(_url2), cat2));
 
             return result;
         }
-        protected override string GetSiteUrlForCategory(string categoryUrl, int page)
+        protected override string GetSiteUrlForCategory(CrawlOffer catJob)
         {
             //z.B. "http://pornomass.com/page/1"
-            return $"{categoryUrl}page/{page}";
+            return $"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}";
         }
         protected override string GetSearchStringGorEntryNodes()
         {
@@ -59,14 +48,14 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             return new ContentCategory(Category.Girls_Hardcore);
         }
-        protected override bool AddWallEntry(HtmlNode node, string categoryName)
+        protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
             WallEntrySource source;
 
             string thumbnail = string.Empty;
-            if (categoryName == "Pornomass")
+            if (catJob.SiteCategoryName == "Pornomass")
             {
-                source = new WallEntrySource(new Uri(_url), node, categoryName);
+                source = new WallEntrySource(new Uri(_url), node, catJob.SiteCategoryName);
                 //doc
                 source.DetailsDoc = source.GetDetailsDocFromNode(node);
                 //details
@@ -75,7 +64,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             }
             else
             {
-                source = new WallEntrySource(new Uri(_url2), node, categoryName);
+                source = new WallEntrySource(new Uri(_url2), node, catJob.SiteCategoryName);
                 //doc
                 source.DetailsDoc = source.GetDetailsDocFromNode(node);
                 //details
@@ -84,8 +73,8 @@ namespace aemarcoCore.Crawlers.Crawlers
             }
             //details
             source.ImageUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='photo-blink']", "href");
-            (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, categoryName);
-            source.ContentCategory = GetContentCategory(categoryName);
+            (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
+            source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
             source.Tags = new List<string>();
 
 
@@ -95,7 +84,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 return false;
             }
-            AddEntry(wallEntry);
+            AddEntry(wallEntry, catJob);
             return true;
         }
 

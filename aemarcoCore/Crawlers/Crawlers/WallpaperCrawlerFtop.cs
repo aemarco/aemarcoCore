@@ -50,28 +50,18 @@ namespace aemarcoCore.Crawlers.Crawlers
                 //z.B. "celebrities/"
                 href = href.Substring(1);
                 //z.B. "https://ftopx.com/celebrities"
-                string url = $"{_url}{href}";
-
+                Uri uri = new Uri($"{_url}{href}");
                 IContentCategory cat = GetContentCategory(text);
-
-                CrawlOffer offer = new CrawlOffer
-                {
-                    Name = text,
-                    Url = url,
-                    MainCategory = cat.MainCategory,
-                    SubCategory = cat.SubCategory
-                };
-
-                result.Add(offer);
+                result.Add(CreateCrawlOffer(text, uri, cat));
             }
 
             return result;
 
         }
-        protected override string GetSiteUrlForCategory(string categoryUrl, int page)
+        protected override string GetSiteUrlForCategory(CrawlOffer catJob)
         {
             //z.B. "http://ftopx.com/celebrities/page/1/?sort=p.approvedAt&direction=desc"
-            return $"{categoryUrl}page/{page}/?sort=p.approvedAt&direction=desc";
+            return $"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}/?sort=p.approvedAt&direction=desc";
         }
         protected override string GetSearchStringGorEntryNodes()
         {
@@ -106,11 +96,11 @@ namespace aemarcoCore.Crawlers.Crawlers
                     return new ContentCategory(Category.Girls);
             }
         }
-        protected override bool AddWallEntry(HtmlNode node, string categoryName)
+        protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
             node = node.ParentNode.ParentNode;
 
-            var source = new WallEntrySource(new Uri(_url), node, categoryName);
+            var source = new WallEntrySource(new Uri(_url), node, catJob.SiteCategoryName);
 
             //docs
             source.DetailsDoc = source.GetDetailsDocFromNode(node, "./div[@class='thumbnail']/a");
@@ -119,8 +109,8 @@ namespace aemarcoCore.Crawlers.Crawlers
             //details
             source.ImageUri = source.GetUriFromDocument(source.DownloadDoc, "//a[@type='button']", "href");
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@class='img-responsive img-rounded']", "src");
-            (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, categoryName);
-            source.ContentCategory = GetContentCategory(categoryName);
+            (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
+            source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
             source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='well well-sm']/a", new Func<HtmlNode, string>(x => x.InnerText.Trim()));
 
 
@@ -130,7 +120,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 return false;
             }
-            AddEntry(wallEntry);
+            AddEntry(wallEntry, catJob);
             return true;
         }
 

@@ -15,20 +15,15 @@ namespace aemarcoCore.Crawlers.Base
     {
         #region fields
 
+        //ctor
         private bool _onlyNews;
-        private int _knownEntryStreak;
         private int _startPage;
         private int _lastPage;
-
         private CancellationToken _cancellationToken;
-        private int _numberOfCategories;
-        private int _numberOfCategoriesDone;
-        private int _numberOfPages;
-        private int _numberOfPagesDone;
-        private int _numberOfEntries;
-        private int _numberOfEntriesDone;
 
-        private List<CrawlOffer> _offers;
+        //handling
+        private List<CrawlOffer> _catJobs;
+        private int _entriesPerPage;
 
         #endregion
 
@@ -40,21 +35,10 @@ namespace aemarcoCore.Crawlers.Base
             CancellationToken cancellationToken,
             bool onlyNews)
         {
-
-            _knownEntryStreak = 0;
-
             _startPage = startPage;
             _lastPage = lastPage;
             _cancellationToken = cancellationToken;
             _onlyNews = onlyNews;
-
-
-            _numberOfCategories = 0;
-            _numberOfCategoriesDone = 0;
-            _numberOfPages = _lastPage - _startPage + 1;
-            _numberOfPagesDone = 0;
-            _numberOfEntries = 0;
-            _numberOfEntriesDone = 0;
         }
 
 
@@ -66,91 +50,53 @@ namespace aemarcoCore.Crawlers.Base
         {
             get
             {
-                return _offers == null ||
-                      _offers.Count > 0;
+                return _catJobs == null ||
+                      _catJobs.Count > 0;
             }
         }
-
-        protected int StartingPage
-        {
-            get
-            {
-                return _startPage;
-            }
-        }
-
-        protected int NumberOfCategoriesDone
-        {
-            get { return _numberOfCategoriesDone; }
-            set
-            {
-                _numberOfCategoriesDone = value;
-                _knownEntryStreak = 0;
-                NumberOfPagesDone = 0;
-            }
-        }
-
-        protected int NumberOfPagesDone
-        {
-            get { return _numberOfPagesDone; }
-            set
-            {
-                _numberOfPagesDone = value;
-                _numberOfEntriesDone = 0;
-                OnProgress();
-            }
-        }
-
 
         #endregion
 
         #region Starting 
 
-
-        internal void LimitAsPerFilterlist(List<string> categories)
+        internal void LimitAsPerFilterlist(List<string> searchedCategories)
         {
             //no Filtration leaves _offers null
-            if (categories == null || categories.Count == 0)
+            if (searchedCategories == null || searchedCategories.Count == 0)
             {
                 return;
             }
-            
 
-            _offers = new List<CrawlOffer>();
+
+            _catJobs = new List<CrawlOffer>();
             foreach (var offer in GetCrawlsOffers())
             {
-                //offers with no mainCategory cant match any filter
-                if (String.IsNullOrEmpty(offer.MainCategory))
+                //job gets added if it matched any searchedCategories
+                if (searchedCategories.Where(x => offer.MatchFilter(x)).FirstOrDefault() != null)
                 {
-                    continue;
-                }
-
-                string filterString = offer.MainCategory;
-                if (!String.IsNullOrEmpty(offer.SubCategory))
-                {
-                    filterString += $"_{offer.SubCategory}";
-                }
-
-                if (categories.Where(x => filterString.StartsWith(x)).FirstOrDefault() != null &&
-                    _offers.Contains(offer))
-                {
-                    _offers.Add(offer);
+                    _catJobs.Add(offer);
                 }
             }
         }
 
-
-
-        public void Start()
+        protected CrawlOffer CreateCrawlOffer(
+            string categoryName, Uri categoryUri, IContentCategory category)
         {
-            if (_offers == null)
-            {
-                _offers = GetCrawlsOffers();
-            }
+            return new CrawlOffer(_startPage, _lastPage, _onlyNews,
+                categoryName, categoryUri, category);
+        }
 
-
+        public bool Start()
+        {
             //Crawling
             DoWork();
+
+            if (_cancellationToken.IsCancellationRequested)
+            {
+                return false;
+
+            }
+            return true;
         }
 
 
@@ -182,59 +128,97 @@ namespace aemarcoCore.Crawlers.Base
 
         private int CalculateProgress()
         {
-            int done = _numberOfCategoriesDone * _numberOfPages * _numberOfEntries +
-                    _numberOfPagesDone * _numberOfEntries +
-                    _numberOfEntriesDone;
-            int todo = _numberOfCategories * _numberOfPages * _numberOfEntries;
-            double result = 100.0 * done / todo; 
-            if (double.IsNaN(result))
+            int done = _catJobs.Sum(x => x.DoneEntries);
+            int todo = _catJobs.Sum(x => x.TotalEntries);
+            if (todo == 0)
             {
-                result = 0.0;
+                return 0;
             }
-            return Convert.ToInt32(result);
-        }
-
-        #endregion
-
-        #region Cancellation
-
-        protected bool IShallGoAheadWithCategories()
-        {
-            return !_cancellationToken.IsCancellationRequested;
-        }
-
-        protected bool IShallGoAheadWithPages(int currPage)
-        {
-            return !_cancellationToken.IsCancellationRequested &&
-                currPage <= _lastPage &&
-                (!_onlyNews || _knownEntryStreak < 10);
-        }
-        protected bool IShallGoAheadWithEntries()
-        {
-            return !_cancellationToken.IsCancellationRequested &&
-                (!_onlyNews || _knownEntryStreak < 10);
+            return Convert.ToInt32(100.0 * done / todo);
         }
 
         #endregion
 
         #region Crawling
 
-        protected virtual void DoWork()
+        private void DoWork()
         {
-            
-            _numberOfCategories = _offers.Count;
-
-            foreach (var offer in _offers)
+            if (_catJobs == null)
             {
-                if (!IShallGoAheadWithCategories())
+                _catJobs = GetCrawlsOffers();
+            }
+
+            foreach (var catJob in _catJobs)
+            {
+                if (_cancellationToken.IsCancellationRequested)
                 {
                     break;
                 }
-                GetCategory(offer);
-                NumberOfCategoriesDone++;
+                GetCategory(catJob);
             }
         }
         protected abstract List<CrawlOffer> GetCrawlsOffers();
+        protected virtual void GetCategory(CrawlOffer catJob)
+        {
+            do
+            {
+                if (!GetPage(catJob))
+                {
+                    catJob.ReportEndReached();
+                    break;
+                }
+            }
+            while (catJob.ContainsPagesToDo && !_cancellationToken.IsCancellationRequested);
+            //either no more work or cancellation
+            OnProgress();
+        }
+        protected virtual bool GetPage(CrawlOffer catJob)
+        {
+            bool result = false;
+            //Seite mit Wallpaperliste
+            string pageUrl = GetSiteUrlForCategory(catJob);
+            var doc = GetDocument(pageUrl);
+            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes(GetSearchStringGorEntryNodes());
+
+            //non Valid Page
+            if (nodes == null || nodes.Count == 0)
+            {
+                //invalid page breaks the loop
+                return false;
+            }
+
+            if (nodes.Count > _entriesPerPage)
+            {
+                _entriesPerPage = nodes.Count;
+                //set for all so progress can be calculated
+                for (int i = 0; i < _catJobs.Count; i++)
+                {
+                    _catJobs[i].ReportNumberOfEntriesPerPage(_entriesPerPage);
+
+                }
+            }
+
+
+            foreach (HtmlNode node in nodes)
+            {
+                if (_cancellationToken.IsCancellationRequested ||
+                    catJob.ReachedMaximumStreak)
+                {
+                    catJob.ReportEndReached();
+                    return true;
+                }
+
+                if (AddWallEntry(node, catJob))
+                {
+                    result = true;
+                }
+                OnProgress();
+            }
+            catJob.ReportPageDone();
+            //valid Page contains minimum 1 valid Entry
+            return result;
+        }
+        protected abstract string GetSiteUrlForCategory(CrawlOffer catJob);
         protected virtual HtmlDocument GetDocument(string url, int retry = 0)
         {
             HtmlWeb web = new HtmlWeb();
@@ -259,86 +243,25 @@ namespace aemarcoCore.Crawlers.Base
                 throw;
             }
         }
-        protected virtual void GetCategory(CrawlOffer offer)
-        {
-            int page = StartingPage;
-            NumberOfPagesDone = 0;
-
-            bool pageValid = true;
-            do
-            {
-                if (GetPage(GetSiteUrlForCategory(offer.Url, page), offer.Name))
-                {
-                    NumberOfPagesDone++;
-                    page++;
-                }
-                else
-                {
-                    pageValid = false;
-                }
-            } while (pageValid && IShallGoAheadWithPages(page));
-        }
-        protected abstract string GetSiteUrlForCategory(string categoryUrl, int page);
-        protected virtual bool GetPage(string pageUrl, string categoryName)
-        {
-            bool result = false;
-            //Seite mit Wallpaperliste
-            HtmlDocument doc = GetDocument(pageUrl);
-            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes(GetSearchStringGorEntryNodes());
-
-            //non Valid Page
-            if (nodes == null || nodes.Count == 0)
-            {
-                return result;
-            }
-
-            if (nodes.Count > _numberOfEntries)
-            {
-                _numberOfEntries = nodes.Count;
-            }
-
-            foreach (HtmlNode node in nodes)
-            {
-                if (!IShallGoAheadWithEntries())
-                {
-                    result = false;
-                    break;
-                }
-
-                if (AddWallEntry(node, categoryName))
-                {
-                    result = true;
-                }
-                _numberOfEntriesDone++;
-                OnProgress();
-            }
-
-            //valid Page contains minimum 1 valid Entry
-            return result;
-        }
         protected abstract string GetSearchStringGorEntryNodes();
         protected abstract IContentCategory GetContentCategory(string categoryName);
-        protected abstract bool AddWallEntry(HtmlNode node, string categoryName);
-        protected void AddEntry(IWallEntry entry)
+        protected abstract bool AddWallEntry(HtmlNode node, CrawlOffer catJob);
+        protected void AddEntry(IWallEntry entry, CrawlOffer catJob)
         {
             //bekanntes Entry
             if (WallCrawlerData.IsKnownEntry(entry))
             {
-                //Streak mitzählen
-                _knownEntryStreak++;
-
                 OnKnownEntry(entry);
+                catJob.ReportEntryDone(true);
             }
             //neues Entry
             else
             {
-                //Streak beenden
-                _knownEntryStreak = 0;
-
-                //url als bekannte Url merken
-                WallCrawlerData.AddNewEntry(entry);
 
                 OnNewEntry(entry);
+                //url als bekannte Url merken
+                WallCrawlerData.AddNewEntry(entry);
+                catJob.ReportEntryDone(false);
             }
         }
 
