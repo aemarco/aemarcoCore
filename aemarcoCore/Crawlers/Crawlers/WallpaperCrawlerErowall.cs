@@ -17,8 +17,9 @@ namespace aemarcoCore.Crawlers.Crawlers
         public WallpaperCrawlerErowall(
             int startPage,
             int lastPage,
-            CancellationToken cancellationToken = default(CancellationToken))
-            : base(startPage, lastPage, cancellationToken)
+            CancellationToken cancellationToken,
+            bool onlyNews)
+            : base(startPage, lastPage, cancellationToken, onlyNews)
         {
 
         }

@@ -14,16 +14,22 @@ namespace aemarcoCore.Crawlers
 {
     public class WallpaperCrawler
     {
-
+        CancellationToken _cancellationToken;
+        int _startPage;
+        int _lastPage;
         private IProgress<int> _progress;
-        private object _progressLock;
-        private object _entryLock;
 
-        private Dictionary<WallpaperCrawlerBasis, int> _crawlers;
-        private WallCrawlerResult _result;
-        private List<string> _filterCategories;
+        private bool _onlyNews;
 
-        private DirectoryInfo _reportPath;
+
+        private object _progressLock = new object();
+        private object _entryLock = new object();
+
+        private Dictionary<WallpaperCrawlerBasis, int> _crawlers = new Dictionary<WallpaperCrawlerBasis, int>();
+        private WallCrawlerResult _result = new WallCrawlerResult();
+        private List<string> _filterCategories = new List<string>();
+
+        private DirectoryInfo _reportPath = null;
 
 
         /// <summary>
@@ -39,25 +45,32 @@ namespace aemarcoCore.Crawlers
             int startPage = 0,
             int lastPage = 0)
         {
-            _progress = progress;
-            _progressLock = new object();
-            _entryLock = new object();
-
-            _crawlers = new Dictionary<WallpaperCrawlerBasis, int>();
-            _result = new WallCrawlerResult();
-            _filterCategories = new List<string>();
-
-            var crawlerTypes = System.Reflection.Assembly
-                .GetAssembly(typeof(WallpaperCrawlerBasis))
-                .GetTypes()
-                .Where(x => x.IsSubclassOf(typeof(WallpaperCrawlerBasis)))
-                .ToList();
-
-            foreach (Type type in crawlerTypes)
+            if (startPage == 0 && lastPage == 0)
             {
-                var instance = (WallpaperCrawlerBasis)Activator.CreateInstance(type, startPage, lastPage, cancellationToken);
-                _crawlers.Add(instance, 0);
+                _onlyNews = true;
+                _startPage = 1;
+                _lastPage = 10;
             }
+            else
+            {
+                _onlyNews = false;
+                _startPage = startPage;
+                _lastPage = lastPage;
+            }
+
+
+            if (_startPage < 1)
+            {
+                throw new ArgumentOutOfRangeException("Startpage needs to be 1 or higher");
+            }
+            if (_lastPage < _startPage)
+            {
+                throw new ArgumentOutOfRangeException("Lastpage can´t be smaller than Startpage");
+            }
+
+
+            _cancellationToken = cancellationToken;
+            _progress = progress;
         }
 
 
@@ -101,23 +114,29 @@ namespace aemarcoCore.Crawlers
         /// <returns>IWallCrawlerResult</returns>
         public IWallCrawlerResult Start()
         {
-            //reduce to crawlers which requires to run
-            var crawlersToUse = new Dictionary<WallpaperCrawlerBasis, int>();
-            foreach (var crawler in _crawlers.Keys)
+            //creates all available crawlers and adds them if applicable
+            var crawlerTypes = System.Reflection.Assembly
+                .GetAssembly(typeof(WallpaperCrawlerBasis))
+                .GetTypes()
+                .Where(x => x.IsSubclassOf(typeof(WallpaperCrawlerBasis)))
+                .ToList();
+
+            foreach (Type type in crawlerTypes)
             {
-                crawler.LimitAsPerFilterlist(_filterCategories);
-                if (crawler.HasWorkingOffers)
+                var instance = (WallpaperCrawlerBasis)Activator.CreateInstance(type, _startPage, _lastPage, _cancellationToken, _onlyNews);
+
+                instance.LimitAsPerFilterlist(_filterCategories);
+                if (instance.HasWorkingOffers)
                 {
-                    crawler.Progress += Instance_OnProgress;
-                    crawler.NewEntry += Instance_OnNewEntry;
-                    crawler.KnownEntry += Instance_OnKnownEntry;
-                    crawlersToUse.Add(crawler, 0);
+                    instance.Progress += Instance_OnProgress;
+                    instance.NewEntry += Instance_OnNewEntry;
+                    instance.KnownEntry += Instance_OnKnownEntry;
+                    _crawlers.Add(instance, 0);
                 }
             }
-            _crawlers = crawlersToUse;
 
 
-            //Crawling
+            //start Crawling
             List<Task> tasks = new List<Task>();
             foreach (var crawler in _crawlers.Keys)
             {
@@ -125,6 +144,24 @@ namespace aemarcoCore.Crawlers
                 tasks.Add(task);
             }
             Task.WaitAll(tasks.ToArray());
+
+            bool sucess = true;
+            foreach (var t in tasks)
+            {
+                if (!t.IsCompleted)
+                {
+                    sucess = false;
+                }
+            }
+
+            if (sucess)
+            {
+
+            }
+            else
+            {
+
+            }
 
 
             //persist results for Deduplication

@@ -37,22 +37,16 @@ namespace aemarcoCore.Crawlers.Base
         internal WallpaperCrawlerBasis(
             int startPage,
             int lastPage,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            bool onlyNews)
         {
+
             _knownEntryStreak = 0;
 
-
-            _onlyNews = true;
-            _startPage = 1;
-            _lastPage = 10;
-            if (startPage != 0 && lastPage != 0)
-            {
-                _onlyNews = false;
-                _startPage = startPage;
-                _lastPage = lastPage;
-            }
+            _startPage = startPage;
+            _lastPage = lastPage;
             _cancellationToken = cancellationToken;
-
+            _onlyNews = onlyNews;
 
 
             _numberOfCategories = 0;
@@ -77,30 +71,53 @@ namespace aemarcoCore.Crawlers.Base
             }
         }
 
+        protected int StartingPage
+        {
+            get
+            {
+                return _startPage;
+            }
+        }
+
+        protected int NumberOfCategoriesDone
+        {
+            get { return _numberOfCategoriesDone; }
+            set
+            {
+                _numberOfCategoriesDone = value;
+                _knownEntryStreak = 0;
+                NumberOfPagesDone = 0;
+            }
+        }
+
+        protected int NumberOfPagesDone
+        {
+            get { return _numberOfPagesDone; }
+            set
+            {
+                _numberOfPagesDone = value;
+                _numberOfEntriesDone = 0;
+                OnProgress();
+            }
+        }
+
+
         #endregion
 
         #region Starting 
 
 
-        public void LimitAsPerFilterlist(List<string> categorys)
+        internal void LimitAsPerFilterlist(List<string> categories)
         {
             //no Filtration leaves _offers null
-            if (categorys == null || categorys.Count == 0)
+            if (categories == null || categories.Count == 0)
             {
                 return;
             }
+            
 
-
-            //get offers
-            if (_offers == null)
-            {
-                _offers = GetCrawlsOffers();
-            }
-
-            //new list with offers which will be used
-            var used = new List<CrawlOffer>();
-
-            foreach (var offer in _offers)
+            _offers = new List<CrawlOffer>();
+            foreach (var offer in GetCrawlsOffers())
             {
                 //offers with no mainCategory cant match any filter
                 if (String.IsNullOrEmpty(offer.MainCategory))
@@ -114,19 +131,24 @@ namespace aemarcoCore.Crawlers.Base
                     filterString += $"_{offer.SubCategory}";
                 }
 
-                if (categorys.Where(x => filterString.StartsWith(x)).FirstOrDefault() != null &&
-                    !used.Contains(offer))
+                if (categories.Where(x => filterString.StartsWith(x)).FirstOrDefault() != null &&
+                    _offers.Contains(offer))
                 {
-                    used.Add(offer);
+                    _offers.Add(offer);
                 }
             }
-            _offers = used;
         }
 
 
 
         public void Start()
         {
+            if (_offers == null)
+            {
+                _offers = GetCrawlsOffers();
+            }
+
+
             //Crawling
             DoWork();
         }
@@ -136,56 +158,22 @@ namespace aemarcoCore.Crawlers.Base
 
         #region Events
 
-
-        public event EventHandler<ProgressChangedEventArgs> Progress;
-        protected virtual void OnProgress()
+        internal event EventHandler<ProgressChangedEventArgs> Progress;
+        protected void OnProgress()
         {
             Progress?.Invoke(this, new ProgressChangedEventArgs(CalculateProgress(), null));
         }
 
-
-        public event EventHandler<IWallEntryEventArgs> KnownEntry;
-        protected virtual void OnKnownEntry(IWallEntry entry)
+        internal event EventHandler<IWallEntryEventArgs> KnownEntry;
+        private void OnKnownEntry(IWallEntry entry)
         {
-            if (KnownEntry != null)
-            {
-                foreach (Delegate d in KnownEntry.GetInvocationList())
-                {
-                    ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
-                    if (syncer == null)
-                    {
-                        d.DynamicInvoke(this, new IWallEntryEventArgs { Entry = entry });
-                    }
-                    else
-                    {
-                        syncer.BeginInvoke(d, new object[] { this, new IWallEntryEventArgs { Entry = entry } });  // cleanup omitted
-                    }
-                }
-
-            }
+            KnownEntry?.Invoke(this, new IWallEntryEventArgs { Entry = entry });
         }
 
-
-        public event EventHandler<IWallEntryEventArgs> NewEntry;
-        protected virtual void OnNewEntry(IWallEntry entry)
+        internal event EventHandler<IWallEntryEventArgs> NewEntry;
+        private void OnNewEntry(IWallEntry entry)
         {
-
-            if (NewEntry != null)
-            {
-                foreach (Delegate d in NewEntry.GetInvocationList())
-                {
-                    ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
-                    if (syncer == null)
-                    {
-                        d.DynamicInvoke(this, new IWallEntryEventArgs { Entry = entry });
-                    }
-                    else
-                    {
-                        syncer.BeginInvoke(d, new object[] { this, new IWallEntryEventArgs { Entry = entry } });  // cleanup omitted
-                    }
-                }
-
-            }
+            NewEntry?.Invoke(this, new IWallEntryEventArgs { Entry = entry });
         }
 
         #endregion
@@ -194,12 +182,16 @@ namespace aemarcoCore.Crawlers.Base
 
         private int CalculateProgress()
         {
-            int a = _numberOfCategoriesDone * _numberOfPages * _numberOfEntries +
+            int done = _numberOfCategoriesDone * _numberOfPages * _numberOfEntries +
                     _numberOfPagesDone * _numberOfEntries +
                     _numberOfEntriesDone;
-            int b = _numberOfCategories * _numberOfPages * _numberOfEntries;
-            double result = (100.0 * a) / (b);
-            return (int)result;
+            int todo = _numberOfCategories * _numberOfPages * _numberOfEntries;
+            double result = 100.0 * done / todo; 
+            if (double.IsNaN(result))
+            {
+                result = 0.0;
+            }
+            return Convert.ToInt32(result);
         }
 
         #endregion
@@ -210,11 +202,7 @@ namespace aemarcoCore.Crawlers.Base
         {
             return !_cancellationToken.IsCancellationRequested;
         }
-        protected int GetStartingPage()
-        {
-            _knownEntryStreak = 0;
-            return _startPage;
-        }
+
         protected bool IShallGoAheadWithPages(int currPage)
         {
             return !_cancellationToken.IsCancellationRequested &&
@@ -233,23 +221,17 @@ namespace aemarcoCore.Crawlers.Base
 
         protected virtual void DoWork()
         {
-            if (_offers == null)
-            {
-                _offers = GetCrawlsOffers();
-            }
-
+            
             _numberOfCategories = _offers.Count;
+
             foreach (var offer in _offers)
             {
                 if (!IShallGoAheadWithCategories())
                 {
                     break;
                 }
-                GetCategory(offer.Url, offer.Name);
-                _numberOfCategoriesDone++;
-                _numberOfPagesDone = 0;
-
-                OnProgress();
+                GetCategory(offer);
+                NumberOfCategoriesDone++;
             }
         }
         protected abstract List<CrawlOffer> GetCrawlsOffers();
@@ -277,19 +259,23 @@ namespace aemarcoCore.Crawlers.Base
                 throw;
             }
         }
-        protected virtual void GetCategory(string categoryUrl, string categoryName)
+        protected virtual void GetCategory(CrawlOffer offer)
         {
-            int page = GetStartingPage();
-            if (page == 0) page = 1;
+            int page = StartingPage;
+            NumberOfPagesDone = 0;
 
             bool pageValid = true;
             do
             {
-                pageValid = GetPage(GetSiteUrlForCategory(categoryUrl, page), categoryName);
-                _numberOfPagesDone++;
-                _numberOfEntriesDone = 0;
-                OnProgress();
-                page++;
+                if (GetPage(GetSiteUrlForCategory(offer.Url, page), offer.Name))
+                {
+                    NumberOfPagesDone++;
+                    page++;
+                }
+                else
+                {
+                    pageValid = false;
+                }
             } while (pageValid && IShallGoAheadWithPages(page));
         }
         protected abstract string GetSiteUrlForCategory(string categoryUrl, int page);
@@ -335,7 +321,6 @@ namespace aemarcoCore.Crawlers.Base
         protected abstract bool AddWallEntry(HtmlNode node, string categoryName);
         protected void AddEntry(IWallEntry entry)
         {
-
             //bekanntes Entry
             if (WallCrawlerData.IsKnownEntry(entry))
             {
