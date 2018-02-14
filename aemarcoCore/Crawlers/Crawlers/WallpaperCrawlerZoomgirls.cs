@@ -39,10 +39,11 @@ namespace aemarcoCore.Crawlers.Crawlers
             result.Add(CreateCrawlOffer(text, uri, cat));
             return result;
         }
-        protected override string GetSiteUrlForCategory(CrawlOffer catJob)
+        protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
         {
             //z.B. "https://zoomgirls.net/latest_wallpapers/page/1"
-            return $"{catJob.CategoryUri.AbsoluteUri}/page/{catJob.CurrentPage}";
+            //return $"{catJob.CategoryUri.AbsoluteUri}/page/{catJob.CurrentPage}";
+            return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}/page/{ catJob.CurrentPage }");
         }
         protected override string GetSearchStringGorEntryNodes()
         {

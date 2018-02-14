@@ -176,8 +176,8 @@ namespace aemarcoCore.Crawlers.Base
         {
             bool result = false;
             //Seite mit Wallpaperliste
-            string pageUrl = GetSiteUrlForCategory(catJob);
-            var doc = GetDocument(pageUrl);
+            Uri pageUri = GetSiteUrlForCategory(catJob);
+            var doc = GetDocument(pageUri);
             HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes(GetSearchStringGorEntryNodes());
 
             //non Valid Page
@@ -218,19 +218,21 @@ namespace aemarcoCore.Crawlers.Base
             //valid Page contains minimum 1 valid Entry
             return result;
         }
-        protected abstract string GetSiteUrlForCategory(CrawlOffer catJob);
-        protected virtual HtmlDocument GetDocument(string url, int retry = 0)
+        //protected abstract string GetSiteUrlForCategory(CrawlOffer catJob);
+        protected abstract Uri GetSiteUrlForCategory(CrawlOffer catJob);
+        protected virtual HtmlDocument GetDocument(Uri uri, int retry = 0)
         {
             HtmlWeb web = new HtmlWeb();
             try
             {
-                return web.Load(url);
+                return web.Load(uri);
             }
             catch (WebException ex)
             {
                 if (ex.Status == WebExceptionStatus.TrustFailure)
                 {
-                    return web.Load(url.Replace("https", "http"));
+
+                    return web.Load(new Uri(uri.AbsoluteUri.Replace("https", "http")));
                 }
                 else if (ex.Status == WebExceptionStatus.Timeout)
                 {
@@ -238,7 +240,7 @@ namespace aemarcoCore.Crawlers.Base
                     {
                         throw;
                     }
-                    return GetDocument(url, retry++);
+                    return GetDocument(uri, retry++);
                 }
                 throw;
             }

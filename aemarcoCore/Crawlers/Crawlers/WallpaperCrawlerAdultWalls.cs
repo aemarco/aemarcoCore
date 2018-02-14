@@ -28,7 +28,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             List<CrawlOffer> result = new List<CrawlOffer>();
 
             //main page
-            var doc = GetDocument(_uri.AbsoluteUri);
+            var doc = GetDocument(_uri);
 
             //foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
             foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//li[@class='sub-menu-item']/a"))
@@ -55,10 +55,11 @@ namespace aemarcoCore.Crawlers.Crawlers
 
             return result;
         }
-        protected override string GetSiteUrlForCategory(CrawlOffer catJob)
+        protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
         {
             //z.B. "http://adultwalls.com/wallpapers/erotic-wallpapers/1?order=publish-date-newest&resolution=all&search="                
-            return $"{catJob.CategoryUri.AbsoluteUri}/{catJob.CurrentPage}?order=publish-date-newest&resolution=all&search=";
+            //return $"{catJob.CategoryUri.AbsoluteUri}/{catJob.CurrentPage}?order=publish-date-newest&resolution=all&search=";
+            return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}/{catJob.CurrentPage}?order=publish-date-newest&resolution=all&search=");
         }
         protected override string GetSearchStringGorEntryNodes()
         {

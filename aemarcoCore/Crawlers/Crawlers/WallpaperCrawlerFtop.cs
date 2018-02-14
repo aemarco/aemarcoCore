@@ -29,7 +29,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             List<CrawlOffer> result = new List<CrawlOffer>();
 
             //main page
-            var doc = GetDocument(_uri.AbsoluteUri);
+            var doc = GetDocument(_uri);
 
             foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
             {
@@ -57,10 +57,11 @@ namespace aemarcoCore.Crawlers.Crawlers
             return result;
 
         }
-        protected override string GetSiteUrlForCategory(CrawlOffer catJob)
+        protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
         {
             //z.B. "http://ftopx.com/celebrities/page/1/?sort=p.approvedAt&direction=desc"
-            return $"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}/?sort=p.approvedAt&direction=desc";
+            //return $"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}/?sort=p.approvedAt&direction=desc";
+            return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}page/{catJob.CurrentPage}/?sort=p.approvedAt&direction=desc");
         }
         protected override string GetSearchStringGorEntryNodes()
         {

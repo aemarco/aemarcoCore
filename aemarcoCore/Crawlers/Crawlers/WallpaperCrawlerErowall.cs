@@ -29,7 +29,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             List<CrawlOffer> result = new List<CrawlOffer>();
 
             //main page
-            var doc = GetDocument(_uri.AbsoluteUri);
+            var doc = GetDocument(_uri);
 
             //foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
             foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@class='m']/li[@class='m']/a"))
@@ -75,10 +75,11 @@ namespace aemarcoCore.Crawlers.Crawlers
             return result;
 
         }
-        protected override string GetSiteUrlForCategory(CrawlOffer catJob)
+        protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
         {
             //z.B. "https://erowall.com/teg/brunette/page/1"       
-            return $"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}";
+            //return $"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}";
+            return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}page/{ catJob.CurrentPage }");
         }
         protected override string GetSearchStringGorEntryNodes()
         {

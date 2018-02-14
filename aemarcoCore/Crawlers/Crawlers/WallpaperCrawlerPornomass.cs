@@ -35,10 +35,11 @@ namespace aemarcoCore.Crawlers.Crawlers
 
             return result;
         }
-        protected override string GetSiteUrlForCategory(CrawlOffer catJob)
+        protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
         {
             //z.B. "http://pornomass.com/page/1"
-            return $"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}";
+            //return $"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}";
+            return new Uri(catJob.CategoryUri, $"/page/{ catJob.CurrentPage }");
         }
         protected override string GetSearchStringGorEntryNodes()
         {

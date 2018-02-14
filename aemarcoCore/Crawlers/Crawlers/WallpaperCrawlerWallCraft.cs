@@ -29,7 +29,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             List<CrawlOffer> result = new List<CrawlOffer>();
 
             //main page
-            var doc = GetDocument(_uri.AbsoluteUri);
+            var doc = GetDocument(_uri);
 
             foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@class='left_category']/li/a"))
             {
@@ -51,16 +51,19 @@ namespace aemarcoCore.Crawlers.Crawlers
             return result;
 
         }
-        protected override string GetSiteUrlForCategory(CrawlOffer catJob)
+        protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
         {
             if (catJob.CurrentPage == 1)
             {
                 //z.B. "https://wallpaperscraft.com/catalog/girls/date"
-                return $"{catJob.CategoryUri.AbsoluteUri}/date";
+                //return $"{catJob.CategoryUri.AbsoluteUri}/date";
+
+                return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}/date");
             }
 
             //z.B. "https://wallpaperscraft.com/catalog/girls/date/page2"       
-            return $"{catJob.CategoryUri.AbsoluteUri}/date/page{catJob.CurrentPage}";
+            //return $"{catJob.CategoryUri.AbsoluteUri}/date/page{catJob.CurrentPage}";
+            return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}/date/page{catJob.CurrentPage}");
         }
         protected override string GetSearchStringGorEntryNodes()
         {
