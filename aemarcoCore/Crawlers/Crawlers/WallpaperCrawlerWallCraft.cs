@@ -11,7 +11,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 {
     internal class WallpaperCrawlerWallCraft : WallpaperCrawlerBasis
     {
-        const string _url = "https://wallpaperscraft.com/";
+        private Uri _uri = new Uri("https://wallpaperscraft.com");
 
         public WallpaperCrawlerWallCraft(
             int startPage,
@@ -21,6 +21,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             : base(startPage, lastPage, cancellationToken, onlyNews)
         {
 
+
         }
 
         protected override List<CrawlOffer> GetCrawlsOffers()
@@ -28,7 +29,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             List<CrawlOffer> result = new List<CrawlOffer>();
 
             //main page
-            var doc = GetDocument(_url);
+            var doc = GetDocument(_uri.AbsoluteUri);
 
             foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@class='left_category']/li/a"))
             {
@@ -43,10 +44,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 {
                     continue;
                 }
-                string url = $"{_url.Substring(0, _url.IndexOf("//"))}{href}";
-
-
-                Uri uri = new Uri(url);
+                Uri uri = new Uri(_uri, href);
                 IContentCategory cat = GetContentCategory(text);
                 result.Add(CreateCrawlOffer(text, uri, cat));
             }
@@ -57,8 +55,8 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             if (catJob.CurrentPage == 1)
             {
-                //TODO: sortierung bei erster Seite
-                return catJob.CategoryUri.AbsoluteUri;
+                //z.B. "https://wallpaperscraft.com/catalog/girls/date"
+                return $"{catJob.CategoryUri.AbsoluteUri}/date";
             }
 
             //z.B. "https://wallpaperscraft.com/catalog/girls/date/page2"       
@@ -130,7 +128,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         }
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
-            var source = new WallEntrySource(new Uri(_url), node, catJob.SiteCategoryName);
+            var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
             //docs
             source.DetailsDoc = source.GetDetailsDocFromNode(node, "./a");
@@ -141,7 +139,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@class='wb_preview']/a/img", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
             source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
-            source.Tags = source.GetTagsFromNodes(source.DownloadDoc, "//div[@class='wb_tags']/a", new Func<HtmlNode, string>(x => x.InnerText.Trim()));
+            source.Tags = source.GetTagsFromNodes(source.DownloadDoc, "//div[@class='wb_tags']/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
 
 
             WallEntry wallEntry = source.WallEntry;
@@ -152,11 +150,6 @@ namespace aemarcoCore.Crawlers.Crawlers
             AddEntry(wallEntry, catJob);
             return true;
         }
-
-
-
-
-
 
     }
 }

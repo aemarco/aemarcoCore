@@ -12,7 +12,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 {
     internal class WallpaperCrawlerErowall : WallpaperCrawlerBasis
     {
-        const string _url = "https://erowall.com/";
+        private Uri _uri = new Uri("https://erowall.com");
 
         public WallpaperCrawlerErowall(
             int startPage,
@@ -29,7 +29,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             List<CrawlOffer> result = new List<CrawlOffer>();
 
             //main page
-            var doc = GetDocument(_url);
+            var doc = GetDocument(_uri.AbsoluteUri);
 
             //foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
             foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@class='m']/li[@class='m']/a"))
@@ -63,11 +63,11 @@ namespace aemarcoCore.Crawlers.Crawlers
                 }
 
                 //z.B. "search/brunette/"
-                href = href.Substring(1).Replace("search", "teg");
+                href = href.Replace("search", "teg");
 
 
-                //z.B. "https://erowall.com/search/brunette/"
-                Uri uri = new Uri($"{_url}{href}");
+                //z.B. "https://erowall.com/teg/brunette/"
+                Uri uri = new Uri(_uri, href);
                 IContentCategory cat = GetContentCategory(text);
                 result.Add(CreateCrawlOffer(text, uri, cat));
             }
@@ -110,18 +110,14 @@ namespace aemarcoCore.Crawlers.Crawlers
             Match match = Regex.Match(node.Attributes["href"]?.Value, @"/(\d+)/$");
             // z.B. "24741"
             string imageLink = match.Groups[1].Value;
-            // z.B. "https://erowall.com//wallpapers/original/24741.jpg"
-            string url = _url + "wallpapers/original/" + imageLink + ".jpg";
 
-
-
-            var source = new WallEntrySource(new Uri(_url), node, catJob.SiteCategoryName);
+            var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
             //docs
             source.DetailsDoc = source.GetDetailsDocFromNode(node);
 
             //details
-            source.ImageUri = new Uri(_url + "wallpapers/original/" + imageLink + ".jpg");
+            source.ImageUri = new Uri(_uri, $"/wallpapers/original/{imageLink}.jpg");
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@class='view-left']/a/img", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
             source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);

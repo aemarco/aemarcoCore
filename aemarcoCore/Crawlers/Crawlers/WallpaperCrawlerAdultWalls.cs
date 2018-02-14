@@ -11,7 +11,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 {
     internal class WallpaperCrawlerAdultWalls : WallpaperCrawlerBasis
     {
-        const string _url = "http://adultwalls.com/";
+        private Uri _uri = new Uri("http://adultwalls.com");
 
         public WallpaperCrawlerAdultWalls(
             int startPage,
@@ -28,7 +28,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             List<CrawlOffer> result = new List<CrawlOffer>();
 
             //main page
-            var doc = GetDocument(_url);
+            var doc = GetDocument(_uri.AbsoluteUri);
 
             //foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
             foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//li[@class='sub-menu-item']/a"))
@@ -47,11 +47,8 @@ namespace aemarcoCore.Crawlers.Crawlers
                     continue;
                 }
 
-                //z.B. "wallpapers/erotic-wallpapers"
-                href = href.Substring(1);
                 //z.B. "http://adultwalls.com/wallpapers/erotic-wallpapers"
-
-                Uri uri = new Uri($"{_url}{href}/");
+                Uri uri = new Uri(_uri, href);
                 IContentCategory cat = GetContentCategory(text);
                 result.Add(CreateCrawlOffer(text, uri, cat));
             }
@@ -61,7 +58,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         protected override string GetSiteUrlForCategory(CrawlOffer catJob)
         {
             //z.B. "http://adultwalls.com/wallpapers/erotic-wallpapers/1?order=publish-date-newest&resolution=all&search="                
-            return $"{catJob.CategoryUri.AbsoluteUri}{catJob.CurrentPage}?order=publish-date-newest&resolution=all&search=";
+            return $"{catJob.CategoryUri.AbsoluteUri}/{catJob.CurrentPage}?order=publish-date-newest&resolution=all&search=";
         }
         protected override string GetSearchStringGorEntryNodes()
         {
@@ -79,7 +76,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         }
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
-            var source = new WallEntrySource(new Uri(_url), node, catJob.SiteCategoryName);
+            var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
             //docs
             source.DetailsDoc = source.GetDetailsDocFromNode(node);
@@ -90,7 +87,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@class='img-rounded']", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, "wallpapers/", "/", catJob.SiteCategoryName);
             source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
-            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='col-md-12']/a", new Func<HtmlNode, string>(x => x.InnerText.Trim()));
+            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='col-md-12']/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
 
 
             WallEntry wallEntry = source.WallEntry;

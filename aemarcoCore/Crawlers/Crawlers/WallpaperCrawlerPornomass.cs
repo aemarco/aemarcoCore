@@ -10,8 +10,8 @@ namespace aemarcoCore.Crawlers.Crawlers
 {
     internal class WallpaperCrawlerPornomass : WallpaperCrawlerBasis
     {
-        const string _url = "http://pornomass.com/";
-        const string _url2 = "http://gif.pornomass.com/";
+        private Uri _uri1 = new Uri("http://pornomass.com");
+        private Uri _uri2 = new Uri("http://gif.pornomass.com");
 
         public WallpaperCrawlerPornomass(
             int startPage,
@@ -28,10 +28,10 @@ namespace aemarcoCore.Crawlers.Crawlers
             List<CrawlOffer> result = new List<CrawlOffer>();
 
             IContentCategory cat1 = GetContentCategory("Pornomass");
-            result.Add(CreateCrawlOffer("Pornomass", new Uri(_url), cat1));
+            result.Add(CreateCrawlOffer("Pornomass", _uri1, cat1));
 
             IContentCategory cat2 = GetContentCategory("Gifpornomass");
-            result.Add(CreateCrawlOffer("Gifpornomass", new Uri(_url2), cat2));
+            result.Add(CreateCrawlOffer("Gifpornomass", _uri2, cat2));
 
             return result;
         }
@@ -55,7 +55,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             string thumbnail = string.Empty;
             if (catJob.SiteCategoryName == "Pornomass")
             {
-                source = new WallEntrySource(new Uri(_url), node, catJob.SiteCategoryName);
+                source = new WallEntrySource(_uri1, node, catJob.SiteCategoryName);
                 //doc
                 source.DetailsDoc = source.GetDetailsDocFromNode(node);
                 //details
@@ -64,7 +64,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             }
             else
             {
-                source = new WallEntrySource(new Uri(_url2), node, catJob.SiteCategoryName);
+                source = new WallEntrySource(_uri2, node, catJob.SiteCategoryName);
                 //doc
                 source.DetailsDoc = source.GetDetailsDocFromNode(node);
                 //details

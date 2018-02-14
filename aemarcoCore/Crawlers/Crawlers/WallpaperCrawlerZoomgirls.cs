@@ -4,13 +4,15 @@ using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 
 namespace aemarcoCore.Crawlers.Crawlers
 {
     internal class WallpaperCrawlerZoomgirls : WallpaperCrawlerBasis
     {
-        const string _url = "https://zoomgirls.net/";
+        private Uri _uri = new Uri("https://zoomgirls.net");
+
 
         public WallpaperCrawlerZoomgirls(
             int startPage,
@@ -31,7 +33,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             //z.B. "latest_wallpapers"
             string href = "latest_wallpapers";
             //z.B. "https://zoomgirls.net/latest_wallpapers"
-            Uri uri = new Uri($"{_url}{href}");
+            Uri uri = new Uri(_uri, href);
             IContentCategory cat = GetContentCategory(text);
 
             result.Add(CreateCrawlOffer(text, uri, cat));
@@ -52,7 +54,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         }
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
-            var source = new WallEntrySource(new Uri(_url), node, catJob.SiteCategoryName);
+            var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
             //docs
             source.DetailsDoc = source.GetDetailsDocFromNode(node);
@@ -62,7 +64,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='wallpaper-thumb']/img", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
             source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
-            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//ul[@class='tagcloud']/span/a", new Func<HtmlNode, string>(x => x.InnerText.Trim()));
+            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//ul[@class='tagcloud']/span/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
 
             WallEntry wallEntry = source.WallEntry;
             if (wallEntry == null)
@@ -122,13 +124,14 @@ namespace aemarcoCore.Crawlers.Crawlers
             #region Image Url
 
             //z.B. "/view-jana-jordan--1920x1200.html"
-            string url = targetNode.Attributes["href"]?.Value;
+            string name = targetNode.Attributes["href"]?.Value;
             //z.B. "jana-jordan--1920x1200.html"
-            url = url.Substring(url.IndexOf("view") + 5);
+            name = name.Substring(name.IndexOf("view") + 5);
             //z.B. "jana-jordan--1920x1200"
-            url = url.Substring(0, url.IndexOf(".html"));
+            name = name.Substring(0, name.IndexOf(".html"));
             //z.B. "https://zoomgirls.net/wallpapers/jana-jordan--1920x1200.jpg"
-            url = _url + @"wallpapers/" + url + ".jpg";
+
+            string url = new Uri(_uri, $"/wallpapers/{name}.jpg").AbsoluteUri;
 
             #endregion
 

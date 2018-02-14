@@ -11,7 +11,8 @@ namespace aemarcoCore.Crawlers.Crawlers
 {
     internal class WallpaperCrawlerFtop : WallpaperCrawlerBasis
     {
-        const string _url = "https://ftopx.com/";
+
+        private Uri _uri = new Uri("https://ftopx.com");
 
         public WallpaperCrawlerFtop(
             int startPage,
@@ -28,7 +29,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             List<CrawlOffer> result = new List<CrawlOffer>();
 
             //main page
-            var doc = GetDocument(_url);
+            var doc = GetDocument(_uri.AbsoluteUri);
 
             foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
             {
@@ -47,10 +48,8 @@ namespace aemarcoCore.Crawlers.Crawlers
                     continue;
                 }
 
-                //z.B. "celebrities/"
-                href = href.Substring(1);
                 //z.B. "https://ftopx.com/celebrities"
-                Uri uri = new Uri($"{_url}{href}");
+                Uri uri = new Uri(_uri, href);
                 IContentCategory cat = GetContentCategory(text);
                 result.Add(CreateCrawlOffer(text, uri, cat));
             }
@@ -100,7 +99,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             node = node.ParentNode.ParentNode;
 
-            var source = new WallEntrySource(new Uri(_url), node, catJob.SiteCategoryName);
+            var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
             //docs
             source.DetailsDoc = source.GetDetailsDocFromNode(node, "./div[@class='thumbnail']/a");
@@ -111,7 +110,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@class='img-responsive img-rounded']", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
             source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
-            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='well well-sm']/a", new Func<HtmlNode, string>(x => x.InnerText.Trim()));
+            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='well well-sm']/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
 
 
 
