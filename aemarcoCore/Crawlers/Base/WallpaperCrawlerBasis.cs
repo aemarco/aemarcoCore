@@ -259,10 +259,7 @@ namespace aemarcoCore.Crawlers.Base
             //neues Entry
             else
             {
-
                 OnNewEntry(entry);
-                //url als bekannte Url merken
-                WallCrawlerData.AddNewEntry(entry);
                 catJob.ReportEntryDone(false);
             }
         }

@@ -35,11 +35,11 @@
     </DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="HtmlAgilityPack, Version=1.6.13.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\..\aemarcoCentral\packages\HtmlAgilityPack.1.6.13\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    <Reference Include="HtmlAgilityPack, Version=1.7.3.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\..\aemarco.WallpaperManager\packages\HtmlAgilityPack.1.7.3\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\aemarcoCentral\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\aemarco.WallpaperManager\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -56,10 +56,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\Enums\Category.cs" />
-    <Compile Include="Common\Enums\WallpaperMode.cs" />
-    <Compile Include="Common\Events\IWallCrawlerResultEventArgs.cs" />
-    <Compile Include="Common\Events\IWallEntryEventArgs.cs" />
+    <Compile Include="Common\CustomEventArgs.cs" />
+    <Compile Include="Common\Enums.cs" />
+    <Compile Include="ConfigurationHelper.cs" />
     <Compile Include="Crawlers\Crawlers\WallpaperCrawlerAdultWalls.cs" />
     <Compile Include="Crawlers\Types\CrawlOffer.cs" />
     <Compile Include="Crawlers\Types\WallEntrySource.cs" />
@@ -93,7 +92,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

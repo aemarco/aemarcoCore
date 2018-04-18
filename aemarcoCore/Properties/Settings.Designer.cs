@@ -12,7 +12,7 @@ namespace aemarcoCore.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.5.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.6.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -23,51 +23,39 @@ namespace aemarcoCore.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("\\\\nas\\home\\Code_Data\\Crawler\\JSON")]
-        public string CrawlerData {
-            get {
-                return ((string)(this["CrawlerData"]));
-            }
-            set {
-                this["CrawlerData"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("bmp,jpg,jpeg,png,gif")]
         public string CrawlerFileExtensions {
             get {
                 return ((string)(this["CrawlerFileExtensions"]));
             }
-            set {
-                this["CrawlerFileExtensions"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("25")]
         public int WallpaperPercentCutAllowedLeftRight {
             get {
                 return ((int)(this["WallpaperPercentCutAllowedLeftRight"]));
             }
-            set {
-                this["WallpaperPercentCutAllowedLeftRight"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("15")]
         public int WallpaperPercentCutAllowedTopBottom {
             get {
                 return ((int)(this["WallpaperPercentCutAllowedTopBottom"]));
             }
-            set {
-                this["WallpaperPercentCutAllowedTopBottom"] = value;
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("c:\\Logs\\Crawler")]
+        public string CrawlerData {
+            get {
+                return ((string)(this["CrawlerData"]));
             }
         }
     }

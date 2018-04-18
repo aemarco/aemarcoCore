@@ -1,5 +1,7 @@
 ﻿namespace aemarcoCore.Common
 {
+
+
     public enum Category
     {
         Men,
@@ -53,6 +55,25 @@
         Other_Textures,
         Other_Brands
     }
+
+    public enum WallpaperMode
+    {
+        Fit,
+        AllowFill,
+        Fill
+    }
+
+
+    internal enum KnownUrlSource
+    {
+        FileFromSettings,
+        ForeignFunc
+    }
+
+
+
+
+
 
 
 

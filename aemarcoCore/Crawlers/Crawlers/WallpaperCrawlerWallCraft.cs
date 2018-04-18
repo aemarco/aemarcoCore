@@ -30,8 +30,9 @@ namespace aemarcoCore.Crawlers.Crawlers
 
             //main page
             var doc = GetDocument(_uri);
-
-            foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@class='left_category']/li/a"))
+            var nodes = doc.DocumentNode.SelectNodes("//ul[@class='left_category']/li/a");
+            if (nodes == null) return result;
+            foreach (HtmlNode node in nodes)
             {
                 string text = WebUtility.HtmlDecode(node.InnerText).Trim();
                 if (String.IsNullOrEmpty(text) || text == "All" || text == "Wallpapers for Android")

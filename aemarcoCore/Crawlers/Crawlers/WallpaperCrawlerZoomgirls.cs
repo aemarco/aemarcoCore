@@ -61,7 +61,10 @@ namespace aemarcoCore.Crawlers.Crawlers
             source.DetailsDoc = source.GetDetailsDocFromNode(node);
 
             //details
-            source.ImageUri = new Uri(GetImageUrl(source.DetailsDoc));
+            string imageUri = GetImageUrl(source.DetailsDoc);
+            if (String.IsNullOrEmpty(imageUri)) return false;
+
+            source.ImageUri = new Uri(imageUri);
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='wallpaper-thumb']/img", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
             source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);

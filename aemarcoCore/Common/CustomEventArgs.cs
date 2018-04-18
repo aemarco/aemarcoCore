@@ -6,4 +6,12 @@ namespace aemarcoCore.Common
     {
         public IWallCrawlerResult Result { get; set; }
     }
+
+    public class IWallEntryEventArgs : EventArgs
+    {
+        public IWallEntry Entry { get; set; }
+    }
+
+
+
 }
