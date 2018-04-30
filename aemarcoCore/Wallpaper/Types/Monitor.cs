@@ -1,20 +1,26 @@
 ﻿using aemarcoCore.Common;
-using aemarcoCore.Tools;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace aemarcoCore.Wallpaper.Types
 {
     internal class Monitor
     {
+
+        #region fields
+
         private Rectangle _rectangle;
         private Image _wallpaper;
         private string _deviceName;
+
         private WallpaperMode _wallMode;
-        private List<string> _sourceFiles;
+
+        #endregion
+
+        #region ctor
 
         internal Monitor(Screen screen, string backgroundFile, WallpaperMode mode)
         {
@@ -23,35 +29,57 @@ namespace aemarcoCore.Wallpaper.Types
                 throw new NullReferenceException("Monitor kann nicht initialisiert werden");
             }
 
-            //set mandatory fields            
+            //set mandatory fields 
+            _rectangle = new Rectangle(
+                GetRectangleX(screen),
+                GetRectangleY(screen),
+                screen.Bounds.Width,
+                screen.Bounds.Height);
+            _wallpaper = GetPreviousImage(backgroundFile, _rectangle);
             _deviceName = screen.DeviceName;
             _wallMode = mode;
-            _sourceFiles = new List<string>();
-            _rectangle = new Rectangle(0, 0, screen.Bounds.Width, screen.Bounds.Height);
+        }
 
 
-            foreach (Screen scr in Screen.AllScreens)
-            {
-                if (scr.Bounds.Left < _rectangle.X)
-                    _rectangle.X = scr.Bounds.Left;
-                if (scr.Bounds.Top < _rectangle.Y)
-                    _rectangle.Y = scr.Bounds.Top;
-            }
-            _rectangle.X *= -1;
-            _rectangle.Y *= -1;
-            _rectangle.X += screen.Bounds.Left;
-            _rectangle.Y += screen.Bounds.Top;
+
+        #endregion
+
+        #region props
+
+        internal string DeviceName { get { return _deviceName; } }
+        internal Rectangle Rectangle { get { return _rectangle; } }
+        internal Image Wallpaper { get { return _wallpaper; } }
+
+        #endregion
+
+        #region private
+
+        private int GetRectangleX(Screen screen)
+        {
+            var minX = Screen.AllScreens.Min(x => x.Bounds.X);
+            int result = -minX + screen.Bounds.Left;
+            return result;
+        }
+        private int GetRectangleY(Screen screen)
+        {
+            var minY = Screen.AllScreens.Min(x => x.Bounds.Y);
+            int result = -minY + screen.Bounds.Top;
+            return result;
+        }
+        private Bitmap GetPreviousImage(string backgroundFile, Rectangle rectangle)
+        {
+            Bitmap result = null;
 
             if (File.Exists(backgroundFile))
             {
                 try
                 {
-                    using (var old = new Bitmap(backgroundFile))
+                    using (Bitmap old = new Bitmap(backgroundFile))
                     {
-                        if (old.Width >= (_rectangle.X + _rectangle.Width) &&
-                            old.Height >= (_rectangle.Y + _rectangle.Height))
+                        if (old.Width >= (rectangle.X + rectangle.Width) &&
+                            old.Height >= (rectangle.Y + rectangle.Height))
                         {
-                            _wallpaper = (Bitmap)old.Clone(_rectangle, old.PixelFormat);
+                            result = (Bitmap)old.Clone(rectangle, old.PixelFormat);
                         }
                         else
                         {
@@ -64,18 +92,14 @@ namespace aemarcoCore.Wallpaper.Types
                     File.Delete(backgroundFile);
                 }
             }
-            if (_wallpaper == null)
+            if (result == null)
             {
-                _wallpaper = new Bitmap(_rectangle.Width, _rectangle.Height);
+                result = new Bitmap(rectangle.Width, rectangle.Height);
 
             }
 
+            return result;
         }
-
-        internal string DeviceName { get { return _deviceName; } }
-        internal Rectangle Rectangle { get { return _rectangle; } }
-        internal Image Wallpaper { get { return _wallpaper; } }
-
 
         private void SetDirectWallpaper(Image wall)
         {
@@ -124,9 +148,10 @@ namespace aemarcoCore.Wallpaper.Types
             SetDirectWallpaper(((Bitmap)img).Clone(rect, img.PixelFormat));
         }
 
+        #endregion
+
         internal void SetWallpaper(Image wall)
         {
-
             if (wall == null)
             {
                 throw new NullReferenceException("Wallpaper can´t be null");
@@ -159,24 +184,5 @@ namespace aemarcoCore.Wallpaper.Types
             }
         }
 
-
-
-        internal void SetWallpaperSourceList(List<string> files)
-        {
-            _sourceFiles = files;
-        }
-
-        internal void SetRandomWallpaper(Func<string, Image> getImage, Random rand)
-        {
-            if (_sourceFiles.Count < 1)
-            {
-                _sourceFiles = WallCrawlerData.GetKnownUrls();
-                //return;
-            }
-
-            int index = rand.Next(0, _sourceFiles.Count);
-            Image wall = getImage(_sourceFiles[index]);
-            SetWallpaper(wall);
-        }
     }
 }

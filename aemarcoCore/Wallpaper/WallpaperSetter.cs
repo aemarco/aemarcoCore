@@ -1,5 +1,4 @@
 ﻿using aemarcoCore.Common;
-using aemarcoCore.Properties;
 using aemarcoCore.Tools;
 using aemarcoCore.Wallpaper.Types;
 using System;
@@ -15,17 +14,20 @@ namespace aemarcoCore.Wallpaper
 {
     public class WallpaperSetter
     {
+        #region fields
 
         private string _defaultBackgroundFile;
-        private List<Monitor> _monitors;
         private WallpaperMode _wallMode;
         Random _rand;
 
-        private static int percentLeftRightCutAllowed;
-        private static int percentTopBottomCutAllowed;
+        private Dictionary<Monitor, List<string>> _monitorDictionary;
+
+        #endregion
+
+        #region ctor
 
         /// <summary>
-        /// Use this Instance to handle stting Wallpapers
+        /// Use this Instance to handle setting Wallpapers
         /// </summary>
         /// <param name="mode">
         ///  Fit: Places the Wallpaper as big as possible without cutting (black bars)
@@ -37,15 +39,18 @@ namespace aemarcoCore.Wallpaper
             _defaultBackgroundFile = new FileInfo("CurrentWallpaper.jpg").FullName;
             _wallMode = mode;
             _rand = new Random();
-            _monitors = new List<Monitor>();
+            _monitorDictionary = new Dictionary<Monitor, List<string>>();
+
             foreach (Screen scr in Screen.AllScreens)
             {
-                _monitors.Add(new Monitor(scr, _defaultBackgroundFile, _wallMode));
+                var mon = new Monitor(scr, _defaultBackgroundFile, _wallMode);
+                _monitorDictionary.Add(mon, null);
             }
-
         }
 
+        #endregion
 
+        #region private
 
         private void SetBackgroundImage()
         {
@@ -53,7 +58,7 @@ namespace aemarcoCore.Wallpaper
             {
                 using (Graphics virtualScreenGraphic = Graphics.FromImage(virtualScreenBitmap))
                 {
-                    foreach (var mon in _monitors)
+                    foreach (var mon in _monitorDictionary.Keys)
                     {
                         virtualScreenGraphic.DrawImage(mon.Wallpaper, mon.Rectangle);
                     }
@@ -81,6 +86,9 @@ namespace aemarcoCore.Wallpaper
             catch { return null; }
         }
 
+        #endregion
+
+
 
 
         /// <summary>
@@ -89,7 +97,7 @@ namespace aemarcoCore.Wallpaper
         /// <param name="file">Wallpaper to set</param>
         public void SetWallOnAllScreen(string file)
         {
-            foreach (Monitor mon in _monitors)
+            foreach (Monitor mon in _monitorDictionary.Keys)
             {
                 mon.SetWallpaper(GetImage(file));
             }
@@ -163,7 +171,7 @@ namespace aemarcoCore.Wallpaper
 
             for (int i = 0; i < screens.Count; i++)
             {
-                Monitor mon = _monitors.Where(x => x.DeviceName == screens[i]).FirstOrDefault();
+                Monitor mon = _monitorDictionary.Keys.Where(x => x.DeviceName == screens[i]).FirstOrDefault();
                 if (mon == null)
                 {
                     Screen scr = Screen.AllScreens.Where(x => x.DeviceName == screens[i]).FirstOrDefault();
@@ -172,12 +180,15 @@ namespace aemarcoCore.Wallpaper
                         continue;
                     }
                     mon = new Monitor(scr, _defaultBackgroundFile, _wallMode);
-                    _monitors.Add(mon);
+                    _monitorDictionary.Add(mon, null);
                 }
                 mon.SetWallpaper(images[i]);
             }
             SetBackgroundImage();
         }
+
+
+
 
 
         /// <summary>
@@ -191,27 +202,23 @@ namespace aemarcoCore.Wallpaper
         /// <returns></returns>
         public static bool CanBeSnapped(int imageWidth, int imageHeight, int monitorWidth, int monitorHeight)
         {
-            if (percentLeftRightCutAllowed == default(int))
-            {
-                percentLeftRightCutAllowed = Settings.Default.WallpaperPercentCutAllowedLeftRight;
-                percentTopBottomCutAllowed = Settings.Default.WallpaperPercentCutAllowedTopBottom;
-            }
-
-
             double imageRatio = 1.0 * imageWidth / imageHeight;
             double monitorRatio = 1.0 * monitorWidth / monitorHeight;
 
             if (monitorRatio - imageRatio < 0) // Bild breiter als Monitor (links und rechts schneiden)
             {
                 int width = (int)(monitorRatio * imageHeight);
-                return (imageWidth - width <= 1.0 * imageWidth / 100 * percentLeftRightCutAllowed);
+                return (imageWidth - width <= 1.0 * imageWidth / 100 * ConfigurationHelper.PercentLeftRightCutAllowed);
             }
             else  // Bild schmaler als Monitor (oben und unten schneiden)
             {
                 int height = (int)(1.0 * imageWidth / (1.0 * monitorWidth / monitorHeight));
-                return (imageHeight - height <= 1.0 * imageHeight / 100 * percentTopBottomCutAllowed);
+                return (imageHeight - height <= 1.0 * imageHeight / 100 * ConfigurationHelper.PercentTopBottomCutAllowed);
             }
         }
+
+
+
 
 
         /// <summary>
@@ -219,22 +226,21 @@ namespace aemarcoCore.Wallpaper
         /// </summary>
         /// <param name="screen">Screen Device name</param>
         /// <param name="files">Wallpapers to set</param>
-        public void SetWallpaperSourceList(string screen, List<string> files)
+        public void SetWallpaperSourceList(string screen, IEnumerable<string> files)
         {
             if (screen == null || files == null ||
-                files.Count < 1 || files.Contains(null))
+                !files.Any() || files.Contains(null))
             {
                 throw new ArgumentException("Screens or Wallpapers not provided correctly.");
             }
 
-            Monitor mon = _monitors.Where(x => x.DeviceName == screen).FirstOrDefault();
+            Monitor mon = _monitorDictionary.Keys.Where(x => x.DeviceName == screen).FirstOrDefault();
             if (mon == null)
             {
                 throw new ArgumentException($"Monitor {screen} not found.");
             }
 
-            mon.SetWallpaperSourceList(files);
-
+            _monitorDictionary[mon] = files.ToList();
         }
 
         /// <summary>
@@ -242,9 +248,18 @@ namespace aemarcoCore.Wallpaper
         /// </summary>
         public void SetRandomWallpaper()
         {
-            foreach (var mon in _monitors)
+
+            foreach (var pair in _monitorDictionary)
             {
-                mon.SetRandomWallpaper(GetImage, _rand);
+                var source = pair.Value;
+                if (source == null)
+                {
+                    source = WallCrawlerData.GetKnownUrls();
+                }
+
+                int index = _rand.Next(0, source.Count);
+                Image wall = GetImage(source[index]);
+                pair.Key.SetWallpaper(wall);
             }
 
             SetBackgroundImage();
