@@ -1,13 +1,13 @@
 ﻿using Microsoft.Win32;
 using System.Runtime.InteropServices;
 
-namespace aemarcoCore.Tools
+namespace aemarcoCore.Wallpaper.Types
 {
     internal static class WinWallpaper
     {
 
 
-        const int SETWALLPAPER = 20;
+        const int SETWALLPAPER = 20; //0x0014
         const int UPDATEINIFILE = 0x01;
         const int SENDWININICHANGE = 0x02;
 
