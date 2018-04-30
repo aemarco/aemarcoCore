@@ -3,7 +3,6 @@
 Nuget: Be aware that the available Nuget package is always a bit behind with changes...
 
 Frequent changes may ocure, even with already done code and interfaces.
-
 always use namespace aemarcoCore.Common
 
 Crawler Usage:
