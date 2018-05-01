@@ -220,30 +220,39 @@ namespace aemarcoCore.Crawlers.Base
         }
         //protected abstract string GetSiteUrlForCategory(CrawlOffer catJob);
         protected abstract Uri GetSiteUrlForCategory(CrawlOffer catJob);
-        protected virtual HtmlDocument GetDocument(Uri uri, int retry = 0)
+        public static HtmlDocument GetDocument(Uri uri, int retry = 0)
         {
-            HtmlWeb web = new HtmlWeb();
+            var web = new HtmlWeb()
+            {
+                PreRequest = request =>
+                {
+                    request.AutomaticDecompression =
+                        DecompressionMethods.Deflate |
+                        DecompressionMethods.GZip;
+                    return true;
+                }
+            };
             try
             {
                 return web.Load(uri);
             }
             catch (WebException ex)
             {
+                if (retry >= 5)
+                {
+                    throw;
+                }
                 if (ex.Status == WebExceptionStatus.TrustFailure)
                 {
-
-                    return web.Load(new Uri(uri.AbsoluteUri.Replace("https", "http")));
+                    return GetDocument(new Uri(uri.AbsoluteUri.Replace("https", "http")));
                 }
                 else if (ex.Status == WebExceptionStatus.Timeout)
                 {
-                    if (retry >= 5)
-                    {
-                        throw;
-                    }
-                    return GetDocument(uri, retry++);
+                    return GetDocument(uri, ++retry);
                 }
                 throw;
             }
+
         }
         protected abstract string GetSearchStringGorEntryNodes();
         protected abstract IContentCategory GetContentCategory(string categoryName);

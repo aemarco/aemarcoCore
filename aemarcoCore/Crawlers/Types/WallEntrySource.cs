@@ -1,4 +1,5 @@
 ﻿using aemarcoCore.Common;
+using aemarcoCore.Crawlers.Base;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -98,28 +99,35 @@ namespace aemarcoCore.Crawlers.Types
 
 
 
-        internal HtmlDocument GetDetailsDocFromNode(HtmlNode node, string nodeToDetailsNode = null)
+        internal HtmlDocument GetChildDocumentFromNode(HtmlNode node, string nodeToSubNode = null)
         {
             HtmlNode subNode;
-            if (nodeToDetailsNode == null)
+            if (nodeToSubNode == null)
             {
                 subNode = node;
             }
             else
             {
-                subNode = node?.SelectSingleNode(nodeToDetailsNode);
+                subNode = node?.SelectSingleNode(nodeToSubNode);
+            }
+            if (subNode == null)
+            {
+                return null;
             }
             var href = subNode?.Attributes["href"]?.Value;
             var uri = new Uri(_baseUri, href);
-            return new HtmlWeb().Load(uri);
+            return WallpaperCrawlerBasis.GetDocument(uri);
         }
 
         internal HtmlDocument GetChildDocument(HtmlDocument doc, string docToHrefNode)
         {
             var node = doc?.DocumentNode.SelectSingleNode(docToHrefNode);
-            var href = node?.Attributes["href"]?.Value;
-            var uri = new Uri(_baseUri, href);
-            return new HtmlWeb().Load(uri);
+            if (node != null)
+            {
+                return GetChildDocumentFromNode(node);
+
+            }
+            return null;
         }
 
         internal Uri GetUriFromDocument(HtmlDocument doc, string docToTargetNode, string attribute)
@@ -129,7 +137,7 @@ namespace aemarcoCore.Crawlers.Types
             return new Uri(_baseUri, href);
         }
 
-        
+
         internal (string filename, string extension) GetFileDetails(Uri imageUri, string prefix = null)
         {
             string pref = (prefix == null) ? string.Empty : $"{prefix}_";

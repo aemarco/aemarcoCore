@@ -103,7 +103,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
             //docs
-            source.DetailsDoc = source.GetDetailsDocFromNode(node, "./div[@class='thumbnail']/a");
+            source.DetailsDoc = source.GetChildDocumentFromNode(node, "./div[@class='thumbnail']/a");
             source.DownloadDoc = source.GetChildDocument(source.DetailsDoc, "//div[@class='res-origin']/a");
 
             //details

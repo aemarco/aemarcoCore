@@ -30,12 +30,12 @@ namespace aemarcoCore.Crawlers.Crawlers
 
             //main page
             var doc = GetDocument(_uri);
-            var nodes = doc.DocumentNode.SelectNodes("//ul[@class='left_category']/li/a");
+            var nodes = doc.DocumentNode.SelectNodes("//ul[@class='filters__list JS-Filters']/li/a");
             if (nodes == null) return result;
             foreach (HtmlNode node in nodes)
             {
-                string text = WebUtility.HtmlDecode(node.InnerText).Trim();
-                if (String.IsNullOrEmpty(text) || text == "All" || text == "Wallpapers for Android")
+                string text = WebUtility.HtmlDecode(node.FirstChild.InnerText).Trim();
+                if (String.IsNullOrEmpty(text))
                 {
                     continue;
                 }
@@ -68,7 +68,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         }
         protected override string GetSearchStringGorEntryNodes()
         {
-            return "//div[@class='wallpaper_pre']";
+            return "//li[@class='wallpapers__item']";
         }
         protected override IContentCategory GetContentCategory(string categoryName)
         {
@@ -135,15 +135,16 @@ namespace aemarcoCore.Crawlers.Crawlers
             var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
             //docs
-            source.DetailsDoc = source.GetDetailsDocFromNode(node, "./a");
-            source.DownloadDoc = source.GetDetailsDocFromNode(node, "./div[@class='pre_info']/div[@class='pre_size']/a");
+            source.DetailsDoc = source.GetChildDocumentFromNode(node, "./a");
+            source.DownloadDoc = source.GetChildDocument(source.DetailsDoc, "//div[@class='wallpaper-table__row']/span[@class='wallpaper-table__cell']/a");
+
 
             //details
-            source.ImageUri = source.GetUriFromDocument(source.DownloadDoc, "//div[@class='wb_preview']/a[@class='wd_zoom']/img", "src");
-            source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@class='wb_preview']/a/img", "src");
+            source.ImageUri = source.GetUriFromDocument(source.DownloadDoc, "//img[@class='wallpaper__image']", "src");
+            source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@class='wallpaper__image']", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
             source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
-            source.Tags = source.GetTagsFromNodes(source.DownloadDoc, "//div[@class='wb_tags']/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
+            source.Tags = source.GetTagsFromNodes(source.DownloadDoc, "//div[@class='wallpaper__tags']/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
 
 
             WallEntry wallEntry = source.WallEntry;
