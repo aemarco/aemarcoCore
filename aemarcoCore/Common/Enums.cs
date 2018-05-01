@@ -1,7 +1,7 @@
 ﻿namespace aemarcoCore.Common
 {
 
-
+    //crawler
     public enum Category
     {
         Men,
@@ -56,6 +56,7 @@
         Other_Brands
     }
 
+    //wall setter
     public enum WallpaperMode
     {
         Fit,

@@ -22,6 +22,15 @@ Create a WallpaperCrawler for usage.
 	NewEntry and KnownEntry events deliver IWallEntry.
 	Completed event delivers IWallCrawlerResult on completion.
 	
+	Optional Configuration:
+	Known Urls are either provided in ConfigurationHelper or handled via a json file containing a List<string>
+	Sources for the list are handled in following order:
+	ConfigurationHelper.KnownUrlsFunc --> known Urls are passed in via a Func
+	ConfigurationHelper.KnownUrlsFile --> A file location which is beeing readed and writed
+	app.config CrawlerData --> A directory where a file 'known.json' will be used
+	ApplicationDirectory subfolder JSON --> File 'known.json' will be used
+
+
 
 WallpaperSetter Usage:
 in namespace aemarcoCore.Wallpaper
