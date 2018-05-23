@@ -10,43 +10,28 @@ namespace aemarcoCore.Crawlers.Types
     {
         private static List<string> _crawlerExtensions;
 
-        private string _url;
-        private string _thumbnailUrl;
-        private string _fileName;
-        private string _extension;
-        private IContentCategory _contentCategory;
-        private string _siteCategory;
-        private List<string> _tags;
-
 
         internal WallEntry(
             string url, string thumbnailUrl, string fileName, string extension,
             IContentCategory contentCategory, string siteCategory, List<string> tags)
         {
-            _url = url;
-            _thumbnailUrl = thumbnailUrl;
-            _fileName = fileName;
-            _extension = extension;
-            _contentCategory = contentCategory;
-            _siteCategory = siteCategory;
-            _tags = tags;
+            Url = url;
+            ThumbnailUrl = thumbnailUrl;
+            FileName = fileName;
+            Extension = extension;
+            ContentCategory = contentCategory;
+            SiteCategory = siteCategory;
+            Tags = tags;
         }
 
 
-        public string Url
-        { get { return _url; } }
-        public string ThumbnailUrl
-        { get { return _thumbnailUrl; } }
-        public string FileName
-        { get { return _fileName; } }
-        public string Extension
-        { get { return _extension; } }
-        public IContentCategory ContentCategory
-        { get { return _contentCategory; } }
-        public string SiteCategory
-        { get { return _siteCategory; } }
-        public List<string> Tags
-        { get { return _tags; } }
+        public string Url { get; }
+        public string ThumbnailUrl { get; }
+        public string FileName { get; }
+        public string Extension { get; }
+        public IContentCategory ContentCategory { get; }
+        public string SiteCategory { get; }
+        public List<string> Tags { get; }
 
         [JsonIgnore]
         public string JSON
@@ -68,14 +53,14 @@ namespace aemarcoCore.Crawlers.Types
 
 
                 if (
-                    String.IsNullOrEmpty(_url) || //Entry muss Url haben
-                    String.IsNullOrEmpty(_thumbnailUrl) || //Entry muss ThumbnailUrl haben
-                    String.IsNullOrEmpty(_fileName) || //Entry muss FileName haben
-                    String.IsNullOrEmpty(_extension) || //Entry muss Extension haben
-                    String.IsNullOrEmpty(_siteCategory) || //Entry muss SiteCategory haben
-                    _contentCategory == null || //Entry muss ContentCategory haben
-                    _tags == null || //Entry muss Tags haben                    
-                    !_crawlerExtensions.Contains(_extension) //Extension muss erlaubt sein
+                    String.IsNullOrEmpty(Url) || //Entry muss Url haben
+                    String.IsNullOrEmpty(ThumbnailUrl) || //Entry muss ThumbnailUrl haben
+                    String.IsNullOrEmpty(FileName) || //Entry muss FileName haben
+                    String.IsNullOrEmpty(Extension) || //Entry muss Extension haben
+                    String.IsNullOrEmpty(SiteCategory) || //Entry muss SiteCategory haben
+                    ContentCategory == null || //Entry muss ContentCategory haben
+                    Tags == null || //Entry muss Tags haben                    
+                    !_crawlerExtensions.Contains(Extension) //Extension muss erlaubt sein
                     )
                 {
                     return false;

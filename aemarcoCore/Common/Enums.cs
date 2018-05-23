@@ -61,15 +61,10 @@
     {
         Fit,
         AllowFill,
+        AllowFillForceCut,
         Fill
     }
 
-
-    internal enum KnownUrlSource
-    {
-        FileFromSettings,
-        ForeignFunc
-    }
 
 
 

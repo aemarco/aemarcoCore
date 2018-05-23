@@ -13,5 +13,17 @@ namespace aemarcoCore.Common
     }
 
 
+    public class IPersonCrawlerResultEventArgs : EventArgs
+    {
+        public IPersonCrawlerResult Result { get; set; }
+
+    }
+
+    public class IPersonEntryEventArgs : EventArgs
+    {
+        public IPersonEntry Entry { get; set; }
+
+    }
+
 
 }

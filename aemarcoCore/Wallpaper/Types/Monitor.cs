@@ -40,6 +40,17 @@ namespace aemarcoCore.Wallpaper.Types
             _wallMode = mode;
         }
 
+        internal Monitor(Rectangle rect, string name, string backgroundFile, WallpaperMode mode)
+        {
+            if (backgroundFile == null)
+            {
+                throw new NullReferenceException("Monitor kann nicht initialisiert werden");
+            }
+            _rectangle = rect;            
+            _deviceName = name;
+            _wallMode = mode;
+
+        }
 
 
         #endregion
@@ -103,9 +114,6 @@ namespace aemarcoCore.Wallpaper.Types
 
         private void SetDirectWallpaper(Image wall)
         {
-            Bitmap targetImg = new Bitmap(_rectangle.Width, _rectangle.Height);
-            Graphics g = Graphics.FromImage(targetImg);
-
             float heightRatio = (float)_rectangle.Height / (float)wall.Height;
             float widthRatio = (float)_rectangle.Width / (float)wall.Width;
 
@@ -129,6 +137,8 @@ namespace aemarcoCore.Wallpaper.Types
 
             Rectangle drawTo = new Rectangle(x, y, width, height);
 
+            Bitmap targetImg = new Bitmap(_rectangle.Width, _rectangle.Height);
+            Graphics g = Graphics.FromImage(targetImg);
             g.DrawImage(wall, drawTo);
             _wallpaper = targetImg;
         }
@@ -147,6 +157,26 @@ namespace aemarcoCore.Wallpaper.Types
             }
             SetDirectWallpaper(((Bitmap)img).Clone(rect, img.PixelFormat));
         }
+        private void SetCuttedWallpaper(Image img)
+        {
+            Rectangle rect;
+            if ((1.0 * _rectangle.Width / _rectangle.Height) - (1.0 * img.Width / img.Height) < 0) // Bild breiter als Monitor
+            {
+                double pixelsToCut = 1.0 * img.Width / 100 * ConfigurationHelper.PercentLeftRightCutAllowed;
+                rect = new Rectangle(0, 0, img.Width - (int)pixelsToCut, img.Height);
+                rect.X = (img.Width - rect.Width) / 2;
+            }
+            else // Bild schmaler als Monitor
+            {
+                double pixelsToCut = 1.0 * img.Height / 100 * ConfigurationHelper.PercentTopBottomCutAllowed;
+                rect = new Rectangle(0, 0, img.Width, img.Height - (int)pixelsToCut);
+                rect.Y = (img.Height - rect.Height) / 2;
+            }
+
+            SetDirectWallpaper(((Bitmap)img).Clone(rect, img.PixelFormat));
+        }
+
+
 
         #endregion
 
@@ -168,6 +198,18 @@ namespace aemarcoCore.Wallpaper.Types
                         else
                         {
                             SetDirectWallpaper(wall);
+                        }
+                        break;
+                    }
+                case WallpaperMode.AllowFillForceCut:
+                    {
+                        if (WallpaperSetter.CanBeSnapped(wall.Width, wall.Height, _rectangle.Width, _rectangle.Height))
+                        {
+                            SetSnappedWallpaper(wall);
+                        }
+                        else
+                        {
+                            SetCuttedWallpaper(wall);
                         }
                         break;
                     }

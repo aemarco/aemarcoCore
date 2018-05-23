@@ -12,7 +12,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 {
     internal class WallpaperCrawlerErowall : WallpaperCrawlerBasis
     {
-        private Uri _uri = new Uri("https://erowall.com");
+        private readonly Uri _uri = new Uri("https://erowall.com");
 
         public WallpaperCrawlerErowall(
             int startPage,

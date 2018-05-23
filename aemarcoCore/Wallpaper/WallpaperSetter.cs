@@ -33,8 +33,9 @@ namespace aemarcoCore.Wallpaper
         ///  Fit: Places the Wallpaper as big as possible without cutting (black bars)
         ///  Fill: Cuts the Wallpaper and fills the screen
         ///  AllowFill: Decides automatically between Fit and Fill
+        ///  AllowFillForceCut (default): Fills if possible, otherwise cuts adjusted percentage 
         /// </param>
-        public WallpaperSetter(WallpaperMode mode = WallpaperMode.AllowFill)
+        public WallpaperSetter(WallpaperMode mode = WallpaperMode.AllowFillForceCut)
         {
             _defaultBackgroundFile = new FileInfo("CurrentWallpaper.jpg").FullName;
             _wallMode = mode;
@@ -46,6 +47,11 @@ namespace aemarcoCore.Wallpaper
                 var mon = new Monitor(scr, _defaultBackgroundFile, _wallMode);
                 _monitorDictionary.Add(mon, null);
             }
+
+            //adding Virtual Screen as well.
+            var allScreenRect = new Rectangle(0, 0, SystemInformation.VirtualScreen.Width, SystemInformation.VirtualScreen.Height);
+            var virtualMon = new Monitor(allScreenRect, Constants.VIRTUALSCREEN_NAME, _defaultBackgroundFile, _wallMode);
+            _monitorDictionary.Add(virtualMon, null);
         }
 
         #endregion
@@ -60,8 +66,25 @@ namespace aemarcoCore.Wallpaper
                 {
                     foreach (var mon in _monitorDictionary.Keys)
                     {
+                        if (mon.DeviceName == Constants.VIRTUALSCREEN_NAME)
+                        {
+                            continue;
+                        }
                         virtualScreenGraphic.DrawImage(mon.Wallpaper, mon.Rectangle);
                     }
+                    virtualScreenBitmap.Save(_defaultBackgroundFile, ImageFormat.Jpeg);
+                }
+            }
+            WinWallpaper.SetWallpaper(_defaultBackgroundFile);
+        }
+        private void SetVirtualBackgroundImage()
+        {
+            using (Image virtualScreenBitmap = new Bitmap(SystemInformation.VirtualScreen.Width, SystemInformation.VirtualScreen.Height))
+            {
+                using (Graphics virtualScreenGraphic = Graphics.FromImage(virtualScreenBitmap))
+                {
+                    var mon = _monitorDictionary.Keys.Where(x => x.DeviceName == Constants.VIRTUALSCREEN_NAME).First();
+                    virtualScreenGraphic.DrawImage(mon.Wallpaper, mon.Rectangle);
                     virtualScreenBitmap.Save(_defaultBackgroundFile, ImageFormat.Jpeg);
                 }
             }
@@ -90,15 +113,18 @@ namespace aemarcoCore.Wallpaper
 
 
 
-
         /// <summary>
-        /// Sets given Wallpaper on all Screens
+        /// Sets given Wallpaper foreach Screen
         /// </summary>
         /// <param name="file">Wallpaper to set</param>
         public void SetWallOnAllScreen(string file)
         {
             foreach (Monitor mon in _monitorDictionary.Keys)
             {
+                if (mon.DeviceName == Constants.VIRTUALSCREEN_NAME)
+                {
+                    continue;
+                }
                 mon.SetWallpaper(GetImage(file));
             }
             SetBackgroundImage();
@@ -184,7 +210,15 @@ namespace aemarcoCore.Wallpaper
                 }
                 mon.SetWallpaper(images[i]);
             }
-            SetBackgroundImage();
+
+            if (screens.Contains(Constants.VIRTUALSCREEN_NAME))
+            {
+                SetVirtualBackgroundImage();
+            }
+            else
+            {
+                SetBackgroundImage();
+            }
         }
 
 
@@ -251,6 +285,11 @@ namespace aemarcoCore.Wallpaper
 
             foreach (var pair in _monitorDictionary)
             {
+                if (pair.Key.DeviceName == Constants.VIRTUALSCREEN_NAME)
+                {
+                    continue;
+                }
+
                 var source = pair.Value;
                 if (source == null)
                 {

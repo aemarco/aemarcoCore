@@ -31,8 +31,8 @@ namespace aemarcoCore.Crawlers
         private List<string> _filterCategories = new List<string>();
 
         //events
-        private object _progressLock = new object();
-        private object _entryLock = new object();
+        private readonly object _progressLock = new object();
+        private readonly object _entryLock = new object();
 
         #endregion
 

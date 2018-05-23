@@ -6,19 +6,18 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Net;
 using System.Threading;
 
 namespace aemarcoCore.Crawlers.Base
 {
-    internal abstract class WallpaperCrawlerBasis
+    internal abstract class WallpaperCrawlerBasis : CrawlerBasis
     {
         #region fields
 
         //ctor
-        private bool _onlyNews;
-        private int _startPage;
-        private int _lastPage;
+        private readonly bool _onlyNews;
+        private readonly int _startPage;
+        private readonly int _lastPage;
         private CancellationToken _cancellationToken;
 
         //handling
@@ -218,42 +217,7 @@ namespace aemarcoCore.Crawlers.Base
             //valid Page contains minimum 1 valid Entry
             return result;
         }
-        //protected abstract string GetSiteUrlForCategory(CrawlOffer catJob);
         protected abstract Uri GetSiteUrlForCategory(CrawlOffer catJob);
-        public static HtmlDocument GetDocument(Uri uri, int retry = 0)
-        {
-            var web = new HtmlWeb()
-            {
-                PreRequest = request =>
-                {
-                    request.AutomaticDecompression =
-                        DecompressionMethods.Deflate |
-                        DecompressionMethods.GZip;
-                    return true;
-                }
-            };
-            try
-            {
-                return web.Load(uri);
-            }
-            catch (WebException ex)
-            {
-                if (retry >= 5)
-                {
-                    throw;
-                }
-                if (ex.Status == WebExceptionStatus.TrustFailure)
-                {
-                    return GetDocument(new Uri(uri.AbsoluteUri.Replace("https", "http")));
-                }
-                else if (ex.Status == WebExceptionStatus.Timeout)
-                {
-                    return GetDocument(uri, ++retry);
-                }
-                throw;
-            }
-
-        }
         protected abstract string GetSearchStringGorEntryNodes();
         protected abstract IContentCategory GetContentCategory(string categoryName);
         protected abstract bool AddWallEntry(HtmlNode node, CrawlOffer catJob);
