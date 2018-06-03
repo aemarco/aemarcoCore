@@ -93,7 +93,7 @@ namespace aemarcoCore.Crawlers.Types
                 return false;
             }
 
-            if (_category.Category.StartsWith(search))
+            if (_category.Category == search)
             {
                 return true;
             }

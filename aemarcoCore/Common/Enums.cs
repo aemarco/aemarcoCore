@@ -6,6 +6,7 @@
     {
         Men,
         Girls,
+        Girls_SFW,
         Girls_Celebrities,
         Girls_CelebrityFakes,
         Girls_Cars,
@@ -54,6 +55,7 @@
         Other_Holidays,
         Other_Textures,
         Other_Brands
+
     }
 
     //wall setter

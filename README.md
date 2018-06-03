@@ -30,6 +30,14 @@ Create a WallpaperCrawler for usage.
 	app.config CrawlerData --> A directory where a file 'known.json' will be used
 	ApplicationDirectory subfolder JSON --> File 'known.json' will be used
 
+Create a PersonCrawler for usage
+
+	name in format 'FirstName LastName' to be tossed in the constructor.
+	Start(), StartAsync(), StartAsyncTask() are availabe for starting the thing.
+
+	IProgress, CancellationToken, ReportPath, Progress event, Entry event, Completed event..
+	may be used in a similar fashion as the previous described crawler
+
 
 
 WallpaperSetter Usage:

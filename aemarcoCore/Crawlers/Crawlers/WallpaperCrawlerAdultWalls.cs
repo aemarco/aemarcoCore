@@ -11,7 +11,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 {
     internal class WallpaperCrawlerAdultWalls : WallpaperCrawlerBasis
     {
-        private Uri _uri = new Uri("http://adultwalls.com");
+        private readonly Uri _uri = new Uri("http://adultwalls.com");
 
         public WallpaperCrawlerAdultWalls(
             int startPage,

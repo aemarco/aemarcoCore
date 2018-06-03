@@ -98,7 +98,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 case "Games":
                     return new ContentCategory(Category.Media_Games);
                 case "Girls":
-                    return new ContentCategory(Category.Girls);
+                    return new ContentCategory(Category.Girls_SFW);
                 case "Hi-Tech":
                     return new ContentCategory(Category.Hobbies_HiTech);
                 case "Holidays":

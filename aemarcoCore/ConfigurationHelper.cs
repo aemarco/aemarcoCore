@@ -37,11 +37,7 @@ namespace aemarcoCore
         public static int PercentTopBottomCutAllowed { get; set; } = Settings.Default.WallpaperPercentCutAllowedTopBottom;
 
 
-        public static void Configure()
-        {
 
-
-        }
 
 
 
