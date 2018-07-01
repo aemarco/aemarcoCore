@@ -137,6 +137,21 @@ namespace aemarcoCore.Crawlers.Types
             return new Uri(_baseUri, href);
         }
 
+        internal string GetSubNodeAttribute(HtmlNode node, string attribute, string nodeToTargetNode = null)
+        {
+            HtmlNode subNode;
+            if (nodeToTargetNode == null)
+            {
+                subNode = node;
+            }
+            else
+            {
+                subNode = node?.SelectSingleNode(nodeToTargetNode);
+            }
+            string value = subNode?.Attributes[attribute]?.Value;
+            return value;
+        }
+
 
         internal (string filename, string extension) GetFileDetails(Uri imageUri, string prefix = null)
         {
@@ -148,7 +163,6 @@ namespace aemarcoCore.Crawlers.Types
 
             return (Path.GetFileNameWithoutExtension(name), Path.GetExtension(name));
         }
-
         internal (string filename, string extension) GetFileDetails(Uri imageUri, string beforeName, string afterName, string prefix = null)
         {
             string pref = (prefix == null) ? string.Empty : $"{prefix}_";
@@ -161,6 +175,7 @@ namespace aemarcoCore.Crawlers.Types
 
             return (name, Path.GetExtension(url));
         }
+
 
         internal List<string> GetTagsFromNode(HtmlNode node, string attribute, string nodeToTargetNode = null)
         {
@@ -177,8 +192,7 @@ namespace aemarcoCore.Crawlers.Types
 
             return GetTagsFromTagString(tagString);
         }
-
-        internal List<string> GetTagsFromNodes(HtmlDocument doc, string docToTargetNodes, Func<HtmlNode, string> selector)
+        internal List<string> GetTagsFromNodes(HtmlDocument doc, string docToTargetNodes, Func<HtmlNode,string> selector)
         {
             var nodes = doc?.DocumentNode.SelectNodes(docToTargetNodes);
             var tags = nodes?.Select(selector).ToList();
@@ -191,8 +205,7 @@ namespace aemarcoCore.Crawlers.Types
                 return tags;
             }
         }
-
-
+        
         internal List<string> GetTagsFromTagString(string tagString)
         {
             //z.B. "flowerdress, nadia p, susi r, suzanna, suzanna a, brunette, boobs, big tits"

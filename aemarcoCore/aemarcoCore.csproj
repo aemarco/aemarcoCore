@@ -78,6 +78,7 @@
     <Compile Include="Crawlers\Crawlers\PersonCrawlerNudevista.cs" />
     <Compile Include="Crawlers\Crawlers\PersonCrawlerPorngatherer.cs" />
     <Compile Include="Crawlers\Crawlers\WallpaperCrawlerAdultWalls.cs" />
+    <Compile Include="Crawlers\Crawlers\WallpaperWallhaven.cs" />
     <Compile Include="Crawlers\PersonCrawler.cs" />
     <Compile Include="Crawlers\Types\CrawlOffer.cs" />
     <Compile Include="Common\Interfaces\IPersonCrawlerResult.cs" />
