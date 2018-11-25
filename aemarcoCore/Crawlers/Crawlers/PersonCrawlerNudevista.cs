@@ -19,9 +19,11 @@ namespace aemarcoCore.Crawlers.Crawlers
 
         internal override PersonEntry GetPersonEntry()
         {
-            PersonEntry result = new PersonEntry(_nameToCrawl);
-            result.PersonEntrySource = "Nudevista";
-            result.PersonEntryPriority = 20;
+            PersonEntry result = new PersonEntry(_nameToCrawl)
+            {
+                PersonEntrySource = "Nudevista",
+                PersonEntryPriority = 20
+            };
 
             string href = $"?q={_nameToCrawl.Replace(' ', '+')}&s=s";
             Uri target = new Uri(_uri, href);
@@ -52,6 +54,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                     address = "http:" + address;
                 }
                 result.PictureUrl = address;
+                result.PictureSuggestedAdultLevel = -1;
             }
 
             //Data

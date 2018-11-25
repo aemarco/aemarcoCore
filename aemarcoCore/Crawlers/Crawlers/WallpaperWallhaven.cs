@@ -11,7 +11,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 {
     internal class WallpaperWallhaven : WallpaperCrawlerBasis
     {
-        private Uri _uri = new Uri("https://alpha.wallhaven.cc");
+        private readonly Uri _uri = new Uri("https://alpha.wallhaven.cc");
 
 
         public WallpaperWallhaven(
@@ -26,22 +26,23 @@ namespace aemarcoCore.Crawlers.Crawlers
 
         protected override List<CrawlOffer> GetCrawlsOffers()
         {
-            List<CrawlOffer> result = new List<CrawlOffer>();
-
-            result.Add(CreateCrawlOffer(
+            List<CrawlOffer> result = new List<CrawlOffer>
+            {
+                CreateCrawlOffer(
                 "Anime_Sketchy",
                 new Uri(_uri, @"search?q=&categories=010&purity=010&sorting=date_added&order=desc"),
-                GetContentCategory("Anime_Sketchy")));
+                GetContentCategory("Anime_Sketchy")),
 
-            result.Add(CreateCrawlOffer(
+                CreateCrawlOffer(
                 "People_SFW",
                 new Uri(_uri, @"search?q=&categories=001&purity=100&sorting=date_added&order=desc"),
-                GetContentCategory("People_SFW")));
+                GetContentCategory("People_SFW")),
 
-            result.Add(CreateCrawlOffer(
+                CreateCrawlOffer(
                 "People_Sketchy",
                 new Uri(_uri, @"search?q=&categories=001&purity=010&sorting=date_added&order=desc"),
-                GetContentCategory("People_Sketchy")));
+                GetContentCategory("People_Sketchy"))
+            };
             return result;
         }
 
@@ -66,7 +67,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 case "Anime_Sketchy":
                     return new ContentCategory(Category.Girls_Fantasy);
                 case "People_SFW":
-                    return new ContentCategory(Category.Girls_SFW);
+                    return new ContentCategory(Category.Girls_SFW, 10, 19);
                 case "People_Sketchy":
                     return new ContentCategory(Category.Girls);
 

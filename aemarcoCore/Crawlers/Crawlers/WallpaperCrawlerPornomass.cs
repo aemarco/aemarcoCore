@@ -10,8 +10,8 @@ namespace aemarcoCore.Crawlers.Crawlers
 {
     internal class WallpaperCrawlerPornomass : WallpaperCrawlerBasis
     {
-        private Uri _uri1 = new Uri("http://pornomass.com");
-        private Uri _uri2 = new Uri("http://gif.pornomass.com");
+        private readonly Uri _uri1 = new Uri("http://pornomass.com");
+        private readonly Uri _uri2 = new Uri("http://gif.pornomass.com");
 
         public WallpaperCrawlerPornomass(
             int startPage,
@@ -47,7 +47,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         }
         protected override IContentCategory GetContentCategory(string categoryName)
         {
-            return new ContentCategory(Category.Girls_Hardcore);
+            return new ContentCategory(Category.Girls_Hardcore, 95, 99);
         }
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
@@ -75,7 +75,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             //details
             source.ImageUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='photo-blink']", "href");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
-            source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
+            source.ContentCategory = catJob.Category;
             source.Tags = new List<string>();
 
 

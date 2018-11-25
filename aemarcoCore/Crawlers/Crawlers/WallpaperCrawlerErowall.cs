@@ -90,7 +90,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             switch (categoryName)
             {
                 case "Blowjob":
-                    return new ContentCategory(Category.Girls_Blowjob);
+                    return new ContentCategory(Category.Girls_Blowjob, 90, 94);
                 case "Lesbians":
                     return new ContentCategory(Category.Girls_Lesbians);
                 case "Lingerie":
@@ -121,7 +121,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             source.ImageUri = new Uri(_uri, $"/wallpapers/original/{imageLink}.jpg");
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@class='view-left']/a/img", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
-            source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
+            source.ContentCategory = catJob.Category;
             source.Tags = source.GetTagsFromNode(node, "title");
 
 

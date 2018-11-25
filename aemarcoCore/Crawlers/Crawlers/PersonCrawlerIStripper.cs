@@ -17,9 +17,11 @@ namespace aemarcoCore.Crawlers.Crawlers
 
         internal override PersonEntry GetPersonEntry()
         {
-            PersonEntry result = new PersonEntry(_nameToCrawl);
-            result.PersonEntrySource = "IStripper";
-            result.PersonEntryPriority = 30;
+            PersonEntry result = new PersonEntry(_nameToCrawl)
+            {
+                PersonEntrySource = "IStripper",
+                PersonEntryPriority = 30
+            };
 
             string href = $"model/{_nameToCrawl.Replace(' ', '-')}";
             Uri target = new Uri(_uri, href);
@@ -45,8 +47,9 @@ namespace aemarcoCore.Crawlers.Crawlers
                 nodeWithBild.Attributes["src"] != null)
             {
                 string address = nodeWithBild.Attributes["src"].Value;
-
                 result.PictureUrl = address;
+                result.PictureSuggestedAdultLevel = 39;
+
             }
 
             //Data
@@ -96,8 +99,6 @@ namespace aemarcoCore.Crawlers.Crawlers
 
                 }
             }
-
-
 
             return result;
 

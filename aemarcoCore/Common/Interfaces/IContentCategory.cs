@@ -10,6 +10,10 @@ namespace aemarcoCore.Common
         string MainCategory { get; }
         string SubCategory { get; }
 
+        int SuggestedMinAdultLevel { get; }
+        int SuggestedMaxAdultLevel { get; }
+
+
         [JsonIgnore]
         string JSON { get; }
     }

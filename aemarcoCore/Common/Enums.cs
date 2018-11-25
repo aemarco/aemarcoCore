@@ -58,6 +58,7 @@
 
     }
 
+
     //wall setter
     public enum WallpaperMode
     {

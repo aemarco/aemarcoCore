@@ -12,6 +12,7 @@ namespace aemarcoCore.Common
         string FirstName { get; }
         string LastName { get; }
         string PictureUrl { get; }
+        int PictureSuggestedAdultLevel { get; }
         DateTime? Geburtstag { get; }
         string Land { get; }
         string Geburtsort { get; }

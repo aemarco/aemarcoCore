@@ -17,9 +17,11 @@ namespace aemarcoCore.Crawlers.Crawlers
 
         internal override PersonEntry GetPersonEntry()
         {
-            PersonEntry result = new PersonEntry(_nameToCrawl);
-            result.PersonEntrySource = "Porngatherer";
-            result.PersonEntryPriority = 10;
+            PersonEntry result = new PersonEntry(_nameToCrawl)
+            {
+                PersonEntrySource = "Porngatherer",
+                PersonEntryPriority = 10
+            };
 
             string href = $"de/pornstars/{_nameToCrawl.Replace(' ', '-')}";
             Uri target = new Uri(_uri, href);
@@ -46,6 +48,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 string address = nodeWithBild.Attributes["data-src"].Value;
                 result.PictureUrl = address;
+                result.PictureSuggestedAdultLevel = -1;
             }
 
             //Aliase

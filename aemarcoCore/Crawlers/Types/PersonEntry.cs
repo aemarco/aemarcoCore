@@ -21,6 +21,7 @@ namespace aemarcoCore.Crawlers.Types
         public string FirstName { get; internal set; }
         public string LastName { get; internal set; }
         public string PictureUrl { get; internal set; }
+        public int PictureSuggestedAdultLevel { get; internal set; } = -1;
         public DateTime? Geburtstag { get; internal set; }
         public string Land { get; internal set; }
         public string Geburtsort { get; internal set; }
@@ -41,6 +42,8 @@ namespace aemarcoCore.Crawlers.Types
         [JsonIgnore]
         public string JSON
         { get { return JsonConvert.SerializeObject(this, Formatting.Indented); } }
+
+
 
         [JsonIgnore]
         internal bool IsValid

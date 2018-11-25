@@ -77,6 +77,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         }
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
+
             var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
             //docs
@@ -87,7 +88,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             source.ImageUri = source.GetUriFromDocument(source.DownloadDoc, "//div[@class='wallpaper-preview-container']/a/img", "src");
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@class='img-rounded']", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, "wallpapers/", "/", catJob.SiteCategoryName);
-            source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
+            source.ContentCategory = catJob.Category;
             source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='col-md-12']/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
 
 

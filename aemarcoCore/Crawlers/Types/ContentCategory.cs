@@ -8,36 +8,29 @@ namespace aemarcoCore.Crawlers.Types
 {
     internal class ContentCategory : IContentCategory
     {
-        private string _category;
-        private string _mainCategory;
-        private string _subCategory;
-
-        internal ContentCategory(Category category)
+        internal ContentCategory(Category category, int minAdult = -1, int maxAdult = -1)
         {
-            _category = category.ToString();
+            Category = category.ToString();
 
-            List<string> strings = _category.Split('_').ToList();
-            _mainCategory = strings[0];
+            List<string> strings = Category.Split('_').ToList();
+            MainCategory = strings[0];
             if (strings.Count > 1)
             {
-                _subCategory = strings[1];
+                SubCategory = strings[1];
             }
-            else
-            {
-                _subCategory = string.Empty;
-            }
+
+            SuggestedMinAdultLevel = minAdult;
+            SuggestedMaxAdultLevel = maxAdult;
         }
 
         [JsonIgnore]
-        public string Category
-        { get { return _category; } }
+        public string Category { get; }
 
 
-        public string MainCategory
-        { get { return _mainCategory; } }
-        public string SubCategory
-        { get { return _subCategory; } }
-
+        public string MainCategory { get; }
+        public string SubCategory { get; } = string.Empty;
+        public int SuggestedMinAdultLevel { get; }
+        public int SuggestedMaxAdultLevel { get; }
 
         [JsonIgnore]
         public string JSON

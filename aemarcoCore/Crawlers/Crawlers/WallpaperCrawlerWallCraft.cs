@@ -11,7 +11,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 {
     internal class WallpaperCrawlerWallCraft : WallpaperCrawlerBasis
     {
-        private Uri _uri = new Uri("https://wallpaperscraft.com");
+        private readonly Uri _uri = new Uri("https://wallpaperscraft.com");
 
         public WallpaperCrawlerWallCraft(
             int startPage,
@@ -76,55 +76,55 @@ namespace aemarcoCore.Crawlers.Crawlers
             switch (categoryName)
             {
                 case "3D":
-                    return new ContentCategory(Category.Fantasy_3D);
+                    return new ContentCategory(Category.Fantasy_3D, 0, 0);
                 case "Abstract":
-                    return new ContentCategory(Category.Fantasy_Abstract);
+                    return new ContentCategory(Category.Fantasy_Abstract, 0, 0);
                 case "Animals":
-                    return new ContentCategory(Category.Hobbies_Animals);
+                    return new ContentCategory(Category.Hobbies_Animals, 0, 0);
                 case "Anime":
-                    return new ContentCategory(Category.Fantasy_Anime);
+                    return new ContentCategory(Category.Fantasy_Anime, 0, 0);
                 case "Brands":
-                    return new ContentCategory(Category.Other_Brands);
+                    return new ContentCategory(Category.Other_Brands, 0, 0);
                 case "Cars":
-                    return new ContentCategory(Category.Vehicle_Cars);
+                    return new ContentCategory(Category.Vehicle_Cars, 0, 0);
                 case "City":
-                    return new ContentCategory(Category.Environment_City);
+                    return new ContentCategory(Category.Environment_City, 0, 0);
                 case "Fantasy":
-                    return new ContentCategory(Category.Fantasy);
+                    return new ContentCategory(Category.Fantasy, 0, 0);
                 case "Flowers":
-                    return new ContentCategory(Category.Environment_Flowers);
+                    return new ContentCategory(Category.Environment_Flowers, 0, 0);
                 case "Food":
-                    return new ContentCategory(Category.Hobbies_Food);
+                    return new ContentCategory(Category.Hobbies_Food, 0, 0);
                 case "Games":
-                    return new ContentCategory(Category.Media_Games);
+                    return new ContentCategory(Category.Media_Games, 0, 0);
                 case "Girls":
-                    return new ContentCategory(Category.Girls_SFW);
+                    return new ContentCategory(Category.Girls_SFW, 10, 19);
                 case "Hi-Tech":
-                    return new ContentCategory(Category.Hobbies_HiTech);
+                    return new ContentCategory(Category.Hobbies_HiTech, 0, 0);
                 case "Holidays":
-                    return new ContentCategory(Category.Other_Holidays);
+                    return new ContentCategory(Category.Other_Holidays, 0, 0);
                 case "Macro":
-                    return new ContentCategory(Category.Environment_Macro);
+                    return new ContentCategory(Category.Environment_Macro, 0, 0);
                 case "Men":
-                    return new ContentCategory(Category.Men);
+                    return new ContentCategory(Category.Men, 0, 0);
                 case "Movies":
-                    return new ContentCategory(Category.Media_Movies);
+                    return new ContentCategory(Category.Media_Movies, 0, 0);
                 case "Music":
-                    return new ContentCategory(Category.Media_Music);
+                    return new ContentCategory(Category.Media_Music, 0, 0);
                 case "Nature":
-                    return new ContentCategory(Category.Environment_Landscape);
+                    return new ContentCategory(Category.Environment_Landscape, 0, 0);
                 case "Other":
-                    return new ContentCategory(Category.Other);
+                    return new ContentCategory(Category.Other, 0, 0);
                 case "Space":
-                    return new ContentCategory(Category.Environment_Space);
+                    return new ContentCategory(Category.Environment_Space, 0, 0);
                 case "Sport":
-                    return new ContentCategory(Category.Hobbies_Sport);
+                    return new ContentCategory(Category.Hobbies_Sport, 0, 0);
                 case "Textures":
-                    return new ContentCategory(Category.Other_Textures);
+                    return new ContentCategory(Category.Other_Textures, 0, 0);
                 case "TV Series":
-                    return new ContentCategory(Category.Media_TVSeries);
+                    return new ContentCategory(Category.Media_TVSeries, 0, 0);
                 case "Vector":
-                    return new ContentCategory(Category.Fantasy_Vector);
+                    return new ContentCategory(Category.Fantasy_Vector, 0, 0);
                 default:
                     return null;
 

@@ -11,7 +11,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 {
     internal class WallpaperCrawlerZoomgirls : WallpaperCrawlerBasis
     {
-        private Uri _uri = new Uri("https://zoomgirls.net");
+        private readonly Uri _uri = new Uri("https://zoomgirls.net");
 
 
         public WallpaperCrawlerZoomgirls(
@@ -67,7 +67,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             source.ImageUri = new Uri(imageUri);
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='wallpaper-thumb']/img", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
-            source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
+            source.ContentCategory = catJob.Category;
             source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//ul[@class='tagcloud']/span/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
 
             WallEntry wallEntry = source.WallEntry;

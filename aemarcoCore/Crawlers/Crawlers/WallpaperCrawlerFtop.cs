@@ -12,7 +12,7 @@ namespace aemarcoCore.Crawlers.Crawlers
     internal class WallpaperCrawlerFtop : WallpaperCrawlerBasis
     {
 
-        private Uri _uri = new Uri("https://ftopx.com");
+        private readonly Uri _uri = new Uri("https://ftopx.com");
 
         public WallpaperCrawlerFtop(
             int startPage,
@@ -110,7 +110,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             source.ImageUri = source.GetUriFromDocument(source.DownloadDoc, "//a[@type='button']", "href");
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@class='img-responsive img-rounded']", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
-            source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
+            source.ContentCategory = catJob.Category;
             source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='well well-sm']/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
 
 
