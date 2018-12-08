@@ -54,6 +54,10 @@ namespace aemarcoCore.Crawlers.Base
             }
         }
 
+        internal abstract SourceSite SourceSite { get; }
+
+
+
         #endregion
 
         #region Starting 

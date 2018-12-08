@@ -9,6 +9,7 @@ namespace aemarcoCore.Common
         string ResultName { get; }
         bool HasBeenAborted { get; set; }
         Exception Exception { get; set; }
+        int NumberOfCrawlersInvolved { get; set; }
 
         List<IWallEntry> NewEntries { get; }
         List<IWallEntry> KnownEntries { get; }

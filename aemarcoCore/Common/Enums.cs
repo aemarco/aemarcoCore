@@ -44,6 +44,7 @@
         Fantasy_Anime,
         Fantasy_3D,
         Fantasy_Vector,
+        Fantasy_Art,
 
         Hobbies,
         Hobbies_Sport,
@@ -54,7 +55,9 @@
         Other,
         Other_Holidays,
         Other_Textures,
-        Other_Brands
+        Other_Brands,
+        Other_Words
+
 
     }
 
@@ -68,7 +71,19 @@
         Fill
     }
 
+    //wallsite
+    public enum SourceSite
+    {
+        AdultWalls,
+        Erowall,
+        Ftop,
+        Pornomass,
+        Wallpaperscraft,
+        Zoomgirls,
+        Wallhaven,
+        BabesUnivers
 
+    }
 
 
 

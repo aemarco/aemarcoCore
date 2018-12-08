@@ -14,6 +14,8 @@ namespace aemarcoCore.Crawlers.Crawlers
     {
         private readonly Uri _uri = new Uri("https://erowall.com");
 
+        internal override SourceSite SourceSite => SourceSite.Erowall;
+
         public WallpaperCrawlerErowall(
             int startPage,
             int lastPage,

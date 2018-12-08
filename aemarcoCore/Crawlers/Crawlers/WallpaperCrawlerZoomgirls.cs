@@ -13,6 +13,7 @@ namespace aemarcoCore.Crawlers.Crawlers
     {
         private readonly Uri _uri = new Uri("https://zoomgirls.net");
 
+        internal override SourceSite SourceSite => SourceSite.Zoomgirls;
 
         public WallpaperCrawlerZoomgirls(
             int startPage,

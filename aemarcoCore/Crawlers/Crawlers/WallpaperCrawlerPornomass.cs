@@ -13,6 +13,8 @@ namespace aemarcoCore.Crawlers.Crawlers
         private readonly Uri _uri1 = new Uri("http://pornomass.com");
         private readonly Uri _uri2 = new Uri("http://gif.pornomass.com");
 
+        internal override SourceSite SourceSite => SourceSite.Pornomass;
+
         public WallpaperCrawlerPornomass(
             int startPage,
             int lastPage,

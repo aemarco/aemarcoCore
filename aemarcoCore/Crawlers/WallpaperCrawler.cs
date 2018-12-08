@@ -19,9 +19,9 @@ namespace aemarcoCore.Crawlers
         private Dictionary<WallpaperCrawlerBasis, int> _crawlers = new Dictionary<WallpaperCrawlerBasis, int>();
 
         //ctor
-        private bool _onlyNews;
-        int _startPage;
-        int _lastPage;
+        private readonly bool _onlyNews;
+        readonly int _startPage;
+        readonly int _lastPage;
         CancellationToken _cancellationToken;
         private IProgress<int> _progress;
 
@@ -29,6 +29,7 @@ namespace aemarcoCore.Crawlers
         private WallCrawlerResult _result = new WallCrawlerResult();
         private DirectoryInfo _reportPath = null;
         private List<string> _filterCategories = new List<string>();
+        private List<string> _filterSourceSites = new List<string>();
 
         //events
         private readonly object _progressLock = new object();
@@ -114,6 +115,25 @@ namespace aemarcoCore.Crawlers
             }
         }
 
+        /// <summary>
+        /// Used to filter which sites to limit to
+        /// Not using means all sites will be crawled
+        /// Using menas only sites added will be crawled
+        /// </summary>
+        /// <param name="sourceSite"></param>
+        public void AddSourceSiteFilter(SourceSite sourceSite)
+        {
+            string site = sourceSite.ToString();
+            if (!_filterSourceSites.Contains(site))
+            {
+                _filterSourceSites.Add(site);
+            }
+
+        }
+
+
+
+
         #endregion
 
         #region Working
@@ -143,6 +163,7 @@ namespace aemarcoCore.Crawlers
         {
             PrepareCrawlerList();
 
+            _result.NumberOfCrawlersInvolved = _crawlers.Count;
 
             //start all crawlers
             List<Task<bool>> tasks = new List<Task<bool>>();
@@ -185,16 +206,31 @@ namespace aemarcoCore.Crawlers
                 .ToList();
 
             foreach (Type type in crawlerTypes)
+
             {
                 var instance = (WallpaperCrawlerBasis)Activator.CreateInstance(type, _startPage, _lastPage, _cancellationToken, _onlyNews);
 
-                instance.LimitAsPerFilterlist(_filterCategories);
-                if (instance.HasWorkingOffers)
+                //filter down to desired sites if filter beeing used
+                if (_filterSourceSites.Count > 0 && !_filterSourceSites.Contains(instance.SourceSite.ToString()))
                 {
-                    instance.Progress += Instance_OnProgress;
-                    instance.NewEntry += Instance_OnNewEntry;
-                    instance.KnownEntry += Instance_OnKnownEntry;
-                    _crawlers.Add(instance, 0);
+                    continue;
+                }
+
+                try
+                {
+                    instance.LimitAsPerFilterlist(_filterCategories);
+                    if (instance.HasWorkingOffers)
+                    {
+                        instance.Progress += Instance_OnProgress;
+                        instance.NewEntry += Instance_OnNewEntry;
+                        instance.KnownEntry += Instance_OnKnownEntry;
+                        _crawlers.Add(instance, 0);
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    _result.Exception = ex;
                 }
             }
         }
@@ -258,8 +294,7 @@ namespace aemarcoCore.Crawlers
                     {
                         foreach (Delegate d in Progress.GetInvocationList())
                         {
-                            ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
-                            if (syncer == null)
+                            if (!(d.Target is ISynchronizeInvoke syncer))
                             {
                                 d.DynamicInvoke(this, new ProgressChangedEventArgs(progress, null));
                             }
@@ -288,8 +323,7 @@ namespace aemarcoCore.Crawlers
                 {
                     foreach (Delegate d in KnownEntry.GetInvocationList())
                     {
-                        ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
-                        if (syncer == null)
+                        if (!(d.Target is ISynchronizeInvoke syncer))
                         {
                             d.DynamicInvoke(this, e);
                         }
@@ -317,8 +351,7 @@ namespace aemarcoCore.Crawlers
                 {
                     foreach (Delegate d in NewEntry.GetInvocationList())
                     {
-                        ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
-                        if (syncer == null)
+                        if (!(d.Target is ISynchronizeInvoke syncer))
                         {
                             d.DynamicInvoke(this, e);
                         }
@@ -342,8 +375,7 @@ namespace aemarcoCore.Crawlers
             {
                 foreach (Delegate d in Completed.GetInvocationList())
                 {
-                    ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
-                    if (syncer == null)
+                    if (!(d.Target is ISynchronizeInvoke syncer))
                     {
                         d.DynamicInvoke(this, new IWallCrawlerResultEventArgs { Result = _result });
                     }

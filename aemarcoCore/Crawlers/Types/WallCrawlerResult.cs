@@ -12,12 +12,14 @@ namespace aemarcoCore.Crawlers.Types
         private List<IWallEntry> _knownEntries;
         private bool _hasBeenAborted;
         private Exception _exception;
+        private int _numberOfCrawlersInvolved;
 
         internal WallCrawlerResult()
         {
             _resultName = string.Empty;
             _hasBeenAborted = false;
             _exception = null;
+            _numberOfCrawlersInvolved = 0;
             _newEntries = new List<IWallEntry>();
             _knownEntries = new List<IWallEntry>();
         }
@@ -38,6 +40,18 @@ namespace aemarcoCore.Crawlers.Types
             get => _exception;
             set => _exception = value;
         }
+
+        public int NumberOfCrawlersInvolved
+        {
+            get => _numberOfCrawlersInvolved;
+            set => _numberOfCrawlersInvolved = value;
+        }
+
+
+
+
+
+
 
         public List<IWallEntry> NewEntries
         { get { return _newEntries; } }

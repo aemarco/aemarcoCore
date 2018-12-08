@@ -14,6 +14,8 @@ namespace aemarcoCore.Crawlers.Crawlers
 
         private readonly Uri _uri = new Uri("https://ftopx.com");
 
+        internal override SourceSite SourceSite => SourceSite.Ftop;
+
         public WallpaperCrawlerFtop(
             int startPage,
             int lastPage,

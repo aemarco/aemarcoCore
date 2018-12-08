@@ -13,6 +13,8 @@ namespace aemarcoCore.Crawlers.Crawlers
     {
         private readonly Uri _uri = new Uri("https://wallpaperscraft.com");
 
+        internal override SourceSite SourceSite => SourceSite.Wallpaperscraft;
+
         public WallpaperCrawlerWallCraft(
             int startPage,
             int lastPage,
@@ -41,7 +43,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 }
 
                 string href = node.Attributes["href"]?.Value;
-                if (String.IsNullOrEmpty(href))
+                if (String.IsNullOrEmpty(href) || href.StartsWith("http"))
                 {
                     continue;
                 }
@@ -83,8 +85,8 @@ namespace aemarcoCore.Crawlers.Crawlers
                     return new ContentCategory(Category.Hobbies_Animals, 0, 0);
                 case "Anime":
                     return new ContentCategory(Category.Fantasy_Anime, 0, 0);
-                case "Brands":
-                    return new ContentCategory(Category.Other_Brands, 0, 0);
+                case "Art":
+                    return new ContentCategory(Category.Fantasy_Art, 0, 0);
                 case "Cars":
                     return new ContentCategory(Category.Vehicle_Cars, 0, 0);
                 case "City":
@@ -97,16 +99,14 @@ namespace aemarcoCore.Crawlers.Crawlers
                     return new ContentCategory(Category.Hobbies_Food, 0, 0);
                 case "Games":
                     return new ContentCategory(Category.Media_Games, 0, 0);
-                case "Girls":
-                    return new ContentCategory(Category.Girls_SFW, 10, 19);
-                case "Hi-Tech":
+                case "Technologies":
                     return new ContentCategory(Category.Hobbies_HiTech, 0, 0);
                 case "Holidays":
                     return new ContentCategory(Category.Other_Holidays, 0, 0);
                 case "Macro":
                     return new ContentCategory(Category.Environment_Macro, 0, 0);
-                case "Men":
-                    return new ContentCategory(Category.Men, 0, 0);
+                case "Motorcycles":
+                    return new ContentCategory(Category.Vehicle_Bikes, 0, 0);
                 case "Movies":
                     return new ContentCategory(Category.Media_Movies, 0, 0);
                 case "Music":
@@ -125,6 +125,8 @@ namespace aemarcoCore.Crawlers.Crawlers
                     return new ContentCategory(Category.Media_TVSeries, 0, 0);
                 case "Vector":
                     return new ContentCategory(Category.Fantasy_Vector, 0, 0);
+                case "Words":
+                    return new ContentCategory(Category.Other_Words, 0, 0);
                 default:
                     return null;
 
@@ -132,6 +134,8 @@ namespace aemarcoCore.Crawlers.Crawlers
         }
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
+
+
             var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
             //docs

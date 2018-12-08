@@ -4,18 +4,19 @@ using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading;
 
 namespace aemarcoCore.Crawlers.Crawlers
 {
-    internal class WallpaperCrawlerAdultWalls : WallpaperCrawlerBasis
+    internal class WallpaperCrawlerBabesUnivers : WallpaperCrawlerBasis
     {
-        private readonly Uri _uri = new Uri("http://adultwalls.com");
+        private readonly Uri _uri = new Uri("http://babesunivers.com/");
 
-        internal override SourceSite SourceSite => SourceSite.AdultWalls;
+        internal override SourceSite SourceSite => SourceSite.BabesUnivers;
 
-        public WallpaperCrawlerAdultWalls(
+        public WallpaperCrawlerBabesUnivers(
             int startPage,
             int lastPage,
             CancellationToken cancellationToken,
@@ -49,7 +50,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                     continue;
                 }
 
-                //z.B. "http://adultwalls.com/wallpapers/erotic-wallpapers"
+                //z.B. "http://babesunivers.com/wallpapers/lingerie-girls"
                 Uri uri = new Uri(_uri, href);
                 IContentCategory cat = GetContentCategory(text);
                 result.Add(CreateCrawlOffer(text, uri, cat));
@@ -59,19 +60,19 @@ namespace aemarcoCore.Crawlers.Crawlers
         }
         protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
         {
-            //z.B. "http://adultwalls.com/wallpapers/erotic-wallpapers/1?order=publish-date-newest&resolution=all&search="                
-            //return $"{catJob.CategoryUri.AbsoluteUri}/{catJob.CurrentPage}?order=publish-date-newest&resolution=all&search=";
+            //z.B. "http://babesunivers.com/wallpapers/lingerie-girls/1?order=publish-date-newest&resolution=all&search="                
+
             return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}/{catJob.CurrentPage}?order=publish-date-newest&resolution=all&search=");
         }
         protected override string GetSearchStringGorEntryNodes()
         {
-            return "//div[@class='thumb-container']/a";
+            return "//a[@class='thumbnail clearfix']";
         }
         protected override IContentCategory GetContentCategory(string categoryName)
         {
             switch (categoryName)
             {
-                case "Lingerie Models":
+                case "Lingerie Girls":
                     return new ContentCategory(Category.Girls_Lingerie);
                 default:
                     return new ContentCategory(Category.Girls);
@@ -84,14 +85,17 @@ namespace aemarcoCore.Crawlers.Crawlers
 
             //docs
             source.DetailsDoc = source.GetChildDocumentFromNode(node);
-            source.DownloadDoc = source.GetChildDocument(source.DetailsDoc, "//a[@class='btn btn-danger']");
+            var detailLinkNode = source.DetailsDoc?.DocumentNode?.SelectNodes("//p/a").ToList()
+                                    .First(x => x.ParentNode.InnerText.Contains("Original Resolution"));
+            source.DownloadDoc = source.GetChildDocumentFromNode(detailLinkNode);
+
 
             //details
             source.ImageUri = source.GetUriFromDocument(source.DownloadDoc, "//div[@class='wallpaper-preview-container']/a/img", "src");
-            source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@class='img-rounded']", "src");
+            source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@class='box-main']/p/img", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, "wallpapers/", "/", catJob.SiteCategoryName);
             source.ContentCategory = catJob.Category;
-            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='col-md-12']/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
+            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='col-md-4']/a[@class='btn btn-default btn-xs']", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
 
 
             WallEntry wallEntry = source.WallEntry;

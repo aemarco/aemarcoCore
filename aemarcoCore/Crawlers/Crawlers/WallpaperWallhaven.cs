@@ -13,6 +13,7 @@ namespace aemarcoCore.Crawlers.Crawlers
     {
         private readonly Uri _uri = new Uri("https://alpha.wallhaven.cc");
 
+        internal override SourceSite SourceSite => SourceSite.Wallhaven;
 
         public WallpaperWallhaven(
             int startPage,
@@ -28,6 +29,12 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             List<CrawlOffer> result = new List<CrawlOffer>
             {
+
+                CreateCrawlOffer(
+                "Anime_SFW",
+                new Uri(_uri, @"search?q=&categories=010&purity=100&sorting=date_added&order=desc"),
+                GetContentCategory("Anime_SFW")),
+
                 CreateCrawlOffer(
                 "Anime_Sketchy",
                 new Uri(_uri, @"search?q=&categories=010&purity=010&sorting=date_added&order=desc"),
@@ -42,6 +49,8 @@ namespace aemarcoCore.Crawlers.Crawlers
                 "People_Sketchy",
                 new Uri(_uri, @"search?q=&categories=001&purity=010&sorting=date_added&order=desc"),
                 GetContentCategory("People_Sketchy"))
+
+
             };
             return result;
         }
@@ -64,6 +73,8 @@ namespace aemarcoCore.Crawlers.Crawlers
 
             switch (categoryName)
             {
+                case "Anime_SFW":
+                    return new ContentCategory(Category.Girls_Fantasy, 10, 19);
                 case "Anime_Sketchy":
                     return new ContentCategory(Category.Girls_Fantasy);
                 case "People_SFW":
