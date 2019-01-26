@@ -74,11 +74,11 @@ namespace aemarcoCore.Crawlers.Crawlers
             switch (categoryName)
             {
                 case "Anime_SFW":
-                    return new ContentCategory(Category.Girls_Fantasy, 10, 19);
+                    return new ContentCategory(Category.Girls_Fantasy, 1, 19);
                 case "Anime_Sketchy":
                     return new ContentCategory(Category.Girls_Fantasy);
                 case "People_SFW":
-                    return new ContentCategory(Category.Girls_SFW, 10, 19);
+                    return new ContentCategory(Category.Girls, 1, 19);
                 case "People_Sketchy":
                     return new ContentCategory(Category.Girls);
 
@@ -92,7 +92,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
             //docs
-            source.DetailsDoc = source.GetChildDocumentFromNode(node, "./a[@class='preview']");
+            source.DetailsDoc = source.GetChildDocumentFromRootNode("./a[@class='preview']");
 
             //details
             source.ImageUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@id='wallpaper']", "src");

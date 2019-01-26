@@ -5,8 +5,7 @@
     public enum Category
     {
         Men,
-        Girls,
-        Girls_SFW,
+        Girls,        
         Girls_Celebrities,
         Girls_CelebrityFakes,
         Girls_Cars,
@@ -20,6 +19,9 @@
         Girls_Fetish,
         Girls_Blowjob,
         Girls_Hardcore,
+        Girls_Amateur,
+        Girls_Gloryhole,
+        Girls_Selfies,
 
         Vehicle,
         Vehicle_Cars,
@@ -81,12 +83,23 @@
         Wallpaperscraft,
         Zoomgirls,
         Wallhaven,
-        BabesUnivers
+        BabesUnivers,
+        Pornpics,
+        Mota
 
     }
 
-
-
+    /// <summary>
+    /// None... No caching
+    /// BySize... Uses that given amount in Bytes (CacheSizeInBytes defaults to 250MB). Cleanup works with a 10% Threshold
+    /// Auto... Cachesize may fluctuate according available diskspace (CacheSizePercentage default to 5%).
+    /// </summary>
+    public enum CacheMode
+    {
+        None,
+        BySize,        
+        Auto
+    }
 
 
 

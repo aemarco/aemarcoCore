@@ -1,13 +1,18 @@
-﻿using aemarcoCore.Common;
+﻿using aemarcoCore.Caching;
+using aemarcoCore.Common;
 using aemarcoCore.Tools;
 using aemarcoCore.Wallpaper.Types;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Cache;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace aemarcoCore.Wallpaper
@@ -16,11 +21,13 @@ namespace aemarcoCore.Wallpaper
     {
         #region fields
 
-        private string _defaultBackgroundFile;
-        private WallpaperMode _wallMode;
-        Random _rand;
+        private readonly string _defaultBackgroundFile;
+        private readonly WallpaperMode _wallMode;
+        private readonly Random _rand;
 
-        private Dictionary<Monitor, List<string>> _monitorDictionary;
+        private readonly Dictionary<Monitor, List<string>> _monitorDictionary;
+        private readonly HttpClient _client;
+        private readonly CacheHandler _cacheHandler;
 
         #endregion
 
@@ -31,14 +38,16 @@ namespace aemarcoCore.Wallpaper
         /// </summary>
         /// <param name="mode">
         ///  Fit: Places the Wallpaper as big as possible without cutting (black bars)
-        ///  Fill: Cuts the Wallpaper and fills the screen
-        ///  AllowFill: Decides automatically between Fit and Fill
-        ///  AllowFillForceCut (default): Fills if possible, otherwise cuts adjusted percentage 
+        ///  Fill: Cuts as much needed to fill the screen
+        ///  AllowFill: Decides automatically between Fill and Fit based on allowed cutting
+        ///  AllowFillForceCut (default): Like AllowFill, otherwise Fit with allowed cutting 
         /// </param>
-        public WallpaperSetter(WallpaperMode mode = WallpaperMode.AllowFillForceCut)
+        public WallpaperSetter(WallpaperSetterSettings settings = null)
         {
+            if (settings == null) settings = new WallpaperSetterSettings();
+
             _defaultBackgroundFile = new FileInfo("CurrentWallpaper.jpg").FullName;
-            _wallMode = mode;
+            _wallMode = settings.WallpaperMode;
             _rand = new Random();
             _monitorDictionary = new Dictionary<Monitor, List<string>>();
 
@@ -52,6 +61,20 @@ namespace aemarcoCore.Wallpaper
             var allScreenRect = new Rectangle(0, 0, SystemInformation.VirtualScreen.Width, SystemInformation.VirtualScreen.Height);
             var virtualMon = new Monitor(allScreenRect, Constants.VIRTUALSCREEN_NAME, _defaultBackgroundFile, _wallMode);
             _monitorDictionary.Add(virtualMon, null);
+
+
+            _client = new HttpClient(new WebRequestHandler());
+
+            if (settings.CacheMode != CacheMode.None)
+            {
+                _cacheHandler = new CacheHandler(_client, settings.CacheMode)
+                {
+                    CacheSize = settings.CacheSizeInBytes,
+                    CacheSizePercentage = settings.CacheSizePercentage,
+                    FolderDepth = settings.FolderDepth
+                };
+            }
+
         }
 
         #endregion
@@ -77,6 +100,9 @@ namespace aemarcoCore.Wallpaper
             }
             WinWallpaper.SetWallpaper(_defaultBackgroundFile);
         }
+
+       
+
         private void SetVirtualBackgroundImage()
         {
             using (Image virtualScreenBitmap = new Bitmap(SystemInformation.VirtualScreen.Width, SystemInformation.VirtualScreen.Height))
@@ -97,17 +123,40 @@ namespace aemarcoCore.Wallpaper
             {
                 if (file.StartsWith("http"))
                 {
-                    using (Stream stream = new WebClient().OpenRead(file))
-                        return Image.FromStream(stream);
-                }
+                    if (_cacheHandler != null)
+                    {
+                        using (var stream = _cacheHandler.GetEntryFromCache(file))
+                        {
+                            using (var bmpTemp = new Bitmap(stream))
+                                return new Bitmap(bmpTemp);
+                        }
+                    }
+                    else
+                    {
+                        var resp = _client.GetAsync(file, HttpCompletionOption.ResponseHeadersRead).Result;
+                        resp.EnsureSuccessStatusCode();
+
+                        using (Stream stream = resp.Content.ReadAsStreamAsync().Result)
+                        {
+                            Image img = Image.FromStream(stream);
+                            return img;
+                        }
+                    }
+                }  
                 else
                 {
                     using (var bmpTemp = new Bitmap(file))
                         return new Bitmap(bmpTemp);
                 }
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                return null;
+            }
+
         }
+        
 
         #endregion
 
@@ -189,8 +238,7 @@ namespace aemarcoCore.Wallpaper
         public void SetWallsForScreens(List<string> screens, List<Image> images)
         {
             if (screens == null || images == null ||
-                screens.Count < 1 || screens.Count != images.Count ||
-                screens.Contains(null) || images.Contains(null))
+                screens.Count < 1 || screens.Count != images.Count)
             {
                 throw new ArgumentException("Screens or Wallpapers not provided correctly.");
             }
@@ -208,7 +256,10 @@ namespace aemarcoCore.Wallpaper
                     mon = new Monitor(scr, _defaultBackgroundFile, _wallMode);
                     _monitorDictionary.Add(mon, null);
                 }
-                mon.SetWallpaper(images[i]);
+
+                if (images[i] != null)
+                    mon.SetWallpaper(images[i]);
+                
             }
 
             if (screens.Contains(Constants.VIRTUALSCREEN_NAME))
@@ -237,20 +288,47 @@ namespace aemarcoCore.Wallpaper
         public static bool CanBeSnapped(int imageWidth, int imageHeight, int monitorWidth, int monitorHeight)
         {
             double imageRatio = 1.0 * imageWidth / imageHeight;
-            double monitorRatio = 1.0 * monitorWidth / monitorHeight;
+            var (minRatio, maxRatio) = GetRatioRange(monitorWidth, monitorHeight);
 
-            if (monitorRatio - imageRatio < 0) // Bild breiter als Monitor (links und rechts schneiden)
-            {
-                int width = (int)(monitorRatio * imageHeight);
-                return (imageWidth - width <= 1.0 * imageWidth / 100 * ConfigurationHelper.PercentLeftRightCutAllowed);
-            }
-            else  // Bild schmaler als Monitor (oben und unten schneiden)
-            {
-                int height = (int)(1.0 * imageWidth / (1.0 * monitorWidth / monitorHeight));
-                return (imageHeight - height <= 1.0 * imageHeight / 100 * ConfigurationHelper.PercentTopBottomCutAllowed);
-            }
+            return (imageRatio <= maxRatio && imageRatio >= minRatio);
         }
 
+        /// <summary>
+        /// returns the min and max Ratio for which Pictures can be Snapped
+        /// </summary>
+        /// <param name="monitorWidth"></param>
+        /// <param name="monitorHeight"></param>
+        /// <returns>minRatio and maxRatio</returns>
+        public static (double minRatio, double maxRatio) GetRatioRange(int monitorWidth, int monitorHeight,
+            int percentLeftRightCutAllowed = -1,
+            int percentTopBottomCutAllowed = -1)
+        {
+            if (percentLeftRightCutAllowed == -1) percentLeftRightCutAllowed = ConfigurationHelper.PercentLeftRightCutAllowed;
+            if (percentTopBottomCutAllowed == -1) percentTopBottomCutAllowed = ConfigurationHelper.PercentTopBottomCutAllowed;
+            
+            double monitorRatio = 1.0 * monitorWidth / monitorHeight;
+
+            
+            double maxWidth = 100.0 * monitorWidth / (100 - percentLeftRightCutAllowed);
+            double maxHeight = 100.0 * monitorHeight / (100 - percentTopBottomCutAllowed);
+
+            var minratio = monitorWidth / maxHeight;
+            var maxratio = maxWidth / monitorHeight;
+            if (maxratio == double.PositiveInfinity)
+                maxratio = double.MaxValue;
+
+
+            return (minratio, maxratio);
+        }
+
+
+        public void ClearCache()
+        {
+            if (_cacheHandler != null)
+            {
+                _cacheHandler.ClearCache();
+            }
+        }
 
 
 

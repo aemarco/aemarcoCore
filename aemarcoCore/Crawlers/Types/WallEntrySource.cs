@@ -5,14 +5,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace aemarcoCore.Crawlers.Types
 {
     internal class WallEntrySource
     {
-        private Uri _baseUri;
-        private HtmlNode _rootNode;
-        private string _categoryName;
+        #region fields
+
+        private readonly Uri _baseUri;
+        private readonly HtmlNode _rootNode;
+        private readonly string _categoryName;
 
         private HtmlDocument _detailsDoc;
         private HtmlDocument _downloadDoc;
@@ -23,18 +26,28 @@ namespace aemarcoCore.Crawlers.Types
         private IContentCategory _contentCategory;
         private List<string> _tags;
 
+        #endregion
+
+        #region ctor
+
         internal WallEntrySource(Uri baseUri, HtmlNode rootNode, string categoryName)
         {
             _baseUri = baseUri;
             _rootNode = rootNode;
             _categoryName = categoryName;
+
         }
 
+        #endregion
+
+        #region props
 
         internal HtmlNode RootNode
         {
             get { return _rootNode; }
         }
+
+
         internal HtmlDocument DetailsDoc
         {
             get { return _detailsDoc; }
@@ -45,7 +58,6 @@ namespace aemarcoCore.Crawlers.Types
             get { return _downloadDoc; }
             set { _downloadDoc = value; }
         }
-
 
         internal Uri ImageUri
         {
@@ -78,6 +90,9 @@ namespace aemarcoCore.Crawlers.Types
             set { _tags = value; }
         }
 
+        #endregion
+
+        #region Output
 
         internal WallEntry WallEntry
         {
@@ -96,9 +111,15 @@ namespace aemarcoCore.Crawlers.Types
             }
         }
 
+        #endregion
 
 
+        #region Documents
 
+        internal HtmlDocument GetChildDocumentFromRootNode(string nodeToSubNode = null)
+        {
+            return GetChildDocumentFromNode(_rootNode, nodeToSubNode);
+        }
         internal HtmlDocument GetChildDocumentFromNode(HtmlNode node, string nodeToSubNode = null)
         {
             HtmlNode subNode;
@@ -119,7 +140,7 @@ namespace aemarcoCore.Crawlers.Types
             return WallpaperCrawlerBasis.GetDocument(uri);
         }
 
-        internal HtmlDocument GetChildDocument(HtmlDocument doc, string docToHrefNode)
+        internal HtmlDocument GetChildDocumentFromDocument(HtmlDocument doc, string docToHrefNode)
         {
             var node = doc?.DocumentNode.SelectSingleNode(docToHrefNode);
             if (node != null)
@@ -130,13 +151,16 @@ namespace aemarcoCore.Crawlers.Types
             return null;
         }
 
+        #endregion
+
+        #region navigation
+
         internal Uri GetUriFromDocument(HtmlDocument doc, string docToTargetNode, string attribute)
         {
             var node = doc?.DocumentNode.SelectSingleNode(docToTargetNode);
             var href = node?.Attributes[attribute]?.Value;
             return new Uri(_baseUri, href);
         }
-
         internal string GetSubNodeAttribute(HtmlNode node, string attribute, string nodeToTargetNode = null)
         {
             HtmlNode subNode;
@@ -152,6 +176,9 @@ namespace aemarcoCore.Crawlers.Types
             return value;
         }
 
+        #endregion
+
+        #region filedetails
 
         internal (string filename, string extension) GetFileDetails(Uri imageUri, string prefix = null)
         {
@@ -176,6 +203,9 @@ namespace aemarcoCore.Crawlers.Types
             return (name, Path.GetExtension(url));
         }
 
+        #endregion
+
+        #region tags
 
         internal List<string> GetTagsFromNode(HtmlNode node, string attribute, string nodeToTargetNode = null)
         {
@@ -192,7 +222,7 @@ namespace aemarcoCore.Crawlers.Types
 
             return GetTagsFromTagString(tagString);
         }
-        internal List<string> GetTagsFromNodes(HtmlDocument doc, string docToTargetNodes, Func<HtmlNode,string> selector)
+        internal List<string> GetTagsFromNodes(HtmlDocument doc, string docToTargetNodes, Func<HtmlNode, string> selector)
         {
             var nodes = doc?.DocumentNode.SelectNodes(docToTargetNodes);
             var tags = nodes?.Select(selector).ToList();
@@ -205,7 +235,7 @@ namespace aemarcoCore.Crawlers.Types
                 return tags;
             }
         }
-        
+
         internal List<string> GetTagsFromTagString(string tagString)
         {
             //z.B. "flowerdress, nadia p, susi r, suzanna, suzanna a, brunette, boobs, big tits"
@@ -228,6 +258,8 @@ namespace aemarcoCore.Crawlers.Types
             }
             return result;
         }
+
+        #endregion
 
 
     }

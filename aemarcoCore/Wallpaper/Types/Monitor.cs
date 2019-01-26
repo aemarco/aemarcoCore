@@ -112,6 +112,11 @@ namespace aemarcoCore.Wallpaper.Types
             return result;
         }
 
+
+        /// <summary>
+        /// Sets the Picture as big as possible with Black bars
+        /// </summary>
+        /// <param name="wall"></param>
         private void SetDirectWallpaper(Image wall)
         {
             float heightRatio = (float)_rectangle.Height / (float)wall.Height;
@@ -142,6 +147,11 @@ namespace aemarcoCore.Wallpaper.Types
             g.DrawImage(wall, drawTo);
             _wallpaper = targetImg;
         }
+
+        /// <summary>
+        /// Sets the Picture and fills the screen by cutting the Picture
+        /// </summary>
+        /// <param name="img"></param>
         private void SetSnappedWallpaper(Image img)
         {
             Rectangle rect;
@@ -157,6 +167,11 @@ namespace aemarcoCore.Wallpaper.Types
             }
             SetDirectWallpaper(((Bitmap)img).Clone(rect, img.PixelFormat));
         }
+        /// <summary>
+        /// Cuts the Picture by the allowed amount and sets it as big as possible with black bars.
+        /// Should be called only if it can´t be "Snapped"
+        /// </summary>
+        /// <param name="img"></param>
         private void SetCuttedWallpaper(Image img)
         {
             Rectangle rect;
@@ -206,6 +221,7 @@ namespace aemarcoCore.Wallpaper.Types
                         if (WallpaperSetter.CanBeSnapped(wall.Width, wall.Height, _rectangle.Width, _rectangle.Height))
                         {
                             SetSnappedWallpaper(wall);
+                            
                         }
                         else
                         {

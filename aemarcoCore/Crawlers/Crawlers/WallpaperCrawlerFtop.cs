@@ -105,8 +105,8 @@ namespace aemarcoCore.Crawlers.Crawlers
             var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
             //docs
-            source.DetailsDoc = source.GetChildDocumentFromNode(node, "./div[@class='thumbnail']/a");
-            source.DownloadDoc = source.GetChildDocument(source.DetailsDoc, "//div[@class='res-origin']/a");
+            source.DetailsDoc = source.GetChildDocumentFromRootNode("./div[@class='thumbnail']/a");
+            source.DownloadDoc = source.GetChildDocumentFromDocument(source.DetailsDoc, "//div[@class='res-origin']/a");
 
             //details
             source.ImageUri = source.GetUriFromDocument(source.DownloadDoc, "//a[@type='button']", "href");

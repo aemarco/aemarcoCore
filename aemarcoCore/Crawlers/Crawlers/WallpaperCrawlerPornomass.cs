@@ -60,7 +60,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 source = new WallEntrySource(_uri1, node, catJob.SiteCategoryName);
                 //doc
-                source.DetailsDoc = source.GetChildDocumentFromNode(node);
+                source.DetailsDoc = source.GetChildDocumentFromRootNode();
                 //details
                 source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='photo-blink']/img", "src");
 
@@ -69,7 +69,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 source = new WallEntrySource(_uri2, node, catJob.SiteCategoryName);
                 //doc
-                source.DetailsDoc = source.GetChildDocumentFromNode(node);
+                source.DetailsDoc = source.GetChildDocumentFromRootNode();
                 //details
                 source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='photo-blink']/video", "poster");
 

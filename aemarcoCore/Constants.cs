@@ -1,8 +1,8 @@
 ﻿namespace aemarcoCore
 {
-    internal static class Constants
+    public static class Constants
     {
-        internal const string VIRTUALSCREEN_NAME = "Virtual";
+        public const string VIRTUALSCREEN_NAME = "Virtual";
 
     }
 }

@@ -22,7 +22,7 @@ namespace aemarcoCore.Tools
 
         //operation
         private static List<string> _knownUrls;
-        private static object _lock = new object();
+        private static readonly object _lock = new object();
 
         #endregion
 

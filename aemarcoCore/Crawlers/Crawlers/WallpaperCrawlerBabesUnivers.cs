@@ -84,7 +84,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
             //docs
-            source.DetailsDoc = source.GetChildDocumentFromNode(node);
+            source.DetailsDoc = source.GetChildDocumentFromRootNode();
             var detailLinkNode = source.DetailsDoc?.DocumentNode?.SelectNodes("//p/a").ToList()
                                     .First(x => x.ParentNode.InnerText.Contains("Original Resolution"));
             source.DownloadDoc = source.GetChildDocumentFromNode(detailLinkNode);

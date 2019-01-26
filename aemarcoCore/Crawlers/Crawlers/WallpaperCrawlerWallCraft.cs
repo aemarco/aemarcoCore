@@ -139,8 +139,8 @@ namespace aemarcoCore.Crawlers.Crawlers
             var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
             //docs
-            source.DetailsDoc = source.GetChildDocumentFromNode(node, "./a");
-            source.DownloadDoc = source.GetChildDocument(source.DetailsDoc, "//div[@class='wallpaper-table__row']/span[@class='wallpaper-table__cell']/a");
+            source.DetailsDoc = source.GetChildDocumentFromRootNode("./a");
+            source.DownloadDoc = source.GetChildDocumentFromDocument(source.DetailsDoc, "//div[@class='wallpaper-table__row']/span[@class='wallpaper-table__cell']/a");
 
 
             //details

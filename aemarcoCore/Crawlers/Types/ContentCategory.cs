@@ -29,8 +29,8 @@ namespace aemarcoCore.Crawlers.Types
 
         public string MainCategory { get; }
         public string SubCategory { get; } = string.Empty;
-        public int SuggestedMinAdultLevel { get; }
-        public int SuggestedMaxAdultLevel { get; }
+        public int SuggestedMinAdultLevel { get; set; }
+        public int SuggestedMaxAdultLevel { get; set; }
 
         [JsonIgnore]
         public string JSON

@@ -8,16 +8,16 @@ namespace aemarcoCore.Crawlers.Types
         #region fields
 
         //Informations
-        private string _siteCategoryName;
-        private Uri _categoryUri;
+        private readonly string _siteCategoryName;
+        private readonly Uri _categoryUri;
         private IContentCategory _category;
 
         //paging
 
-        private int _startPage;
+        private readonly int _startPage;
         private int _lastPage;
         private int _currentPage;
-        private bool _onlyNews;
+        private readonly bool _onlyNews;
 
         private int _numberOfEntriesPerPage;
         private int _numberOfEntriesDoneForCurrentPage;
