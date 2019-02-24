@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -22,28 +24,34 @@ namespace aemarcoCore.Caching
         private readonly HttpClient _client;
         private readonly Random _rand;
         private readonly char[] _alphanum = "ABCDEFG".ToCharArray();
-        private readonly Regex _regex;
         private readonly Timer _cleanupTimer;
         private long _lastKnownCacheSize;
-        private readonly CacheMode _cacheMode;
+        private CacheMode _cacheMode;
+        private int _cacheSizePercentage = 5;
+        private long _cacheSize = 262144000;
+
+
         public CacheHandler(HttpClient client, CacheMode mode)
         {
+            //cachefolder
             var saveDir = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 System.Diagnostics.Process.GetCurrentProcess().ProcessName
                 );
             _cachefolder = new DirectoryInfo(Path.Combine(saveDir, "CacheFolder"));
-
             if (!_cachefolder.Exists) _cachefolder.Create();
+
+            //cachefile
             _cacheStoreFile = Path.Combine(_cachefolder.FullName, "CacheStore.dat");
+
+            //caching
             _store = CacheEntryStore.Load(_cacheStoreFile);
             _client = client;
             _rand = new Random();
-            string regexSearch = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
-            _regex = new Regex(string.Format("[{0}]", Regex.Escape(regexSearch)));
             _lastKnownCacheSize = _store.GetAllValues().Sum(x => x.Size);
-            _cacheMode = mode;
+            CacheMode = mode;
 
+            //cleanup
             _cleanupTimer = new Timer
             {
                 AutoReset = true,
@@ -55,81 +63,160 @@ namespace aemarcoCore.Caching
 
         #endregion
 
-        #region props/settings
+        #region props
 
+        //settings
+        public CacheMode CacheMode
+        {
+            get
+            {
+                if (_cacheSize > 0)
+                {
+                    return _cacheMode;
+                }
+                else
+                {
+                    if (_cacheMode != CacheMode.None && _lastKnownCacheSize > 0)
+                        ClearCache();
+
+                    return CacheMode.None;
+                }
+            }
+            set
+            {
+                if (value != _cacheMode)
+                {
+                    _cacheMode = value;
+                    if (_cacheMode == CacheMode.Auto) UpdateCacheSize();
+                }
+            }
+        }
+        public int CacheSizePercentage
+        {
+            get { return _cacheSizePercentage; }
+            set
+            {
+                if (value != _cacheSizePercentage)
+                {
+                    _cacheSizePercentage = value;
+                    if (_cacheMode == CacheMode.Auto) UpdateCacheSize();
+                }
+            }
+        }
+        private void UpdateCacheSize()
+        {
+            DriveInfo di = new DriveInfo(_cachefolder.FullName);
+            _cacheSize = (di.AvailableFreeSpace + _lastKnownCacheSize) / 100 * _cacheSizePercentage;
+        }
+        public long CacheSize
+        {
+            get { return _cacheSize; }
+            set
+            {
+                if (value != _cacheSize)
+                {
+                    _cacheSize = value;
+                }
+            }
+        }
+
+        //handling
         public int FolderDepth { get; set; } = 6;
-
-        public long CacheSize { get; set; } = 262144000;
-        public int CacheSizePercentage { get; set; } = 5;
         public double CacheThreshold { get; set; } = 0.9;
+
+        //infos
+        public CacheStats CacheStats
+        {
+            get
+            {
+                CacheStats stats;
+                lock (_store)
+                {
+                    stats = _store.CacheStats;
+                }
+                stats.CurrentCacheSize = _lastKnownCacheSize;
+                stats.MaxCacheSize = _cacheSize;
+
+                return stats;
+            }
+        }
 
         #endregion
 
         #region Cleanup
 
-        private void _cleanupTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private async void _cleanupTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             _cleanupTimer.Stop();
-            Cleanup();
+            await Task.Run(() => Cleanup(System.Threading.CancellationToken.None));
             _cleanupTimer.Start();
         }
 
-        public void Cleanup()
+        public void Cleanup(System.Threading.CancellationToken ct, bool clearAll = false)
         {
             //determine CacheSize
-            if (_cacheMode == CacheMode.Auto)
-            {
-                DriveInfo di = new DriveInfo(_cachefolder.FullName);
-                CacheSize = (di.AvailableFreeSpace + _lastKnownCacheSize) / 100 * CacheSizePercentage;
-            }
+            if (_cacheMode == CacheMode.Auto) UpdateCacheSize();
 
-            CleanupKnownEntries();
-            DeleteObsoleteFiles();
+            CleanupKnownEntries(ct, clearAll);
+            DeleteObsoleteFiles(ct);
+
             //determine next occurance of time based cleanup
-            lock (_store)
+            if (!clearAll)
             {
-                var earliest = _store.GetAllValues()
-                                .OrderBy(x => x.ValidUntil)
-                                .FirstOrDefault();
-                if (earliest != null)
+                lock (_store)
                 {
-                    _cleanupTimer.Interval = Math.Max(
-                        (earliest.ValidUntil - DateTimeOffset.Now).TotalMilliseconds,
-                        TimeSpan.FromHours(1).TotalMilliseconds);
+                    var earliest = _store.GetAllValues()
+                                    .OrderBy(x => x.ValidUntil)
+                                    .FirstOrDefault();
+                    if (earliest != null)
+                    {
+                        _cleanupTimer.Interval = Math.Max(
+                            (earliest.ValidUntil - DateTimeOffset.Now).TotalMilliseconds,
+                            TimeSpan.FromHours(1).TotalMilliseconds);
+                    }
                 }
             }
         }
-        private void CleanupKnownEntries()
+        private void CleanupKnownEntries(System.Threading.CancellationToken ct, bool clearAll)
         {
             lock (_store)
             {
                 bool changed = false;
 
-                //remove all items which are to old
-                var toold = _store.GetAllValues()
-                    .Where(x => x.ValidUntil < DateTimeOffset.Now)
-                    .ToList();
-                toold.ForEach(x =>
+                if (clearAll)
                 {
-                    _store.RemoveEntry(x);
+                    //clear entries
+                    _store.ClearEntries();
                     changed = true;
-                });
-
-                //remove oldest items until thres. Cache is reached
-                var toobig = _store.GetAllValues()
-                    .OrderBy(x => x.ValidUntil)
-                    .ToList();
-                if (toobig.Sum(x => x.Size) > CacheSize)
+                }
+                else
                 {
-                    while (toobig.Sum(x => x.Size) > CacheSize * CacheThreshold)
+                    ////remove all items which are to old
+                    //var toold = _store.GetAllValues()
+                    //    .Where(x => x.ValidUntil < DateTimeOffset.Now)
+                    //    .ToList();
+                    //toold.ForEach(x =>
+                    //{
+                    //    _store.RemoveEntry(x);
+                    //    changed = true;
+                    //});
+
+                    //remove oldest items until thres. Cache is reached
+                    var toobig = _store.GetAllValues()
+                        .OrderBy(x => x.ValidUntil)
+                        .ToList();
+                    if (toobig.Sum(x => x.Size) > _cacheSize)
                     {
-                        _store.RemoveEntry(toobig[0]);
-                        toobig.RemoveAt(0);
-                        changed = true;
+                        while (toobig.Sum(x => x.Size) > _cacheSize * CacheThreshold && !ct.IsCancellationRequested)
+                        {
+                            _store.RemoveEntry(toobig[0]);
+                            toobig.RemoveAt(0);
+                            changed = true;
+                        }
                     }
-                    _lastKnownCacheSize = toobig.Sum(x => x.Size);
                 }
 
+                _lastKnownCacheSize = _store.GetAllValues().Sum(x => x.Size);
                 //save changes if any
                 if (changed)
                 {
@@ -141,7 +228,7 @@ namespace aemarcoCore.Caching
             }
         }
 
-        private void DeleteObsoleteFiles()
+        private void DeleteObsoleteFiles(System.Threading.CancellationToken ct)
         {
             List<FileInfo> files = null;
             List<string> known = null;
@@ -158,18 +245,14 @@ namespace aemarcoCore.Caching
             }
 
             files.Remove(files.First(x => x.FullName == _cacheStoreFile));
-            files.ForEach(x =>
+            foreach (var file in files)
             {
-                if (!known.Contains(x.FullName))
-                {
-                    x.Delete();
-                }
-            });
+                if (ct.IsCancellationRequested) break;
+                if (!known.Contains(file.FullName)) file.Delete();
+            }
 
             DeleteEmptySubfolders(_cachefolder.FullName);
         }
-
-
 
         private void DeleteEmptySubfolders(string path, bool isHome = true)
         {
@@ -196,98 +279,100 @@ namespace aemarcoCore.Caching
             catch { }
         }
 
-
-
-
-
         #endregion
 
         #region Entryhandling
 
-        public Stream GetEntryFromCache(string url)
+        public async Task<Stream> GetEntryFromCache(string url)
         {
             byte[] bytes = null;
 
-            //check url
-            var resp = _client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead).Result;
-            resp.EnsureSuccessStatusCode();
+            using (var resp = await _client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
+            {
+                resp.EnsureSuccessStatusCode();
+                //expires
+                var expire = (resp.Headers.CacheControl?.MaxAge is TimeSpan maxAge) ?
+                    DateTimeOffset.Now.Add(maxAge) : DateTimeOffset.Now.AddDays(7);
+                //etag
+                var etag = resp.Headers.ETag?.Tag;
 
-            //cache duration
-            var expire = resp.Content.Headers.Expires ?? DateTimeOffset.Now.AddDays(7);
+                CacheEntry entry = null;
+                lock (_store)
+                {
+                    //get entry
+                    if (_store.EntryExist(url))
+                    {//some entry in store
+                        entry = _store.GetEntry(url);
 
-            //etag
-            var etag = resp.Headers.ETag?.ToString().Replace("\"", "");
+                        if (etag == null || entry.Etag == null || entry.Etag == etag)
+                        {//entry still valid
+                            bytes = File.ReadAllBytes(entry.FileAdress);
+                            _store.ReportEntryUse();
+                        }
+                    }
+                    else
+                    {//need to add new entry to store
+                        entry = new CacheEntry();
+                    }
+
+                    //update entry
+                    entry.ValidUntil = expire;
+                    entry.Etag = etag;
+                }
+
+                //adds or replaces entry in store                
+                if (bytes == null)
+                {
+                    await AddNewEntryOrUpdate(url, entry, resp);
+                    bytes = File.ReadAllBytes(entry.FileAdress);
+                }
+
+                lock (_store)
+                {
+                    if (!_store.Save())
+                    {
+                        _store = CacheEntryStore.Load(_cacheStoreFile);
+                    }
+                }
+
+                //maybe cleanup stuff
+                if (_lastKnownCacheSize > _cacheSize)
+                {
+                    _ = Task.Run(() => Cleanup(System.Threading.CancellationToken.None));
+                }
+
+                return new MemoryStream(bytes);
+            }
+        }
+
+        private async Task AddNewEntryOrUpdate(string key, CacheEntry entry, HttpResponseMessage resp)
+        {
+            //determine cache target
+            DirectoryInfo folder = new DirectoryInfo($"{_cachefolder.FullName}\\{CreateSubfolderstring()}");
+            if (!folder.Exists) folder.Create();
+            string filename = Regex.Replace(CalculateMD5Hash(key), @"[^A-Za-z0-9_\.~]+", "-");
+            string target = Path.Combine(folder.FullName, $"{filename}.dat");
+
+            entry.FileAdress = target;
 
             lock (_store)
             {
-                CacheEntry entry = null;
-                bool needsFile = true;
-
-                //get entry
-                if (_store.EntryExist(url))
-                {//some entry in store
-                    entry = _store.GetEntry(url);
-                    if (etag == null || entry.Etag == etag)
-                    {//entry still valid
-                        needsFile = false;
-                    }
-                }
-                else
-                {//need to add new entry to store
-                    entry = new CacheEntry();
-                }
-
-                //update entry
-                entry.ValidUntil = expire;
-                entry.Etag = etag;
-                //adds or replaces entry in store                
-                if (needsFile)
-                {
-                    AddNewEntryOrUpdate(url, entry, resp);
-                }
-                bytes = File.ReadAllBytes(entry.FileAdress);
-
-                if (!_store.Save())
-                {
-                    _store = CacheEntryStore.Load(_cacheStoreFile);
-                }
+                //add or update Cache 
+                _store.AddOrUpdateEntry(key, entry);
             }
 
-            //maybe cleanup stuff
-            if (_lastKnownCacheSize > CacheSize)
-            {
-                Task.Factory.StartNew(() => Cleanup());
-            }
-
-            return new MemoryStream(bytes);
-        }
-
-        private void AddNewEntryOrUpdate(string key, CacheEntry entry, HttpResponseMessage resp)
-        {
-            //determine cache target
-            var subfolder = CreateSubfolderstring();
-            var sub = string.Join("\\", subfolder.ToCharArray());
-            DirectoryInfo folder = new DirectoryInfo($"{_cachefolder.FullName}\\{sub}");
-            if (!folder.Exists) folder.Create();
-            string filename = _regex.Replace(Path.GetFileNameWithoutExtension(key), "");
-            string target = Path.Combine(folder.FullName, $"{filename}.dat");
 
             //download
-            using (Stream stream = resp.Content.ReadAsStreamAsync().Result)
+            using (Stream stream = await resp.Content.ReadAsStreamAsync())
             {
                 using (var fs = File.Create(target))
                 {
                     stream.CopyTo(fs);
                     entry.Size = fs.Length;
+                    //remember added size
+                    _lastKnownCacheSize += entry.Size;
                 }
             }
-
-            //add or update Cache 
-            entry.FileAdress = target;
-            _store.AddOrUpdateEntry(key, entry);
-
-            //remember added size
-            _lastKnownCacheSize += entry.Size;
         }
 
         private string CreateSubfolderstring()
@@ -297,22 +382,38 @@ namespace aemarcoCore.Caching
             {
                 sb.Append(_alphanum[_rand.Next(0, _alphanum.Length)]);
             }
-            return sb.ToString();
+            var sub = string.Join("\\", sb.ToString().ToCharArray());
+            return sub;
         }
 
-        public void ClearCache()
+        private string CalculateMD5Hash(string input)
         {
-            lock (_store)
+            // step 1, calculate MD5 hash from input
+            MD5 md5 = System.Security.Cryptography.MD5.Create();
+            byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+            byte[] hash = md5.ComputeHash(inputBytes);
+
+            // step 2, convert byte array to hex string
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++)
+
             {
-                //clear entries
-                _store.ClearEntries();
-                //save changes
-                if (!_store.Save())
-                {
-                    _store = CacheEntryStore.Load(_cacheStoreFile);
-                }
+                sb.Append(hash[i].ToString("X2"));
             }
-            DeleteObsoleteFiles();
+            return sb.ToString();
+
+        }
+
+        private async void ClearCache()
+        {
+            await ClearCache(System.Threading.CancellationToken.None);
+        }
+
+        public async Task ClearCache(System.Threading.CancellationToken ct)
+        {
+            _cleanupTimer.Stop();
+            await Task.Run(() => Cleanup(ct, true)).ConfigureAwait(false);
+            _cleanupTimer.Start();
         }
 
         #endregion

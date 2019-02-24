@@ -5,7 +5,7 @@
     public enum Category
     {
         Men,
-        Girls,        
+        Girls,
         Girls_Celebrities,
         Girls_CelebrityFakes,
         Girls_Cars,
@@ -63,16 +63,6 @@
 
     }
 
-
-    //wall setter
-    public enum WallpaperMode
-    {
-        Fit,
-        AllowFill,
-        AllowFillForceCut,
-        Fill
-    }
-
     //wallsite
     public enum SourceSite
     {
@@ -89,6 +79,17 @@
 
     }
 
+
+    //wall setter
+    public enum WallpaperMode
+    {
+        Fit,
+        AllowFill,
+        AllowFillForceCut,
+        Fill
+    }
+
+
     /// <summary>
     /// None... No caching
     /// BySize... Uses that given amount in Bytes (CacheSizeInBytes defaults to 250MB). Cleanup works with a 10% Threshold
@@ -97,11 +98,24 @@
     public enum CacheMode
     {
         None,
-        BySize,        
+        BySize,
         Auto
     }
 
 
 
+
+    internal enum WallpaperSetMode
+    {
+        VirtualScreen,
+        IndividualScreens
+    }
+
+    internal enum WindowsWallpaperStyle
+    {
+        Fit,
+        Fill,
+        Tile
+    }
 
 }

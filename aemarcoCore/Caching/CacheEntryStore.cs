@@ -13,10 +13,29 @@ namespace aemarcoCore.Caching
 
         private readonly string _fileAdress = string.Empty;
         private readonly Dictionary<string, CacheEntry> entries = new Dictionary<string, CacheEntry>();
-        
+
+        //stats
+        private long _entryAccessCount = 0;
+        private long _entryUseCount = 0;
+        private long _entryNotFoundCount = 0;
+
+
         public CacheEntryStore(string file)
         {
             _fileAdress = file;
+        }
+
+        public CacheStats CacheStats
+        {
+            get
+            {
+                return new CacheStats
+                {
+                    EntryAccessCount = _entryAccessCount,
+                    EntryUseCount = _entryUseCount,
+                    EntryNotFoundCount = _entryNotFoundCount
+                };
+            }
         }
 
         #endregion
@@ -37,18 +56,26 @@ namespace aemarcoCore.Caching
 
         public bool EntryExist(string key)
         {
-            return entries.ContainsKey(key);
+            bool result = entries.ContainsKey(key);
+            if (!result) _entryNotFoundCount++;
+            return result;
         }
-        
+
         public CacheEntry GetEntry(string key)
         {
             if (entries.ContainsKey(key))
             {
+                _entryAccessCount++;
                 return entries[key];
             }
             throw new KeyNotFoundException();
         }
-        
+
+        public void ReportEntryUse()
+        {
+            _entryUseCount++;
+        }
+
         public List<string> GetAllKeys()
         {
             return entries.Keys.ToList();
@@ -76,6 +103,9 @@ namespace aemarcoCore.Caching
         public void ClearEntries()
         {
             entries.Clear();
+            _entryAccessCount = 0;
+            _entryUseCount = 0;
+            _entryNotFoundCount = 0;
         }
 
         #endregion
@@ -103,7 +133,7 @@ namespace aemarcoCore.Caching
                 return false;
             }
         }
-        
+
         /// <summary>
         /// gets a storage instance, new one or from saved one
         /// </summary>

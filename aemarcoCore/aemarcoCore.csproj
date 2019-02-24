@@ -71,6 +71,7 @@
     <Compile Include="Caching\CacheEntry.cs" />
     <Compile Include="Caching\CacheEntryStore.cs" />
     <Compile Include="Caching\CacheHandler.cs" />
+    <Compile Include="Caching\CacheStats.cs" />
     <Compile Include="Common\CustomEventArgs.cs" />
     <Compile Include="Common\Enums.cs" />
     <Compile Include="Common\Interfaces\IPersonEntry.cs" />
@@ -103,6 +104,9 @@
     <Compile Include="Common\Interfaces\IWallEntry.cs" />
     <Compile Include="Crawlers\Types\ContentCategory.cs" />
     <Compile Include="Crawlers\Types\WallCrawlerResult.cs" />
+    <Compile Include="Wallpaper\CachedWallpaperSetter.cs" />
+    <Compile Include="Wallpaper\ICachedWallpaperSetter.cs" />
+    <Compile Include="Wallpaper\IWallpaperSetter.cs" />
     <Compile Include="Tools\WallCrawlerData.cs" />
     <Compile Include="Crawlers\Types\WallEntry.cs" />
     <Compile Include="Crawlers\Crawlers\WallpaperCrawlerPornomass.cs" />
@@ -116,7 +120,6 @@
     <Compile Include="Wallpaper\Types\Monitor.cs" />
     <Compile Include="Wallpaper\WallpaperSetter.cs" />
     <Compile Include="Wallpaper\Types\WinWallpaper.cs" />
-    <Compile Include="Wallpaper\Types\WallpaperSetterSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="aemarcoCore.nuspec">

@@ -14,67 +14,52 @@ namespace aemarcoCore.Wallpaper.Types
 
         private Rectangle _rectangle;
         private Image _wallpaper;
-        private string _deviceName;
-
-        private WallpaperMode _wallMode;
 
         #endregion
 
         #region ctor
 
-        internal Monitor(Screen screen, string backgroundFile, WallpaperMode mode)
+        internal Monitor(Rectangle rect, string name, string backgroundFile, WallpaperMode mode)
         {
-            if (screen == null || backgroundFile == null)
+            if (String.IsNullOrWhiteSpace(backgroundFile) || String.IsNullOrWhiteSpace(name))
             {
                 throw new NullReferenceException("Monitor kann nicht initialisiert werden");
             }
+
 
             //set mandatory fields 
             _rectangle = new Rectangle(
-                GetRectangleX(screen),
-                GetRectangleY(screen),
-                screen.Bounds.Width,
-                screen.Bounds.Height);
+                GetRectangleX(rect),
+                GetRectangleY(rect),
+                rect.Width,
+                rect.Height);
+
+
             _wallpaper = GetPreviousImage(backgroundFile, _rectangle);
-            _deviceName = screen.DeviceName;
-            _wallMode = mode;
+            DeviceName = name;
+            WallpaperMode = mode;
         }
-
-        internal Monitor(Rectangle rect, string name, string backgroundFile, WallpaperMode mode)
-        {
-            if (backgroundFile == null)
-            {
-                throw new NullReferenceException("Monitor kann nicht initialisiert werden");
-            }
-            _rectangle = rect;            
-            _deviceName = name;
-            _wallMode = mode;
-
-        }
-
-
         #endregion
 
         #region props
 
-        internal string DeviceName { get { return _deviceName; } }
-        internal Rectangle Rectangle { get { return _rectangle; } }
-        internal Image Wallpaper { get { return _wallpaper; } }
+        internal string DeviceName { get; }
+        public WallpaperMode WallpaperMode { get; internal set; }
 
         #endregion
 
         #region private
 
-        private int GetRectangleX(Screen screen)
+        private int GetRectangleX(Rectangle rect)
         {
             var minX = Screen.AllScreens.Min(x => x.Bounds.X);
-            int result = -minX + screen.Bounds.Left;
+            int result = -minX + rect.Left;
             return result;
         }
-        private int GetRectangleY(Screen screen)
+        private int GetRectangleY(Rectangle rect)
         {
             var minY = Screen.AllScreens.Min(x => x.Bounds.Y);
-            int result = -minY + screen.Bounds.Top;
+            int result = -minY + rect.Top;
             return result;
         }
         private Bitmap GetPreviousImage(string backgroundFile, Rectangle rectangle)
@@ -90,7 +75,7 @@ namespace aemarcoCore.Wallpaper.Types
                         if (old.Width >= (rectangle.X + rectangle.Width) &&
                             old.Height >= (rectangle.Y + rectangle.Height))
                         {
-                            result = (Bitmap)old.Clone(rectangle, old.PixelFormat);
+                            result = new Bitmap(old.Clone(rectangle, old.PixelFormat));
                         }
                         else
                         {
@@ -101,42 +86,36 @@ namespace aemarcoCore.Wallpaper.Types
                 catch
                 {
                     File.Delete(backgroundFile);
+                    result = new Bitmap(_rectangle.Width, _rectangle.Height);
                 }
             }
-            if (result == null)
-            {
-                result = new Bitmap(rectangle.Width, rectangle.Height);
-
-            }
-
             return result;
         }
 
 
         /// <summary>
-        /// Sets the Picture as big as possible with Black bars
+        /// Sets the Picture as big as possible with Black bars if needed
         /// </summary>
-        /// <param name="wall"></param>
-        private void SetDirectWallpaper(Image wall)
+        /// <param name="readyToUsePicture"></param>
+        private void SetDirectWallpaper(Image readyToUsePicture)
         {
-            float heightRatio = (float)_rectangle.Height / (float)wall.Height;
-            float widthRatio = (float)_rectangle.Width / (float)wall.Width;
+            float heightRatio = (float)_rectangle.Height / (float)readyToUsePicture.Height;
+            float widthRatio = (float)_rectangle.Width / (float)readyToUsePicture.Width;
 
-            int height = _rectangle.Height;
-            int width = _rectangle.Width;
+            int height, width;
             int x = 0;
             int y = 0;
 
             if (heightRatio < widthRatio) //Bild schmaler als Monitor
             {
-                width = (int)((float)wall.Width * heightRatio);
-                height = (int)((float)wall.Height * heightRatio);
+                width = (int)((float)readyToUsePicture.Width * heightRatio);
+                height = (int)((float)readyToUsePicture.Height * heightRatio);
                 x = (int)((float)(_rectangle.Width - width) / 2f);
             }
             else //Bild breiter als Monitor
             {
-                width = (int)((float)wall.Width * widthRatio);
-                height = (int)((float)wall.Height * widthRatio);
+                width = (int)((float)readyToUsePicture.Width * widthRatio);
+                height = (int)((float)readyToUsePicture.Height * widthRatio);
                 y = (int)((float)(_rectangle.Height - height) / 2f);
             }
 
@@ -144,51 +123,65 @@ namespace aemarcoCore.Wallpaper.Types
 
             Bitmap targetImg = new Bitmap(_rectangle.Width, _rectangle.Height);
             Graphics g = Graphics.FromImage(targetImg);
-            g.DrawImage(wall, drawTo);
+            g.DrawImage(readyToUsePicture, drawTo);
             _wallpaper = targetImg;
         }
-
         /// <summary>
         /// Sets the Picture and fills the screen by cutting the Picture
         /// </summary>
-        /// <param name="img"></param>
-        private void SetSnappedWallpaper(Image img)
+        /// <param name="pictureToBeCutted"></param>
+        private void SetSnappedWallpaper(Image pictureToBeCutted)
         {
             Rectangle rect;
-            if ((1.0 * _rectangle.Width / _rectangle.Height) - (1.0 * img.Width / img.Height) < 0) // Bild breiter als Monitor
-            {
-                rect = new Rectangle(0, 0, (int)((1.0 * _rectangle.Width / _rectangle.Height) * img.Height), img.Height);
-                rect.X = (img.Width - rect.Width) / 2;
+            double targetRatio = 1.0 * _rectangle.Width / _rectangle.Height;
+
+            if (targetRatio < (1.0 * pictureToBeCutted.Width / pictureToBeCutted.Height))
+            {   // ratio zu groß
+                int targetWidth = (int)(targetRatio * pictureToBeCutted.Height);
+                rect = new Rectangle(0, 0, targetWidth, pictureToBeCutted.Height);
+                rect.X = (pictureToBeCutted.Width - rect.Width) / 2;
             }
-            else // Bild schmaler als Monitor
+            else
             {
-                rect = new Rectangle(0, 0, img.Width, (int)(1.0 * img.Width / (1.0 * _rectangle.Width / _rectangle.Height)));
-                rect.Y = (img.Height - rect.Height) / 2;
+                // ratio zu klein
+                int targetHeight = (int)(pictureToBeCutted.Width / targetRatio);
+                rect = new Rectangle(0, 0, pictureToBeCutted.Width, targetHeight);
+                rect.Y = (pictureToBeCutted.Height - rect.Height) / 2;
             }
-            SetDirectWallpaper(((Bitmap)img).Clone(rect, img.PixelFormat));
+
+            if (rect.X == 0 && rect.Y == 0)
+            {   // ratio stimmt überein
+                SetDirectWallpaper(pictureToBeCutted);
+            }
+            else
+            {
+                SetDirectWallpaper(((Bitmap)pictureToBeCutted).Clone(rect, pictureToBeCutted.PixelFormat));
+            }
         }
         /// <summary>
         /// Cuts the Picture by the allowed amount and sets it as big as possible with black bars.
         /// Should be called only if it can´t be "Snapped"
         /// </summary>
-        /// <param name="img"></param>
-        private void SetCuttedWallpaper(Image img)
+        /// <param name="pictureToBeCutted"></param>
+        private void SetCuttedWallpaper(Image pictureToBeCutted)
         {
             Rectangle rect;
-            if ((1.0 * _rectangle.Width / _rectangle.Height) - (1.0 * img.Width / img.Height) < 0) // Bild breiter als Monitor
-            {
-                double pixelsToCut = 1.0 * img.Width / 100 * ConfigurationHelper.PercentLeftRightCutAllowed;
-                rect = new Rectangle(0, 0, img.Width - (int)pixelsToCut, img.Height);
-                rect.X = (img.Width - rect.Width) / 2;
+            double targetRatio = 1.0 * _rectangle.Width / _rectangle.Height;
+
+            if (targetRatio < 1.0 * pictureToBeCutted.Width / pictureToBeCutted.Height)
+            {   // ratio zu groß
+                double pixelsToCut = 1.0 * pictureToBeCutted.Width / 100 * ConfigurationHelper.PercentLeftRightCutAllowed;
+                rect = new Rectangle(0, 0, pictureToBeCutted.Width - (int)pixelsToCut, pictureToBeCutted.Height);
+                rect.X = (pictureToBeCutted.Width - rect.Width) / 2;
             }
-            else // Bild schmaler als Monitor
-            {
-                double pixelsToCut = 1.0 * img.Height / 100 * ConfigurationHelper.PercentTopBottomCutAllowed;
-                rect = new Rectangle(0, 0, img.Width, img.Height - (int)pixelsToCut);
-                rect.Y = (img.Height - rect.Height) / 2;
+            else
+            {   // ratio zu klein
+                double pixelsToCut = 1.0 * pictureToBeCutted.Height / 100 * ConfigurationHelper.PercentTopBottomCutAllowed;
+                rect = new Rectangle(0, 0, pictureToBeCutted.Width, pictureToBeCutted.Height - (int)pixelsToCut);
+                rect.Y = (pictureToBeCutted.Height - rect.Height) / 2;
             }
 
-            SetDirectWallpaper(((Bitmap)img).Clone(rect, img.PixelFormat));
+            SetDirectWallpaper(((Bitmap)pictureToBeCutted).Clone(rect, pictureToBeCutted.PixelFormat));
         }
 
 
@@ -202,7 +195,7 @@ namespace aemarcoCore.Wallpaper.Types
                 throw new NullReferenceException("Wallpaper can´t be null");
             }
 
-            switch (_wallMode)
+            switch (WallpaperMode)
             {
                 case WallpaperMode.AllowFill:
                     {
@@ -221,7 +214,6 @@ namespace aemarcoCore.Wallpaper.Types
                         if (WallpaperSetter.CanBeSnapped(wall.Width, wall.Height, _rectangle.Width, _rectangle.Height))
                         {
                             SetSnappedWallpaper(wall);
-                            
                         }
                         else
                         {
@@ -240,6 +232,11 @@ namespace aemarcoCore.Wallpaper.Types
                         break;
                     }
             }
+        }
+
+        internal void DrawToGraphics(Graphics g)
+        {
+            g.DrawImage(_wallpaper, _rectangle);
         }
 
     }
