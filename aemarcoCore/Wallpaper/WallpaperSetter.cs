@@ -1,5 +1,4 @@
-﻿using aemarcoCore.Caching;
-using aemarcoCore.Common;
+﻿using aemarcoCore.Common;
 using aemarcoCore.Tools;
 using aemarcoCore.Wallpaper.Types;
 using System;

@@ -89,22 +89,6 @@
         Fill
     }
 
-
-    /// <summary>
-    /// None... No caching
-    /// BySize... Uses that given amount in Bytes (CacheSizeInBytes defaults to 250MB). Cleanup works with a 10% Threshold
-    /// Auto... Cachesize may fluctuate according available diskspace (CacheSizePercentage default to 5%).
-    /// </summary>
-    public enum CacheMode
-    {
-        None,
-        BySize,
-        Auto
-    }
-
-
-
-
     internal enum WallpaperSetMode
     {
         VirtualScreen,

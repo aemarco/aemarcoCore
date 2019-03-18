@@ -68,10 +68,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Caching\CacheEntry.cs" />
-    <Compile Include="Caching\CacheEntryStore.cs" />
-    <Compile Include="Caching\CacheHandler.cs" />
-    <Compile Include="Caching\CacheStats.cs" />
     <Compile Include="Common\CustomEventArgs.cs" />
     <Compile Include="Common\Enums.cs" />
     <Compile Include="Common\Interfaces\IPersonEntry.cs" />
@@ -104,8 +100,6 @@
     <Compile Include="Common\Interfaces\IWallEntry.cs" />
     <Compile Include="Crawlers\Types\ContentCategory.cs" />
     <Compile Include="Crawlers\Types\WallCrawlerResult.cs" />
-    <Compile Include="Wallpaper\CachedWallpaperSetter.cs" />
-    <Compile Include="Wallpaper\ICachedWallpaperSetter.cs" />
     <Compile Include="Wallpaper\IWallpaperSetter.cs" />
     <Compile Include="Tools\WallCrawlerData.cs" />
     <Compile Include="Crawlers\Types\WallEntry.cs" />
