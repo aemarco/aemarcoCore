@@ -6,6 +6,7 @@ namespace aemarcoCore.Common
     public interface IWallEntry
     {
         string Url { get; }
+        string Filepath { get; }
         string ThumbnailUrl { get; }
         string FileName { get; }
         string Extension { get; }

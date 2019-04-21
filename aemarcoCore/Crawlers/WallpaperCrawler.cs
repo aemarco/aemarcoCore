@@ -136,6 +136,7 @@ namespace aemarcoCore.Crawlers
 
         #endregion
 
+
         #region Working
 
         /// <summary>
@@ -164,11 +165,15 @@ namespace aemarcoCore.Crawlers
             PrepareCrawlerList();
 
             _result.NumberOfCrawlersInvolved = _crawlers.Count;
+            _result.SitesFilter = _filterSourceSites.ToList();
+            _result.CategoryFilter = _filterCategories.ToList();
 
             //start all crawlers
             List<Task<bool>> tasks = new List<Task<bool>>();
             foreach (var crawler in _crawlers.Keys)
             {
+                _result.CrawlersInvolved.Add(crawler.GetType().Name);
+
                 var task = Task<bool>.Factory.StartNew(crawler.Start);
                 tasks.Add(task);
             }
@@ -216,8 +221,17 @@ namespace aemarcoCore.Crawlers
                     continue;
                 }
 
+                //filter down to supported categories if filter beeing used
+                if (_filterCategories.Count > 0 &&
+                   !_filterCategories.Any(x => instance.SourceSite.Supports(x)))
+                {
+                    continue;
+                }
+
+
                 try
                 {
+                    //reduce type to desired categories
                     instance.LimitAsPerFilterlist(_filterCategories);
                     if (instance.HasWorkingOffers)
                     {
@@ -251,6 +265,7 @@ namespace aemarcoCore.Crawlers
                     {
                         prefix = $"{_result.ResultName}_";
                     }
+
 
                     File.WriteAllText
                         (

@@ -70,7 +70,9 @@
   <ItemGroup>
     <Compile Include="Common\CustomEventArgs.cs" />
     <Compile Include="Common\Enums.cs" />
+    <Compile Include="Common\Extensions.cs" />
     <Compile Include="Common\Interfaces\IPersonEntry.cs" />
+    <Compile Include="Common\Attributes.cs" />
     <Compile Include="ConfigurationHelper.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Crawlers\Base\CrawlerBasis.cs" />
@@ -83,6 +85,7 @@
     <Compile Include="Crawlers\Crawlers\WallpaperCrawlerPornpics.cs" />
     <Compile Include="Crawlers\Crawlers\WallpaperCrawlerBabesUnivers.cs" />
     <Compile Include="Crawlers\Crawlers\WallpaperCrawlerAdultWalls.cs" />
+    <Compile Include="Crawlers\Crawlers\WallpaperCrawlerZoompussy.cs" />
     <Compile Include="Crawlers\Crawlers\WallpaperWallhaven.cs" />
     <Compile Include="Crawlers\PersonCrawler.cs" />
     <Compile Include="Crawlers\Types\CrawlOffer.cs" />

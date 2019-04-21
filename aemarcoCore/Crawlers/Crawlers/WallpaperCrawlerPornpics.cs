@@ -216,7 +216,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 case "Christmas":
                     return new ContentCategory(Category.Girls_Holidays);
                 case "Cosplay":
-                    return new ContentCategory(Category.Girls_Fantasy);
+                    return new ContentCategory(Category.Girls_Cosplay);
                 case "Gloryhole":
                     return new ContentCategory(Category.Girls_Gloryhole);
                 case "Self Shot":

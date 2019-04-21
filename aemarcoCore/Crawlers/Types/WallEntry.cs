@@ -26,6 +26,7 @@ namespace aemarcoCore.Crawlers.Types
 
 
         public string Url { get; }
+        public string Filepath { get; set; }
         public string ThumbnailUrl { get; }
         public string FileName { get; }
         public string Extension { get; }
@@ -47,13 +48,13 @@ namespace aemarcoCore.Crawlers.Types
                     _crawlerExtensions = new List<string>();
                     foreach (var ext in Settings.Default.CrawlerFileExtensions.Split(','))
                     {
-                        _crawlerExtensions.Add(ext.Replace(".", "").ToLower().Insert(0, "."));
+                        _crawlerExtensions.Add(ext.Replace(".", string.Empty).ToLower().Insert(0, "."));
                     }
                 }
 
 
                 if (
-                    String.IsNullOrEmpty(Url) || //Entry muss Url haben
+                    String.IsNullOrEmpty(Url) || //Entry muss Url oder File haben
                     String.IsNullOrEmpty(ThumbnailUrl) || //Entry muss ThumbnailUrl haben
                     String.IsNullOrEmpty(FileName) || //Entry muss FileName haben
                     String.IsNullOrEmpty(Extension) || //Entry muss Extension haben

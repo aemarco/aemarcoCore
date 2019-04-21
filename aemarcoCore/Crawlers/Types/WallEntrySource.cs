@@ -231,6 +231,7 @@ namespace aemarcoCore.Crawlers.Types
             }
             else
             {
+                tags.RemoveAll(x => x == null);
                 return tags;
             }
         }
