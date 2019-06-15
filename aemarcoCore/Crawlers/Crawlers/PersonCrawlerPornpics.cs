@@ -9,6 +9,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 {
 
     //this one is just crawling for profile pics
+#pragma warning disable CRR0043 // Unused type
     internal class PersonCrawlerPornpics : PersonCrawlerBasis
     {
         public PersonCrawlerPornpics(string nameToCrawl, CancellationToken cancellationToken)
@@ -30,15 +31,17 @@ namespace aemarcoCore.Crawlers.Crawlers
             Uri target = new Uri(_uri, href);
             HtmlDocument document = GetDocument(target);
 
-            var nodes = document.DocumentNode.SelectNodes("//ul[@id='columlist']/li/a");
+            var nodes = document.DocumentNode.SelectNodes("//div[@class='list-item']");
             var search = _nameToCrawl.ToLower();
 
-            var nodeWithName = nodes?.FirstOrDefault(x => x.InnerText.ToLower().Contains(search));
-            HtmlNode nodeWithBild = nodeWithName;
+            var node = nodes?.FirstOrDefault(x => x.InnerText.ToLower().Contains(search));
+
 
             //Name
-            if (nodeWithName != null)
+            if (node != null)
             {
+                var nodeWithName = node.ChildNodes.FirstOrDefault(x => x.Name == "a");
+
                 string n = nodeWithName.Attributes["title"]?.Value;
                 n = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(n.ToLower());
                 if (n.Contains(" "))
@@ -46,19 +49,13 @@ namespace aemarcoCore.Crawlers.Crawlers
                     result.FirstName = n.Substring(0, n.IndexOf(' '));
                     result.LastName = n.Substring(n.IndexOf(' ') + 1);
                 }
-            }
 
-            //Bild
-            if (nodeWithBild != null &&
-                nodeWithBild.Attributes["rel"] != null)
-            {
+
+                var nodeWithBild = node.ChildNodes.FirstOrDefault(x => x.Name == "i");
                 string address = nodeWithBild.Attributes["rel"].Value;
                 result.PictureUrl = address;
                 result.PictureSuggestedAdultLevel = -1;
             }
-
-
-
             return result;
 
         }

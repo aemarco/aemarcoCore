@@ -9,6 +9,7 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers.Crawlers
 {
+#pragma warning disable CRR0043 // Unused type
     internal class WallpaperCrawlerFtop : WallpaperCrawlerBasis
     {
 

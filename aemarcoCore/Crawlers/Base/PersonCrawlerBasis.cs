@@ -1,6 +1,7 @@
 ﻿using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Types;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
 
@@ -58,6 +59,25 @@ namespace aemarcoCore.Crawlers.Base
         }
 
         internal abstract PersonEntry GetPersonEntry();
+
+        protected string ConvertMaßeToMetric(string temp)
+        {
+            List<int> entries = new List<int>();
+
+            foreach (var entry in temp.Split('-'))
+            {
+                if (int.TryParse(entry, out int number))
+                {
+                    entries.Add((int)(number * 2.54));
+                }
+            }
+
+            if (entries.Count == 3)
+                return string.Join("-", entries);
+            else
+                return null;
+        }
+
 
         #endregion
 

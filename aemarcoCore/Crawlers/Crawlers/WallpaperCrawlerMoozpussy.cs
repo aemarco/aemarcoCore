@@ -12,13 +12,13 @@ using System.Threading;
 namespace aemarcoCore.Crawlers.Crawlers
 {
 #pragma warning disable CRR0043 // Unused type
-    internal class WallpaperCrawlerZoompussy : WallpaperCrawlerBasis
+    internal class WallpaperCrawlerMoozpussy : WallpaperCrawlerBasis
     {
-        private readonly Uri _uri = new Uri("http://zoompussy.com/");
+        private readonly Uri _uri = new Uri("http://moozpussy.com/");
 
-        internal override SourceSite SourceSite => SourceSite.Zoompussy;
+        internal override SourceSite SourceSite => SourceSite.Moozpussy;
 
-        public WallpaperCrawlerZoompussy(
+        public WallpaperCrawlerMoozpussy(
             int startPage,
             int lastPage,
             CancellationToken cancellationToken,
@@ -34,22 +34,20 @@ namespace aemarcoCore.Crawlers.Crawlers
             List<CrawlOffer> result = new List<CrawlOffer>();
             List<string> cats = new List<string>
             {
+
                 "asian",
-                "lingerie",
-                "stockings",
                 "ass",
                 "bikini",
                 "blonde",
                 "boobs",
-                "ebony",
-                "tits",
                 "brunette",
                 "legs",
-                "models",
-                "naked",
+                "lingerie",
                 "nude",
                 "pussy",
-                "redhead"
+                "redhead",
+                "teen",
+                "underwear"
             };
 
             foreach (var cat in cats)
@@ -61,7 +59,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         }
         protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
         {
-            //z.B. "http://zoompussy.com/search/asian/page/1/"
+            //z.B. "http://moozpussy.com/search/asian/page/1/"
             return new Uri($"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}");
         }
         protected override string GetSearchStringGorEntryNodes()
@@ -76,7 +74,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 case "asian":
                     return new ContentCategory(Category.Girls_Asian);
                 case "lingerie":
-                case "stockings":
+                case "underwear":
                     return new ContentCategory(Category.Girls_Lingerie);
                 default:
                     return new ContentCategory(Category.Girls);
@@ -91,19 +89,19 @@ namespace aemarcoCore.Crawlers.Crawlers
             source.DetailsDoc = source.GetChildDocumentFromRootNode();
 
             //details
-            source.ImageUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@id='post_content']/blockquote/a", "href");
-            source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@id='post_content']/blockquote/a/img", "src");
+            source.ImageUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@id='post_content']/div[@class='cent']/a", "href");
+            source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@id='post_content']/div[@class='cent']/a/img", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
             source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
             source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='post_z']/a", new Func<HtmlNode, string>(x =>
+            {
+                if (x.Attributes["href"] != null &&
+                    x.Attributes["href"].Value.StartsWith(_uri.AbsoluteUri))
                 {
-                    if (x.Attributes["href"] != null &&
-                        x.Attributes["href"].Value.StartsWith(_uri.AbsoluteUri))
-                    {
-                        return WebUtility.HtmlDecode(x.InnerText).Trim();
-                    }
-                    return null;
-                }));
+                    return WebUtility.HtmlDecode(x.InnerText).Trim();
+                }
+                return null;
+            }));
 
 
             WallEntry wallEntry = source.WallEntry;
@@ -184,15 +182,6 @@ namespace aemarcoCore.Crawlers.Crawlers
             if (!okay) File.Delete(target);
 
         }
-
-
-
-
-
-
-
-
-
 
 
     }

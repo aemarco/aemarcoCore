@@ -126,7 +126,11 @@
 
         //
         [SupportedCategories(Category.Girls_Asian, Category.Girls_Lingerie, Category.Girls)]
-        Zoompussy
+        Zoompussy,
+
+        //
+        [SupportedCategories(Category.Girls_Asian, Category.Girls_Lingerie, Category.Girls)]
+        Moozpussy
 
     }
     //wall setter

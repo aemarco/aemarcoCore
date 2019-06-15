@@ -6,6 +6,7 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers.Crawlers
 {
+#pragma warning disable CRR0043 // Unused type
     internal class PersonCrawlerIStripper : PersonCrawlerBasis
     {
         public PersonCrawlerIStripper(string nameToCrawl, CancellationToken cancellationToken)
@@ -64,15 +65,15 @@ namespace aemarcoCore.Crawlers.Crawlers
                     //Land
                     else if (node.InnerText.Contains("Land:"))
                     {
-                        result.Land = node.InnerText.Replace("Land:", "").Trim();
+                        result.Land = node.InnerText.Replace("Land:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Stadt:"))
                     {
-                        result.Geburtsort = node.InnerText.Replace("Stadt:", "").Trim();
+                        result.Geburtsort = node.InnerText.Replace("Stadt:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Maße:"))
                     {
-                        result.Maße = node.InnerText.Replace("Maße:", "")
+                        result.Maße = node.InnerText.Replace("Maße:", string.Empty)
                             .Replace(" / ", "-")
                             .Trim();
                     }
@@ -80,7 +81,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                     {
                         try
                         {
-                            string str = node.InnerText.Replace("Größe", "").Trim();
+                            string str = node.InnerText.Replace("Größe", string.Empty).Trim();
                             str = str.Substring(0, str.IndexOf("cm") - 1).Trim();
                             result.Größe = Convert.ToInt32(str);
                         }
@@ -90,7 +91,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                     {
                         try
                         {
-                            string str = node.InnerText.Replace("Gewicht:", "").Trim();
+                            string str = node.InnerText.Replace("Gewicht:", string.Empty).Trim();
                             str = str.Substring(0, str.IndexOf("kg") - 1).Trim();
                             result.Gewicht = Convert.ToInt32(str);
                         }

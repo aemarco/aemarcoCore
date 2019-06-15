@@ -362,8 +362,21 @@ namespace aemarcoCore.Wallpaper
             if (maxratio == double.PositiveInfinity)
                 maxratio = double.MaxValue;
 
-            return (minratio, maxratio);
+            return (Math.Round(minratio, 2), Math.Round(maxratio, 2));
         }
+
+
+        public static (double minRatio, double maxRatio) GetRatioRange(int monitorWidth, int monitorHeight,
+            int cuttingTolerance)
+        {
+            return GetRatioRange(monitorWidth, monitorHeight, cuttingTolerance, cuttingTolerance / 2);
+        }
+
+
+
+
+
+
 
         #endregion
 

@@ -7,6 +7,7 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers.Crawlers
 {
+#pragma warning disable CRR0043 // Unused type
     internal class PersonCrawlerNudevista : PersonCrawlerBasis
     {
 
@@ -15,7 +16,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
         }
 
-        private readonly Uri _uri = new Uri("http://www.nudevista.at");
+        private readonly Uri _uri = new Uri("https://www.nudevista.at");
 
         internal override PersonEntry GetPersonEntry()
         {
@@ -51,7 +52,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 string address = nodeWithBild.Attributes["src"].Value;
                 if (!address.StartsWith("http"))
                 {
-                    address = "http:" + address;
+                    address = "https:" + address;
                 }
                 result.PictureUrl = address;
                 result.PictureSuggestedAdultLevel = -1;
@@ -65,7 +66,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                     //Geburtstag
                     if (node.InnerText.Contains("Geburtstag:"))
                     {
-                        string str = node.InnerText.Replace("Geburtstag: ", "").Trim();
+                        string str = node.InnerText.Replace("Geburtstag: ", string.Empty).Trim();
                         if (DateTime.TryParse(str, out DateTime dt))
                         {
                             result.Geburtstag = dt;
@@ -74,22 +75,22 @@ namespace aemarcoCore.Crawlers.Crawlers
                     //Land
                     else if (node.InnerText.Contains("Land:"))
                     {
-                        result.Land = node.InnerText.Replace("Land:", "").Trim();
+                        result.Land = node.InnerText.Replace("Land:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Geburtsort:"))
                     {
-                        result.Geburtsort = node.InnerText.Replace("Geburtsort:", "").Trim();
+                        result.Geburtsort = node.InnerText.Replace("Geburtsort:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Beruf:"))
                     {
-                        result.Beruf = node.InnerText.Replace("Beruf:", "").Trim();
+                        result.Beruf = node.InnerText.Replace("Beruf:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Karrierestart:"))
                     {
                         try
                         {
-                            string str = node.InnerText.Replace("Karrierestart:", "").Trim();
-                            str = str.Replace("-", "").Trim();
+                            string str = node.InnerText.Replace("Karrierestart:", string.Empty).Trim();
+                            str = str.Replace("-", string.Empty).Trim();
 
                             result.Karrierestart = new DateTime(Convert.ToInt32(str), 1, 1);
                         }
@@ -97,7 +98,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                     }
                     else if (node.InnerText.Contains("Karrierestatus:"))
                     {
-                        result.Karrierestatus = node.InnerText.Replace("Karrierestatus:", "").Trim();
+                        result.Karrierestatus = node.InnerText.Replace("Karrierestatus:", string.Empty).Trim();
                     }
                     //Aliase
                     else if (node.InnerText.Contains("Auch bekannt als"))
@@ -107,7 +108,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
                         string aliasString = node.InnerText;
                         //Auch bekannt als Becky Lesabre, Beth Porter.
-                        aliasString = node.InnerText.Replace("Auch bekannt als", "");
+                        aliasString = node.InnerText.Replace("Auch bekannt als", string.Empty);
                         aliasString = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(aliasString.ToLower());
                         // Becky Lesabre, Beth Porter.
                         if (aliasString.EndsWith("."))
@@ -125,23 +126,25 @@ namespace aemarcoCore.Crawlers.Crawlers
                     }
                     else if (node.InnerText.Contains("Rasse:"))
                     {
-                        result.Rasse = node.InnerText.Replace("Rasse:", "").Trim();
+                        result.Rasse = node.InnerText.Replace("Rasse:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Haare:"))
                     {
-                        result.Haare = node.InnerText.Replace("Haare:", "").Trim();
+                        result.Haare = node.InnerText.Replace("Haare:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Augen:"))
                     {
-                        result.Augen = node.InnerText.Replace("Augen:", "").Trim();
+                        result.Augen = node.InnerText.Replace("Augen:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Maße:"))
                     {
-                        result.Maße = node.InnerText.Replace("Maße:", "").Trim();
+                        string temp = node.InnerText.Replace("Maße:", string.Empty).Trim();
+                        string maße = ConvertMaßeToMetric(temp);
+                        result.Maße = maße;
                     }
                     else if (node.InnerText.Contains("Körbchengröße:"))
                     {
-                        result.Körbchengröße = node.InnerText.Replace("Körbchengröße:", "").Trim();
+                        result.Körbchengröße = node.InnerText.Replace("Körbchengröße:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Größe:"))
                     {
@@ -167,8 +170,8 @@ namespace aemarcoCore.Crawlers.Crawlers
                     }
                     else if (node.InnerText.Contains("Piercings:"))
                     {
-                        var pierc = node.InnerText.Replace("Piercings:", "").Trim();
-                        pierc = pierc.Replace("None", "").Trim();
+                        var pierc = node.InnerText.Replace("Piercings:", string.Empty).Trim();
+                        pierc = pierc.Replace("None", string.Empty).Trim();
                         if (!String.IsNullOrWhiteSpace(pierc))
                         {
                             result.Piercings = pierc;

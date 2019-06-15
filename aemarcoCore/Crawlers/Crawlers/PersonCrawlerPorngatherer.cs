@@ -6,6 +6,7 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers.Crawlers
 {
+#pragma warning disable CRR0043 // Unused type
     internal class PersonCrawlerPorngatherer : PersonCrawlerBasis
     {
         public PersonCrawlerPorngatherer(string nameToCrawl, CancellationToken cancellationToken)
@@ -13,7 +14,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
         }
 
-        private readonly Uri _uri = new Uri("https://www.pornsitestars.com");
+        private readonly Uri _uri = new Uri("https://pornsites.xxx");
 
         internal override PersonEntry GetPersonEntry()
         {
@@ -23,12 +24,12 @@ namespace aemarcoCore.Crawlers.Crawlers
                 PersonEntryPriority = 10
             };
 
-            string href = $"de/pornstars/{_nameToCrawl.Replace(' ', '-')}";
+            string href = $"pornstars/{_nameToCrawl.Replace(' ', '-')}";
             Uri target = new Uri(_uri, href);
             HtmlDocument document = GetDocument(target);
-            var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@class='tab-left lefttext']");
-            var nodeWithBild = document.DocumentNode.SelectSingleNode("//div[@class='fallbox']")?.FirstChild?.FirstChild;
-            var nodeWithAliase = document.DocumentNode.SelectSingleNode("//div[@class='center']")?.NextSibling;
+            var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@class='tab-left lefttext noborder mobilehide']");
+            var nodeWithBild = document.DocumentNode.SelectSingleNode("//div[@class='fallboxcon']/a/div/img");
+            var nodeWithData = document.DocumentNode.SelectNodes("//table[@class='styled']/tr");
             //Name
             if (nodeWithName != null)
             {
@@ -51,27 +52,70 @@ namespace aemarcoCore.Crawlers.Crawlers
                 result.PictureSuggestedAdultLevel = -1;
             }
 
-            //Aliase
-            if (nodeWithAliase != null && nodeWithAliase.InnerText.StartsWith("aka"))
-            {
-                string aliasString = nodeWithAliase.InnerText;
-                //aka Nensi B, Medina U, Foxy Di, Nensi B Medina, Kate X-Art, Foxi Di, Katoa Erotic Beauty, Nensi Amour Angels, Nensi Show Beauty
-                aliasString = aliasString.Substring(4);
-                aliasString = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(aliasString.ToLower());
-                // Nensi B, Medina U, Foxy Di, Nensi B Medina, Kate X-Art, Foxi Di, Katoa Erotic Beauty, Nensi Amour Angels, Nensi Show Beauty
-                if (aliasString.EndsWith("."))
-                    aliasString = aliasString.Remove(aliasString.Length - 1);
-                // Becky Lesabre, Beth Porter
-                foreach (string aliasItem in aliasString.Split(','))
-                {
-                    var al = aliasItem.Trim();
-                    if (al.Length > 3 && al.Contains(" "))
-                    {
-                        result.Aliase.Add(al);
-                    }
+            //data
 
+
+            //Data
+            if (nodeWithData != null)
+            {
+                foreach (var node in nodeWithData)
+                {
+                    //Geburtstag
+                    if (node.InnerText.Contains("Age:"))
+                    {
+                        string str = node.InnerText
+                            .Replace("Age:", string.Empty)
+                            .Trim();
+                        str = str.Substring(0, str.IndexOf(' '));
+
+
+                        if (DateTime.TryParse(str, out DateTime dt))
+                        {
+                            result.Geburtstag = dt;
+                        }
+                    }
+                    else if (node.InnerText.Contains("Hair color:"))
+                    {
+                        result.Haare = node.InnerText.Replace("Hair color:", string.Empty).Trim();
+                    }
+                    else if (node.InnerText.Contains("Eye color:"))
+                    {
+                        result.Augen = node.InnerText.Replace("Eye color:", string.Empty).Trim();
+                    }
+                    else if (node.InnerText.Contains("Weight:"))
+                    {
+                        try
+                        {
+                            string str = node.InnerText.Replace("Weight:", string.Empty);
+                            str = str.Substring(str.IndexOf("(") + 1);
+                            str = str.Substring(0, str.IndexOf("kg)") - 1);
+                            result.Gewicht = Convert.ToInt32(str);
+                        }
+                        catch { }
+                    }
+                    else if (node.InnerText.Contains("Height:"))
+                    {
+                        try
+                        {
+                            string str = node.InnerText.Replace("Height:", string.Empty);
+                            str = str.Substring(str.IndexOf("(") + 1);
+                            str = str.Substring(0, str.IndexOf("cm)") - 1);
+                            result.Größe = Convert.ToInt32(str);
+                        }
+                        catch { }
+                    }
+                    else if (node.InnerText.Contains("Ethnicity:"))
+                    {
+                        result.Rasse = node.InnerText.Replace("Ethnicity:", string.Empty).Trim();
+                    }
+                    else if (node.InnerText.Contains("Country:"))
+                    {
+                        result.Land = node.InnerText.Replace("Country:", string.Empty).Trim();
+                    }
                 }
             }
+
+
 
             return result;
         }

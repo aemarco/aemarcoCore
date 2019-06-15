@@ -10,6 +10,7 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers.Crawlers
 {
+#pragma warning disable CRR0043 // Unused type
     internal class WallpaperCrawlerErowall : WallpaperCrawlerBasis
     {
         private readonly Uri _uri = new Uri("https://erowall.com");

@@ -8,6 +8,7 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers.Crawlers
 {
+#pragma warning disable CRR0043 // Unused type
     internal class WallpaperCrawlerPornomass : WallpaperCrawlerBasis
     {
         private readonly Uri _uri1 = new Uri("http://pornomass.com");
