@@ -75,28 +75,28 @@ namespace aemarcoCore.Crawlers.Crawlers
             switch (categoryName)
             {
                 case "Celebrities":
-                    return new ContentCategory(Category.Girls_Celebrities);
+                    return new ContentCategory(Common.Category.Girls_Celebrities);
                 case "Girls & Beaches":
-                    return new ContentCategory(Category.Girls_Beaches);
+                    return new ContentCategory(Common.Category.Girls_Beaches);
                 case "Girls & Cars":
-                    return new ContentCategory(Category.Girls_Cars);
+                    return new ContentCategory(Common.Category.Girls_Cars);
                 case "Girls & Bikes":
-                    return new ContentCategory(Category.Girls_Bikes);
+                    return new ContentCategory(Common.Category.Girls_Bikes);
                 case "Lingerie Girls":
-                    return new ContentCategory(Category.Girls_Lingerie);
+                    return new ContentCategory(Common.Category.Girls_Lingerie);
                 case "Asian Girls":
-                    return new ContentCategory(Category.Girls_Asian);
+                    return new ContentCategory(Common.Category.Girls_Asian);
                 case "Holidays":
-                    return new ContentCategory(Category.Girls_Holidays);
+                    return new ContentCategory(Common.Category.Girls_Holidays);
                 case "Fantasy Girls":
                 case "3D & Vector Girls":
-                    return new ContentCategory(Category.Girls_Fantasy);
+                    return new ContentCategory(Common.Category.Girls_Fantasy);
                 case "Celebrity Fakes":
-                    return new ContentCategory(Category.Girls_CelebrityFakes);
+                    return new ContentCategory(Common.Category.Girls_CelebrityFakes);
                 case "Fetish Girls":
-                    return new ContentCategory(Category.Girls_Fetish);
+                    return new ContentCategory(Common.Category.Girls_Fetish);
                 default:
-                    return new ContentCategory(Category.Girls);
+                    return new ContentCategory(Common.Category.Girls);
             }
         }
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)

@@ -74,12 +74,12 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
 
                 case "asian":
-                    return new ContentCategory(Category.Girls_Asian);
+                    return new ContentCategory(Common.Category.Girls_Asian);
                 case "lingerie":
                 case "stockings":
-                    return new ContentCategory(Category.Girls_Lingerie);
+                    return new ContentCategory(Common.Category.Girls_Lingerie);
                 default:
-                    return new ContentCategory(Category.Girls);
+                    return new ContentCategory(Common.Category.Girls);
             }
         }
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)

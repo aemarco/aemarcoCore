@@ -50,7 +50,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         }
         protected override IContentCategory GetContentCategory(string categoryName)
         {
-            return new ContentCategory(Category.Girls_Hardcore, 95, 99);
+            return new ContentCategory(Common.Category.Girls, 90, 99);
         }
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {

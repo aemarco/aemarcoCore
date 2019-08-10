@@ -89,6 +89,7 @@
     <Compile Include="Crawlers\Crawlers\WallpaperCrawlerZoompussy.cs" />
     <Compile Include="Crawlers\Crawlers\WallpaperWallhaven.cs" />
     <Compile Include="Crawlers\PersonCrawler.cs" />
+    <Compile Include="Crawlers\Types\AbyssAPIResult.cs" />
     <Compile Include="Crawlers\Types\CrawlOffer.cs" />
     <Compile Include="Common\Interfaces\IPersonCrawlerResult.cs" />
     <Compile Include="Crawlers\Types\PersonCrawlerResult.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Common\Interfaces\IWallEntry.cs" />
     <Compile Include="Crawlers\Types\ContentCategory.cs" />
     <Compile Include="Crawlers\Types\WallCrawlerResult.cs" />
+    <Compile Include="Crawlers\Crawlers\WallpaperCrawlerAbyss.cs" />
     <Compile Include="Wallpaper\IWallpaperSetter.cs" />
     <Compile Include="Tools\WallCrawlerData.cs" />
     <Compile Include="Crawlers\Types\WallEntry.cs" />

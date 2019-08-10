@@ -45,6 +45,10 @@ namespace aemarcoCore.Crawlers.Types
 
         #region props
 
+        //kind of crawl
+        public CrawlMethod CrawlMethod { get; set; } = CrawlMethod.Classic;
+
+
         //Informations
         public string SiteCategoryName
         {

@@ -92,20 +92,18 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             switch (categoryName)
             {
-                case "Blowjob":
-                    return new ContentCategory(Category.Girls_Blowjob, 90, 94);
                 case "Lesbians":
-                    return new ContentCategory(Category.Girls_Lesbians);
+                    return new ContentCategory(Common.Category.Girls_Lesbians);
                 case "Lingerie":
-                    return new ContentCategory(Category.Girls_Lingerie);
+                    return new ContentCategory(Common.Category.Girls_Lingerie);
                 case "Beach":
-                    return new ContentCategory(Category.Girls_Beaches);
+                    return new ContentCategory(Common.Category.Girls_Beaches);
                 case "Asian":
-                    return new ContentCategory(Category.Girls_Asian);
+                    return new ContentCategory(Common.Category.Girls_Asian);
                 case "Anime":
-                    return new ContentCategory(Category.Girls_Fantasy);
+                    return new ContentCategory(Common.Category.Girls_Fantasy);
                 default:
-                    return new ContentCategory(Category.Girls);
+                    return new ContentCategory(Common.Category.Girls);
             }
         }
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)

@@ -20,6 +20,8 @@ namespace aemarcoCore
         /// </summary>
         public static string KnownUrlsFile { get; set; }
 
+        public static string AbyssAPI_Key { get; set; }
+
 
 
         //wallpapersetter
@@ -35,18 +37,6 @@ namespace aemarcoCore
         /// Example: 10 means that top side can be cutted 5 % and bottom side 5%
         /// </summary>
         public static int PercentTopBottomCutAllowed { get; set; } = Settings.Default.WallpaperPercentCutAllowedTopBottom;
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

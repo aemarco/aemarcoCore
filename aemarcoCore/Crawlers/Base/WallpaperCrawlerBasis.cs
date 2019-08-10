@@ -81,11 +81,14 @@ namespace aemarcoCore.Crawlers.Base
         }
 
         protected CrawlOffer CreateCrawlOffer(
-            string categoryName, Uri categoryUri, IContentCategory category)
+            string siteCategoryName, Uri categoryUri, IContentCategory category)
         {
             return new CrawlOffer(_startPage, _lastPage, _onlyNews,
-                categoryName, categoryUri, category);
+                siteCategoryName, categoryUri, category);
         }
+
+
+
 
         public bool Start()
         {
@@ -176,48 +179,65 @@ namespace aemarcoCore.Crawlers.Base
         protected virtual bool GetPage(CrawlOffer catJob)
         {
             bool result = false;
-            //Seite mit Wallpaperliste
-            Uri pageUri = GetSiteUrlForCategory(catJob);
-            var doc = GetDocument(pageUri);
-            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes(GetSearchStringGorEntryNodes());
 
-            //non Valid Page
-            if (nodes == null || nodes.Count == 0)
+            switch (catJob.CrawlMethod)
             {
-                //invalid page breaks the loop
-                return false;
+                case CrawlMethod.Classic:
+                    {
+                        //Seite mit Wallpaperliste
+                        Uri pageUri = GetSiteUrlForCategory(catJob);
+                        var doc = GetDocument(pageUri);
+                        HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes(GetSearchStringGorEntryNodes());
+
+                        //non Valid Page
+                        if (nodes == null || nodes.Count == 0)
+                        {
+                            //invalid page breaks the loop
+                            return false;
+                        }
+
+                        if (nodes.Count > _entriesPerPage)
+                        {
+                            _entriesPerPage = nodes.Count;
+                            //set for all so progress can be calculated
+                            for (int i = 0; i < _catJobs.Count; i++)
+                            {
+                                if (_catJobs[i].CrawlMethod != CrawlMethod.API)
+                                {
+
+                                    _catJobs[i].ReportNumberOfEntriesPerPage(_entriesPerPage);
+                                }
+                            }
+                        }
+
+
+                        foreach (HtmlNode node in nodes)
+                        {
+                            if (_cancellationToken.IsCancellationRequested ||
+                                catJob.ReachedMaximumStreak)
+                            {
+                                catJob.ReportEndReached();
+                                return true;
+                            }
+
+                            if (AddWallEntry(node, catJob))
+                            {
+                                result = true;
+                            }
+                            OnProgress();
+                        }
+                        catJob.ReportPageDone();
+                        //valid Page contains minimum 1 valid Entry
+                        return result;
+                    }
+                case CrawlMethod.API:
+                    {
+                        result = HandleAPIPage(catJob, _cancellationToken, OnProgress);
+                        return result;
+                    }
+                default:
+                    throw new NotImplementedException($"{catJob.CrawlMethod} not implemented.");
             }
-
-            if (nodes.Count > _entriesPerPage)
-            {
-                _entriesPerPage = nodes.Count;
-                //set for all so progress can be calculated
-                for (int i = 0; i < _catJobs.Count; i++)
-                {
-                    _catJobs[i].ReportNumberOfEntriesPerPage(_entriesPerPage);
-
-                }
-            }
-
-
-            foreach (HtmlNode node in nodes)
-            {
-                if (_cancellationToken.IsCancellationRequested ||
-                    catJob.ReachedMaximumStreak)
-                {
-                    catJob.ReportEndReached();
-                    return true;
-                }
-
-                if (AddWallEntry(node, catJob))
-                {
-                    result = true;
-                }
-                OnProgress();
-            }
-            catJob.ReportPageDone();
-            //valid Page contains minimum 1 valid Entry
-            return result;
         }
         protected abstract Uri GetSiteUrlForCategory(CrawlOffer catJob);
         protected abstract string GetSearchStringGorEntryNodes();
@@ -237,6 +257,11 @@ namespace aemarcoCore.Crawlers.Base
                 OnNewEntry(entry);
                 catJob.ReportEntryDone(false);
             }
+        }
+
+        protected virtual bool HandleAPIPage(CrawlOffer catJob, CancellationToken cancellationToken, Action progAction)
+        {
+            return false;
         }
 
         #endregion

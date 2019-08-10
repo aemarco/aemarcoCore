@@ -78,47 +78,47 @@ namespace aemarcoCore.Crawlers.Crawlers
             switch (categoryName)
             {
                 case "3D graphics":
-                    return new ContentCategory(Category.Fantasy_Art, 0, 0);
+                    return new ContentCategory(Common.Category.Fantasy_Art, 0, 0);
                 case "Animals":
-                    return new ContentCategory(Category.Hobbies_Animals, 0, 0);
+                    return new ContentCategory(Common.Category.Hobbies_Animals, 0, 0);
                 case "Anime":
-                    return new ContentCategory(Category.Girls_Fantasy, 1, 19);
+                    return new ContentCategory(Common.Category.Girls_Fantasy, 1, 19);
                 case "Aviation":
-                    return new ContentCategory(Category.Vehicle_Planes, 0, 0);
+                    return new ContentCategory(Common.Category.Vehicle_Planes, 0, 0);
                 case "Cars":
-                    return new ContentCategory(Category.Vehicle_Cars, 0, 0);
+                    return new ContentCategory(Common.Category.Vehicle_Cars, 0, 0);
                 case "Celebrities":
-                    return new ContentCategory(Category.Girls_Celebrities, 1, 19);
+                    return new ContentCategory(Common.Category.Girls_Celebrities, 1, 19);
                 case "Food":
-                    return new ContentCategory(Category.Hobbies_Food, 0, 0);
+                    return new ContentCategory(Common.Category.Hobbies_Food, 0, 0);
                 case "Games":
-                    return new ContentCategory(Category.Media_Games, 0, 0);
+                    return new ContentCategory(Common.Category.Media_Games, 0, 0);
                 case "Girls":
-                    return new ContentCategory(Category.Girls, 1, 19);
+                    return new ContentCategory(Common.Category.Girls, 1, 19);
                 case "Holidays":
-                    return new ContentCategory(Category.Other_Holidays, 0, 0);
+                    return new ContentCategory(Common.Category.Other_Holidays, 0, 0);
                 case "Men":
-                    return new ContentCategory(Category.Men, 1, 19);
+                    return new ContentCategory(Common.Category.Men, 1, 19);
                 case "Motorcycles":
-                    return new ContentCategory(Category.Vehicle_Bikes, 0, 0);
+                    return new ContentCategory(Common.Category.Vehicle_Bikes, 0, 0);
                 case "Movies":
-                    return new ContentCategory(Category.Media_Movies, 0, 0);
+                    return new ContentCategory(Common.Category.Media_Movies, 0, 0);
                 case "Music":
-                    return new ContentCategory(Category.Media_Music, 0, 0);
+                    return new ContentCategory(Common.Category.Media_Music, 0, 0);
                 case "Nature":
-                    return new ContentCategory(Category.Environment, 0, 0);
+                    return new ContentCategory(Common.Category.Environment, 0, 0);
                 case "Space":
-                    return new ContentCategory(Category.Environment_Space, 0, 0);
+                    return new ContentCategory(Common.Category.Environment_Space, 0, 0);
                 case "Sport":
-                    return new ContentCategory(Category.Hobbies_Sport, 0, 0);
+                    return new ContentCategory(Common.Category.Hobbies_Sport, 0, 0);
                 case "Various":
-                    return new ContentCategory(Category.Other, 0, 0);
+                    return new ContentCategory(Common.Category.Other, 0, 0);
                 case "World":
-                    return new ContentCategory(Category.Environment_City, 0, 0);
+                    return new ContentCategory(Common.Category.Environment_City, 0, 0);
                 case "Erotica (18+)":
-                    return new ContentCategory(Category.Girls);
+                    return new ContentCategory(Common.Category.Girls);
                 default:
-                    return new ContentCategory(Category.Other);
+                    return new ContentCategory(Common.Category.Other);
             }
         }
 
@@ -180,12 +180,12 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 if (tags.Contains("girl") && !tags.Contains("child"))
                 {
-                    if (result.Category == Category.Vehicle_Cars.ToString())
-                        result = new ContentCategory(Category.Girls_Cars, 1, 19);
-                    else if (result.Category == Category.Vehicle_Bikes.ToString())
-                        result = new ContentCategory(Category.Girls_Bikes, 1, 19);
-                    else if (result.Category == Category.Fantasy_Art.ToString())
-                        result = new ContentCategory(Category.Girls_Fantasy, 1, 19);
+                    if (result.Category == Common.Category.Vehicle_Cars.ToString())
+                        result = new ContentCategory(Common.Category.Girls_Cars, 1, 19);
+                    else if (result.Category == Common.Category.Vehicle_Bikes.ToString())
+                        result = new ContentCategory(Common.Category.Girls_Bikes, 1, 19);
+                    else if (result.Category == Common.Category.Fantasy_Art.ToString())
+                        result = new ContentCategory(Common.Category.Girls_Fantasy, 1, 19);
                     else
                     {
                         result.SuggestedMinAdultLevel = 1;
@@ -194,20 +194,20 @@ namespace aemarcoCore.Crawlers.Crawlers
                 }
                 else if (tags.Contains("flowers"))
                 {
-                    if (result.Category == Category.Environment.ToString())
-                        result = new ContentCategory(Category.Environment_Flowers, 0, 0);
+                    if (result.Category == Common.Category.Environment.ToString())
+                        result = new ContentCategory(Common.Category.Environment_Flowers, 0, 0);
                 }
             }
             else if (result.SuggestedMinAdultLevel == -1 && result.SuggestedMaxAdultLevel == -1)
             {
-                if (tags.Contains("car") && result.Category == Category.Girls.ToString())
-                    result = new ContentCategory(Category.Girls_Cars);
-                else if (tags.Contains("motorcycle") && result.Category == Category.Girls.ToString())
-                    result = new ContentCategory(Category.Girls_Bikes);
-                else if ((tags.Contains("beach") || tags.Contains("sea") || tags.Contains("lake")) && result.Category == Category.Girls.ToString())
-                    result = new ContentCategory(Category.Girls_Beaches);
-                else if (tags.Contains("fetish") && result.Category == Category.Girls.ToString())
-                    result = new ContentCategory(Category.Girls_Fetish);
+                if (tags.Contains("car") && result.Category == Common.Category.Girls.ToString())
+                    result = new ContentCategory(Common.Category.Girls_Cars);
+                else if (tags.Contains("motorcycle") && result.Category == Common.Category.Girls.ToString())
+                    result = new ContentCategory(Common.Category.Girls_Bikes);
+                else if ((tags.Contains("beach") || tags.Contains("sea") || tags.Contains("lake")) && result.Category == Common.Category.Girls.ToString())
+                    result = new ContentCategory(Common.Category.Girls_Beaches);
+                else if (tags.Contains("fetish") && result.Category == Common.Category.Girls.ToString())
+                    result = new ContentCategory(Common.Category.Girls_Fetish);
             }
 
 

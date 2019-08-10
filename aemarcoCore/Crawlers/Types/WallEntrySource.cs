@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 
 namespace aemarcoCore.Crawlers.Types
 {
@@ -185,6 +186,7 @@ namespace aemarcoCore.Crawlers.Types
 
             string url = imageUri.AbsoluteUri;
             string main = url?.Substring(url.LastIndexOf("/") + 1);
+            main = WebUtility.HtmlDecode(main);
             string name = $"{pref}{main}";
 
             return (Path.GetFileNameWithoutExtension(name), Path.GetExtension(name));
@@ -196,7 +198,7 @@ namespace aemarcoCore.Crawlers.Types
             string url = imageUri.AbsoluteUri;
             string after = url.Substring(url.IndexOf(beforeName) + beforeName.Length);
             string main = after.Substring(0, after.IndexOf(afterName));
-
+            main = WebUtility.HtmlDecode(main);
             string name = $"{pref}{main}";
 
             return (name, Path.GetExtension(url));
@@ -232,7 +234,7 @@ namespace aemarcoCore.Crawlers.Types
             else
             {
                 tags.RemoveAll(x => x == null);
-                return tags;
+                return GetTagsFromTagString(string.Join(",", tags));
             }
         }
 
@@ -246,6 +248,7 @@ namespace aemarcoCore.Crawlers.Types
                 return result;
             }
 
+            tagString = WebUtility.HtmlDecode(tagString).Trim();
             string[] tags = tagString.Split(',');
             foreach (string tag in tags)
             {

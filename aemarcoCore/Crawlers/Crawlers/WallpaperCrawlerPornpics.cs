@@ -204,70 +204,27 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 case "Homemade":
                 case "Amateur":
-                    return new ContentCategory(Category.Girls_Amateur);
+                    return new ContentCategory(Common.Category.Girls_Amateur);
                 case "Asian":
                 case "Indian":
                 case "Japanese":
                 case "Thai":
-                    return new ContentCategory(Category.Girls_Asian);
+                    return new ContentCategory(Common.Category.Girls_Asian);
                 case "Bondage":
                 case "Blindfold":
                 case "Latex":
-                    return new ContentCategory(Category.Girls_Fetish);
+                    return new ContentCategory(Common.Category.Girls_Fetish);
                 case "Christmas":
-                    return new ContentCategory(Category.Girls_Holidays);
+                    return new ContentCategory(Common.Category.Girls_Holidays);
                 case "Cosplay":
-                    return new ContentCategory(Category.Girls_Cosplay);
+                    return new ContentCategory(Common.Category.Girls_Cosplay);
                 case "Gloryhole":
-                    return new ContentCategory(Category.Girls_Gloryhole);
+                    return new ContentCategory(Common.Category.Girls_Gloryhole);
                 case "Self Shot":
-                    return new ContentCategory(Category.Girls_Selfies);
-
-
-                case "Anal":
-                case "Anal Gape":
-                case "Ass Fucking":
-                case "Ass Licking":
-                case "Ball Licking":
-                case "Big Cock":
-                case "Blowbang":
-                case "Blowjob":
-                case "Bukkake":
-                case "Cowgirl":
-                case "Creampie":
-                case "Cum In Mouth":
-                case "Cum In Pussy":
-                case "Cumshot":
-                case "Cum Swapping":
-                case "Deepthroat":
-                case "Double Penetration":
-                case "Facesitting":
-                case "Facial":
-                case "Fisting":
-                case "Footjob":
-                case "Gangbang":
-                case "Groupsex":
-                case "Gyno":
-                case "Handjob":
-                case "Hardcore":
-                case "Interracial":
-                case "Kissing":
-                case "Lesbian":
-                case "Orgy":
-                case "POV":
-                case "Pussy Licking":
-                case "Secretary":
-                case "Seduction":
-                case "Squirting":
-                case "Strapon":
-                case "Threesome":
-                case "Titjob":
-                case "Tribbing":
-                case "Wedding":
-                    return new ContentCategory(Category.Girls_Hardcore);
+                    return new ContentCategory(Common.Category.Girls_Selfies);
 
                 default:
-                    return new ContentCategory(Category.Girls);
+                    return new ContentCategory(Common.Category.Girls);
 
             }
         }

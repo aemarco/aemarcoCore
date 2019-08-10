@@ -73,9 +73,9 @@ namespace aemarcoCore.Crawlers.Crawlers
             switch (categoryName)
             {
                 case "Lingerie Models":
-                    return new ContentCategory(Category.Girls_Lingerie);
+                    return new ContentCategory(Common.Category.Girls_Lingerie);
                 default:
-                    return new ContentCategory(Category.Girls);
+                    return new ContentCategory(Common.Category.Girls);
             }
         }
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)

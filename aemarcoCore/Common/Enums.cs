@@ -10,6 +10,7 @@
         Girls_CelebrityFakes,
         Girls_Cars,
         Girls_Bikes,
+        Girls_Guns,
         Girls_Fantasy,
         Girls_Cosplay,
         Girls_Lingerie,
@@ -64,6 +65,12 @@
 
     }
 
+    internal enum CrawlMethod
+    {
+        Classic,
+        API
+    }
+
     //wallsite
     public enum SourceSite
     {
@@ -72,7 +79,7 @@
         AdultWalls,
 
         //
-        [SupportedCategories(Category.Girls, Category.Girls_Blowjob, Category.Girls_Lesbians,
+        [SupportedCategories(Category.Girls, Category.Girls_Lesbians,
             Category.Girls_Lingerie, Category.Girls_Beaches, Category.Girls_Asian, Category.Girls_Fantasy)]
         Erowall,
 
@@ -83,7 +90,7 @@
         Ftop,
 
         //
-        [SupportedCategories(Category.Girls_Hardcore)]
+        [SupportedCategories(Category.Girls)]
         Pornomass,
 
         //
@@ -112,7 +119,7 @@
         //
         [SupportedCategories(Category.Girls_Amateur, Category.Girls_Asian, Category.Girls_Fetish,
             Category.Girls_Holidays, Category.Girls_Cosplay, Category.Girls_Gloryhole, Category.Girls_Selfies,
-            Category.Girls_Hardcore, Category.Girls)]
+            Category.Girls)]
         Pornpics,
 
         //
@@ -130,8 +137,11 @@
 
         //
         [SupportedCategories(Category.Girls_Asian, Category.Girls_Lingerie, Category.Girls)]
-        Moozpussy
+        Moozpussy,
 
+
+        [SupportedCategories(Category.Girls)]
+        Abyss
     }
     //wall setter
     public enum WallpaperMode

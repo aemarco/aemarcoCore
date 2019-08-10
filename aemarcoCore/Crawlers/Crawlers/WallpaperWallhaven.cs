@@ -75,18 +75,18 @@ namespace aemarcoCore.Crawlers.Crawlers
             switch (categoryName)
             {
                 case "Anime_SFW":
-                    return new ContentCategory(Category.Girls_Fantasy, 1, 19);
+                    return new ContentCategory(Common.Category.Girls_Fantasy, 1, 19);
                 case "Anime_Sketchy":
-                    return new ContentCategory(Category.Girls_Fantasy);
+                    return new ContentCategory(Common.Category.Girls_Fantasy);
                 case "People_SFW":
-                    return new ContentCategory(Category.Girls, 1, 19);
+                    return new ContentCategory(Common.Category.Girls, 1, 19);
                 case "People_Sketchy":
-                    return new ContentCategory(Category.Girls);
+                    return new ContentCategory(Common.Category.Girls);
 
 
 
                 default:
-                    return new ContentCategory(Category.Girls);
+                    return new ContentCategory(Common.Category.Girls);
             }
         }
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
