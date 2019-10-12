@@ -158,11 +158,6 @@
         IndividualScreens
     }
 
-    internal enum WindowsWallpaperStyle
-    {
-        Fit,
-        Fill,
-        Tile
-    }
+    
 
 }

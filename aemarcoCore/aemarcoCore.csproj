@@ -107,7 +107,6 @@
     <Compile Include="Crawlers\Types\ContentCategory.cs" />
     <Compile Include="Crawlers\Types\WallCrawlerResult.cs" />
     <Compile Include="Crawlers\Crawlers\WallpaperCrawlerAbyss.cs" />
-    <Compile Include="Wallpaper\IWallpaperSetter.cs" />
     <Compile Include="Tools\WallCrawlerData.cs" />
     <Compile Include="Crawlers\Types\WallEntry.cs" />
     <Compile Include="Crawlers\Crawlers\WallpaperCrawlerPornomass.cs" />
@@ -118,9 +117,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Wallpaper\Types\Monitor.cs" />
     <Compile Include="Wallpaper\WallpaperSetter.cs" />
-    <Compile Include="Wallpaper\Types\WinWallpaper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="aemarcoCore.nuspec">
