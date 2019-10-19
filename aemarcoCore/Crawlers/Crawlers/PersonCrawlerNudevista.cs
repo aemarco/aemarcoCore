@@ -116,7 +116,10 @@ namespace aemarcoCore.Crawlers.Crawlers
                         // Becky Lesabre, Beth Porter
                         foreach (string aliasItem in aliasString.Split(','))
                         {
-                            var al = aliasItem.Trim();
+                            var al = aliasItem;
+                            if (al.StartsWith(".")) al.Remove(0, 1);
+                            al = al.Trim();
+
                             if (al.Length > 3 && al.Contains(" "))
                             {
                                 result.Aliase.Add(al);
