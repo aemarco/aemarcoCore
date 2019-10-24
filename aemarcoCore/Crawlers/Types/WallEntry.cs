@@ -1,5 +1,4 @@
 ﻿using aemarcoCore.Common;
-using aemarcoCore.Properties;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -46,7 +45,7 @@ namespace aemarcoCore.Crawlers.Types
                 if (_crawlerExtensions == null)
                 {
                     _crawlerExtensions = new List<string>();
-                    foreach (var ext in Settings.Default.CrawlerFileExtensions.Split(','))
+                    foreach (var ext in "bmp,jpg,jpeg,png,gif".Split(','))
                     {
                         _crawlerExtensions.Add(ext.Replace(".", string.Empty).ToLower().Insert(0, "."));
                     }

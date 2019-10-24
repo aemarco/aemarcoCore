@@ -1,5 +1,4 @@
-﻿using aemarcoCore.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace aemarcoCore
@@ -30,13 +29,13 @@ namespace aemarcoCore
         /// left and right side of the picture. Ranges 0 - 100%
         /// Example: 10 means that left side can be cutted 5 % and right side 5%
         /// </summary>
-        public static int PercentLeftRightCutAllowed { get; set; } = Settings.Default.WallpaperPercentCutAllowedLeftRight;
+        public static int PercentLeftRightCutAllowed { get; set; } = 25;
         /// <summary>
         /// Used for WallpaperMode.AllowFill to determine how many % can be cut on 
         /// top and bottom side of the picture. Ranges 0 - 100%
         /// Example: 10 means that top side can be cutted 5 % and bottom side 5%
         /// </summary>
-        public static int PercentTopBottomCutAllowed { get; set; } = Settings.Default.WallpaperPercentCutAllowedTopBottom;
+        public static int PercentTopBottomCutAllowed { get; set; } = 15;
 
 
 

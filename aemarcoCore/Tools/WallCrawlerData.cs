@@ -1,5 +1,4 @@
 ﻿using aemarcoCore.Common;
-using aemarcoCore.Properties;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -76,7 +75,7 @@ namespace aemarcoCore.Tools
             //get path for saving
             try
             {
-                dataPath = new DirectoryInfo(Settings.Default.CrawlerData);
+                dataPath = new DirectoryInfo(@"c:\Logs\Crawler");
                 if (!dataPath.Exists) dataPath.Create();
             }
             catch

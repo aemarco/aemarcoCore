@@ -1,14 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aemarcoCore", "aemarcoCore\aemarcoCore.csproj", "{13FFECB7-BBA1-4F7F-B629-8DBE7230BF3E}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A9CACFF6-9914-44A7-B5FD-2C4208385D91}"
-	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aemarcoCore", "aemarcoCore\aemarcoCore.csproj", "{1CCBFEDC-E346-4A90-AFB3-EDDEF671B1EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -16,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{13FFECB7-BBA1-4F7F-B629-8DBE7230BF3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{13FFECB7-BBA1-4F7F-B629-8DBE7230BF3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{13FFECB7-BBA1-4F7F-B629-8DBE7230BF3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{13FFECB7-BBA1-4F7F-B629-8DBE7230BF3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CCBFEDC-E346-4A90-AFB3-EDDEF671B1EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CCBFEDC-E346-4A90-AFB3-EDDEF671B1EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CCBFEDC-E346-4A90-AFB3-EDDEF671B1EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CCBFEDC-E346-4A90-AFB3-EDDEF671B1EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {18BD1B93-A6B3-4451-A9AF-009688B551C4}
+		SolutionGuid = {0EC96D17-031A-4821-AF90-49577D41E2CF}
 	EndGlobalSection
 EndGlobal
