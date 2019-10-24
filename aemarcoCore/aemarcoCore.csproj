@@ -6,7 +6,6 @@
     <AssemblyVersion>2.0.0.1</AssemblyVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-   
     <PackageId>aemarcoCore</PackageId>
     <PackageVersion>$(AssemblyVersion)</PackageVersion>
     <Authors>aemarco</Authors>

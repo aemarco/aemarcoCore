@@ -22,22 +22,5 @@ namespace aemarcoCore
         public static string AbyssAPI_Key { get; set; }
 
 
-
-        //wallpapersetter
-        /// <summary>
-        /// Used for WallpaperMode.AllowFill to determine how many % can be cut on 
-        /// left and right side of the picture. Ranges 0 - 100%
-        /// Example: 10 means that left side can be cutted 5 % and right side 5%
-        /// </summary>
-        public static int PercentLeftRightCutAllowed { get; set; } = 25;
-        /// <summary>
-        /// Used for WallpaperMode.AllowFill to determine how many % can be cut on 
-        /// top and bottom side of the picture. Ranges 0 - 100%
-        /// Example: 10 means that top side can be cutted 5 % and bottom side 5%
-        /// </summary>
-        public static int PercentTopBottomCutAllowed { get; set; } = 15;
-
-
-
     }
 }
