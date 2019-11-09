@@ -103,9 +103,6 @@ namespace aemarcoCore.Crawlers.Crawlers
                     //Aliase
                     else if (node.InnerText.Contains("Auch bekannt als"))
                     {
-                        //&& item.Aliase == null
-
-
                         string aliasString = node.InnerText;
                         //Auch bekannt als Becky Lesabre, Beth Porter.
                         aliasString = node.InnerText.Replace("Auch bekannt als", string.Empty);
@@ -116,8 +113,8 @@ namespace aemarcoCore.Crawlers.Crawlers
                         // Becky Lesabre, Beth Porter
                         foreach (string aliasItem in aliasString.Split(','))
                         {
-                            var al = aliasItem;
-                            if (al.StartsWith(".")) al.Remove(0, 1);
+                            var al = aliasItem.Trim();
+                            if (al.StartsWith(".")) al = al.Remove(0, 1);
                             al = al.Trim();
 
                             if (al.Length > 3 && al.Contains(" "))
