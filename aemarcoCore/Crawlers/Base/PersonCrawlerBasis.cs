@@ -29,6 +29,13 @@ namespace aemarcoCore.Crawlers.Base
 
         #endregion
 
+        #region props
+
+        internal abstract PersonSite PersonSite { get; }
+        internal abstract int PersonPriority { get; }
+
+        #endregion
+
         #region Starting 
 
         internal bool Start()

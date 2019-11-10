@@ -15,15 +15,15 @@ namespace aemarcoCore.Crawlers
     {
         #region fields
 
-        private Dictionary<PersonCrawlerBasis, int> _crawlers = new Dictionary<PersonCrawlerBasis, int>();
+        readonly Dictionary<PersonCrawlerBasis, int> _crawlers = new Dictionary<PersonCrawlerBasis, int>();
         CancellationToken _cancellationToken;
-        private IProgress<int> _progress;
+        readonly IProgress<int> _progress;
 
         //settings
-        private PersonCrawlerResult _result = new PersonCrawlerResult();
+        readonly PersonCrawlerResult _result = new PersonCrawlerResult();
         private DirectoryInfo _reportPath = null;
         private readonly string _nameToCrawl;
-
+        readonly List<string> _filterPersonSites = new List<string>();
 
 
         //events
@@ -40,7 +40,7 @@ namespace aemarcoCore.Crawlers
         /// <param name="cancellationToken">can be used for cancellation</param>
         /// <param name="progress">can be used to report progress (there is also a Event for this)</param>
         public PersonCrawler(string nameToCrawl,
-            CancellationToken cancellationToken = default(CancellationToken),
+            CancellationToken cancellationToken = default,
             IProgress<int> progress = null)
         {
             _nameToCrawl = nameToCrawl;
@@ -67,6 +67,22 @@ namespace aemarcoCore.Crawlers
         public string ReportName
         {
             set { _result.ResultName = value; }
+        }
+
+
+        /// <summary>
+        /// Not using means all sites will be crawled
+        /// Using means only sites added will be crawled
+        /// </summary>
+        /// <param name="personSite"></param>
+        public void AddPersonSiteFilter(PersonSite personSite)
+        {
+            string site = personSite.ToString();
+            if (!_filterPersonSites.Contains(site))
+            {
+                _filterPersonSites.Add(site);
+            }
+
         }
 
 
@@ -143,6 +159,11 @@ namespace aemarcoCore.Crawlers
             foreach (Type type in crawlerTypes)
             {
                 var instance = (PersonCrawlerBasis)Activator.CreateInstance(type, _nameToCrawl, _cancellationToken);
+
+                if (_filterPersonSites.Count > 0 && !_filterPersonSites.Contains(instance.PersonSite.ToString()))
+                {
+                    continue;
+                }
 
                 instance.Progress += Instance_OnProgress;
                 instance.Entry += Instance_OnEntry;

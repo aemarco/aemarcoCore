@@ -1,4 +1,5 @@
 ﻿using aemarcoCore.Common;
+using aemarcoCore.Crawlers.Base;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -7,16 +8,16 @@ namespace aemarcoCore.Crawlers.Types
 {
     internal class PersonEntry : IPersonEntry
     {
-        private readonly string _nameToCrawl;
-        public PersonEntry(string nameToCrawl)
+        public PersonEntry(PersonCrawlerBasis crawler)
         {
-            _nameToCrawl = nameToCrawl;
-
+            PersonEntrySource = crawler.PersonSite.ToString();
+            PersonEntryPriority = crawler.PersonPriority;
             Aliase = new List<string>();
         }
 
-        public string PersonEntrySource { get; set; }
-        public int PersonEntryPriority { get; set; }
+        public string PersonEntrySource { get; }
+        public int PersonEntryPriority { get; }
+
 
         public string FirstName { get; internal set; }
         public string LastName { get; internal set; }

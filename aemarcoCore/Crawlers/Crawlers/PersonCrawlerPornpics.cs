@@ -1,4 +1,5 @@
-﻿using aemarcoCore.Crawlers.Base;
+﻿using aemarcoCore.Common;
+using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
 using System;
@@ -18,14 +19,11 @@ namespace aemarcoCore.Crawlers.Crawlers
         }
 
         private readonly Uri _uri = new Uri("https://www.pornpics.com");
-
+        internal override PersonSite PersonSite => PersonSite.Pornpics;
+        internal override int PersonPriority => 5;
         internal override PersonEntry GetPersonEntry()
         {
-            PersonEntry result = new PersonEntry(_nameToCrawl)
-            {
-                PersonEntrySource = "Pornpics",
-                PersonEntryPriority = 5
-            };
+            PersonEntry result = new PersonEntry(this);
 
             string href = $"/pornstars/list/";
             Uri target = new Uri(_uri, href);

@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace aemarcoCore.Crawlers.Types
 {
@@ -47,6 +48,7 @@ namespace aemarcoCore.Crawlers.Types
         internal void AddNewEntry(IPersonEntry entry)
         {
             _entries.Add(entry);
+            _entries = _entries.OrderByDescending(x => x.PersonEntryPriority).ToList();
         }
 
 

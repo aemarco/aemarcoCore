@@ -1,4 +1,5 @@
-﻿using aemarcoCore.Crawlers.Base;
+﻿using aemarcoCore.Common;
+using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
 using System;
@@ -15,20 +16,17 @@ namespace aemarcoCore.Crawlers.Crawlers
         }
 
         private readonly Uri _uri = new Uri("https://pornsites.xxx");
-
+        internal override PersonSite PersonSite => PersonSite.Porngatherer;
+        internal override int PersonPriority => 10;
         internal override PersonEntry GetPersonEntry()
         {
-            PersonEntry result = new PersonEntry(_nameToCrawl)
-            {
-                PersonEntrySource = "Porngatherer",
-                PersonEntryPriority = 10
-            };
+            PersonEntry result = new PersonEntry(this);
 
             string href = $"pornstars/{_nameToCrawl.Replace(' ', '-')}";
             Uri target = new Uri(_uri, href);
             HtmlDocument document = GetDocument(target);
-            var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@class='tab-left lefttext noborder mobilehide']");
-            var nodeWithBild = document.DocumentNode.SelectSingleNode("//div[@class='fallboxcon']/a/div/img");
+            var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@class='maincon']/div/h2");
+            var nodeWithBild = document.DocumentNode.SelectSingleNode("//div[@class='maincon']/div/div/img");
             var nodeWithData = document.DocumentNode.SelectNodes("//table[@class='styled']/tr");
             //Name
             if (nodeWithName != null)
@@ -74,10 +72,12 @@ namespace aemarcoCore.Crawlers.Crawlers
                             result.Geburtstag = dt;
                         }
                     }
+                    //not tested
                     else if (node.InnerText.Contains("Hair color:"))
                     {
                         result.Haare = node.InnerText.Replace("Hair color:", string.Empty).Trim();
                     }
+                    //not tested
                     else if (node.InnerText.Contains("Eye color:"))
                     {
                         result.Augen = node.InnerText.Replace("Eye color:", string.Empty).Trim();
@@ -104,10 +104,12 @@ namespace aemarcoCore.Crawlers.Crawlers
                         }
                         catch { }
                     }
+                    //not tested
                     else if (node.InnerText.Contains("Ethnicity:"))
                     {
                         result.Rasse = node.InnerText.Replace("Ethnicity:", string.Empty).Trim();
                     }
+                    //not tested
                     else if (node.InnerText.Contains("Country:"))
                     {
                         result.Land = node.InnerText.Replace("Country:", string.Empty).Trim();

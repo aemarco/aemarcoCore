@@ -1,4 +1,5 @@
-﻿using aemarcoCore.Crawlers.Base;
+﻿using aemarcoCore.Common;
+using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
 using System;
@@ -17,14 +18,11 @@ namespace aemarcoCore.Crawlers.Crawlers
         }
 
         private readonly Uri _uri = new Uri("https://www.nudevista.at");
-
+        internal override PersonSite PersonSite => PersonSite.Nudevista;
+        internal override int PersonPriority => 20;
         internal override PersonEntry GetPersonEntry()
         {
-            PersonEntry result = new PersonEntry(_nameToCrawl)
-            {
-                PersonEntrySource = "Nudevista",
-                PersonEntryPriority = 20
-            };
+            PersonEntry result = new PersonEntry(this);
 
             string href = $"?q={_nameToCrawl.Replace(' ', '+')}&s=s";
             Uri target = new Uri(_uri, href);

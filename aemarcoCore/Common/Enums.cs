@@ -143,21 +143,17 @@
         [SupportedCategories(Category.Girls)]
         Abyss
     }
-    //wall setter
-    public enum WallpaperMode
+
+
+    //personsite
+    public enum PersonSite
     {
-        Fit,
-        AllowFill,
-        AllowFillForceCut,
-        Fill
+        IStripper,
+        Pornpics,
+        Porngatherer,
+        Nudevista
     }
 
-    internal enum WallpaperSetMode
-    {
-        VirtualScreen,
-        IndividualScreens
-    }
 
-    
 
 }

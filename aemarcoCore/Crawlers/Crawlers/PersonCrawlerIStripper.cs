@@ -1,4 +1,5 @@
-﻿using aemarcoCore.Crawlers.Base;
+﻿using aemarcoCore.Common;
+using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
 using System;
@@ -6,7 +7,6 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers.Crawlers
 {
-#pragma warning disable CRR0043 // Unused type
     internal class PersonCrawlerIStripper : PersonCrawlerBasis
     {
         public PersonCrawlerIStripper(string nameToCrawl, CancellationToken cancellationToken)
@@ -14,17 +14,16 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
         }
 
-        private readonly Uri _uri = new Uri("https://de.istripper.com");
+        private readonly Uri _uri = new Uri("https://www.istripper.com");
+
+        internal override PersonSite PersonSite => PersonSite.IStripper;
+        internal override int PersonPriority => 30;
 
         internal override PersonEntry GetPersonEntry()
         {
-            PersonEntry result = new PersonEntry(_nameToCrawl)
-            {
-                PersonEntrySource = "IStripper",
-                PersonEntryPriority = 30
-            };
+            PersonEntry result = new PersonEntry(this);
 
-            string href = $"model/{_nameToCrawl.Replace(' ', '-')}";
+            string href = $"de/model/{_nameToCrawl.Replace(' ', '-')}";
             Uri target = new Uri(_uri, href);
             HtmlDocument document = GetDocument(target);
             var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@class='trigger']/div/h1");
