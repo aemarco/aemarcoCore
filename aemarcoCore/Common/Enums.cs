@@ -151,7 +151,8 @@
         IStripper,
         Pornpics,
         Porngatherer,
-        Nudevista
+        Nudevista,
+        CoedCherry
     }
 
 

@@ -52,12 +52,8 @@ namespace aemarcoCore.Crawlers.Types
             get
             {
 
-                if (
-                    String.IsNullOrEmpty(FirstName) || //Entry muss FirstName haben
-                    String.IsNullOrEmpty(LastName) || //Entry muss LastName haben
-                    String.IsNullOrEmpty(PictureUrl) //Entry muss PictureUrl haben
-                    )
-
+                if (String.IsNullOrEmpty(FirstName) || //Entry muss FirstName haben
+                    String.IsNullOrEmpty(LastName)) //Entry muss LastName haben
                 {
                     return false;
                 }
