@@ -27,12 +27,9 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
+- task: NuGetCommand@2
   inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: |
-      **\*test*.dll
-      !**\*TestAdapter.dll
-      !**\obj\**
-    searchFolder: '$(System.DefaultWorkingDirectory)'
-    vsTestVersion: '16.0'
+    command: 'push'
+    packagesToPush: '**/aemarcoCore/bin/Release/*.nupkg'
+    nuGetFeedType: 'external'
+    publishFeedCredentials: 'Nuget'
