@@ -1,6 +1,7 @@
 ﻿using aemarcoCore.Common;
 using aemarcoCore.Crawlers;
 using aemarcoCore.Crawlers.Crawlers;
+using FluentAssertions;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 
 namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
 {
@@ -24,7 +26,9 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
                 crawler.PrepareCrawlerList();
 
                 var worker = crawler._crawlers.Keys.FirstOrDefault();
-                Assert.IsTrue(worker != null && worker.SourceSite == site);
+
+                worker.Should().NotBeNull();
+                worker.SourceSite.Should().Be(site);
             }
         }
 
@@ -58,12 +62,13 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
             //GetCrawlsOffers will visit the site
             //LimitAsPerFilterlist will filter list to desired category
 
-            Assert.IsTrue(crawler._crawlers.Keys.Count == sitesSupporting.Count);
+
+            crawler._crawlers.Keys.Count.Should().Be(sitesSupporting.Count);
             Assert.IsTrue(crawler._crawlers.Keys.All(c => c.HasWorkingOffers));
             sitesSupporting.ForEach(s =>
             {
                 //each supported site must have exactly 1 crawler
-                Assert.IsTrue(crawler._crawlers.Keys.Single(k => k.SourceSite == s) != null);
+                crawler._crawlers.Keys.Single(k => k.SourceSite == s).Should().NotBeNull();
             });
 
         }
@@ -106,10 +111,9 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
                 if (!cts.IsCancellationRequested) cts.Cancel();
             };
             var result = crawler.StartAsyncTask().GetAwaiter().GetResult();
+            Task.Delay(2500).GetAwaiter().GetResult();
 
             Assert.IsTrue(found || result.NewEntries.Count > 0);
-
-            Task.Delay(2500).GetAwaiter().GetResult();
         }
 
 
