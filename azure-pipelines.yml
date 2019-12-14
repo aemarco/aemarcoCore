@@ -28,16 +28,12 @@ steps:
     configuration: '$(buildConfiguration)'
 
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'test'
-    projects: '**/*.csproj'
-    testRunTitle: 'testStuff'
+
 
 
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '**/aemarcoCore/bin/Release'
+    SourceFolder: '$(Build.SourcesDirectory)/aemarcoCore/bin/Release'
     Contents: '*.nupkg'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
