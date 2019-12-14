@@ -36,10 +36,3 @@ steps:
 
 
 
-- task: NuGetCommand@2
-  inputs:
-    command: 'push'
-    packagesToPush: '**/aemarcoCore/bin/Release/*.nupkg'
-    nuGetFeedType: 'external'
-    publishFeedCredentials: 'Nuget'
-    allowPackageConflicts: true
