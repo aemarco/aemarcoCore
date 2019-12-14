@@ -22,6 +22,5 @@ namespace aemarcoCore
         public static string AbyssAPI_Key { get; set; }
 
 
-
     }
 }
