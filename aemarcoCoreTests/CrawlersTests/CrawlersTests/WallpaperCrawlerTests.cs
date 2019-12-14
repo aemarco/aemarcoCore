@@ -114,6 +114,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
             Task.Delay(2500).GetAwaiter().GetResult();
 
             Assert.IsTrue(found || result.NewEntries.Count > 0);
+            cts.Dispose();
         }
 
 

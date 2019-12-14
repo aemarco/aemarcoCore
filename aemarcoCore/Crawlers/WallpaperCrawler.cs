@@ -22,14 +22,14 @@ namespace aemarcoCore.Crawlers
         private readonly bool _onlyNews;
         readonly int _startPage;
         readonly int _lastPage;
-        CancellationToken _cancellationToken;
-        private IProgress<int> _progress;
+        readonly CancellationToken _cancellationToken;
+        readonly IProgress<int> _progress;
 
         //settings
-        private WallCrawlerResult _result = new WallCrawlerResult();
+        private readonly WallCrawlerResult _result = new WallCrawlerResult();
         private DirectoryInfo _reportPath = null;
-        private List<string> _filterCategories = new List<string>();
-        private List<string> _filterSourceSites = new List<string>();
+        readonly List<string> _filterCategories = new List<string>();
+        readonly List<string> _filterSourceSites = new List<string>();
 
         //events
         private readonly object _progressLock = new object();
@@ -47,7 +47,7 @@ namespace aemarcoCore.Crawlers
         /// <param name="startPage">can be used in conjuction with lastPage to set first page where the crawler starts crawling</param>
         /// <param name="lastPage">can be used in conjuction with firstPage to set last page which the crawler crawls</param>
         public WallpaperCrawler(
-            CancellationToken cancellationToken = default(CancellationToken),
+            CancellationToken cancellationToken = default,
             IProgress<int> progress = null,
             int startPage = 0,
             int lastPage = 0)
