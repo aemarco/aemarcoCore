@@ -42,3 +42,4 @@ steps:
     packagesToPush: '**/aemarcoCore/bin/Release/*.nupkg'
     nuGetFeedType: 'external'
     publishFeedCredentials: 'Nuget'
+    allowPackageConflicts: true
