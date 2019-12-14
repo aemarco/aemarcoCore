@@ -74,6 +74,8 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 case "Lingerie Models":
                     return new ContentCategory(Common.Category.Girls_Lingerie);
+                case "Erotic Wallpapers":
+                    return new ContentCategory(Common.Category.Girls);
                 default:
                     return new ContentCategory(Common.Category.Girls);
             }

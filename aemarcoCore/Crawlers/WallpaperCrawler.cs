@@ -16,7 +16,7 @@ namespace aemarcoCore.Crawlers
     {
         #region fields
 
-        private Dictionary<WallpaperCrawlerBasis, int> _crawlers = new Dictionary<WallpaperCrawlerBasis, int>();
+        internal Dictionary<WallpaperCrawlerBasis, int> _crawlers = new Dictionary<WallpaperCrawlerBasis, int>();
 
         //ctor
         private readonly bool _onlyNews;
@@ -201,7 +201,7 @@ namespace aemarcoCore.Crawlers
             return _result;
         }
 
-        private void PrepareCrawlerList()
+        internal void PrepareCrawlerList()
         {
             //creates all available crawlers and adds them if applicable
             var crawlerTypes = System.Reflection.Assembly

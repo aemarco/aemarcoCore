@@ -33,7 +33,6 @@ namespace aemarcoCore.Crawlers
 
         private string QueryApi(params string[] parameters)
         {
-
             // https://wall.alphacoders.com/api2.0/get.php?auth=YOUR_KEY&method=category_list
 
             List<string> allParams = parameters.ToList();
@@ -106,6 +105,19 @@ namespace aemarcoCore.Crawlers
             return result;
 
         }
+        protected override IContentCategory GetContentCategory(string categoryName)
+        {
+            switch (categoryName)
+            {
+                case "Women":
+                    return new ContentCategory(Common.Category.Girls, 1, 29);
+
+                default:
+                    return null;
+            }
+        }
+
+        #region api
 
         private List<AbyssCategory> _abyssCats;
 
@@ -146,18 +158,6 @@ namespace aemarcoCore.Crawlers
             return result;
         }
 
-        protected override IContentCategory GetContentCategory(string categoryName)
-        {
-            switch (categoryName)
-            {
-                case "Women":
-                    return new ContentCategory(Common.Category.Girls, 1, 29);
-
-                default:
-                    return null;
-            }
-        }
-
         private bool AddWallEntry(CrawlOffer catJob, AbyssWallpaper wall)
         {
             // https://wall.alphacoders.com/api2.0/get.php?auth=YOUR_KEY&method=wallpaper_info&id=595064
@@ -193,6 +193,52 @@ namespace aemarcoCore.Crawlers
             AddEntry(entry, catJob);
             return true;
         }
+
+        #endregion
+
+        #region normal
+
+        protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
+        {
+            //z.B. "https://mobile.alphacoders.com/by-category/33?page=1"
+            return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}?page={catJob.CurrentPage}");
+
+        }
+        protected override string GetSearchStringGorEntryNodes()
+        {
+            return "//div[@class='thumb-container']/div[@class='container-masonry']/div[@class='item-element']/a";
+        }
+        protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
+        {
+            var source = new WallEntrySource(_muri, node, catJob.SiteCategoryName);
+
+            //docs
+            source.DetailsDoc = source.GetChildDocumentFromRootNode(null);
+
+
+            //details
+            source.ImageUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@class='img-full-size']", "src");
+
+            var thumbUrl = source.GetSubNodeAttribute(source.RootNode, "src", "./img[@class='img-responsive']");
+            source.ThumbnailUri = new Uri(thumbUrl);
+
+            (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
+
+
+            source.Tags = source.GetTagsFromNode(source.RootNode, "title", "./img[@class='img-responsive']");
+            source.ContentCategory = CheckForRealCategory(catJob.Category, source.Tags, null);
+
+
+            WallEntry wallEntry = source.WallEntry;
+            if (wallEntry == null)
+            {
+                return false;
+            }
+            AddEntry(wallEntry, catJob);
+            return true;
+        }
+
+        #endregion
 
 
 
@@ -258,46 +304,6 @@ namespace aemarcoCore.Crawlers
             return cat;
         }
 
-
-        protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
-        {
-            //z.B. "https://mobile.alphacoders.com/by-category/33?page=1"
-            return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}?page={catJob.CurrentPage}");
-
-        }
-        protected override string GetSearchStringGorEntryNodes()
-        {
-            return "//div[@class='thumb-container']/div[@class='container-masonry']/div[@class='item-element']/a";
-        }
-        protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
-        {
-            var source = new WallEntrySource(_muri, node, catJob.SiteCategoryName);
-
-            //docs
-            source.DetailsDoc = source.GetChildDocumentFromRootNode(null);
-
-
-            //details
-            source.ImageUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@class='img-full-size']", "src");
-
-            var thumbUrl = source.GetSubNodeAttribute(source.RootNode, "src", "./img[@class='img-responsive']");
-            source.ThumbnailUri = new Uri(thumbUrl);
-
-            (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
-
-
-            source.Tags = source.GetTagsFromNode(source.RootNode, "title", "./img[@class='img-responsive']");
-            source.ContentCategory = CheckForRealCategory(catJob.Category, source.Tags, null);
-
-
-            WallEntry wallEntry = source.WallEntry;
-            if (wallEntry == null)
-            {
-                return false;
-            }
-            AddEntry(wallEntry, catJob);
-            return true;
-        }
 
     }
 #pragma warning restore CRR0043 // Unused type

@@ -73,7 +73,7 @@ namespace aemarcoCore.Crawlers.Base
             foreach (var offer in GetCrawlsOffers())
             {
                 //job gets added if it matched any searchedCategories
-                if (searchedCategories.Where(x => offer.MatchFilter(x)).FirstOrDefault() != null)
+                if (searchedCategories.Any(x => offer.MatchFilter(x)))
                 {
                     _catJobs.Add(offer);
                 }
