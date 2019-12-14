@@ -109,7 +109,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
 
             Assert.IsTrue(found || result.NewEntries.Count > 0);
 
-            Task.Delay(5000).GetAwaiter().GetResult();
+            Task.Delay(2500).GetAwaiter().GetResult();
         }
 
 
