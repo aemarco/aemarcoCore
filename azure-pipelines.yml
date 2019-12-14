@@ -35,4 +35,10 @@ steps:
     testRunTitle: 'testStuff'
 
 
-
+- task: NuGetCommand@2
+  displayName: 'NuGet push'
+  inputs:
+    command: push
+    packagesToPush: '**/aemarcoCore/bin/Release/*.nupkg'
+    nuGetFeedType: external
+    publishFeedCredentials: Nuget
