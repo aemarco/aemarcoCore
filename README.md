@@ -1,6 +1,6 @@
 # aemarcoCore
 
-[![Build Status](https://dev.azure.com/aemarco/aemarcoCentral/_apis/build/status/aemarco.WallpaperDownloader?branchName=master)](https://dev.azure.com/aemarco/aemarcoCentral/_build/latest?definitionId=6&branchName=master)
+[![Build Status](https://dev.azure.com/aemarco/aemarcoCentral/_apis/build/status/aemarco.aemarcoCore?branchName=master)](https://dev.azure.com/aemarco/aemarcoCentral/_build/latest?definitionId=9&branchName=master)
 
 Nuget: Be aware that the available Nuget package is always a bit behind with changes...
 
