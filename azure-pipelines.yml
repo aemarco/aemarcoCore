@@ -35,10 +35,9 @@ steps:
     testRunTitle: 'testStuff'
 
 
-- task: NuGetCommand@2
-  displayName: 'NuGet push'
+- task: CopyFiles@2
   inputs:
-    command: push
-    packagesToPush: '**/aemarcoCore/bin/Release/*.nupkg'
-    nuGetFeedType: external
-    publishFeedCredentials: Nuget
+    SourceFolder: '**/aemarcoCore/bin/Release'
+    Contents: '*.nupkg'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
