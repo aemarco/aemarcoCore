@@ -2,9 +2,8 @@
 
 [![Build Status](https://dev.azure.com/aemarco/aemarcoCentral/_apis/build/status/aemarco.aemarcoCore?branchName=master)](https://dev.azure.com/aemarco/aemarcoCentral/_build/latest?definitionId=9&branchName=master)
 
-Nuget: Be aware that the available Nuget package is always a bit behind with changes...
 
-Frequent changes may ocure, even with already done code and interfaces.
+Breaking changes may ocure(independend of version), even with already done code and interfaces.
 always use namespace aemarcoCore.Common
 
 Crawler Usage:
@@ -17,6 +16,9 @@ Create a WallpaperCrawler for usage.
 
 	ReportPath can be set to receive a file report at the set Destination
 	AddCategoryFilter may be used to limit crawling to the desired categories.
+	AddSourceSiteFilter may be used to limit crawling to the desired site.
+	Those filters can be combined :)
+
 
 	Start(), StartAsync(), StartAsyncTask() are availabe for starting the thing.
 
@@ -28,9 +30,9 @@ Create a WallpaperCrawler for usage.
 	Known Urls are either provided in ConfigurationHelper or handled via a json file containing a List<string>
 	Sources for the list are handled in following order:
 	ConfigurationHelper.KnownUrlsFunc --> known Urls are passed in via a Func
-	ConfigurationHelper.KnownUrlsFile --> A file location which is beeing readed and writed
-	app.config CrawlerData --> A directory where a file 'known.json' will be used
+	ConfigurationHelper.KnownUrlsFile --> A file location which is beeing read from and written to	
 	ApplicationDirectory subfolder JSON --> File 'known.json' will be used
+
 
 Create a PersonCrawler for usage
 
@@ -41,14 +43,4 @@ Create a PersonCrawler for usage
 	may be used in a similar fashion as the previous described crawler
 
 
-
-WallpaperSetter Usage:
-in namespace aemarcoCore.Wallpaper
-Create a WallpaperSetter for usage
-
-	WallpaperMode tossed in to determine behaviour
-
-	CanBeSnapped can be used to find out if a Wallpaper can be snapped to the screen
-
-	
 

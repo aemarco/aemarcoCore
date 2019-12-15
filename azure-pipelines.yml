@@ -38,6 +38,6 @@ steps:
   displayName: 'NuGet push'
   inputs:
     command: push
-    packagesToPush: '**/*.nupkg'
+    packagesToPush: '$(Build.SourcesDirectory)/aemarcoCore/bin/Release/*.nupkg'
     nuGetFeedType: external
     publishFeedCredentials: Nuget
