@@ -27,6 +27,10 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
+- script: |
+    echo '##vso[task.setvariable variable=APIKEY__AbyssKey]$(APIKEY__ABYSSKEY)'
+  displayName: set environment variable for subsequent steps
+
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
