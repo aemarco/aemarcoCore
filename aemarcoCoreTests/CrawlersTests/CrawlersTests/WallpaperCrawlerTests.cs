@@ -32,7 +32,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         public void Setup()
         {
             ConfigurationHelper.KnownUrlsFunc = () => new List<string>();
-            ConfigurationHelper.AbyssAPI_Key = _config.GetValue<string>("AbyssKey");
+            ConfigurationHelper.AbyssAPI_Key = _config.GetValue<string>("AbyssKey") ?? _config.GetValue<string>("ABYSSKEY");
         }
 
 
