@@ -7,16 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.9.0" />
     <PackageReference Include="nunit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
@@ -25,6 +15,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\aemarcoCore\aemarcoCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="*.json"/>
   </ItemGroup>
 
 </Project>
