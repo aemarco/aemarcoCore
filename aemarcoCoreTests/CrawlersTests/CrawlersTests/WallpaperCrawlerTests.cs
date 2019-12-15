@@ -32,7 +32,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         public void Setup()
         {
             ConfigurationHelper.KnownUrlsFunc = () => new List<string>();
-            ConfigurationHelper.AbyssAPI_Key = _config.GetValue<string>("AbyssKey") ?? _config.GetValue<string>("ABYSSKEY");
+            ConfigurationHelper.AbyssAPI_Key = _config.GetValue<string>("AbyssKey");
         }
 
 
@@ -51,6 +51,10 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [TestCaseSource(nameof(SiteCases))]
         public void SourceSites_HaveACrawler(SourceSite site)
         {
+            if (site == SourceSite.Abyss && string.IsNullOrWhiteSpace(ConfigurationHelper.AbyssAPI_Key))
+                Assert.Pass(); // skip abyss when there is no API key
+
+
             var crawler = new WallpaperCrawler(CancellationToken.None, null, 0, 0);
             crawler.AddSourceSiteFilter(site);
             crawler.PrepareCrawlerList();
@@ -107,7 +111,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
             var sites = Enum.GetValues(typeof(SourceSite))
                     .Cast<SourceSite>()
                     .Where(x => !x.IsDisabled())
-                    //.Where(x => x != SourceSite.Abyss) //Abyss no offers because Api-Key
+                    .Where(x => x != SourceSite.Abyss || !string.IsNullOrWhiteSpace(ConfigurationHelper.AbyssAPI_Key)) // skip abyss when there is no API key
                     .ToList();
 
             var sitesSupporting = sites.Where(x => x.Supports(cat.ToString())).ToList();
@@ -156,6 +160,9 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [TestCaseSource(nameof(CrawlCases))]
         public void Crawlers_Finds_Entries(SourceSite site, Category cat)
         {
+            if (site == SourceSite.Abyss && string.IsNullOrWhiteSpace(ConfigurationHelper.AbyssAPI_Key))
+                Assert.Pass(); // skip abyss when there is no API key
+
             CancellationTokenSource cts = new CancellationTokenSource();
             var crawler = new WallpaperCrawler(cts.Token, null, 1, 1);
             crawler.AddSourceSiteFilter(site);
