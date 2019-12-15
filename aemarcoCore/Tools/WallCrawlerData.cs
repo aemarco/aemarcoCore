@@ -60,32 +60,17 @@ namespace aemarcoCore.Tools
             }
             else
             {
-                _dataFile = GetDataFileFileInfo();
+                var dataPath = new DirectoryInfo($"{Environment.CurrentDirectory}\\JSON");
+                if (!dataPath.Exists) dataPath.Create();
+                _dataFile = new FileInfo($"{dataPath.FullName}\\known.json");
                 if (_dataFile.Exists)
                 {
                     _knownUrls = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(_dataFile.FullName));
                 }
                 _isInitiallized = true;
             }
-
         }
-        private static FileInfo GetDataFileFileInfo()
-        {
-            DirectoryInfo dataPath;
-            //get path for saving
-            try
-            {
-                dataPath = new DirectoryInfo(@"c:\Logs\Crawler");
-                if (!dataPath.Exists) dataPath.Create();
-            }
-            catch
-            {
-                dataPath = new DirectoryInfo($"{Environment.CurrentDirectory}\\JSON");
-                if (!dataPath.Exists) dataPath.Create();
 
-            }
-            return new FileInfo($"{dataPath.FullName}\\known.json");
-        }
 
         #endregion
 
@@ -103,14 +88,6 @@ namespace aemarcoCore.Tools
                     _knownUrls.Add(entry.Url);
                 }
                 return known;
-            }
-        }
-        internal static List<string> GetKnownUrls()
-        {
-            lock (_lock)
-            {
-                if (!_isInitiallized) Init();
-                return _knownUrls;
             }
         }
 

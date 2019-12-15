@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarcoCore", "aemarcoCore\aemarcoCore.csproj", "{1CCBFEDC-E346-4A90-AFB3-EDDEF671B1EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aemarcoCoreTests", "aemarcoCoreTests\aemarcoCoreTests.csproj", "{890F1157-CC3C-466A-BA93-45827EAC0F13}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarcoCoreTests", "aemarcoCoreTests\aemarcoCoreTests.csproj", "{890F1157-CC3C-466A-BA93-45827EAC0F13}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

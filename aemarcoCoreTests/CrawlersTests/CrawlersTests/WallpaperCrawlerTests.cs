@@ -1,7 +1,9 @@
-﻿using aemarcoCore.Common;
+﻿using aemarcoCore;
+using aemarcoCore.Common;
 using aemarcoCore.Crawlers;
 using aemarcoCore.Crawlers.Crawlers;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,24 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
     [SingleThreaded]
     public class WallpaperCrawlerTests
     {
+        IConfiguration _config;
+
+        [OneTimeSetUp]
+        public void OneTimeSetup()
+        {
+            _config = new ConfigurationBuilder()
+                .AddEnvironmentVariables("APIKEY:")
+                .Build();
+        }
+
+        [SetUp]
+        public void Setup()
+        {
+            ConfigurationHelper.KnownUrlsFunc = () => new List<string>();
+            ConfigurationHelper.AbyssAPI_Key = _config.GetValue<string>("AbyssKey");
+        }
+
+
 
         static object[] SiteCases
         {
@@ -24,7 +44,6 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
                 return Enum.GetValues(typeof(SourceSite))
                     .Cast<SourceSite>()
                     .Where(x => !x.IsDisabled())
-                    .Where(x => x != SourceSite.Abyss)
                     .Select(x => new object[] { x })
                     .ToArray();
             }
@@ -68,6 +87,10 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
 
         }
 
+
+
+
+
         static object[] CategoryCases
         {
             get
@@ -84,7 +107,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
             var sites = Enum.GetValues(typeof(SourceSite))
                     .Cast<SourceSite>()
                     .Where(x => !x.IsDisabled())
-                    .Where(x => x != SourceSite.Abyss) //Abyss no offers because Api-Key
+                    //.Where(x => x != SourceSite.Abyss) //Abyss no offers because Api-Key
                     .ToList();
 
             var sitesSupporting = sites.Where(x => x.Supports(cat.ToString())).ToList();
@@ -103,12 +126,11 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
             Assert.IsTrue(crawler._crawlers.Keys.All(c => c.HasWorkingOffers));
             sitesSupporting.ForEach(s =>
             {
-                //each supported site must have exactly 1 crawler
+                //each supported site must have exactly 1 crawler for given category
                 crawler._crawlers.Keys.Single(k => k.SourceSite == s).Should().NotBeNull();
             });
 
         }
-
 
 
         static object[] CrawlCases
@@ -116,11 +138,9 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
             get
             {
                 List<object> result = new List<object>();
-
                 foreach (SourceSite site in Enum.GetValues(typeof(SourceSite)))
                 {
                     if (site.IsDisabled()) continue;
-                    if (site == SourceSite.Abyss) continue; //Abyss no Api Key
                     foreach (Category cat in Enum.GetValues(typeof(Category)))
                     {
                         if (site.Supports(cat.ToString()))
@@ -148,7 +168,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
                 if (!cts.IsCancellationRequested) cts.Cancel();
             };
             var result = crawler.StartAsyncTask().GetAwaiter().GetResult();
-            Task.Delay(2500).GetAwaiter().GetResult();
+            Task.Delay(1000).GetAwaiter().GetResult();
 
             Assert.IsTrue(found || result.NewEntries.Any());
             cts.Dispose();
