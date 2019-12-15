@@ -19,6 +19,11 @@ namespace aemarcoCore
         /// </summary>
         public static string KnownUrlsFile { get; set; }
 
+
+        /// <summary>
+        /// API Key to be used for Abyss
+        /// If non is provided, Abyss beeing skipped
+        /// </summary>
         public static string AbyssAPI_Key { get; set; }
 
 

@@ -16,22 +16,57 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
     [SingleThreaded]
     public class WallpaperCrawlerTests
     {
-        [Test]
-        public void SourceSites_HaveACrawler()
+
+        static object[] SiteCases
         {
-            foreach (SourceSite site in Enum.GetValues(typeof(SourceSite)))
+            get
             {
-                var crawler = new WallpaperCrawler(CancellationToken.None, null, 0, 0);
-                crawler.AddSourceSiteFilter(site);
-                crawler.PrepareCrawlerList();
-
-                var worker = crawler._crawlers.Keys.FirstOrDefault();
-
-                worker.Should().NotBeNull();
-                worker.SourceSite.Should().Be(site);
+                return Enum.GetValues(typeof(SourceSite))
+                    .Cast<SourceSite>()
+                    .Where(x => !x.IsDisabled())
+                    .Where(x => x != SourceSite.Abyss)
+                    .Select(x => new object[] { x })
+                    .ToArray();
             }
         }
+        [TestCaseSource(nameof(SiteCases))]
+        public void SourceSites_HaveACrawler(SourceSite site)
+        {
+            var crawler = new WallpaperCrawler(CancellationToken.None, null, 0, 0);
+            crawler.AddSourceSiteFilter(site);
+            crawler.PrepareCrawlerList();
 
+            var worker = crawler._crawlers.Keys.FirstOrDefault();
+
+            worker.Should().NotBeNull();
+            worker.SourceSite.Should().Be(site);
+
+        }
+
+
+        static object[] DisabledSites
+        {
+            get
+            {
+                return Enum.GetValues(typeof(SourceSite))
+                    .Cast<SourceSite>()
+                    .Where(x => x.IsDisabled())
+                    .Select(x => new object[] { x })
+                    .ToArray();
+            }
+        }
+        [TestCaseSource(nameof(DisabledSites))]
+        public void Crawlers_Disabled_DontCrawl(SourceSite site)
+        {
+            var crawler = new WallpaperCrawler(CancellationToken.None, null, 0, 0);
+            crawler.AddSourceSiteFilter(site);
+            crawler.PrepareCrawlerList();
+
+            var worker = crawler._crawlers.Keys.FirstOrDefault();
+
+            worker.Should().BeNull();
+
+        }
 
         static object[] CategoryCases
         {
@@ -43,11 +78,12 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
                     .ToArray();
             }
         }
-        [TestCaseSource("CategoryCases")]
+        [TestCaseSource(nameof(CategoryCases))]
         public void Crawlers_Keep_Support_Promises(Category cat)
         {
             var sites = Enum.GetValues(typeof(SourceSite))
                     .Cast<SourceSite>()
+                    .Where(x => !x.IsDisabled())
                     .Where(x => x != SourceSite.Abyss) //Abyss no offers because Api-Key
                     .ToList();
 
@@ -83,6 +119,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
 
                 foreach (SourceSite site in Enum.GetValues(typeof(SourceSite)))
                 {
+                    if (site.IsDisabled()) continue;
                     if (site == SourceSite.Abyss) continue; //Abyss no Api Key
                     foreach (Category cat in Enum.GetValues(typeof(Category)))
                     {
@@ -96,7 +133,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
                     .ToArray();
             }
         }
-        [TestCaseSource("CrawlCases")]
+        [TestCaseSource(nameof(CrawlCases))]
         public void Crawlers_Finds_Entries(SourceSite site, Category cat)
         {
             CancellationTokenSource cts = new CancellationTokenSource();
@@ -113,12 +150,9 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
             var result = crawler.StartAsyncTask().GetAwaiter().GetResult();
             Task.Delay(2500).GetAwaiter().GetResult();
 
-            Assert.IsTrue(found || result.NewEntries.Count > 0);
+            Assert.IsTrue(found || result.NewEntries.Any());
             cts.Dispose();
         }
-
-
-
 
 
 

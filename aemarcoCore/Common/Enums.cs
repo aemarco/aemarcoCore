@@ -65,12 +65,6 @@
 
     }
 
-    internal enum CrawlMethod
-    {
-        Classic,
-        API
-    }
-
     //wallsite
     public enum SourceSite
     {
@@ -132,6 +126,7 @@
         Mota,
 
         //
+        [Disabled("Site down :(")]
         [SupportedCategories(Category.Girls_Asian, Category.Girls_Lingerie, Category.Girls)]
         Zoompussy,
 
@@ -156,5 +151,10 @@
     }
 
 
+    internal enum CrawlMethod
+    {
+        Classic,
+        API
+    }
 
 }

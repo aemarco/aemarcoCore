@@ -5,28 +5,6 @@ namespace aemarcoCore.Crawlers.Types
 {
     internal class CrawlOffer
     {
-        #region fields
-
-        //Informations
-        private readonly string _siteCategoryName;
-        private readonly Uri _categoryUri;
-        private IContentCategory _category;
-
-        //paging
-
-        private readonly int _startPage;
-        private int _lastPage;
-        private int _currentPage;
-        private readonly bool _onlyNews;
-
-        private int _numberOfEntriesPerPage;
-        private int _numberOfEntriesDoneForCurrentPage;
-        private int _numberOfEntriesKnownInSequence;
-        private int _numberOfEntriesDone;
-        private int _numberOfEntriesTotal;
-
-        #endregion
-
         #region ctor
 
         public CrawlOffer(int startPage, int lastPage, bool onlyNews,
@@ -34,11 +12,13 @@ namespace aemarcoCore.Crawlers.Types
         {
             _startPage = startPage;
             _lastPage = lastPage;
-            _currentPage = _startPage;
             _onlyNews = onlyNews;
-            _siteCategoryName = siteCategoryName;
-            _categoryUri = categoryUri;
-            _category = category;
+
+            CurrentPage = _startPage;
+
+            SiteCategoryName = siteCategoryName;
+            CategoryUri = categoryUri;
+            Category = category;
         }
 
         #endregion
@@ -47,77 +27,59 @@ namespace aemarcoCore.Crawlers.Types
 
         //kind of crawl
         public CrawlMethod CrawlMethod { get; set; } = CrawlMethod.Classic;
-
-
-        //Informations
-        public string SiteCategoryName
-        {
-            get { return _siteCategoryName; }
-        }
-        public Uri CategoryUri
-        {
-            get { return _categoryUri; }
-        }
-        public IContentCategory Category
-        {
-            get { return _category; }
-        }
+        public string SiteCategoryName { get; }
+        public Uri CategoryUri { get; }
+        public IContentCategory Category { get; }
 
         //paging
+        public int CurrentPage { get; private set; }
+        public int DoneEntries { get; private set; }
+        public int TotalEntries { get; private set; }
+
+
+
+
+        private int _lastPage;
         public bool ContainsPagesToDo
         {
-            get { return _currentPage <= _lastPage; }
+            get { return CurrentPage <= _lastPage; }
         }
+
+
+
+        private readonly bool _onlyNews;
         public bool ReachedMaximumStreak
         {
             get { return (_onlyNews && _numberOfEntriesKnownInSequence >= 10); }
         }
-        public int CurrentPage
-        {
-            get { return _currentPage; }
-        }
-        public int DoneEntries
-        {
-            get { return _numberOfEntriesDone; }
-        }
-        public int TotalEntries
-        {
-            get { return _numberOfEntriesTotal; }
-        }
+
+
 
         #endregion
 
         #region methods internal
 
-        internal bool MatchFilter(string search)
-        {
-            //offers with no Category cant match any filter
-            if (_category == null)
-            {
-                return false;
-            }
 
-            if (_category.Category == search)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
+        private readonly int _startPage;
+        private int _numberOfEntriesPerPage;
         internal void ReportNumberOfEntriesPerPage(int count)
         {
             int numberOfPages = _lastPage - _startPage + 1;
-            _numberOfEntriesTotal = numberOfPages * count;
+            TotalEntries = numberOfPages * count;
             _numberOfEntriesPerPage = count;
         }
 
+
+
+        private int _numberOfEntriesDoneForCurrentPage;
         internal void ReportPageDone()
         {
-            _currentPage++;
+            CurrentPage++;
             _numberOfEntriesDoneForCurrentPage = 0;
         }
 
+
+        private int _numberOfEntriesKnownInSequence;
         internal void ReportEntryDone(bool known)
         {
             if (known)
@@ -132,32 +94,19 @@ namespace aemarcoCore.Crawlers.Types
 
             _numberOfEntriesDoneForCurrentPage++;
 
-            int countBefore = (_currentPage - _startPage) * _numberOfEntriesPerPage;
-            _numberOfEntriesDone = countBefore + _numberOfEntriesDoneForCurrentPage;
+            int countBefore = (CurrentPage - _startPage) * _numberOfEntriesPerPage;
+            DoneEntries = countBefore + _numberOfEntriesDoneForCurrentPage;
         }
 
         internal void ReportEndReached()
         {
-            _numberOfEntriesTotal = _numberOfEntriesDone;
-            _lastPage = _currentPage - 1;
+            TotalEntries = DoneEntries;
+            _lastPage = CurrentPage - 1;
         }
 
 
 
         #endregion
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }

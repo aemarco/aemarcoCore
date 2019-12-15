@@ -3,7 +3,5 @@
 // Project-level suppressions either have no target or are given
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Ausstehend>", Scope = "member", Target = "~M:aemarcoCore.Crawlers.PersonCrawler.Start~aemarcoCore.Common.IPersonCrawlerResult")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Ausstehend>", Scope = "member", Target = "~M:aemarcoCore.Crawlers.PersonCrawler.WriteReport")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1068:CancellationToken parameters must come last", Justification = "<Ausstehend>", Scope = "member", Target = "~M:aemarcoCore.Crawlers.PersonCrawler.#ctor(System.String,System.Threading.CancellationToken,System.IProgress{System.Int32})")]
-
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Stil", "IDE0060:Nicht verwendete Parameter entfernen", Justification = "<Ausstehend>", Scope = "member", Target = "~M:aemarcoCore.Crawlers.Crawlers.WallpaperCrawlerPornpics.#ctor(System.Int32,System.Int32,System.Boolean,System.Threading.CancellationToken)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1068:CancellationToken parameters must come last", Justification = "<Ausstehend>", Scope = "member", Target = "~M:aemarcoCore.Crawlers.WallpaperCrawler.#ctor(System.Threading.CancellationToken,System.IProgress{System.Int32},System.Int32,System.Int32)")]

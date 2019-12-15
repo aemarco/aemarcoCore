@@ -12,32 +12,24 @@ namespace aemarcoCore.Crawlers.Base
 {
     internal abstract class WallpaperCrawlerBasis : CrawlerBasis
     {
-        #region fields
+        #region ctor
 
-        //ctor
-        private readonly bool _onlyNews;
         private readonly int _startPage;
         private readonly int _lastPage;
-        private CancellationToken _cancellationToken;
+        private readonly bool _onlyNews;
+        protected CancellationToken _cancellationToken;
 
-        //handling
-        private List<CrawlOffer> _catJobs;
-        private int _entriesPerPage;
-
-        #endregion
-
-        #region ctor
 
         internal WallpaperCrawlerBasis(
             int startPage,
             int lastPage,
-            CancellationToken cancellationToken,
-            bool onlyNews)
+            bool onlyNews,
+            CancellationToken cancellationToken)
         {
             _startPage = startPage;
             _lastPage = lastPage;
-            _cancellationToken = cancellationToken;
             _onlyNews = onlyNews;
+            _cancellationToken = cancellationToken;
         }
 
 
@@ -45,41 +37,52 @@ namespace aemarcoCore.Crawlers.Base
 
         #region props
 
+        internal abstract SourceSite SourceSite { get; }
+
+
+        private List<CrawlOffer> _catJobs;
         internal bool HasWorkingOffers
         {
             get
             {
-                return _catJobs == null ||
-                      _catJobs.Count > 0;
+                _catJobs = _catJobs ?? GetCrawlsOffers();
+                return _catJobs.Any();
             }
         }
-
-        internal abstract SourceSite SourceSite { get; }
 
         #endregion
 
         #region Starting 
 
+        /// <summary>
+        /// null or empty list means no limitation, otherwise this crawler will be 
+        /// limited to offers which matching searchedCategories
+        /// </summary>
+        /// <param name="searchedCategories">strings of internal Category (enum)</param>
         internal void LimitAsPerFilterlist(List<string> searchedCategories)
         {
-            //no Filtration leaves _offers null
-            if (searchedCategories == null || searchedCategories.Count == 0)
-            {
-                return;
-            }
-
-
-            _catJobs = new List<CrawlOffer>();
-            foreach (var offer in GetCrawlsOffers())
-            {
-                //job gets added if it matched any searchedCategories
-                if (searchedCategories.Any(x => offer.MatchFilter(x)))
-                {
-                    _catJobs.Add(offer);
-                }
-            }
+            _catJobs = GetCrawlsOffers()
+                 .Where(o =>
+                    searchedCategories == null || // no filtering = allOffers
+                    !searchedCategories.Any() || // no filtering = allOffers
+                    (o.Category?.Category != null && searchedCategories.Contains(o.Category.Category))) //filtering means offer must be contained
+                 .ToList();
         }
 
+        /// <summary>
+        /// Maps Site Category name to internal category
+        /// </summary>
+        /// <param name="categoryName">name of category on site</param>
+        /// <returns>internal category</returns>
+        protected abstract IContentCategory GetContentCategory(string categoryName);
+
+        /// <summary>
+        /// creates a CrawlOffer which carries the limitation infos
+        /// </summary>
+        /// <param name="siteCategoryName">Name of the Category on the site</param>
+        /// <param name="categoryUri">Uri to navigate to the Category´s page</param>
+        /// <param name="category">mapped internal category</param>
+        /// <returns>CrawlOffer</returns>
         protected CrawlOffer CreateCrawlOffer(
             string siteCategoryName, Uri categoryUri, IContentCategory category)
         {
@@ -89,16 +92,25 @@ namespace aemarcoCore.Crawlers.Base
 
 
 
-
-        public bool Start()
+        /// <summary>
+        /// returns on completion, false means aborted
+        /// </summary>
+        /// <returns></returns>
+        public bool Start(WallpaperCrawler crawler)
         {
-            //Crawling
-            DoWork();
-
-            if (_cancellationToken.IsCancellationRequested)
+            try
+            {
+                //Crawling
+                DoWork();
+                _cancellationToken.ThrowIfCancellationRequested();
+            }
+            catch (OperationCanceledException)
             {
                 return false;
-
+            }
+            catch (Exception ex)
+            {
+                crawler.AddException(ex);
             }
             return true;
         }
@@ -111,7 +123,14 @@ namespace aemarcoCore.Crawlers.Base
         internal event EventHandler<ProgressChangedEventArgs> Progress;
         protected void OnProgress()
         {
-            Progress?.Invoke(this, new ProgressChangedEventArgs(CalculateProgress(), null));
+            if (Progress != null)
+            {
+                int done = _catJobs.Sum(x => x.DoneEntries);
+                int todo = _catJobs.Sum(x => x.TotalEntries);
+                int prog = (todo == 0) ? 0 : Convert.ToInt32(100.0 * done / todo);
+
+                Progress(this, new ProgressChangedEventArgs(prog, null));
+            }
         }
 
         internal event EventHandler<IWallEntryEventArgs> KnownEntry;
@@ -128,121 +147,120 @@ namespace aemarcoCore.Crawlers.Base
 
         #endregion
 
-        #region Progress
-
-        private int CalculateProgress()
-        {
-            int done = _catJobs.Sum(x => x.DoneEntries);
-            int todo = _catJobs.Sum(x => x.TotalEntries);
-            if (todo == 0)
-            {
-                return 0;
-            }
-            return Convert.ToInt32(100.0 * done / todo);
-        }
-
-        #endregion
-
         #region Crawling
 
+        /// <summary>
+        /// handles the entire crawler by going through offers
+        /// </summary>
         private void DoWork()
         {
             if (_catJobs == null)
-            {
                 _catJobs = GetCrawlsOffers();
-            }
 
             foreach (var catJob in _catJobs)
             {
-                if (_cancellationToken.IsCancellationRequested)
-                {
-                    break;
-                }
+                _cancellationToken.ThrowIfCancellationRequested();
                 GetCategory(catJob);
             }
         }
         protected abstract List<CrawlOffer> GetCrawlsOffers();
+
+        /// <summary>
+        /// handles an entire offer by going through pages
+        /// </summary>
+        /// <param name="catJob">CrawlOffer</param>
         protected virtual void GetCategory(CrawlOffer catJob)
         {
             do
             {
-                if (!GetPage(catJob))
-                {
-                    catJob.ReportEndReached();
-                    break;
-                }
+                _cancellationToken.ThrowIfCancellationRequested();
+                if (!GetPage(catJob)) catJob.ReportEndReached();
             }
-            while (catJob.ContainsPagesToDo && !_cancellationToken.IsCancellationRequested);
-            //either no more work or cancellation
+            while (catJob.ContainsPagesToDo);
+            //no more work
             OnProgress();
         }
+
+
+        private int _entriesPerPage;
+        /// <summary>
+        /// handles current page of given offer (crawlers may override, with API for example)
+        /// </summary>
+        /// <param name="catJob">job to get page for</param>
+        /// <returns>true if page contained any entries</returns>
         protected virtual bool GetPage(CrawlOffer catJob)
         {
             bool result = false;
 
-            switch (catJob.CrawlMethod)
+            //Seite mit Wallpaperliste
+            Uri pageUri = GetSiteUrlForCategory(catJob);
+            var doc = GetDocument(pageUri);
+            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes(GetSearchStringGorEntryNodes());
+
+            //non entries on page
+            if (nodes == null || !nodes.Any())
+                return result;
+
+
+            //report count to all classic jobs
+            if (nodes.Count > _entriesPerPage)
             {
-                case CrawlMethod.Classic:
-                    {
-                        //Seite mit Wallpaperliste
-                        Uri pageUri = GetSiteUrlForCategory(catJob);
-                        var doc = GetDocument(pageUri);
-                        HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes(GetSearchStringGorEntryNodes());
-
-                        //non Valid Page
-                        if (nodes == null || nodes.Count == 0)
-                        {
-                            //invalid page breaks the loop
-                            return false;
-                        }
-
-                        if (nodes.Count > _entriesPerPage)
-                        {
-                            _entriesPerPage = nodes.Count;
-                            //set for all so progress can be calculated
-                            for (int i = 0; i < _catJobs.Count; i++)
-                            {
-                                if (_catJobs[i].CrawlMethod != CrawlMethod.API)
-                                {
-
-                                    _catJobs[i].ReportNumberOfEntriesPerPage(_entriesPerPage);
-                                }
-                            }
-                        }
-
-
-                        foreach (HtmlNode node in nodes)
-                        {
-                            if (_cancellationToken.IsCancellationRequested ||
-                                catJob.ReachedMaximumStreak)
-                            {
-                                catJob.ReportEndReached();
-                                return true;
-                            }
-
-                            if (AddWallEntry(node, catJob))
-                            {
-                                result = true;
-                            }
-                            OnProgress();
-                        }
-                        catJob.ReportPageDone();
-                        //valid Page contains minimum 1 valid Entry
-                        return result;
-                    }
-                case CrawlMethod.API:
-                    {
-                        result = HandleAPIPage(catJob, _cancellationToken, OnProgress);
-                        return result;
-                    }
-                default:
-                    throw new NotImplementedException($"{catJob.CrawlMethod} not implemented.");
+                _entriesPerPage = nodes.Count;
+                _catJobs.ForEach(j =>
+                {
+                    if (j.CrawlMethod == CrawlMethod.Classic)
+                        j.ReportNumberOfEntriesPerPage(_entriesPerPage);
+                });
             }
+
+            //handle each node
+            foreach (HtmlNode node in nodes)
+            {
+                _cancellationToken.ThrowIfCancellationRequested();
+
+                if (catJob.ReachedMaximumStreak)
+                {
+                    catJob.ReportEndReached();
+                    return true;
+                }
+
+                if (AddWallEntry(node, catJob))
+                {
+                    result = true;
+                }
+                OnProgress();
+            }
+            catJob.ReportPageDone();
+            //valid Page contains minimum 1 valid Entry
+            return result;
         }
+
+        /// <summary>
+        /// Gets the url for the site containing the category
+        /// </summary>
+        /// <param name="catJob">current job</param>
+        /// <returns>Uri to navigate for category</returns>
         protected abstract Uri GetSiteUrlForCategory(CrawlOffer catJob);
+        /// <summary>
+        /// Gets search path for entry nodes
+        /// </summary>
+        /// <returns>search path</returns>
         protected abstract string GetSearchStringGorEntryNodes();
-        protected abstract IContentCategory GetContentCategory(string categoryName);
+
+        /// <summary>
+        /// handles 1 entry in a page
+        /// </summary>
+        /// <param name="node">Html node for entry</param>
+        /// <param name="catJob">current job</param>
+        /// <returns>true if found a valid entry</returns>
         protected abstract bool AddWallEntry(HtmlNode node, CrawlOffer catJob);
+
+
+        /// <summary>
+        /// adds the entry to the crawlresult, as new or known
+        /// </summary>
+        /// <param name="entry">entry to add</param>
+        /// <param name="catJob">job leaded to entry</param>
         protected void AddEntry(IWallEntry entry, CrawlOffer catJob)
         {
             //bekanntes Entry
@@ -257,11 +275,6 @@ namespace aemarcoCore.Crawlers.Base
                 OnNewEntry(entry);
                 catJob.ReportEntryDone(false);
             }
-        }
-
-        protected virtual bool HandleAPIPage(CrawlOffer catJob, CancellationToken cancellationToken, Action progAction)
-        {
-            return false;
         }
 
         #endregion

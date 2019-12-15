@@ -128,19 +128,15 @@ namespace aemarcoCore.Crawlers
             {
                 _filterSourceSites.Add(site);
             }
-
         }
 
-
-
-
         #endregion
-
 
         #region Working
 
         /// <summary>
         /// Starts crawling by fire and forget
+        /// events may be used for data and completion
         /// </summary>
         public void StartAsync()
         {
@@ -157,7 +153,7 @@ namespace aemarcoCore.Crawlers
         }
 
         /// <summary>
-        /// Starts crawling, returns on completion
+        /// Starts crawling, returns IWallCrawlerResult on completion
         /// </summary>
         /// <returns>IWallCrawlerResult</returns>
         public IWallCrawlerResult Start()
@@ -168,34 +164,38 @@ namespace aemarcoCore.Crawlers
             _result.SitesFilter = _filterSourceSites.ToList();
             _result.CategoryFilter = _filterCategories.ToList();
 
-            //start all crawlers
-            List<Task<bool>> tasks = new List<Task<bool>>();
-            foreach (var crawler in _crawlers.Keys)
-            {
-                _result.CrawlersInvolved.Add(crawler.GetType().Name);
-
-                var task = Task<bool>.Factory.StartNew(crawler.Start);
-                tasks.Add(task);
-            }
 
             try
             {
+                //start all crawlers
+                List<Task<bool>> tasks = new List<Task<bool>>();
+                foreach (var crawler in _crawlers.Keys)
+                {
+                    _result.CrawlersInvolved.Add(crawler.GetType().Name);
+
+                    var task = Task<bool>.Factory.StartNew(() => crawler.Start(this));
+                    tasks.Add(task);
+                }
+
                 //awaiting end of crawling
                 Task.WaitAll(tasks.ToArray());
                 if (!tasks.All(x => x.Result) == true)
                 {
                     _result.HasBeenAborted = true;
                 }
+
             }
-            catch (Exception ex)
+            catch (Exception ex) //since crawlers should not throw, this should never happen ?!
             {
-                _result.Exception = ex;
+                _result.Exceptions.Add(ex);
             }
+
 
             //persist results for Deduplication
             WallCrawlerData.Save();
             //Writing Report
             WriteReport();
+
 
             OnCompleted();
             return _result;
@@ -211,42 +211,52 @@ namespace aemarcoCore.Crawlers
                 .ToList();
 
             foreach (Type type in crawlerTypes)
-
             {
-                var instance = (WallpaperCrawlerBasis)Activator.CreateInstance(type, _startPage, _lastPage, _cancellationToken, _onlyNews);
+                var instance = (WallpaperCrawlerBasis)Activator.CreateInstance(type, _startPage, _lastPage, _onlyNews, _cancellationToken);
 
-                //filter down to desired sites if filter beeing used
-                if (_filterSourceSites.Count > 0 && !_filterSourceSites.Contains(instance.SourceSite.ToString()))
+                //remove disabled crawlers
+                if (instance.SourceSite.IsDisabled())
                 {
                     continue;
                 }
 
-                //filter down to supported categories if filter beeing used
-                if (_filterCategories.Count > 0 &&
-                   !_filterCategories.Any(x => instance.SourceSite.Supports(x)))
+                //filter down to desired sites if site filter beeing used
+                if (_filterSourceSites.Any() && !_filterSourceSites.Contains(instance.SourceSite.ToString()))
                 {
                     continue;
                 }
 
+                //filter down to crawlers supporting any searched category if any searched category
+                if (_filterCategories.Any() && !instance.SourceSite.SupportsAny(_filterCategories))
+                {
+                    continue;
+                }
 
                 try
                 {
-                    //reduce type to desired categories
+                    //reduce crawler to desired categories
                     instance.LimitAsPerFilterlist(_filterCategories);
+                    //crawler confirms found category
                     if (instance.HasWorkingOffers)
                     {
+                        //atach events
                         instance.Progress += Instance_OnProgress;
                         instance.NewEntry += Instance_OnNewEntry;
                         instance.KnownEntry += Instance_OnKnownEntry;
+
                         _crawlers.Add(instance, 0);
                     }
                 }
                 catch (Exception ex)
                 {
-
-                    _result.Exception = ex;
+                    _result.Exceptions.Add(ex);
                 }
             }
+        }
+
+        internal void AddException(Exception ex)
+        {
+            _result.Exceptions.Add(ex);
         }
 
         private void WriteReport()
@@ -255,23 +265,14 @@ namespace aemarcoCore.Crawlers
             {
                 try
                 {
-                    if (!_reportPath.Exists)
-                    {
-                        _reportPath.Create();
-                    }
+                    if (!_reportPath.Exists) _reportPath.Create();
 
-                    string prefix = string.Empty;
+                    string filename = $"{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.json";
                     if (!String.IsNullOrWhiteSpace(_result.ResultName))
-                    {
-                        prefix = $"{_result.ResultName}_";
-                    }
+                        filename.Insert(0, $"{_result.ResultName}_");
 
 
-                    File.WriteAllText
-                        (
-                        $"{_reportPath.FullName}\\{prefix}{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.json",
-                        _result.JSON
-                        );
+                    File.WriteAllText(Path.Combine(_reportPath.FullName, filename), _result.JSON);
                 }
                 catch { }
             }
@@ -296,7 +297,6 @@ namespace aemarcoCore.Crawlers
                     _crawlers[instance] = e.ProgressPercentage;
 
                     int progress = _crawlers.Values.Sum() / _crawlers.Values.Count;
-
 
                     //falls IProgress
                     if (_progress != null)

@@ -257,10 +257,16 @@ paket-files/
 # CodeRush
 .cr/
 
+
+#appsettings
+**/appsettings*.json
+
+#appsettings
+**/connectionStrings*.config
+
+
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
 
 
-/Code_Nuget.lnk
-aemarcoCore/UploadNuget.ps1

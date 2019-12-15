@@ -19,11 +19,10 @@ namespace aemarcoCore.Crawlers.Crawlers
         public WallpaperCrawlerWallCraft(
             int startPage,
             int lastPage,
-            CancellationToken cancellationToken,
-            bool onlyNews)
-            : base(startPage, lastPage, cancellationToken, onlyNews)
+            bool onlyNews,
+            CancellationToken cancellationToken)
+            : base(startPage, lastPage, onlyNews, cancellationToken)
         {
-
 
         }
 

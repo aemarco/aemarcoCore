@@ -16,7 +16,7 @@ namespace aemarcoCore.Crawlers.Types
             CrawlersInvolved = new List<string>();
             NumberOfCrawlersInvolved = 0;
             HasBeenAborted = false;
-            Exception = null;
+            Exceptions = new List<Exception>();
 
             NewEntries = new List<IWallEntry>();
             KnownEntries = new List<IWallEntry>();
@@ -31,7 +31,9 @@ namespace aemarcoCore.Crawlers.Types
         public int NumberOfCrawlersInvolved { get; set; }
 
         public bool HasBeenAborted { get; set; }
-        public Exception Exception { get; set; }
+
+        [JsonIgnore]
+        public List<Exception> Exceptions { get; set; }
 
         public int NumberOfNewEntries { get { return NewEntries.Count; } }
         public int NumberOfKnownEntries { get { return KnownEntries.Count; } }

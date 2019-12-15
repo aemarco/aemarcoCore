@@ -14,7 +14,9 @@ namespace aemarcoCore.Common
         int NumberOfCrawlersInvolved { get; }
 
         bool HasBeenAborted { get; }
-        Exception Exception { get; }
+
+        [JsonIgnore]
+        List<Exception> Exceptions { get; }
 
         int NumberOfNewEntries { get; }
         int NumberOfKnownEntries { get; }
