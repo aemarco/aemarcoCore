@@ -135,7 +135,7 @@
         Moozpussy,
 
 
-        [SupportedCategories(Category.Girls)]
+        [SupportedCategories(Category.Girls, Category.Vehicle, Category.Media_Games, Category.Media_Movies, Category.Media_TVSeries, Category.Media_Music, Category.Men)]
         Abyss
     }
 

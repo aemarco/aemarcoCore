@@ -4,7 +4,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <ApplicationIcon>girl.ico</ApplicationIcon>
-    <AssemblyVersion>2.1.2.0</AssemblyVersion>
+    <AssemblyVersion>2.1.3.0</AssemblyVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageId>aemarcoCore</PackageId>

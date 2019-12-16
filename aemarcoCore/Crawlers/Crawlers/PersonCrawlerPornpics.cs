@@ -10,7 +10,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 {
 
     //this one is just crawling for profile pics
-#pragma warning disable CRR0043 // Unused type
+
     internal class PersonCrawlerPornpics : PersonCrawlerBasis
     {
         public PersonCrawlerPornpics(string nameToCrawl, CancellationToken cancellationToken)

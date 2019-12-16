@@ -11,7 +11,7 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers.Crawlers
 {
-#pragma warning disable CRR0043 // Unused type
+
     internal class WallpaperCrawlerZoompussy : WallpaperCrawlerBasis
     {
         private readonly Uri _uri = new Uri("http://zoompussy.com/");
@@ -195,5 +195,5 @@ namespace aemarcoCore.Crawlers.Crawlers
 
 
     }
-#pragma warning restore CRR0043 // Unused type
+
 }

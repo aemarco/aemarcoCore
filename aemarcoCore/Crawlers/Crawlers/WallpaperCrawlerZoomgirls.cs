@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers.Crawlers
 {
-#pragma warning disable CRR0043 // Unused type
+
     internal class WallpaperCrawlerZoomgirls : WallpaperCrawlerBasis
     {
         private readonly Uri _uri = new Uri("https://zoomgirls.net");

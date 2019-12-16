@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers
 {
-#pragma warning disable CRR0043 // Unused type
+
     internal class WallpaperCrawlerAbyss : WallpaperCrawlerBasis
     {
         private int _queryCount = -1;
@@ -91,8 +91,19 @@ namespace aemarcoCore.Crawlers
             switch (categoryName)
             {
                 case "Women":
-                    return new ContentCategory(Common.Category.Girls, 1, 29);
-
+                    return new ContentCategory(Category.Girls, 1, 29);
+                case "Vehicles":
+                    return new ContentCategory(Category.Vehicle, 0, 0);
+                case "Video Game":
+                    return new ContentCategory(Category.Media_Games, 0, 0);
+                case "Men":
+                    return new ContentCategory(Category.Men, 0, 10);
+                case "Movie":
+                    return new ContentCategory(Category.Media_Movies, 0, 0);
+                case "Music":
+                    return new ContentCategory(Category.Media_Music, 0, 0);
+                case "TV Show":
+                    return new ContentCategory(Category.Media_TVSeries, 0, 0);
                 default:
                     return null;
             }
@@ -297,32 +308,50 @@ namespace aemarcoCore.Crawlers
                             return new ContentCategory(Category.Girls_Guns, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
                     }
                 }
+                else if (info.category == "Vehicles")
+                {
+                    switch (info.sub_category)
+                    {
+                        case "Motorcycle":
+                            return new ContentCategory(Category.Vehicle_Bikes, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
+                        case "Aircraft":
+                            return new ContentCategory(Category.Vehicle_Planes, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
+                    }
+
+                }
             }
 
 
 
 
             //all walls
-            if (tags != null && tags.Any() && cat.MainCategory == "Girls")
+            if (tags != null && tags.Any())
             {
-                if (tags.Any(x => x.ToLower().Contains("asian")))
-                    return new ContentCategory(Category.Girls_Asian, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
-                if (tags.Any(x => x.ToLower().Contains("girls & cars")))
-                    return new ContentCategory(Category.Girls_Cars, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
-                if (tags.Any(x => x.ToLower().Contains("cosplay")))
-                    return new ContentCategory(Category.Girls_Cosplay, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
-                if (tags.Any(x => x.ToLower().Contains("girls & motorcycles")))
-                    return new ContentCategory(Category.Girls_Bikes, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
-                if (tags.Any(x => x.ToLower().Contains("bikini")))
-                    return new ContentCategory(Category.Girls_Beaches, 20, cat.SuggestedMaxAdultLevel);
-                if (tags.Any(x => x.ToLower().Contains("model")))
-                    return new ContentCategory(Category.Girls_Celebrities, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
-                if (tags.Any(x => x.ToLower().Contains("girls & guns")))
-                    return new ContentCategory(Category.Girls_Guns, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
-
+                if (cat.MainCategory == "Girls")
+                {
+                    if (tags.Any(x => x.ToLower().Contains("asian")))
+                        return new ContentCategory(Category.Girls_Asian, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
+                    if (tags.Any(x => x.ToLower().Contains("girls & cars")))
+                        return new ContentCategory(Category.Girls_Cars, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
+                    if (tags.Any(x => x.ToLower().Contains("cosplay")))
+                        return new ContentCategory(Category.Girls_Cosplay, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
+                    if (tags.Any(x => x.ToLower().Contains("girls & motorcycles")))
+                        return new ContentCategory(Category.Girls_Bikes, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
+                    if (tags.Any(x => x.ToLower().Contains("bikini")))
+                        return new ContentCategory(Category.Girls_Beaches, 20, cat.SuggestedMaxAdultLevel);
+                    if (tags.Any(x => x.ToLower().Contains("model")))
+                        return new ContentCategory(Category.Girls_Celebrities, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
+                    if (tags.Any(x => x.ToLower().Contains("girls & guns")))
+                        return new ContentCategory(Category.Girls_Guns, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
+                }
+                else if (cat.MainCategory == "Vehicles")
+                {
+                    if (tags.Any(x => x.ToLower().Contains("motorcycle")))
+                        return new ContentCategory(Category.Vehicle_Bikes, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
+                    if (tags.Any(x => x.ToLower().Contains("aircraft")))
+                        return new ContentCategory(Category.Vehicle_Planes, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
+                }
             }
-
-
 
             return cat;
         }
@@ -330,5 +359,5 @@ namespace aemarcoCore.Crawlers
 
 
     }
-#pragma warning restore CRR0043 // Unused type
+
 }
