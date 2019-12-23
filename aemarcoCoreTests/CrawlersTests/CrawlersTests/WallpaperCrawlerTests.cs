@@ -42,7 +42,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
             var app = AppDomain.CurrentDomain.BaseDirectory;
             DirectoryInfo di = new DirectoryInfo(Path.Combine(app, "temp"));
 
-            di.Delete(true);
+            if (di.Exists) di.Delete(true);
         }
 
 

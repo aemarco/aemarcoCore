@@ -1,0 +1,198 @@
+﻿using aemarcoCore.Common;
+using aemarcoCore.Crawlers.Base;
+using aemarcoCore.Crawlers.Types;
+using HtmlAgilityPack;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading;
+
+namespace aemarcoCore.Crawlers.Crawlers
+{
+    internal class WallpaperCrawlerCoedCherry : WallpaperCrawlerBasis
+    {
+        private readonly Uri _uri = new Uri("https://www.coedcherry.com/");
+
+        internal override SourceSite SourceSite => SourceSite.CoedCherry;
+
+        public WallpaperCrawlerCoedCherry(
+            int startPage,
+            int lastPage,
+            bool onlyNews,
+            CancellationToken cancellationToken)
+            : base(1, 1, false, cancellationToken)
+        {
+
+        }
+
+        protected override List<CrawlOffer> GetCrawlsOffers()
+        {
+            List<CrawlOffer> result = new List<CrawlOffer>();
+
+            List<string> cats = new List<string>
+            {
+                "18",
+                "Alternative",
+                "Amateur",
+                "Artistic",
+                "Ass",
+                "Asian",
+                "Babe",
+                "Barefoot",
+                "Bed",
+                "Beautiful",
+                "Big tits",
+                "Bikini",
+                "Black hair",
+                "Blonde",
+                "Blowjob",
+                "Boobs",
+                "Bra",
+                "Brunette",
+                "Busty",
+                "Close up",
+                "College",
+                "Cum",
+                "Cute",
+                "Dildo",
+                "Dress",
+                "Facial",
+                "Feet",
+                "Fingers",
+                "Flashing",
+                "Flat chested",
+                "Girlfriend",
+                "Glam",
+                "Group",
+                "Hardcore",
+                "Heels",
+                "Homemade",
+                "Latina",
+                "Lesbian",
+                "Lightspeed",
+                "Lingerie",
+                "Long hair",
+                "Long legs",
+                "Panties",
+                "Softcore",
+                "Masturbation",
+                "Model",
+                "Natural tits",
+                "Non nude",
+                "Nude",
+                "Outside",
+                "Painted toes",
+                "Petite",
+                "Pigtails ",
+                "Public",
+                "Pussy",
+                "Pov",
+                "Redhead",
+                "Selfpics",
+                "Sexy",
+                "Shaved pussy",
+                "Shoes",
+                "Skinny",
+                "Small tits",
+                "Socks",
+                "Soles",
+                "Solo",
+                "Spreading",
+                "Striptease",
+                "Stockings",
+                "Tattoo",
+                "Teen",
+                "Thong",
+                "Tits",
+                "Tight",
+                "Topless",
+                "Toy",
+                "Upskirt",
+                "Wet",
+                "Vibrator"
+            };
+
+            foreach (var cat in cats)
+            {
+                var uri = new Uri(_uri, $"/galleries?tags={cat.ToLower().Replace(" ", "-")}");
+                var cc = GetContentCategory(cat);
+                var offer = CreateCrawlOffer(cat, uri, cc);
+                result.Add(offer);
+            }
+            return result;
+        }
+        protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
+        {
+            //z.B. "https://www.coedcherry.com/galleries?tags=artistic&sort=newest"                
+
+            return new Uri($"{catJob.CategoryUri.AbsoluteUri}&sort=newest");
+        }
+        protected override string GetSearchStringGorEntryNodes()
+        {
+            return "//div[@id='search-results']/div[@class='thumbs ']/figure/a";
+        }
+        protected override IContentCategory GetContentCategory(string categoryName)
+        {
+            switch (categoryName)
+            {
+                case "Homemade":
+                case "Amateur":
+                    return new ContentCategory(Common.Category.Girls_Amateur);
+                case "Asian":
+                    return new ContentCategory(Common.Category.Girls_Asian);
+                case "Selfpics":
+                    return new ContentCategory(Common.Category.Girls_Selfies);
+                default:
+                    return new ContentCategory(Common.Category.Girls);
+            }
+        }
+        protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
+        {
+            var linkToAlbum = node.Attributes["href"]?.Value;
+            var linkToAlbumUri = new Uri(linkToAlbum);
+            var albumDoc = GetDocument(linkToAlbumUri);
+
+
+            var entryNodes = albumDoc.DocumentNode.SelectNodes("//div[@class='thumbs ']/figure/a");
+
+            var result = true;
+            List<string> tags = null;
+            foreach (var entryNode in entryNodes)
+            {
+                var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
+
+                if (tags == null)
+                {
+                    tags = source.GetTagsFromNodes(
+                        albumDoc,
+                        "//a[@rel='tag']",
+                        new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText)
+                                .Replace("#", string.Empty)
+                                .Replace("-", " ")
+                                .Trim()));
+                }
+
+
+                //details
+                source.ImageUri = new Uri(entryNode.Attributes["href"].Value);
+                source.ThumbnailUri = source.ImageUri;
+                (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
+                source.ContentCategory = catJob.Category;
+                source.Tags = tags;
+
+                //TODO Album-Grouping
+
+                WallEntry wallEntry = source.WallEntry;
+                if (wallEntry == null)
+                {
+                    result = false;
+                    continue;
+                }
+                AddEntry(wallEntry, catJob);
+            }
+            return result;
+        }
+
+
+    }
+}

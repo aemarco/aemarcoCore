@@ -21,7 +21,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             int lastPage,
             bool onlyNews,
             CancellationToken cancellationToken)
-            : base(1, 1, onlyNews, cancellationToken)
+            : base(1, 1, false, cancellationToken)
         {
 
         }
@@ -237,11 +237,12 @@ namespace aemarcoCore.Crawlers.Crawlers
             var entryNodes = albumDoc.DocumentNode.SelectNodes("//li[@class='thumbwook']/a");
 
             var result = true;
+            List<string> tags = null;
             foreach (var entryNode in entryNodes)
             {
                 var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
-                List<string> tags = null;
+
                 if (tags == null)
                 {
                     tags = source.GetTagsFromNodes(albumDoc, "//div[@class='gallery-info__item tags']/a/span", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));

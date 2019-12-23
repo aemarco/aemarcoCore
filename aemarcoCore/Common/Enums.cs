@@ -135,7 +135,11 @@
 
 
         [SupportedCategories(Category.Girls, Category.Vehicle, Category.Media_Games, Category.Media_Movies, Category.Media_TVSeries, Category.Media_Music, Category.Men)]
-        Abyss
+        Abyss,
+
+
+        [SupportedCategories(Category.Girls, Category.Girls_Asian, Category.Girls_Selfies, Category.Girls_Amateur)]
+        CoedCherry
     }
 
 
