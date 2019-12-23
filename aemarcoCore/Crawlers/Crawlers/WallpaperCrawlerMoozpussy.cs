@@ -31,35 +31,39 @@ namespace aemarcoCore.Crawlers.Crawlers
         protected override List<CrawlOffer> GetCrawlsOffers()
         {
             List<CrawlOffer> result = new List<CrawlOffer>();
-            List<string> cats = new List<string>
-            {
 
-                "asian",
-                "ass",
-                "bikini",
-                "blonde",
-                "boobs",
-                "brunette",
-                "legs",
-                "lingerie",
-                "nude",
-                "pussy",
-                "redhead",
-                "teen",
-                "underwear"
-            };
-
-            foreach (var cat in cats)
+            //main page
+            var doc = GetDocument(_uri);
+            foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//article/blockquote/a"))
             {
-                var offer = CreateCrawlOffer(cat, new Uri(_uri, $"/search/{cat}/"), GetContentCategory(cat));
-                result.Add(offer);
+                //z.B. "asian"
+                string text = WebUtility.HtmlDecode(node.InnerText).Trim();
+                if (String.IsNullOrWhiteSpace(text))
+                {
+                    continue;
+                }
+
+                //z.B. "/search/asian"
+                string href = node.Attributes["href"]?.Value;
+                if (String.IsNullOrEmpty(href) || href.StartsWith("http"))
+                {
+                    continue;
+                }
+
+
+                //z.B. "https://moozpussy.com/search/asian/"
+                Uri uri = new Uri(_uri, href);
+                IContentCategory cat = GetContentCategory(text);
+
+                result.Add(CreateCrawlOffer(text, uri, cat));
             }
+
             return result;
         }
         protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
         {
             //z.B. "http://moozpussy.com/search/asian/page/1/"
-            return new Uri($"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}");
+            return new Uri($"{catJob.CategoryUri.AbsoluteUri}/page/{catJob.CurrentPage}");
         }
         protected override string GetSearchStringGorEntryNodes()
         {
