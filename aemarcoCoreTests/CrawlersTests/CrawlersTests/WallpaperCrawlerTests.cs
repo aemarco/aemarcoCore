@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -33,6 +34,15 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         {
             ConfigurationHelper.KnownUrlsFunc = () => new List<string>();
             ConfigurationHelper.AbyssAPI_Key = _config.GetValue<string>("AbyssKey");
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            var app = AppDomain.CurrentDomain.BaseDirectory;
+            DirectoryInfo di = new DirectoryInfo(Path.Combine(app, "temp"));
+
+            di.Delete(true);
         }
 
 
