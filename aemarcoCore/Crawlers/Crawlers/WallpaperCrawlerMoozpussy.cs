@@ -12,6 +12,9 @@ using System.Threading;
 namespace aemarcoCore.Crawlers.Crawlers
 {
 
+    /// <summary>
+    /// updated: 23.12.2019
+    /// </summary>
     internal class WallpaperCrawlerMoozpussy : WallpaperCrawlerBasis
     {
         private readonly Uri _uri = new Uri("http://moozpussy.com/");
@@ -124,10 +127,6 @@ namespace aemarcoCore.Crawlers.Crawlers
             }
             return true;
         }
-
-
-
-
 
         private void DownloadSingle(WallEntry wallEntry)
         {
