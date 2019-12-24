@@ -11,30 +11,19 @@ namespace aemarcoCore.Crawlers.Types
 {
     internal class WallEntrySource
     {
-        #region fields
-
-        private readonly Uri _baseUri;
-        private readonly HtmlNode _rootNode;
-        private readonly string _categoryName;
-
-        private HtmlDocument _detailsDoc;
-        private HtmlDocument _downloadDoc;
-        private Uri _imageUri;
-        private Uri _thumbUri;
-        private string _filename;
-        private string _extension;
-        private IContentCategory _contentCategory;
-        private List<string> _tags;
-
-        #endregion
 
         #region ctor
 
+        private readonly Uri _baseUri;
+        internal WallEntrySource()
+        {
+
+        }
         internal WallEntrySource(Uri baseUri, HtmlNode rootNode, string categoryName)
         {
             _baseUri = baseUri;
-            _rootNode = rootNode;
-            _categoryName = categoryName;
+            RootNode = rootNode;
+            SiteCategory = categoryName;
 
         }
 
@@ -42,64 +31,31 @@ namespace aemarcoCore.Crawlers.Types
 
         #region props
 
-        internal HtmlNode RootNode
-        {
-            get { return _rootNode; }
-        }
-
-
-        internal HtmlDocument DetailsDoc
-        {
-            get { return _detailsDoc; }
-            set { _detailsDoc = value; }
-        }
-        internal HtmlDocument DownloadDoc
-        {
-            get { return _downloadDoc; }
-            set { _downloadDoc = value; }
-        }
-
-        internal Uri ImageUri
-        {
-            get { return _imageUri; }
-            set { _imageUri = value; }
-        }
-        internal Uri ThumbnailUri
-        {
-            get { return _thumbUri; }
-            set { _thumbUri = value; }
-        }
-        public string Filename
-        {
-            get { return _filename; }
-            set { _filename = value; }
-        }
-        public string Extension
-        {
-            get { return _extension; }
-            set { _extension = value; }
-        }
-        public IContentCategory ContentCategory
-        {
-            get { return _contentCategory; }
-            set { _contentCategory = value; }
-        }
-        public List<string> Tags
-        {
-            get { return _tags; }
-            set { _tags = value; }
-        }
+        internal HtmlNode RootNode { get; }
+        internal HtmlDocument DetailsDoc { get; set; }
+        internal HtmlDocument DownloadDoc { get; set; }
 
         #endregion
 
         #region Output
 
+        internal Uri ImageUri { get; set; }
+        internal Uri ThumbnailUri { get; set; }
+        public string Filename { get; set; }
+        public string Extension { get; set; }
+        public IContentCategory ContentCategory { get; set; }
+        public string SiteCategory { get; set; }
+        public List<string> Tags { get; set; }
+        public string AlbumName { get; set; }
+
+
         internal WallEntry WallEntry
         {
             get
             {
-                var entry = new WallEntry(_imageUri.AbsoluteUri, _thumbUri.AbsoluteUri,
-                    _filename, _extension, _contentCategory, _categoryName, _tags);
+                var entry = new WallEntry(ImageUri.AbsoluteUri, ThumbnailUri.AbsoluteUri,
+                    Filename, Extension, ContentCategory, SiteCategory, Tags, AlbumName);
+
                 if (entry.IsValid)
                 {
                     return entry;
@@ -118,7 +74,7 @@ namespace aemarcoCore.Crawlers.Types
 
         internal HtmlDocument GetChildDocumentFromRootNode(string nodeToSubNode = null)
         {
-            return GetChildDocumentFromNode(_rootNode, nodeToSubNode);
+            return GetChildDocumentFromNode(RootNode, nodeToSubNode);
         }
         internal HtmlDocument GetChildDocumentFromNode(HtmlNode node, string nodeToSubNode = null)
         {
@@ -139,7 +95,6 @@ namespace aemarcoCore.Crawlers.Types
             var uri = new Uri(_baseUri, href);
             return WallpaperCrawlerBasis.GetDocument(uri);
         }
-
         internal HtmlDocument GetChildDocumentFromDocument(HtmlDocument doc, string docToHrefNode)
         {
             var node = doc?.DocumentNode.SelectSingleNode(docToHrefNode);

@@ -149,19 +149,21 @@ namespace aemarcoCore.Crawlers.Crawlers
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
             var linkToAlbum = node.Attributes["href"]?.Value;
+            var albumName = node.Attributes["title"].Value;
             var linkToAlbumUri = new Uri(linkToAlbum);
             var albumDoc = GetDocument(linkToAlbumUri);
 
 
-            var entryNodes = albumDoc.DocumentNode.SelectNodes("//div[@class='thumbs ']/figure/a");
+            HtmlNodeCollection entryNodes = albumDoc.DocumentNode.SelectNodes("//div[@class='thumbs ']/figure/a");
+
 
             var result = true;
             List<string> tags = null;
             foreach (var entryNode in entryNodes)
             {
+                //get tags during first node
                 var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
-
-                if (tags == null)
+                if (entryNodes.IndexOf(entryNode) == 0)
                 {
                     tags = source.GetTagsFromNodes(
                         albumDoc,
@@ -179,8 +181,8 @@ namespace aemarcoCore.Crawlers.Crawlers
                 (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
                 source.ContentCategory = catJob.Category;
                 source.Tags = tags;
+                source.AlbumName = albumName;
 
-                //TODO Album-Grouping
 
                 WallEntry wallEntry = source.WallEntry;
                 if (wallEntry == null)

@@ -9,10 +9,9 @@ namespace aemarcoCore.Crawlers.Types
     {
         private static List<string> _crawlerExtensions;
 
-
         internal WallEntry(
             string url, string thumbnailUrl, string fileName, string extension,
-            IContentCategory contentCategory, string siteCategory, List<string> tags)
+            IContentCategory contentCategory, string siteCategory, List<string> tags, string albumName)
         {
             Url = url;
             ThumbnailUrl = thumbnailUrl;
@@ -21,6 +20,7 @@ namespace aemarcoCore.Crawlers.Types
             ContentCategory = contentCategory;
             SiteCategory = siteCategory;
             Tags = tags;
+            AlbumName = albumName;
         }
 
 
@@ -32,6 +32,8 @@ namespace aemarcoCore.Crawlers.Types
         public IContentCategory ContentCategory { get; }
         public string SiteCategory { get; }
         public List<string> Tags { get; }
+        public string AlbumName { get; }
+
 
         [JsonIgnore]
         public string JSON

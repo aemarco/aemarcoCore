@@ -165,6 +165,10 @@ namespace aemarcoCore.Crawlers
 
         private bool AddWallEntry(CrawlOffer catJob, AbyssWallpaper wall)
         {
+            WallEntrySource source = new WallEntrySource();
+
+
+
             // https://wall.alphacoders.com/api2.0/get.php?auth=YOUR_KEY&method=wallpaper_info&id=595064
             var wallInfoString = QueryApi(
                 "method=wallpaper_info",
@@ -174,28 +178,23 @@ namespace aemarcoCore.Crawlers
             var wallInf = wallInfo.wallpaper;
 
 
-            string filename = $"Abyss_{wallInf.category}_{wallInf.sub_category}_{wallInf.id}";
-            string extension = $".{wallInf.file_type}";
-            List<string> tags = wallInfo.tags.Select(x => x.name).ToList();
-            if (!String.IsNullOrWhiteSpace(wallInf.sub_category)) tags.Insert(0, wallInf.sub_category);
-            var cc = CheckForRealCategory(catJob.Category, tags, wallInf);
+            source.ImageUri = new Uri(wallInf.url_image);
+            source.ThumbnailUri = new Uri(wallInf.url_thumb);
+            source.Filename = $"Abyss_{wallInf.category}_{wallInf.sub_category}_{wallInf.id}";
+            source.Extension = $".{wallInf.file_type}";
+            source.Tags = wallInfo.tags.Select(x => x.name).ToList();
+            source.ContentCategory = CheckForRealCategory(catJob.Category, source.Tags, wallInf);
+            if (!String.IsNullOrWhiteSpace(wallInf.sub_category)) source.Tags.Insert(0, wallInf.sub_category);
+            source.SiteCategory = catJob.SiteCategoryName;
 
 
-            var entry = new WallEntry(
-                wallInf.url_image,
-                wallInf.url_thumb,
-                filename,
-                extension,
-                cc,
-                catJob.SiteCategoryName,
-                tags);
 
-
-            if (!entry.IsValid)
+            WallEntry wallEntry = source.WallEntry;
+            if (wallEntry == null)
             {
                 return false;
             }
-            AddEntry(entry, catJob);
+            AddEntry(wallEntry, catJob);
             return true;
         }
 
