@@ -182,15 +182,26 @@ namespace aemarcoCore.Crawlers.Crawlers
 
             foreach (var cat in cats)
             {
-                var offer = CreateCrawlOffer(cat, new Uri(_uri, $"/recent/{cat.ToLower().Replace(" ", "-")}/"), GetContentCategory(cat));
-                result.Add(offer);
+                var cc = GetContentCategory(cat);
+
+                var newOffer = CreateCrawlOffer(
+                    cat,
+                    new Uri(_uri, $"/recent/{cat.ToLower().Replace(" ", "-")}/"),
+                    cc);
+                result.Add(newOffer);
+
+                var popularOffer = CreateCrawlOffer(
+                    cat,
+                    new Uri(_uri, $"/{cat.ToLower().Replace(" ", "-")}/"),
+                    cc);
+                result.Add(popularOffer);
+
             }
             return result;
         }
         protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
         {
-            //z.B. "http://babesunivers.com/wallpapers/lingerie-girls/1?order=publish-date-newest&resolution=all&search="                
-
+            //z.B. "https://www.pornpics.com/recent/asian/"
             return catJob.CategoryUri;
         }
         protected override string GetSearchStringGorEntryNodes()

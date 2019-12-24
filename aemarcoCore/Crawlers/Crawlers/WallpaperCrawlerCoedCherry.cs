@@ -114,18 +114,23 @@ namespace aemarcoCore.Crawlers.Crawlers
 
             foreach (var cat in cats)
             {
-                var uri = new Uri(_uri, $"/galleries?tags={cat.ToLower().Replace(" ", "-")}");
                 var cc = GetContentCategory(cat);
-                var offer = CreateCrawlOffer(cat, uri, cc);
-                result.Add(offer);
+
+                var popularUri = new Uri(_uri, $"/galleries?tags={cat.ToLower().Replace(" ", "-")}");
+                var popularOffer = CreateCrawlOffer(cat, popularUri, cc);
+                result.Add(popularOffer);
+
+                var newUri = new Uri(_uri, $"/galleries?tags={cat.ToLower().Replace(" ", "-")}&sort=newest");
+                var newOffer = CreateCrawlOffer(cat, newUri, cc);
+                result.Add(newOffer);
+
             }
             return result;
         }
         protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
         {
-            //z.B. "https://www.coedcherry.com/galleries?tags=artistic&sort=newest"                
-
-            return new Uri($"{catJob.CategoryUri.AbsoluteUri}&sort=newest");
+            //z.B. "https://www.coedcherry.com/galleries?tags=artistic&sort=newest"
+            return catJob.CategoryUri;
         }
         protected override string GetSearchStringGorEntryNodes()
         {
