@@ -208,36 +208,9 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             return "//li[@class='thumbwook']/a";
         }
-        protected override IContentCategory GetContentCategory(string categoryName)
-        {
-            switch (categoryName)
-            {
-                case "Homemade":
-                case "Amateur":
-                    return new ContentCategory(Common.Category.Girls_Amateur);
-                case "Asian":
-                case "Indian":
-                case "Japanese":
-                case "Thai":
-                    return new ContentCategory(Common.Category.Girls_Asian);
-                case "Bondage":
-                case "Blindfold":
-                case "Latex":
-                    return new ContentCategory(Common.Category.Girls_Fetish);
-                case "Christmas":
-                    return new ContentCategory(Common.Category.Girls_Holidays);
-                case "Cosplay":
-                    return new ContentCategory(Common.Category.Girls_Cosplay);
-                case "Gloryhole":
-                    return new ContentCategory(Common.Category.Girls_Gloryhole);
-                case "Self Shot":
-                    return new ContentCategory(Common.Category.Girls_Selfies);
 
-                default:
-                    return new ContentCategory(Common.Category.Girls);
+        protected override IContentCategory DefaultCategory => new ContentCategory(Category.Girls);
 
-            }
-        }
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
 

@@ -106,7 +106,7 @@ namespace aemarcoCore.Crawlers
         /// Not using this means everything will be crawled
         /// Using this means only added categories will be crawled
         /// </summary>
-        public void AddCategoryFilter(Common.Category category)
+        public void AddCategoryFilter(Category category)
         {
             string cat = category.ToString();
             if (!_filterCategories.Contains(cat))

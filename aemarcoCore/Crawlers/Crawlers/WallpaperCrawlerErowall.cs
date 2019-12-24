@@ -88,24 +88,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             return "//div[@class='wpmini']/a";
         }
-        protected override IContentCategory GetContentCategory(string categoryName)
-        {
-            switch (categoryName)
-            {
-                case "Lesbians":
-                    return new ContentCategory(Common.Category.Girls_Lesbians);
-                case "Lingerie":
-                    return new ContentCategory(Common.Category.Girls_Lingerie);
-                case "Beach":
-                    return new ContentCategory(Common.Category.Girls_Beaches);
-                case "Asian":
-                    return new ContentCategory(Common.Category.Girls_Asian);
-                case "Anime":
-                    return new ContentCategory(Common.Category.Girls_Fantasy);
-                default:
-                    return new ContentCategory(Common.Category.Girls);
-            }
-        }
+        protected override IContentCategory DefaultCategory => new ContentCategory(Category.Girls);
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
             //details

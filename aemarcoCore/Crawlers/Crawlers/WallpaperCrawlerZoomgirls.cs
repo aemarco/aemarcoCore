@@ -36,9 +36,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             string href = "latest_wallpapers";
             //z.B. "https://zoomgirls.net/latest_wallpapers"
             Uri uri = new Uri(_uri, href);
-            IContentCategory cat = GetContentCategory(text);
-
-            result.Add(CreateCrawlOffer(text, uri, cat));
+            result.Add(CreateCrawlOffer(text, uri, DefaultCategory));
             return result;
         }
         protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
@@ -51,10 +49,8 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             return "//div[@class='thumb']/a";
         }
-        protected override IContentCategory GetContentCategory(string categoryName)
-        {
-            return new ContentCategory(Common.Category.Girls);
-        }
+
+        protected override IContentCategory DefaultCategory => new ContentCategory(Category.Girls);
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
             var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);

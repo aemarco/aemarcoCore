@@ -70,35 +70,9 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             return "//div[@class='thumbnail']/a";
         }
-        protected override IContentCategory GetContentCategory(string categoryName)
-        {
-            switch (categoryName)
-            {
-                case "Celebrities":
-                    return new ContentCategory(Common.Category.Girls_Celebrities);
-                case "Girls & Beaches":
-                    return new ContentCategory(Common.Category.Girls_Beaches);
-                case "Girls & Cars":
-                    return new ContentCategory(Common.Category.Girls_Cars);
-                case "Girls & Bikes":
-                    return new ContentCategory(Common.Category.Girls_Bikes);
-                case "Lingerie Girls":
-                    return new ContentCategory(Common.Category.Girls_Lingerie);
-                case "Asian Girls":
-                    return new ContentCategory(Common.Category.Girls_Asian);
-                case "Holidays":
-                    return new ContentCategory(Common.Category.Girls_Holidays);
-                case "Fantasy Girls":
-                case "3D & Vector Girls":
-                    return new ContentCategory(Common.Category.Girls_Fantasy);
-                case "Celebrity Fakes":
-                    return new ContentCategory(Common.Category.Girls_CelebrityFakes);
-                case "Fetish Girls":
-                    return new ContentCategory(Common.Category.Girls_Fetish);
-                default:
-                    return new ContentCategory(Common.Category.Girls);
-            }
-        }
+
+        protected override IContentCategory DefaultCategory => new ContentCategory(Category.Girls);
+
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
             node = node.ParentNode.ParentNode;

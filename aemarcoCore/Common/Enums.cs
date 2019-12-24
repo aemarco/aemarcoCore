@@ -113,7 +113,7 @@
         //
         [SupportedCategories(Category.Girls_Amateur, Category.Girls_Asian, Category.Girls_Fetish,
             Category.Girls_Holidays, Category.Girls_Cosplay, Category.Girls_Gloryhole, Category.Girls_Selfies,
-            Category.Girls)]
+            Category.Girls, Category.Girls_Hardcore, Category.Girls_Lesbians)]
         Pornpics,
 
         //
@@ -138,7 +138,7 @@
         Abyss,
 
 
-        [SupportedCategories(Category.Girls, Category.Girls_Asian, Category.Girls_Selfies, Category.Girls_Amateur)]
+        [SupportedCategories(Category.Girls, Category.Girls_Hardcore, Category.Girls_Lesbians, Category.Girls_Asian, Category.Girls_Selfies, Category.Girls_Amateur)]
         CoedCherry
     }
 

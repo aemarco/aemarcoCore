@@ -69,12 +69,89 @@ namespace aemarcoCore.Crawlers.Base
                  .ToList();
         }
 
+
+
+
         /// <summary>
         /// Maps Site Category name to internal category
         /// </summary>
         /// <param name="categoryName">name of category on site</param>
         /// <returns>internal category</returns>
-        protected abstract IContentCategory GetContentCategory(string categoryName);
+        protected virtual IContentCategory GetContentCategory(string categoryName)
+        {
+            switch (categoryName)
+            {
+                case "Erotic Wallpapers":
+                case "Erotic Girls":
+                    return new ContentCategory(Category.Girls);
+                case "Celebrities":
+                    return new ContentCategory(Category.Girls_Celebrities);
+                case "Celebrity Fakes":
+                    return new ContentCategory(Category.Girls_CelebrityFakes);
+                case "Girls & Cars":
+                    return new ContentCategory(Category.Girls_Cars);
+                case "Girls & Bikes":
+                    return new ContentCategory(Category.Girls_Bikes);
+                case "______Girls_Guns":
+                    return new ContentCategory(Category.Girls_Guns);
+                case "Anime":
+                case "Fantasy Girls":
+                case "3D & Vector Girls":
+                    return new ContentCategory(Category.Girls_Fantasy);
+                case "Cosplay":
+                    return new ContentCategory(Category.Girls_Cosplay);
+                case "Lingerie":
+                case "Lingerie Models":
+                case "Lingerie Girls":
+                case "lingerie":
+                case "underwear":
+                case "stockings":
+                    return new ContentCategory(Category.Girls_Lingerie);
+                case "Lesbian":
+                case "Lesbians":
+                    return new ContentCategory(Category.Girls_Lesbians);
+                case "Beach":
+                case "Girls & Beaches":
+                    return new ContentCategory(Category.Girls_Beaches);
+                case "Asian Girls":
+                case "asian":
+                case "Asian":
+                case "Indian":
+                case "Japanese":
+                case "Thai":
+                    return new ContentCategory(Category.Girls_Asian);
+                case "Holidays":
+                case "Christmas":
+                    return new ContentCategory(Category.Girls_Holidays);
+                case "Fetish Girls":
+                case "Bondage":
+                case "Blindfold":
+                case "Latex":
+                    return new ContentCategory(Category.Girls_Fetish);
+                case "______Girls_Blowjob":
+                    return new ContentCategory(Category.Girls_Blowjob);
+                case "Hardcore":
+                    return new ContentCategory(Category.Girls_Hardcore);
+                case "Homemade":
+                case "Amateur":
+                    return new ContentCategory(Category.Girls_Amateur);
+                case "Gloryhole":
+                    return new ContentCategory(Category.Girls_Gloryhole);
+                case "Selfpics":
+                case "Self Shot":
+                    return new ContentCategory(Category.Girls_Selfies);
+            }
+            return DefaultCategory;
+        }
+
+        protected virtual IContentCategory DefaultCategory => null;
+
+
+
+
+
+
+
 
         /// <summary>
         /// creates a CrawlOffer which carries the limitation infos

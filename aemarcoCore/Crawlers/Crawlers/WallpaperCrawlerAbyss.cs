@@ -104,9 +104,8 @@ namespace aemarcoCore.Crawlers
                     return new ContentCategory(Category.Media_Music, 0, 0);
                 case "TV Show":
                     return new ContentCategory(Category.Media_TVSeries, 0, 0);
-                default:
-                    return null;
             }
+            return DefaultCategory;
         }
 
 

@@ -136,21 +136,9 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             return "//div[@id='search-results']/div[@class='thumbs ']/figure/a";
         }
-        protected override IContentCategory GetContentCategory(string categoryName)
-        {
-            switch (categoryName)
-            {
-                case "Homemade":
-                case "Amateur":
-                    return new ContentCategory(Common.Category.Girls_Amateur);
-                case "Asian":
-                    return new ContentCategory(Common.Category.Girls_Asian);
-                case "Selfpics":
-                    return new ContentCategory(Common.Category.Girls_Selfies);
-                default:
-                    return new ContentCategory(Common.Category.Girls);
-            }
-        }
+
+        protected override IContentCategory DefaultCategory => new ContentCategory(Category.Girls);
+
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
             var linkToAlbum = node.Attributes["href"]?.Value;

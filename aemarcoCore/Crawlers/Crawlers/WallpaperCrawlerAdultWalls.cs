@@ -68,18 +68,8 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             return "//div[@class='thumb-container']/a";
         }
-        protected override IContentCategory GetContentCategory(string categoryName)
-        {
-            switch (categoryName)
-            {
-                case "Lingerie Models":
-                    return new ContentCategory(Common.Category.Girls_Lingerie);
-                case "Erotic Wallpapers":
-                    return new ContentCategory(Common.Category.Girls);
-                default:
-                    return new ContentCategory(Common.Category.Girls);
-            }
-        }
+
+        protected override IContentCategory DefaultCategory => new ContentCategory(Category.Girls);
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
 

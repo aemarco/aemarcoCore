@@ -69,16 +69,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             return "//a[@class='thumbnail clearfix']";
         }
-        protected override IContentCategory GetContentCategory(string categoryName)
-        {
-            switch (categoryName)
-            {
-                case "Lingerie Girls":
-                    return new ContentCategory(Common.Category.Girls_Lingerie);
-                default:
-                    return new ContentCategory(Common.Category.Girls);
-            }
-        }
+        protected override IContentCategory DefaultCategory => new ContentCategory(Category.Girls);
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
 
