@@ -190,6 +190,7 @@ namespace aemarcoCore.Crawlers
                 _result.Exceptions.Add(ex);
             }
 
+            _result.CleanupAlbums();
 
             //persist results for Deduplication
             WallCrawlerData.Save();
@@ -332,7 +333,11 @@ namespace aemarcoCore.Crawlers
         {
             lock (_entryLock)
             {
-                _result.AddKnownEntry(e.Entry);
+                if (string.IsNullOrWhiteSpace(e.Entry.AlbumName))
+                    _result.AddKnownEntry(e.Entry);
+                else
+                    _result.AddToAlbums(e.Entry, false);
+
 
                 if (KnownEntry != null)
                 {
@@ -359,7 +364,10 @@ namespace aemarcoCore.Crawlers
         {
             lock (_entryLock)
             {
-                _result.AddNewEntry(e.Entry);
+                if (string.IsNullOrWhiteSpace(e.Entry.AlbumName))
+                    _result.AddNewEntry(e.Entry);
+                else
+                    _result.AddToAlbums(e.Entry, true);
 
 
                 if (NewEntry != null)

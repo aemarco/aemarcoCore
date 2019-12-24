@@ -23,6 +23,7 @@ namespace aemarcoCore.Common
 
 
         List<IWallEntry> NewEntries { get; }
+        List<IAlbumEntry> AlbumEntries { get; }
         List<IWallEntry> KnownEntries { get; }
 
         [JsonIgnore]

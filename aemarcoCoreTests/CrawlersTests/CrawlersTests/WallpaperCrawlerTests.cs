@@ -187,7 +187,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
             var result = crawler.StartAsyncTask().GetAwaiter().GetResult();
             Task.Delay(1000).GetAwaiter().GetResult();
 
-            Assert.IsTrue(found || result.NewEntries.Any());
+            Assert.IsTrue(found || result.NewEntries.Any() || result.AlbumEntries.Any());
             cts.Dispose();
         }
 

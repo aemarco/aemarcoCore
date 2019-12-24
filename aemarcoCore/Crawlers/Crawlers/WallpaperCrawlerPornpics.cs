@@ -231,6 +231,8 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
 
             var linkToAlbum = node.Attributes["href"]?.Value;
+            var albumName = new WallEntrySource().GetSubNodeAttribute(node, "alt", "./img");
+
             var linkToAlbumUri = new Uri(linkToAlbum);
             var albumDoc = GetDocument(linkToAlbumUri);
 
@@ -241,15 +243,18 @@ namespace aemarcoCore.Crawlers.Crawlers
             foreach (var entryNode in entryNodes)
             {
                 var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
-
-
-                if (tags == null)
+                if (entryNodes.IndexOf(entryNode) == 0)
                 {
-                    tags = source.GetTagsFromNodes(albumDoc, "//div[@class='gallery-info__item tags']/a/span", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
-                    tags.AddRange(source.GetTagsFromNodes(albumDoc, "//div[@class='gallery-info__item']/a/span", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim())));
+                    tags = source.GetTagsFromNodes(
+                        albumDoc,
+                        "//div[@class='gallery-info__item tags']/div/a/span",
+                        new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
+
+                    tags.AddRange(source.GetTagsFromNodes(
+                        albumDoc,
+                        "//div[@class='gallery-info__item']/div/a/span",
+                        new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim())));
                 }
-
-
 
 
                 //details
@@ -258,7 +263,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
                 source.ContentCategory = catJob.Category;
                 source.Tags = tags;
-
+                source.AlbumName = albumName;
 
                 WallEntry wallEntry = source.WallEntry;
                 if (wallEntry == null)
