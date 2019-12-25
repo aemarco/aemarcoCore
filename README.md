@@ -24,11 +24,8 @@ Create a WallpaperCrawler for usage.
 
 	Progress event delivers the current progress 0...100, safe for GUI-Use
 	NewEntry and KnownEntry events deliver IWallEntry.
-	
+	NewAlbum and KnwonAlbum events deliver IAlbumEntry.
 	Completed event delivers IWallCrawlerResult on completion.
-	Beside NewEntries and KnownEntries it also holds AlbumEntries.
-	AlbumEntries are IAlbumEntry which holds multiple IWallEntry´s collected as a album.
-	Entries in Albums are not contained in New or Known Entries.... Album holds at least 1 new Entry
 	
 
 	Optional Configuration:

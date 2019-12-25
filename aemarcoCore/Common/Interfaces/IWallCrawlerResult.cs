@@ -23,8 +23,14 @@ namespace aemarcoCore.Common
 
 
         List<IWallEntry> NewEntries { get; }
-        List<IAlbumEntry> AlbumEntries { get; }
         List<IWallEntry> KnownEntries { get; }
+
+
+        int NumberOfNewAlbums { get; }
+        int NumberOfKnownAlbums { get; }
+
+        List<IAlbumEntry> NewAlbums { get; }
+        List<IAlbumEntry> KnownAlbums { get; }
 
         [JsonIgnore]
         string JSON { get; }

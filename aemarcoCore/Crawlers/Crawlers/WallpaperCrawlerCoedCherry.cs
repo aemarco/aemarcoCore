@@ -4,6 +4,7 @@ using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading;
 
@@ -20,7 +21,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             int lastPage,
             bool onlyNews,
             CancellationToken cancellationToken)
-            : base(1, 1, false, cancellationToken)
+            : base(1, 1, onlyNews, cancellationToken)
         {
 
         }
@@ -143,15 +144,16 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             var linkToAlbum = node.Attributes["href"]?.Value;
             var albumName = node.Attributes["title"].Value;
+            if (string.IsNullOrWhiteSpace(albumName)) return false;
+
             var linkToAlbumUri = new Uri(linkToAlbum);
             var albumDoc = GetDocument(linkToAlbumUri);
 
 
-            HtmlNodeCollection entryNodes = albumDoc.DocumentNode.SelectNodes("//div[@class='thumbs ']/figure/a");
+            var entryNodes = albumDoc.DocumentNode.SelectNodes("//div[@class='thumbs ']/figure/a");
 
-
-            var result = true;
             List<string> tags = null;
+            AlbumEntry album = new AlbumEntry(albumName);
             foreach (var entryNode in entryNodes)
             {
                 //get tags during first node
@@ -167,7 +169,6 @@ namespace aemarcoCore.Crawlers.Crawlers
                                 .Trim()));
                 }
 
-
                 //details
                 source.ImageUri = new Uri(entryNode.Attributes["href"].Value);
                 source.ThumbnailUri = source.ImageUri;
@@ -176,16 +177,19 @@ namespace aemarcoCore.Crawlers.Crawlers
                 source.Tags = tags;
                 source.AlbumName = albumName;
 
-
                 WallEntry wallEntry = source.WallEntry;
-                if (wallEntry == null)
+                if (wallEntry != null)
                 {
-                    result = false;
-                    continue;
+                    album.Entries.Add(wallEntry);
                 }
-                AddEntry(wallEntry, catJob);
             }
-            return result;
+
+
+            if (album.Entries.Any())
+            {
+                AddAlbum(album, catJob);
+            }
+            return album.Entries.Any();
         }
 
 

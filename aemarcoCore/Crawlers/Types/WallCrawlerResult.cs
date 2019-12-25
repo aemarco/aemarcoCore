@@ -21,7 +21,8 @@ namespace aemarcoCore.Crawlers.Types
 
             NewEntries = new List<IWallEntry>();
             KnownEntries = new List<IWallEntry>();
-            AlbumEntries = new List<IAlbumEntry>();
+            NewAlbums = new List<IAlbumEntry>();
+            KnownAlbums = new List<IAlbumEntry>();
         }
 
 
@@ -37,58 +38,25 @@ namespace aemarcoCore.Crawlers.Types
         [JsonIgnore]
         public List<Exception> Exceptions { get; set; }
 
-        public int NumberOfNewEntries { get { return NewEntries.Count + AlbumEntries.Sum(x => x.Entries.Count); } }
+
+
+        public int NumberOfNewEntries { get { return NewEntries.Count; } }
         public int NumberOfKnownEntries { get { return KnownEntries.Count; } }
 
         public List<IWallEntry> NewEntries { get; set; }
-        public List<IAlbumEntry> AlbumEntries { get; set; }
         public List<IWallEntry> KnownEntries { get; set; }
+
+        public int NumberOfNewAlbums { get { return NewAlbums.Count; } }
+        public int NumberOfKnownAlbums { get { return KnownAlbums.Count; } }
+
+        public List<IAlbumEntry> NewAlbums { get; set; }
+        public List<IAlbumEntry> KnownAlbums { get; set; }
+
+
 
         [JsonIgnore]
         public string JSON
         { get { return JsonConvert.SerializeObject(this, Formatting.Indented); } }
 
-
-
-
-        internal void AddNewEntry(IWallEntry entry)
-        {
-            NewEntries.Add(entry);
-        }
-        internal void AddToAlbums(IWallEntry entry, bool isNew)
-        {
-            if (AlbumEntries.FirstOrDefault(x => x.Name == entry.AlbumName) is AlbumEntry album) //means there is already a album for this entry
-            {
-                //make sure that entries dont come in the album multiple times
-                if (isNew || //if its new, it cant be in the album yet... it would be known alreay (quick win) 
-                    !album.Entries.Any(x => x.Url == entry.Url)) //if its known, make sure each url get added only once
-                {
-                    album.Entries.Add(entry);
-                }
-            }
-            else //create album, also with known entries (will be cleaned up later)
-            {
-                album = new AlbumEntry(entry);
-                AlbumEntries.Add(album);
-            }
-
-            album.HasNewEntries |= isNew;
-        }
-        public void CleanupAlbums()
-        {
-            foreach (AlbumEntry album in AlbumEntries)
-            {
-                if (!album.HasNewEntries)
-                {
-                    KnownEntries.AddRange(album.Entries);
-                    album.Entries.Clear();
-                }
-            }
-            AlbumEntries.RemoveAll(x => x.Entries.Count == 0);
-        }
-        internal void AddKnownEntry(IWallEntry entry)
-        {
-            KnownEntries.Add(entry);
-        }
     }
 }

@@ -7,16 +7,15 @@ namespace aemarcoCore.Crawlers.Types
 {
     public class AlbumEntry : IAlbumEntry
     {
-        public AlbumEntry(IWallEntry entry)
+        public AlbumEntry(string name)
         {
-            Name = entry.AlbumName;
-            Entries = new List<IWallEntry> { entry };
-            HasNewEntries = false;
+            Name = name;
+            Entries = new List<IWallEntry>();
         }
 
-
-
         public string Name { get; }
+
+
         public List<IWallEntry> Entries { get; }
 
 

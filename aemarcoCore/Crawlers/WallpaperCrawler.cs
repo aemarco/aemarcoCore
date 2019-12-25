@@ -190,8 +190,6 @@ namespace aemarcoCore.Crawlers
                 _result.Exceptions.Add(ex);
             }
 
-            _result.CleanupAlbums();
-
             //persist results for Deduplication
             WallCrawlerData.Save();
             //Writing Report
@@ -244,6 +242,8 @@ namespace aemarcoCore.Crawlers
                         instance.Progress += Instance_OnProgress;
                         instance.NewEntry += Instance_OnNewEntry;
                         instance.KnownEntry += Instance_OnKnownEntry;
+                        instance.NewAlbum += Instance_OnNewAlbum;
+                        instance.KnownAlbum += Instance_OnKnownAlbum;
 
                         _crawlers.Add(instance, 0);
                     }
@@ -333,11 +333,7 @@ namespace aemarcoCore.Crawlers
         {
             lock (_entryLock)
             {
-                if (string.IsNullOrWhiteSpace(e.Entry.AlbumName))
-                    _result.AddKnownEntry(e.Entry);
-                else
-                    _result.AddToAlbums(e.Entry, false);
-
+                _result.KnownEntries.Add(e.Entry);
 
                 if (KnownEntry != null)
                 {
@@ -364,15 +360,80 @@ namespace aemarcoCore.Crawlers
         {
             lock (_entryLock)
             {
-                if (string.IsNullOrWhiteSpace(e.Entry.AlbumName))
-                    _result.AddNewEntry(e.Entry);
-                else
-                    _result.AddToAlbums(e.Entry, true);
-
+                _result.NewEntries.Add(e.Entry);
 
                 if (NewEntry != null)
                 {
                     foreach (Delegate d in NewEntry.GetInvocationList())
+                    {
+                        if (!(d.Target is ISynchronizeInvoke syncer))
+                        {
+                            d.DynamicInvoke(this, e);
+                        }
+                        else
+                        {
+                            syncer.BeginInvoke(d, new object[] { this, e });  // cleanup omitted
+                        }
+                    }
+
+                }
+            }
+        }
+
+        /// <summary>
+        /// Delivers album-entries which are already known by the crawler
+        /// </summary>
+        public event EventHandler<IAlbumEntryEventArgs> KnownAlbum;
+        private void Instance_OnKnownAlbum(object sender, IAlbumEntryEventArgs e)
+        {
+            lock (_entryLock)
+            {
+                if (_result.KnownAlbums.Any(x => x.Name == e.Entry.Name) ||
+                    _result.NewAlbums.Any(x => x.Name == e.Entry.Name))
+                {
+                    //album may only trigger event once and be added once
+                    return;
+                }
+
+                _result.KnownAlbums.Add(e.Entry);
+
+                if (KnownAlbum != null)
+                {
+                    foreach (Delegate d in KnownAlbum.GetInvocationList())
+                    {
+                        if (!(d.Target is ISynchronizeInvoke syncer))
+                        {
+                            d.DynamicInvoke(this, e);
+                        }
+                        else
+                        {
+                            syncer.BeginInvoke(d, new object[] { this, e });  // cleanup omitted
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Delivers album-entries which are new to the crawler
+        /// </summary>
+        public event EventHandler<IAlbumEntryEventArgs> NewAlbum;
+        private void Instance_OnNewAlbum(object sender, IAlbumEntryEventArgs e)
+        {
+            lock (_entryLock)
+            {
+                if (_result.KnownAlbums.Any(x => x.Name == e.Entry.Name) ||
+                    _result.NewAlbums.Any(x => x.Name == e.Entry.Name))
+                {
+                    //album may only trigger event once and be added once
+                    return;
+                }
+
+                _result.NewAlbums.Add(e.Entry);
+
+                if (NewAlbum != null)
+                {
+                    foreach (Delegate d in NewAlbum.GetInvocationList())
                     {
                         if (!(d.Target is ISynchronizeInvoke syncer))
                         {

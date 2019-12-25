@@ -4,6 +4,7 @@ using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading;
 
@@ -21,7 +22,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             int lastPage,
             bool onlyNews,
             CancellationToken cancellationToken)
-            : base(1, 1, false, cancellationToken)
+            : base(1, 1, onlyNews, cancellationToken)
         {
 
         }
@@ -216,14 +217,15 @@ namespace aemarcoCore.Crawlers.Crawlers
 
             var linkToAlbum = node.Attributes["href"]?.Value;
             var albumName = new WallEntrySource().GetSubNodeAttribute(node, "alt", "./img");
+            if (string.IsNullOrWhiteSpace(albumName)) return false;
 
             var linkToAlbumUri = new Uri(linkToAlbum);
             var albumDoc = GetDocument(linkToAlbumUri);
 
             var entryNodes = albumDoc.DocumentNode.SelectNodes("//li[@class='thumbwook']/a");
 
-            var result = true;
             List<string> tags = null;
+            AlbumEntry album = new AlbumEntry(albumName);
             foreach (var entryNode in entryNodes)
             {
                 var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
@@ -250,14 +252,17 @@ namespace aemarcoCore.Crawlers.Crawlers
                 source.AlbumName = albumName;
 
                 WallEntry wallEntry = source.WallEntry;
-                if (wallEntry == null)
+                if (wallEntry != null)
                 {
-                    result = false;
-                    continue;
+                    album.Entries.Add(wallEntry);
                 }
-                AddEntry(wallEntry, catJob);
             }
-            return result;
+
+            if (album.Entries.Any())
+            {
+                AddAlbum(album, catJob);
+            }
+            return album.Entries.Any();
         }
 
 

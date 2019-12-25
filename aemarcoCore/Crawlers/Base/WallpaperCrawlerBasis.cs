@@ -222,6 +222,20 @@ namespace aemarcoCore.Crawlers.Base
             NewEntry?.Invoke(this, new IWallEntryEventArgs { Entry = entry });
         }
 
+
+
+        internal event EventHandler<IAlbumEntryEventArgs> KnownAlbum;
+        private void OnKnownAlbum(IAlbumEntry entry)
+        {
+            KnownAlbum?.Invoke(this, new IAlbumEntryEventArgs { Entry = entry });
+        }
+        internal event EventHandler<IAlbumEntryEventArgs> NewAlbum;
+        private void OnNewAlbum(IAlbumEntry entry)
+        {
+            NewAlbum?.Invoke(this, new IAlbumEntryEventArgs { Entry = entry });
+        }
+
+
         #endregion
 
         #region Crawling
@@ -334,7 +348,7 @@ namespace aemarcoCore.Crawlers.Base
 
 
         /// <summary>
-        /// adds the entry to the crawlresult, as new or known
+        /// adds the wall-entry to the crawlresult, as new or known wall
         /// </summary>
         /// <param name="entry">entry to add</param>
         /// <param name="catJob">job leaded to entry</param>
@@ -350,6 +364,31 @@ namespace aemarcoCore.Crawlers.Base
             else
             {
                 OnNewEntry(entry);
+                catJob.ReportEntryDone(false);
+            }
+        }
+
+        /// <summary>
+        /// adds the album-entry to the crawlresult, as new or known album
+        /// </summary>
+        /// <param name="entry">entry to add</param>
+        /// <param name="catJob">job leaded to entry</param>
+        protected void AddAlbum(AlbumEntry entry, CrawlOffer catJob)
+        {
+            foreach (var wEntry in entry.Entries)
+                entry.HasNewEntries |= !WallCrawlerData.IsKnownEntry(wEntry);
+
+
+            //bekanntes Album
+            if (!entry.HasNewEntries)
+            {
+                OnKnownAlbum(entry);
+                catJob.ReportEntryDone(true);
+            }
+            //neues Album
+            else
+            {
+                OnNewAlbum(entry);
                 catJob.ReportEntryDone(false);
             }
         }

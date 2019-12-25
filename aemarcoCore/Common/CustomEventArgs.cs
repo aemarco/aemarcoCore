@@ -11,7 +11,10 @@ namespace aemarcoCore.Common
     {
         public IWallEntry Entry { get; set; }
     }
-
+    public class IAlbumEntryEventArgs : EventArgs
+    {
+        public IAlbumEntry Entry { get; set; }
+    }
 
     public class IPersonCrawlerResultEventArgs : EventArgs
     {

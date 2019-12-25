@@ -102,9 +102,6 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         }
 
 
-
-
-
         static object[] CategoryCases
         {
             get
@@ -184,10 +181,18 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
                 found = true;
                 if (!cts.IsCancellationRequested) cts.Cancel();
             };
+            crawler.NewAlbum += (sender, e) =>
+            {
+                found = true;
+                if (!cts.IsCancellationRequested) cts.Cancel();
+            };
+
+
+
             var result = crawler.StartAsyncTask().GetAwaiter().GetResult();
             Task.Delay(1000).GetAwaiter().GetResult();
 
-            Assert.IsTrue(found || result.NewEntries.Any() || result.AlbumEntries.Any());
+            Assert.IsTrue(found || result.NewEntries.Any() || result.NewAlbums.Any());
             cts.Dispose();
         }
 
