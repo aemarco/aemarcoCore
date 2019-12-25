@@ -57,11 +57,16 @@ namespace aemarcoCore.Crawlers.Types
         }
         internal void AddToAlbums(IWallEntry entry, bool isNew)
         {
-            if (AlbumEntries.FirstOrDefault(x => x.Name == entry.AlbumName) is AlbumEntry album)
+            if (AlbumEntries.FirstOrDefault(x => x.Name == entry.AlbumName) is AlbumEntry album) //means there is already a album for this entry
             {
-                album.Entries.Add(entry);
+                //make sure that entries dont come in the album multiple times
+                if (isNew || //if its new, it cant be in the album yet... it would be known alreay (quick win) 
+                    !album.Entries.Any(x => x.Url == entry.Url)) //if its known, make sure each url get added only once
+                {
+                    album.Entries.Add(entry);
+                }
             }
-            else
+            else //create album, also with known entries (will be cleaned up later)
             {
                 album = new AlbumEntry(entry);
                 AlbumEntries.Add(album);

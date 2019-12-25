@@ -76,6 +76,12 @@ namespace aemarcoCore.Tools
 
         #region operation
 
+        /// <summary>
+        /// check if the entry is already known
+        /// after this check, the entry will be in the known list
+        /// </summary>
+        /// <param name="entry">entry to be checked</param>
+        /// <returns>true if it´s knwon already</returns>
         internal static bool IsKnownEntry(IWallEntry entry)
         {
             lock (_lock)
