@@ -24,6 +24,7 @@
         Girls_Amateur,
         Girls_Gloryhole,
         Girls_Selfies,
+        Girls_Fun,
 
         Vehicle,
         Vehicle_Cars,
@@ -90,15 +91,16 @@
         //
         [SupportedCategories(Category.Fantasy_3D, Category.Fantasy_Abstract, Category.Hobbies_Animals,
             Category.Fantasy_Anime, Category.Fantasy_Art, Category.Vehicle_Cars, Category.Environment_City,
-            Category.Fantasy, Category.Environment_Flowers, Category.Hobbies_Food, Category.Media_Games,
+            Category.Fantasy, Category.Environment_Flowers, Category.Hobbies_Food,
             Category.Hobbies_HiTech, Category.Other_Holidays, Category.Environment_Macro,
-            Category.Vehicle_Bikes, Category.Media_Movies, Category.Media_Music,
+            Category.Vehicle_Bikes, Category.Media_Music,
             Category.Environment_Landscape, Category.Other, Category.Environment_Space,
-            Category.Hobbies_Sport, Category.Other_Textures, Category.Media_TVSeries,
+            Category.Hobbies_Sport, Category.Other_Textures,
             Category.Fantasy_Vector, Category.Other_Words)]
         Wallpaperscraft,
 
         //
+        [Disabled]
         [SupportedCategories(Category.Girls)]
         Zoomgirls,
 

@@ -10,13 +10,13 @@ using System.Threading;
 namespace aemarcoCore.Crawlers.Crawlers
 {
 
-    internal class WallpaperWallhaven : WallpaperCrawlerBasis
+    internal class WallpaperCrawlerWallhaven : WallpaperCrawlerBasis
     {
         private readonly Uri _uri = new Uri("https://wallhaven.cc");
 
         internal override SourceSite SourceSite => SourceSite.Wallhaven;
 
-        public WallpaperWallhaven(
+        public WallpaperCrawlerWallhaven(
             int startPage,
             int lastPage,
             bool onlyNews,

@@ -140,6 +140,8 @@ namespace aemarcoCore.Crawlers.Base
                 case "Selfpics":
                 case "Self Shot":
                     return new ContentCategory(Category.Girls_Selfies);
+                case "______Girls_Fun":
+                    return new ContentCategory(Category.Girls_Fun);
             }
             return DefaultCategory;
         }
