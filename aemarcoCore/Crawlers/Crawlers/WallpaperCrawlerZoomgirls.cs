@@ -30,13 +30,15 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             List<CrawlOffer> result = new List<CrawlOffer>();
 
-            //z.B. "Latest Wallpapers"
-            string text = "Latest Wallpapers";
-            //z.B. "latest_wallpapers"
-            string href = "latest_wallpapers";
-            //z.B. "https://zoomgirls.net/latest_wallpapers"
-            Uri uri = new Uri(_uri, href);
-            result.Add(CreateCrawlOffer(text, uri, DefaultCategory));
+            
+            result.Add(CreateCrawlOffer(
+                "Latest Wallpapers", 
+                new Uri(_uri, "latest_wallpapers"), 
+                DefaultCategory));
+            result.Add(CreateCrawlOffer(
+                "Random Wallpapers", 
+                new Uri(_uri, "random_wallpapers"), 
+                DefaultCategory));
             return result;
         }
         protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
