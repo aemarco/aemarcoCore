@@ -100,7 +100,7 @@
         Wallpaperscraft,
 
         //
-        [Disabled]
+        //[Disabled]
         [SupportedCategories(Category.Girls)]
         Zoomgirls,
 
