@@ -164,7 +164,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [TestCaseSource(nameof(CrawlCases))]
         public void Crawlers_Finds_Entries(SourceSite site, Category cat)
         {
-            Task.Delay(800).GetAwaiter().GetResult();
+            Task.Delay(1200).GetAwaiter().GetResult();
 
 
             if (site == SourceSite.Abyss && string.IsNullOrWhiteSpace(ConfigurationHelper.AbyssAPI_Key))
