@@ -25,6 +25,7 @@
         Girls_Gloryhole,
         Girls_Selfies,
         Girls_Fun,
+       
 
         Vehicle,
         Vehicle_Cars,
@@ -66,7 +67,7 @@
 
     }
 
-    //wallsite
+    //wall site
     public enum SourceSite
     {
         //
@@ -145,14 +146,15 @@
     }
 
 
-    //personsite
+    //person site
     public enum PersonSite
     {
         IStripper,
         Pornpics,
         Porngatherer,
         Nudevista,
-        CoedCherry
+        CoedCherry,
+        HookupHotshot
     }
 
 

@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers.Crawlers
 {
-    internal class PersonCrawlerIStripper : PersonCrawlerBasis
+    internal class PersonCrawlerIStripper : PersonCrawlerBase
     {
         public PersonCrawlerIStripper(string nameToCrawl, CancellationToken cancellationToken)
             : base(nameToCrawl, cancellationToken)
@@ -23,7 +23,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             PersonEntry result = new PersonEntry(this);
 
-            string href = $"de/model/{_nameToCrawl.Replace(' ', '-')}";
+            string href = $"de/model/{NameToCrawl.Replace(' ', '-')}";
             Uri target = new Uri(_uri, href);
             HtmlDocument document = GetDocument(target);
             var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@class='trigger']/div/h1");
@@ -47,8 +47,8 @@ namespace aemarcoCore.Crawlers.Crawlers
                 nodeWithBild.Attributes["src"] != null)
             {
                 string address = nodeWithBild.Attributes["src"].Value;
-                result.PictureUrl = address;
-                result.PictureSuggestedAdultLevel = 39;
+
+                result.IncludeProfilePicture(address, 35, 39);
 
             }
 

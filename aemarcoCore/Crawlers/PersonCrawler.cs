@@ -15,7 +15,7 @@ namespace aemarcoCore.Crawlers
     {
         #region fields
 
-        readonly Dictionary<PersonCrawlerBasis, int> _crawlers = new Dictionary<PersonCrawlerBasis, int>();
+        readonly Dictionary<PersonCrawlerBase, int> _crawlers = new Dictionary<PersonCrawlerBase, int>();
         CancellationToken _cancellationToken;
         readonly IProgress<int> _progress;
 
@@ -151,14 +151,14 @@ namespace aemarcoCore.Crawlers
         {
             //creates all available crawlers and adds them if applicable
             var crawlerTypes = System.Reflection.Assembly
-                .GetAssembly(typeof(PersonCrawlerBasis))
+                .GetAssembly(typeof(PersonCrawlerBase))
                 .GetTypes()
-                .Where(x => x.IsSubclassOf(typeof(PersonCrawlerBasis)))
+                .Where(x => x.IsSubclassOf(typeof(PersonCrawlerBase)))
                 .ToList();
 
             foreach (Type type in crawlerTypes)
             {
-                var instance = (PersonCrawlerBasis)Activator.CreateInstance(type, _nameToCrawl, _cancellationToken);
+                var instance = (PersonCrawlerBase)Activator.CreateInstance(type, _nameToCrawl, _cancellationToken);
 
                 if (_filterPersonSites.Count > 0 && !_filterPersonSites.Contains(instance.PersonSite.ToString()))
                 {
@@ -214,7 +214,7 @@ namespace aemarcoCore.Crawlers
             {
                 lock (_progressLock)
                 {
-                    PersonCrawlerBasis instance = (PersonCrawlerBasis)sender;
+                    PersonCrawlerBase instance = (PersonCrawlerBase)sender;
                     _crawlers[instance] = e.ProgressPercentage;
 
                     int progress = _crawlers.Values.Sum() / _crawlers.Values.Count;

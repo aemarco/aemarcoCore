@@ -1,47 +1,48 @@
 ﻿using aemarcoCore.Crawlers.Crawlers;
 using aemarcoCore.Crawlers.Types;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
+using FluentAssertions;
 
 namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
 {
     public class PersonCrawlerPornpicsTests
     {
 
-        PersonEntry _alettaEntry;
+        PersonEntry _entry;
 
         [OneTimeSetUp]
         public void Setup()
         {
-            _alettaEntry = new PersonCrawlerPornpics("Aletta Ocean", CancellationToken.None).GetPersonEntry();
+            _entry = new PersonCrawlerPornpics("Aletta Ocean", CancellationToken.None).GetPersonEntry();
 
         }
 
         [Test]
         public void Crawler_Finds_Girl()
         {
-            Assert.IsTrue(_alettaEntry.IsValid);
+            Assert.IsTrue(_entry.IsValid);
         }
 
         [Test]
         public void Crawler_Finds_FirstName()
         {
-            Assert.AreEqual("Aletta", _alettaEntry.FirstName);
+            Assert.AreEqual("Aletta", _entry.FirstName);
         }
 
         [Test]
         public void Crawler_Finds_LastName()
         {
-            Assert.AreEqual("Ocean", _alettaEntry.LastName);
+            Assert.AreEqual("Ocean", _entry.LastName);
         }
 
         [Test]
         public void Crawler_Finds_Picture()
         {
-            Assert.IsFalse(string.IsNullOrWhiteSpace(_alettaEntry.PictureUrl));
+
+            _entry.ProfilePictures.Should().HaveCount(1);
+
+           
         }
 
 

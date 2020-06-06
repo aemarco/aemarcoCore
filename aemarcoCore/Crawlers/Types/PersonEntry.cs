@@ -8,21 +8,20 @@ namespace aemarcoCore.Crawlers.Types
 {
     internal class PersonEntry : IPersonEntry
     {
-        public PersonEntry(PersonCrawlerBasis crawler)
+       
+        public PersonEntry(PersonCrawlerBase crawler)
         {
             PersonEntrySource = crawler.PersonSite.ToString();
             PersonEntryPriority = crawler.PersonPriority;
             Aliase = new List<string>();
+            ProfilePictures = new List<IProfilePicture>();
         }
 
         public string PersonEntrySource { get; }
         public int PersonEntryPriority { get; }
-
-
         public string FirstName { get; internal set; }
         public string LastName { get; internal set; }
-        public string PictureUrl { get; internal set; }
-        public int PictureSuggestedAdultLevel { get; internal set; } = -1;
+        public List<IProfilePicture> ProfilePictures { get; }
         public DateTime? Geburtstag { get; internal set; }
         public string Land { get; internal set; }
         public string Geburtsort { get; internal set; }
@@ -46,24 +45,11 @@ namespace aemarcoCore.Crawlers.Types
 
 
 
+
+    
         [JsonIgnore]
-        internal bool IsValid
-        {
-            get
-            {
-
-                if (String.IsNullOrEmpty(FirstName) || //Entry muss FirstName haben
-                    String.IsNullOrEmpty(LastName)) //Entry muss LastName haben
-                {
-                    return false;
-                }
-                return true;
-            }
-        }
-
-
-
-
-
+        internal bool IsValid =>
+            !string.IsNullOrWhiteSpace(FirstName) &&
+            !string.IsNullOrWhiteSpace(LastName);
     }
 }

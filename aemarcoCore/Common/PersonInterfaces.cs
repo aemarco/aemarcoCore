@@ -1,9 +1,19 @@
-﻿using Newtonsoft.Json;
+﻿
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace aemarcoCore.Common
 {
+    public interface IPersonCrawlerResult
+    {
+        List<IPersonEntry> Entries { get; }
+        Exception Exception { get; set; }
+        bool HasBeenAborted { get; set; }
+        string JSON { get; }
+        string ResultName { get; set; }
+    }
+
     public interface IPersonEntry
     {
         string PersonEntrySource { get; }
@@ -11,8 +21,10 @@ namespace aemarcoCore.Common
 
         string FirstName { get; }
         string LastName { get; }
-        string PictureUrl { get; }
-        int PictureSuggestedAdultLevel { get; }
+
+        List<IProfilePicture> ProfilePictures { get; }
+
+
         DateTime? Geburtstag { get; }
         string Land { get; }
         string Geburtsort { get; }
@@ -32,4 +44,14 @@ namespace aemarcoCore.Common
         [JsonIgnore]
         string JSON { get; }
     }
+
+    public interface IProfilePicture
+    {
+        string Url { get; }
+        int SuggestedMinAdultLevel { get; }
+        int SuggestedMaxAdultLevel { get; }
+    }
+
+
+
 }

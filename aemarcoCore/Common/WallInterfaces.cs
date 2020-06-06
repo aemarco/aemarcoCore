@@ -36,4 +36,30 @@ namespace aemarcoCore.Common
         string JSON { get; }
 
     }
+
+
+    public interface IAlbumEntry
+    {
+        string Name { get; }
+        List<IWallEntry> Entries { get; }
+
+    }
+
+    public interface IWallEntry
+    {
+        string Url { get; }
+        string ThumbnailUrl { get; }
+        string FileName { get; }
+        string Extension { get; }
+        IContentCategory ContentCategory { get; }
+        string SiteCategory { get; }
+        List<string> Tags { get; }
+        string Filepath { get; }
+        string AlbumName { get; }
+
+
+        [JsonIgnore]
+        string JSON { get; }
+    }
+
 }

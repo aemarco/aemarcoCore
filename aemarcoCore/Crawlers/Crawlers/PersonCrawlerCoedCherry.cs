@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers.Crawlers
 {
-    internal class PersonCrawlerCoedCherry : PersonCrawlerBasis
+    internal class PersonCrawlerCoedCherry : PersonCrawlerBase
     {
         public PersonCrawlerCoedCherry(string nameToCrawl, CancellationToken cancellationToken)
             : base(nameToCrawl, cancellationToken)
@@ -22,7 +22,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             PersonEntry result = new PersonEntry(this);
 
             ///models/foxy-di/biography
-            string href = $"/models/{_nameToCrawl.Replace(' ', '-')}/biography";
+            string href = $"/models/{NameToCrawl.Replace(' ', '-')}/biography";
             Uri target = new Uri(_uri, href);
             HtmlDocument document = GetDocument(target);
             var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@class='submenu-header']/h1");

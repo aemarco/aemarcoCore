@@ -9,7 +9,7 @@ using System.Threading;
 namespace aemarcoCore.Crawlers.Crawlers
 {
 
-    internal class PersonCrawlerNudevista : PersonCrawlerBasis
+    internal class PersonCrawlerNudevista : PersonCrawlerBase
     {
 
         public PersonCrawlerNudevista(string nameToCrawl, CancellationToken cancellationToken)
@@ -24,7 +24,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             PersonEntry result = new PersonEntry(this);
 
-            string href = $"?q={_nameToCrawl.Replace(' ', '+')}&s=s";
+            string href = $"?q={NameToCrawl.Replace(' ', '+')}&s=s";
             Uri target = new Uri(_uri, href);
             HtmlDocument document = GetDocument(target);
             var nodeWithName = document.DocumentNode.SelectSingleNode("//td[contains(@valign, 'top') and contains(@colspan ,'2')]");
@@ -52,8 +52,11 @@ namespace aemarcoCore.Crawlers.Crawlers
                 {
                     address = "https:" + address;
                 }
-                result.PictureUrl = address;
-                result.PictureSuggestedAdultLevel = -1;
+
+                result.IncludeProfilePicture(address);
+
+
+               
             }
 
             //Data

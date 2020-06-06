@@ -8,7 +8,7 @@ using System.Threading;
 namespace aemarcoCore.Crawlers.Crawlers
 {
 
-    internal class PersonCrawlerPorngatherer : PersonCrawlerBasis
+    internal class PersonCrawlerPorngatherer : PersonCrawlerBase
     {
         public PersonCrawlerPorngatherer(string nameToCrawl, CancellationToken cancellationToken)
               : base(nameToCrawl, cancellationToken)
@@ -22,7 +22,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             PersonEntry result = new PersonEntry(this);
 
-            string href = $"pornstars/{_nameToCrawl.Replace(' ', '-')}";
+            string href = $"pornstars/{NameToCrawl.Replace(' ', '-')}";
             Uri target = new Uri(_uri, href);
             HtmlDocument document = GetDocument(target);
             var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@class='maincon']/div/h2");
@@ -46,8 +46,8 @@ namespace aemarcoCore.Crawlers.Crawlers
                 nodeWithBild.Attributes["data-src"].Value != "No Profile Picture")
             {
                 string address = nodeWithBild.Attributes["data-src"].Value;
-                result.PictureUrl = address;
-                result.PictureSuggestedAdultLevel = -1;
+
+                result.IncludeProfilePicture(address);
             }
 
             //data

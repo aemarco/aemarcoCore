@@ -32,6 +32,7 @@ namespace aemarcoCore.Crawlers.Types
         public int SuggestedMinAdultLevel { get; set; }
         public int SuggestedMaxAdultLevel { get; set; }
 
+
         [JsonIgnore]
         public string JSON
         { get { return JsonConvert.SerializeObject(this, Formatting.Indented); } }

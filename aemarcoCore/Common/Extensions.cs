@@ -1,7 +1,7 @@
-﻿using aemarcoCore.Crawlers.Types;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using aemarcoCore.Crawlers.Types;
 
 namespace aemarcoCore.Common
 {
@@ -39,8 +39,16 @@ namespace aemarcoCore.Common
 
 
 
-
-
+        //person crawling extensions
+        internal static void IncludeProfilePicture(this PersonEntry entry, string url, int suggestedMinAdult = -1, int suggestedMaxAdult = -1)
+        {
+            entry.ProfilePictures.Add(new ProfilePicture
+            {
+                Url = url,
+                SuggestedMinAdultLevel =  suggestedMinAdult,
+                SuggestedMaxAdultLevel = suggestedMaxAdult
+            });
+        }
 
 
 

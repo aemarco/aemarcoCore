@@ -8,23 +8,18 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers.Base
 {
-    internal abstract class PersonCrawlerBasis : CrawlerBasis
+    internal abstract class PersonCrawlerBase : CrawlerBasis
     {
-
-        #region fields
-
-        private CancellationToken _cancellationToken;
-        protected string _nameToCrawl;
-
-        #endregion
-
         #region ctor
 
-        internal PersonCrawlerBasis(
+       
+        private CancellationToken _cancellationToken;
+        
+        internal PersonCrawlerBase(
             string nameToCrawl,
             CancellationToken cancellationToken)
         {
-            _nameToCrawl = nameToCrawl;
+            NameToCrawl = nameToCrawl;
             _cancellationToken = cancellationToken;
         }
 
@@ -32,15 +27,18 @@ namespace aemarcoCore.Crawlers.Base
 
         #region props
 
-
         /// <summary>
         /// used for crawl filtering
         /// </summary>
         internal abstract PersonSite PersonSite { get; }
+
         /// <summary>
-        /// higher means priority, lower means not so meaningfull
+        /// higher means priority, lower means not so meaningful
         /// </summary>
-        internal abstract int PersonPriority { get; }
+        internal virtual int PersonPriority => 0;
+
+        internal string NameToCrawl { get; }
+    
 
         #endregion
 
@@ -65,7 +63,7 @@ namespace aemarcoCore.Crawlers.Base
 
         private void DoWork()
         {
-            PersonEntry entry = GetPersonEntry();
+            var entry = GetPersonEntry();
             OnProgress(100);
             if (entry.IsValid)
             {
@@ -78,7 +76,6 @@ namespace aemarcoCore.Crawlers.Base
 
 
 
-
         /// <summary>
         /// used to convert "34B-26-35" into "86-66-88"
         /// </summary>
@@ -87,12 +84,12 @@ namespace aemarcoCore.Crawlers.Base
         /// <returns>"86-66-88"</returns>
         protected string ConvertMaßeToMetric(string temp, bool isCmAlready = false)
         {
-            List<int> entries = new List<int>();
+            var entries = new List<int>();
 
             foreach (var entry in temp.Split('-'))
             {
                 var resultString = Regex.Match(entry, @"\d+").Value;
-                if (int.TryParse(resultString, out int number))
+                if (int.TryParse(resultString, out var number))
                 {
                     if (!isCmAlready) number = (int)(number * 2.54);
                     entries.Add(number);
@@ -136,20 +133,20 @@ namespace aemarcoCore.Crawlers.Base
             if (string.IsNullOrWhiteSpace(str)) return null;
 
 
-            int inches = 0;
+            var inches = 0;
             if (str.Contains("'"))
             {
                 var feetstring = str.Substring(0, str.IndexOf("'")).Trim();
-                if (int.TryParse(feetstring, out int feet)) inches += feet * 12;
+                if (int.TryParse(feetstring, out var feet)) inches += feet * 12;
                 str = str.Substring(str.IndexOf("'") + 1);
             }
             if (str.Contains("\""))
             {
                 var inchstring = str.Substring(0, str.IndexOf("\"")).Trim();
-                if (int.TryParse(inchstring, out int inch)) inches += inch;
+                if (int.TryParse(inchstring, out var inch)) inches += inch;
             }
 
-            int cm = (int)(inches * 2.54);
+            var cm = (int)(inches * 2.54);
             return (cm > 0) ? cm : default(int?);
         }
 
@@ -166,9 +163,9 @@ namespace aemarcoCore.Crawlers.Base
             if (string.IsNullOrWhiteSpace(resultString)) return null;
 
 
-            int kilos = 0;
+            var kilos = 0;
 
-            if (int.TryParse(resultString, out int lbs))
+            if (int.TryParse(resultString, out var lbs))
             {
                 kilos = (int)(1.0 * lbs / 2.20462);
             }

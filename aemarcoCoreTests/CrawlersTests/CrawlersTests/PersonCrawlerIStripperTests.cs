@@ -1,77 +1,59 @@
 ﻿using aemarcoCore.Crawlers.Crawlers;
 using aemarcoCore.Crawlers.Types;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
+using FluentAssertions;
 
 namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
 {
-    public class PersonCrawlerIStripperTests
+    public class PersonCrawlerIStripperTests : PersonCrawlerTestsBase
     {
-        PersonEntry _personEntry;
-
-
+        
         [OneTimeSetUp]
         public void Setup()
         {
-            var crawler = new PersonCrawlerIStripper("Aletta Ocean", CancellationToken.None);
-            _personEntry = crawler.GetPersonEntry();
-        }
-
-        [Test]
-        public void Crawler_Finds_Girl()
-        {
-            Assert.IsTrue(_personEntry.IsValid);
-        }
-
-        [Test]
-        public void Crawler_Finds_FirstName()
-        {
-            Assert.AreEqual("Aletta", _personEntry.FirstName);
-        }
-
-        [Test]
-        public void Crawler_Finds_LastName()
-        {
-            Assert.AreEqual("Ocean", _personEntry.LastName);
+            SetupEntry( new PersonCrawlerIStripper("Aletta Ocean", CancellationToken.None));
         }
 
         [Test]
         public void Crawler_Finds_Picture()
         {
-            Assert.IsFalse(string.IsNullOrWhiteSpace(_personEntry.PictureUrl));
+
+            Entry.ProfilePictures.Should().HaveCount(1);
+            var pic = Entry.ProfilePictures[0];
+
+            pic.Url.Should().Be("http://www.istripper.com/free/sets/a0822/illustrations/full.png");
+            
         }
 
         [Test]
         public void Crawler_Finds_Land()
         {
-            Assert.AreEqual("Hungary", _personEntry.Land);
+            Assert.AreEqual("Hungary", Entry.Land);
         }
 
         [Test]
         public void Crawler_Finds_Geburtsort()
         {
-            Assert.AreEqual("Budapest", _personEntry.Geburtsort);
+            Assert.AreEqual("Budapest", Entry.Geburtsort);
         }
 
         [Test]
         public void Crawler_Finds_Größe()
         {
-            Assert.AreEqual(178, _personEntry.Größe);
+            Assert.AreEqual(178, Entry.Größe);
         }
 
         [Test]
         public void Crawler_Finds_Gewicht()
         {
-            Assert.AreEqual(57, _personEntry.Gewicht);
+            Assert.AreEqual(57, Entry.Gewicht);
         }
 
         [Test]
         public void Crawler_Finds_Maße()
         {
-            Assert.AreEqual("86-66-94", _personEntry.Maße);
+            Assert.AreEqual("86-66-94", Entry.Maße);
         }
     }
 }

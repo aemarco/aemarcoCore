@@ -11,7 +11,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
     //this one is just crawling for profile pics
 
-    internal class PersonCrawlerPornpics : PersonCrawlerBasis
+    internal class PersonCrawlerPornpics : PersonCrawlerBase
     {
         public PersonCrawlerPornpics(string nameToCrawl, CancellationToken cancellationToken)
             : base(nameToCrawl, cancellationToken)
@@ -30,7 +30,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             HtmlDocument document = GetDocument(target);
 
             var nodes = document.DocumentNode.SelectNodes("//div[@class='list-item']");
-            var search = _nameToCrawl.ToLower();
+            var search = NameToCrawl.ToLower();
 
             var node = nodes?.FirstOrDefault(x => x.InnerText.ToLower().Contains(search));
 
@@ -51,8 +51,9 @@ namespace aemarcoCore.Crawlers.Crawlers
 
                 var nodeWithBild = node.ChildNodes.FirstOrDefault(x => x.Name == "i");
                 string address = nodeWithBild.Attributes["rel"].Value;
-                result.PictureUrl = address;
-                result.PictureSuggestedAdultLevel = -1;
+
+
+                result.IncludeProfilePicture(address);
             }
             return result;
 
