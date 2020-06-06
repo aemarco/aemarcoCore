@@ -4,6 +4,12 @@ using System.Linq;
 
 namespace aemarcoCore.Common
 {
+
+
+
+
+
+
     public sealed class SupportedCategoriesAttribute : Attribute
     {
         public List<string> Categories { get; }
@@ -13,6 +19,14 @@ namespace aemarcoCore.Common
             Categories = categories.Select(x => x.ToString()).ToList();
         }
     }
+
+
+
+
+
+
+
+
 
     public sealed class DisabledAttribute : Attribute
     {

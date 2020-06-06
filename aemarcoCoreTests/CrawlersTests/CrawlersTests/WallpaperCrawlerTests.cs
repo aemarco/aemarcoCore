@@ -158,39 +158,40 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
                         }
                     }
                 }
-                return result
-                    .ToArray();
+                return result.ToArray();
             }
         }
         [TestCaseSource(nameof(CrawlCases))]
         public void Crawlers_Finds_Entries(SourceSite site, Category cat)
         {
+            Task.Delay(800).GetAwaiter().GetResult();
+
+
             if (site == SourceSite.Abyss && string.IsNullOrWhiteSpace(ConfigurationHelper.AbyssAPI_Key))
                 Assert.Pass(); // skip abyss when there is no API key
 
-            CancellationTokenSource cts = new CancellationTokenSource();
+            using var cts = new CancellationTokenSource();
             var crawler = new WallpaperCrawler(cts.Token, null, 1, 1);
             crawler.AddSourceSiteFilter(site);
             crawler.AddCategoryFilter(cat);
 
-            bool found = false;
+            
+            // ReSharper disable AccessToDisposedClosure
             crawler.NewEntry += (sender, e) =>
             {
-                found = true;
+                
                 if (!cts.IsCancellationRequested) cts.Cancel();
             };
             crawler.NewAlbum += (sender, e) =>
             {
-                found = true;
+                
                 if (!cts.IsCancellationRequested) cts.Cancel();
             };
-
+            // ReSharper restore AccessToDisposedClosure
 
 
             var result = crawler.StartAsyncTask().GetAwaiter().GetResult();
-            Task.Delay(1000).GetAwaiter().GetResult();
-
-            Assert.IsTrue(found || result.NewEntries.Any() || result.NewAlbums.Any());
+            Assert.IsTrue(result.HasBeenAborted);
             cts.Dispose();
         }
 

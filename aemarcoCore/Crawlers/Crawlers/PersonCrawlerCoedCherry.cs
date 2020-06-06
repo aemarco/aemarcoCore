@@ -21,7 +21,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             PersonEntry result = new PersonEntry(this);
 
-            ///models/foxy-di/biography
+            // /models/foxy-di/biography
             string href = $"/models/{NameToCrawl.Replace(' ', '-')}/biography";
             Uri target = new Uri(_uri, href);
             HtmlDocument document = GetDocument(target);
