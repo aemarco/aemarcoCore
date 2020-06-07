@@ -1,7 +1,6 @@
 ﻿using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
-using HtmlAgilityPack;
 using System;
 using System.Threading;
 
@@ -20,18 +19,18 @@ namespace aemarcoCore.Crawlers.Crawlers
         internal override int PersonPriority => 10;
         internal override PersonEntry GetPersonEntry()
         {
-            PersonEntry result = new PersonEntry(this);
+            var result = new PersonEntry(this);
 
-            string href = $"pornstars/{NameToCrawl.Replace(' ', '-')}";
-            Uri target = new Uri(_uri, href);
-            HtmlDocument document = GetDocument(target);
+            var href = $"pornstars/{NameToCrawl.Replace(' ', '-')}";
+            var target = new Uri(_uri, href);
+            var document = GetDocument(target);
             var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@class='maincon']/div/h2");
             var nodeWithBild = document.DocumentNode.SelectSingleNode("//div[@class='maincon']/div/div/img");
             var nodeWithData = document.DocumentNode.SelectNodes("//table[@class='styled']/tr");
             //Name
             if (nodeWithName != null)
             {
-                string n = nodeWithName.InnerText.Trim();
+                var n = nodeWithName.InnerText.Trim();
                 n = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(n.ToLower());
                 if (n.Contains(" "))
                 {
@@ -45,7 +44,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 nodeWithBild.Attributes["data-src"] != null &&
                 nodeWithBild.Attributes["data-src"].Value != "No Profile Picture")
             {
-                string address = nodeWithBild.Attributes["data-src"].Value;
+                var address = nodeWithBild.Attributes["data-src"].Value;
 
                 result.IncludeProfilePicture(address);
             }
@@ -61,13 +60,13 @@ namespace aemarcoCore.Crawlers.Crawlers
                     //Geburtstag
                     if (node.InnerText.Contains("Age:"))
                     {
-                        string str = node.InnerText
+                        var str = node.InnerText
                             .Replace("Age:", string.Empty)
                             .Trim();
                         str = str.Substring(0, str.IndexOf(' '));
 
 
-                        if (DateTime.TryParse(str, out DateTime dt))
+                        if (DateTime.TryParse(str, out var dt))
                         {
                             result.Geburtstag = dt;
                         }
@@ -86,7 +85,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                     {
                         try
                         {
-                            string str = node.InnerText.Replace("Weight:", string.Empty);
+                            var str = node.InnerText.Replace("Weight:", string.Empty);
                             str = str.Substring(str.IndexOf("(") + 1);
                             str = str.Substring(0, str.IndexOf("kg)") - 1);
                             result.Gewicht = Convert.ToInt32(str);
@@ -97,7 +96,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                     {
                         try
                         {
-                            string str = node.InnerText.Replace("Height:", string.Empty);
+                            var str = node.InnerText.Replace("Height:", string.Empty);
                             str = str.Substring(str.IndexOf("(") + 1);
                             str = str.Substring(0, str.IndexOf("cm)") - 1);
                             result.Größe = Convert.ToInt32(str);

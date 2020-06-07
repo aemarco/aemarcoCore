@@ -1,7 +1,6 @@
 ﻿using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
-using HtmlAgilityPack;
 using System;
 using System.Threading;
 
@@ -19,19 +18,19 @@ namespace aemarcoCore.Crawlers.Crawlers
         internal override int PersonPriority => 25;
         internal override PersonEntry GetPersonEntry()
         {
-            PersonEntry result = new PersonEntry(this);
+            var result = new PersonEntry(this);
 
             // /models/foxy-di/biography
-            string href = $"/models/{NameToCrawl.Replace(' ', '-')}/biography";
-            Uri target = new Uri(_uri, href);
-            HtmlDocument document = GetDocument(target);
+            var href = $"/models/{NameToCrawl.Replace(' ', '-')}/biography";
+            var target = new Uri(_uri, href);
+            var document = GetDocument(target);
             var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@class='submenu-header']/h1");
             var nodeWithData = document.DocumentNode.SelectSingleNode("//table[@class='table table-responsive table-striped']");
 
             //Name
             if (nodeWithName != null)
             {
-                string n = nodeWithName.InnerText.Trim();
+                var n = nodeWithName.InnerText.Trim();
                 n = n.Replace("'s Bio", string.Empty);
                 n = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(n.ToLower());
                 if (n.Contains(" "))
@@ -53,7 +52,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                     //Geburtstag
                     if (node.InnerText.Contains("Birthday"))
                     {
-                        string str = node.InnerText
+                        var str = node.InnerText
                             .Replace("Birthday", string.Empty)
                             .Replace("\n", string.Empty)
                             .Trim();
@@ -62,7 +61,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
 
 
-                        if (DateTime.TryParse(str, out DateTime dt))
+                        if (DateTime.TryParse(str, out var dt))
                         {
                             result.Geburtstag = dt;
                         }
@@ -95,15 +94,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                         var status = node.InnerText
                             .Replace("Status", string.Empty)
                             .Replace("\n", string.Empty);
-                        switch (status)
-                        {
-                            case "Active":
-                                result.Karrierestatus = "active";
-                                break;
-                            case "Retired":
-                                result.Karrierestatus = "retired";
-                                break;
-                        }
+                        result.IncludeStillActive(status);
                     }
                     //Aliase
                     else if (node.InnerText.Contains("Aliases"))
@@ -111,7 +102,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
                         //Aliases
                         //Nensi B, Medina U, Foxy Di, Nensi B Medina, Kate X-Art, Foxi Di, Katoa Erotic Beauty, Nensi Amour Angels, Nensi Show Beauty, Katoa Errotica Archives
-                        string aliasString = node.InnerText;
+                        var aliasString = node.InnerText;
 
                         //Nensi B, Medina U, Foxy Di, Nensi B Medina, Kate X-Art, Foxi Di, Katoa Erotic Beauty, Nensi Amour Angels, Nensi Show Beauty, Katoa Errotica Archives
                         aliasString = aliasString.Replace("Aliases", string.Empty);
@@ -120,7 +111,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                         if (aliasString.EndsWith("."))
                             aliasString = aliasString.Remove(aliasString.Length - 1);
                         //Nensi B, Medina U, Foxy Di, Nensi B Medina, Kate X-Art, Foxi Di, Katoa Erotic Beauty, Nensi Amour Angels, Nensi Show Beauty, Katoa Errotica Archives
-                        foreach (string aliasItem in aliasString.Split(','))
+                        foreach (var aliasItem in aliasString.Split(','))
                         {
                             var al = aliasItem.Trim();
                             if (al.StartsWith(".")) al = al.Remove(0, 1);
@@ -158,24 +149,24 @@ namespace aemarcoCore.Crawlers.Crawlers
                     }
                     else if (node.InnerText.Contains("Measurements"))
                     {
-                        string temp = node.InnerText
+                        var temp = node.InnerText
                             .Replace("Measurements", string.Empty)
                             .Replace("\n", string.Empty)
                             .Trim();
 
                         if (!string.IsNullOrWhiteSpace(temp))
                         {
-                            string maße = ConvertMaßeToMetric(temp, true);
+                            var maße = ConvertMaßeToMetric(temp, true);
                             result.Maße = maße;
 
-                            string cup = ConvertMaßeToCupSize(temp);
+                            var cup = ConvertMaßeToCupSize(temp);
                             result.Körbchengröße = cup;
                         }
 
                     }
                     else if (node.InnerText.Contains("Height"))
                     {
-                        string str = node.InnerText
+                        var str = node.InnerText
                                 .Replace("Height", string.Empty)
                                 .Replace("\n", string.Empty)
                                 .Trim();
@@ -183,7 +174,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                     }
                     else if (node.InnerText.Contains("Weight"))
                     {
-                        string str = node.InnerText
+                        var str = node.InnerText
                                 .Replace("Weight", string.Empty)
                                 .Replace("\n", string.Empty)
                                 .Trim();

@@ -28,12 +28,12 @@ namespace aemarcoCore.Crawlers.Crawlers
 
         protected override List<CrawlOffer> GetCrawlsOffers()
         {
-            List<CrawlOffer> result = new List<CrawlOffer>();
+            var result = new List<CrawlOffer>();
 
-            IContentCategory cat1 = GetContentCategory("Pornomass");
+            var cat1 = GetContentCategory("Pornomass");
             result.Add(CreateCrawlOffer("Pornomass", _uri1, cat1));
 
-            IContentCategory cat2 = GetContentCategory("Gifpornomass");
+            var cat2 = GetContentCategory("Gifpornomass");
             result.Add(CreateCrawlOffer("Gifpornomass", _uri2, cat2));
 
             return result;
@@ -56,7 +56,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             WallEntrySource source;
 
-            string thumbnail = string.Empty;
+            var thumbnail = string.Empty;
             if (catJob.SiteCategoryName == "Pornomass")
             {
                 source = new WallEntrySource(_uri1, node, catJob.SiteCategoryName);
@@ -83,7 +83,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
 
 
-            WallEntry wallEntry = source.WallEntry;
+            var wallEntry = source.WallEntry;
             if (wallEntry == null)
             {
                 return false;

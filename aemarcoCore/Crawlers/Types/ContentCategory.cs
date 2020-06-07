@@ -1,6 +1,5 @@
 ﻿using aemarcoCore.Common;
 using Newtonsoft.Json;
-using System.Collections.Generic;
 using System.Linq;
 
 
@@ -12,7 +11,7 @@ namespace aemarcoCore.Crawlers.Types
         {
             Category = category.ToString();
 
-            List<string> strings = Category.Split('_').ToList();
+            var strings = Category.Split('_').ToList();
             MainCategory = strings[0];
             if (strings.Count > 1)
             {

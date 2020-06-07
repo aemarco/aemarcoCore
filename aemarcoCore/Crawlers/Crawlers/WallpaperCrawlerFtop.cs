@@ -29,31 +29,31 @@ namespace aemarcoCore.Crawlers.Crawlers
 
         protected override List<CrawlOffer> GetCrawlsOffers()
         {
-            List<CrawlOffer> result = new List<CrawlOffer>();
+            var result = new List<CrawlOffer>();
 
             //main page
             var doc = GetDocument(_uri);
 
-            foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
+            foreach (var node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
             {
 
                 //z.B. "Celebrities"
-                string text = WebUtility.HtmlDecode(node.InnerText).Trim();
+                var text = WebUtility.HtmlDecode(node.InnerText).Trim();
                 if (String.IsNullOrEmpty(text) || text == "Sandbox")
                 {
                     continue;
                 }
 
                 //z.B. "/celebrities/
-                string href = node.Attributes["href"]?.Value;
+                var href = node.Attributes["href"]?.Value;
                 if (String.IsNullOrEmpty(href))
                 {
                     continue;
                 }
 
                 //z.B. "https://ftopx.com/celebrities"
-                Uri uri = new Uri(_uri, href);
-                IContentCategory cat = GetContentCategory(text);
+                var uri = new Uri(_uri, href);
+                var cat = GetContentCategory(text);
                 result.Add(CreateCrawlOffer(text, uri, cat));
             }
 
@@ -92,7 +92,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
 
 
-            WallEntry wallEntry = source.WallEntry;
+            var wallEntry = source.WallEntry;
             if (wallEntry == null)
             {
                 return false;

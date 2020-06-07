@@ -1,7 +1,6 @@
 ﻿using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
-using HtmlAgilityPack;
 using System;
 using System.Linq;
 using System.Threading;
@@ -23,11 +22,11 @@ namespace aemarcoCore.Crawlers.Crawlers
         internal override int PersonPriority => 5;
         internal override PersonEntry GetPersonEntry()
         {
-            PersonEntry result = new PersonEntry(this);
+            var result = new PersonEntry(this);
 
-            string href = $"/pornstars/list/";
-            Uri target = new Uri(_uri, href);
-            HtmlDocument document = GetDocument(target);
+            var href = $"/pornstars/list/";
+            var target = new Uri(_uri, href);
+            var document = GetDocument(target);
 
             var nodes = document.DocumentNode.SelectNodes("//div[@class='list-item']");
             var search = NameToCrawl.ToLower();
@@ -40,7 +39,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 var nodeWithName = node.ChildNodes.FirstOrDefault(x => x.Name == "a");
 
-                string n = nodeWithName.Attributes["title"]?.Value;
+                var n = nodeWithName.Attributes["title"]?.Value;
                 n = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(n.ToLower());
                 if (n.Contains(" "))
                 {
@@ -50,7 +49,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
 
                 var nodeWithBild = node.ChildNodes.FirstOrDefault(x => x.Name == "i");
-                string address = nodeWithBild.Attributes["rel"].Value;
+                var address = nodeWithBild.Attributes["rel"].Value;
 
 
                 result.IncludeProfilePicture(address);

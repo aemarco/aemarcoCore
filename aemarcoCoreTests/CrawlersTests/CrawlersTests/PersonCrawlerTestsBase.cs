@@ -1,6 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
@@ -12,12 +15,21 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
             Entry = crawler.GetPersonEntry();
             ExpectedFirstName = crawler.NameToCrawl.Split(' ').First();
             ExpectedLastName = crawler.NameToCrawl.Split(' ').Last();
+            _expectedPersonSite = crawler.PersonSite.ToString();
+
         }
+
+        private string _expectedPersonSite;
+
+        [Test]
+        public void Entry_Matches_PersonSite()
+        {
+            Assert.AreEqual(_expectedPersonSite, Entry.PersonEntrySource);
+        }
+
+
+        // ReSharper disable once MemberCanBePrivate.Global
         internal PersonEntry Entry { get; private set; }
-        internal string ExpectedFirstName { get; set; }
-        internal string ExpectedLastName { get; set; }
-
-
         [Test]
         public void Entry_IsValid()
         {
@@ -25,16 +37,154 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         }
 
 
+        internal string ExpectedFirstName { get; set; }
         [Test]
         public void Crawler_Finds_FirstName()
         {
             Assert.AreEqual(ExpectedFirstName, Entry.FirstName);
         }
 
+        internal string ExpectedLastName { get; set; }
         [Test]
         public void Crawler_Finds_LastName()
         {
             Assert.AreEqual(ExpectedLastName, Entry.LastName);
         }
+
+        internal DateTime? ExpectedBirthday { get; set; }
+        [Test]
+        public void Crawler_Finds_Birthday()
+        {
+            if (!ExpectedBirthday.HasValue) Assert.Pass();
+            Assert.AreEqual(ExpectedBirthday!.Value, Entry.Geburtstag);
+        }
+
+        internal DateTime? ExpectedCareerStart { get; set; }
+        [Test]
+        public void Crawler_Finds_CareerStart()
+        {
+            if (!ExpectedCareerStart.HasValue) Assert.Pass();
+            Assert.AreEqual(ExpectedCareerStart!.Value, Entry.Karrierestart);
+        }
+
+
+
+        internal string ExpectedCountry { get; set; }
+        [Test]
+        public void Crawler_Finds_Country()
+        {
+            if (string.IsNullOrWhiteSpace(ExpectedCountry)) Assert.Pass();
+            Assert.AreEqual(ExpectedCountry, Entry.Land);
+        }
+
+        internal string ExpectedPlace { get; set; }
+        [Test]
+        public void Crawler_Finds_Place()
+        {
+            if (string.IsNullOrWhiteSpace(ExpectedPlace)) Assert.Pass();
+            Assert.AreEqual(ExpectedPlace, Entry.Geburtsort);
+        }
+        
+        internal string ExpectedProfession { get; set; }
+        [Test]
+        public void Crawler_Finds_Profession()
+        {
+            if (string.IsNullOrWhiteSpace(ExpectedProfession)) Assert.Pass();
+            Assert.AreEqual(ExpectedProfession, Entry.Beruf);
+        }
+        internal string ExpectedEthnicity { get; set; }
+        [Test]
+        public void Crawler_Finds_Ethnicity()
+        {
+            if (string.IsNullOrWhiteSpace(ExpectedEthnicity)) Assert.Pass();
+            Assert.AreEqual(ExpectedEthnicity, Entry.Rasse);
+        }
+        
+        internal string ExpectedHairColor { get; set; }
+        [Test]
+        public void Crawler_Finds_Hair()
+        {
+            if (string.IsNullOrWhiteSpace(ExpectedHairColor)) Assert.Pass();
+            Assert.AreEqual(ExpectedHairColor, Entry.Haare);
+        }
+
+        
+        internal string ExpectedEyeColor { get; set; }
+        [Test]
+        public void Crawler_Finds_Eyes()
+        {
+            if (string.IsNullOrWhiteSpace(ExpectedEyeColor)) Assert.Pass();
+            Assert.AreEqual(ExpectedEyeColor, Entry.Augen);
+        }
+
+        internal int? ExpectedHeight { get; set; }
+        [Test]
+        public void Crawler_Finds_Height()
+        {
+            if (!ExpectedHeight.HasValue) Assert.Pass();
+            Assert.AreEqual(ExpectedHeight!.Value, Entry.Größe);
+        }
+
+        internal int? ExpectedWeight { get; set; }
+        [Test]
+        public void Crawler_Finds_Weight()
+        {
+            if (!ExpectedWeight.HasValue) Assert.Pass();
+            Assert.AreEqual(ExpectedWeight!.Value, Entry.Gewicht);
+        }
+
+        internal string ExpectedMeasurements { get; set; }
+        [Test]
+        public void Crawler_Finds_Measurements()
+        {
+            if (string.IsNullOrWhiteSpace(ExpectedMeasurements)) Assert.Pass();
+            Assert.AreEqual(ExpectedMeasurements, Entry.Maße);
+        }
+
+        internal string ExpectedCupsize { get; set; }
+        [Test]
+        public void Crawler_Finds_CupSize()
+        {
+            if (string.IsNullOrWhiteSpace(ExpectedCupsize)) Assert.Pass();
+            Assert.AreEqual(ExpectedCupsize, Entry.Körbchengröße);
+        }
+
+        internal string ExpectedPiercings { get; set; }
+        [Test]
+        public void Crawler_Finds_Piercings()
+        {
+            if (string.IsNullOrWhiteSpace(ExpectedPiercings)) Assert.Pass();
+            Assert.AreEqual(ExpectedPiercings, Entry.Piercings);
+        }
+
+        internal bool? ExpectedStillActive { get; set; }
+        [Test]
+        public void Crawler_Finds_StillActive()
+        {
+            Assert.AreEqual(ExpectedStillActive, Entry.StillActive);
+        }
+
+        internal List<string> ExpectedProfilePictures { get; set; } = new List<string>();
+        [Test]
+        public void Crawler_Finds_Pictures()
+        {
+            foreach (var url in ExpectedProfilePictures)
+            {
+                Entry.ProfilePictures.Should().Contain(x => x.Url == url);
+            }
+        }
+
+        internal List<string> ExpectedAliases { get; set; } = new List<string>();
+        [Test]
+        public void Crawler_Finds_Aliases()
+        {
+            
+            foreach (var al in ExpectedAliases)
+            {
+                Assert.IsTrue(Entry.Aliase.Contains(al));
+            }
+        }
+
+
     }
 }

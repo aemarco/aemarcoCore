@@ -127,7 +127,7 @@ namespace aemarcoCore.Crawlers.Types
             {
                 subNode = node?.SelectSingleNode(nodeToTargetNode);
             }
-            string value = subNode?.Attributes[attribute]?.Value;
+            var value = subNode?.Attributes[attribute]?.Value;
             return value;
         }
 
@@ -137,24 +137,24 @@ namespace aemarcoCore.Crawlers.Types
 
         internal (string filename, string extension) GetFileDetails(Uri imageUri, string prefix = null)
         {
-            string pref = (prefix == null) ? string.Empty : $"{prefix}_";
+            var pref = (prefix == null) ? string.Empty : $"{prefix}_";
 
-            string url = imageUri.AbsoluteUri;
-            string main = url?.Substring(url.LastIndexOf("/") + 1);
+            var url = imageUri.AbsoluteUri;
+            var main = url?.Substring(url.LastIndexOf("/") + 1);
             main = WebUtility.HtmlDecode(main);
-            string name = $"{pref}{main}";
+            var name = $"{pref}{main}";
 
             return (Path.GetFileNameWithoutExtension(name), Path.GetExtension(name));
         }
         internal (string filename, string extension) GetFileDetails(Uri imageUri, string beforeName, string afterName, string prefix = null)
         {
-            string pref = (prefix == null) ? string.Empty : $"{prefix}_";
+            var pref = (prefix == null) ? string.Empty : $"{prefix}_";
 
-            string url = imageUri.AbsoluteUri;
-            string after = url.Substring(url.IndexOf(beforeName) + beforeName.Length);
-            string main = after.Substring(0, after.IndexOf(afterName));
+            var url = imageUri.AbsoluteUri;
+            var after = url.Substring(url.IndexOf(beforeName) + beforeName.Length);
+            var main = after.Substring(0, after.IndexOf(afterName));
             main = WebUtility.HtmlDecode(main);
-            string name = $"{pref}{main}";
+            var name = $"{pref}{main}";
 
             return (name, Path.GetExtension(url));
         }
@@ -196,7 +196,7 @@ namespace aemarcoCore.Crawlers.Types
         internal List<string> GetTagsFromTagString(string tagString)
         {
             //z.B. "flowerdress, nadia p, susi r, suzanna, suzanna a, brunette, boobs, big tits"
-            List<string> result = new List<string>();
+            var result = new List<string>();
 
             if (String.IsNullOrWhiteSpace(tagString))
             {
@@ -204,11 +204,11 @@ namespace aemarcoCore.Crawlers.Types
             }
 
             tagString = WebUtility.HtmlDecode(tagString).Trim();
-            string[] tags = tagString.Split(',');
-            foreach (string tag in tags)
+            var tags = tagString.Split(',');
+            foreach (var tag in tags)
             {
                 //z.B. "flowerdress"
-                string entry = tag.Trim();
+                var entry = tag.Trim();
                 if (entry.Length > 0)
                 {
                     result.Add(entry);

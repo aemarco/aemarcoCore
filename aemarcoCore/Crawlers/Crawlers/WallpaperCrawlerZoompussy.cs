@@ -30,8 +30,8 @@ namespace aemarcoCore.Crawlers.Crawlers
 
         protected override List<CrawlOffer> GetCrawlsOffers()
         {
-            List<CrawlOffer> result = new List<CrawlOffer>();
-            List<string> cats = new List<string>
+            var result = new List<CrawlOffer>();
+            var cats = new List<string>
             {
                 "asian",
                 "lingerie",
@@ -92,7 +92,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 }));
 
 
-            WallEntry wallEntry = source.WallEntry;
+            var wallEntry = source.WallEntry;
             if (wallEntry == null)
             {
                 return false;
@@ -116,7 +116,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
         private void DownloadSingle(WallEntry wallEntry)
         {
-            string target = GetTargetPath(wallEntry).FullName;
+            var target = GetTargetPath(wallEntry).FullName;
             try
             {
                 if (!File.Exists(target))
@@ -130,9 +130,9 @@ namespace aemarcoCore.Crawlers.Crawlers
         private FileInfo GetTargetPath(WallEntry wallEntry)
         {
             var app = AppDomain.CurrentDomain.BaseDirectory;
-            DirectoryInfo di = new DirectoryInfo(Path.Combine(app, "temp"));
+            var di = new DirectoryInfo(Path.Combine(app, "temp"));
             if (!di.Exists) di.Create();
-            string targetPath = Path.Combine(di.FullName, $"{wallEntry.FileName}{wallEntry.Extension}");
+            var targetPath = Path.Combine(di.FullName, $"{wallEntry.FileName}{wallEntry.Extension}");
             return new FileInfo(targetPath);
         }
         private void Download(WallEntry wallEntry, string target)
@@ -140,19 +140,19 @@ namespace aemarcoCore.Crawlers.Crawlers
             var referer = $"{_uri.AbsoluteUri}{wallEntry.FileName.ToLower()}";
 
 
-            HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(wallEntry.Url);
+            var httpRequest = (HttpWebRequest)WebRequest.Create(wallEntry.Url);
             httpRequest.Method = WebRequestMethods.Http.Get;
             httpRequest.Referer = referer;
 
-            HttpWebResponse httpResponse = (HttpWebResponse)httpRequest.GetResponse();
+            var httpResponse = (HttpWebResponse)httpRequest.GetResponse();
             // returned values are returned as a stream, then read into a string
-            using (Stream httpResponseStream = httpResponse.GetResponseStream())
+            using (var httpResponseStream = httpResponse.GetResponseStream())
             {
-                int bufferSize = 1024;
-                byte[] buffer = new byte[bufferSize];
-                int bytesRead = 0;
+                var bufferSize = 1024;
+                var buffer = new byte[bufferSize];
+                var bytesRead = 0;
 
-                using (FileStream fileStream = File.Create(target))
+                using (var fileStream = File.Create(target))
                 {
                     while ((bytesRead = httpResponseStream.Read(buffer, 0, bufferSize)) != 0)
                     {
@@ -161,7 +161,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 }
             }
 
-            bool okay = false;
+            var okay = false;
             using (var img = Image.FromFile(target))
             {
                 if (img.Width > 0) okay = true;

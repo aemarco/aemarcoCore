@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using aemarcoCore.Crawlers.Types;
 
 namespace aemarcoCore.Common
@@ -50,6 +51,17 @@ namespace aemarcoCore.Common
             });
         }
 
+        internal static void IncludeStillActive(this PersonEntry entry, string text)
+        {
+            if (Regex.IsMatch(text, "active", RegexOptions.IgnoreCase) ||
+                Regex.IsMatch(text, "present", RegexOptions.IgnoreCase))
+                entry.StillActive = true;
+
+
+            if (Regex.IsMatch(text, "retired", RegexOptions.IgnoreCase) ||
+                Regex.Match(text, @"\d+").Groups.Count == 2) // 2013 - 2015
+                entry.StillActive = false;
+        }
 
 
 

@@ -28,27 +28,27 @@ namespace aemarcoCore.Crawlers.Crawlers
 
         protected override List<CrawlOffer> GetCrawlsOffers()
         {
-            List<CrawlOffer> result = new List<CrawlOffer>();
+            var result = new List<CrawlOffer>();
 
             //main page
             var doc = GetDocument(_uri);
             var nodes = doc.DocumentNode.SelectNodes("//ul[@class='filters__list JS-Filters']/li/a");
             if (nodes == null) return result;
-            foreach (HtmlNode node in nodes)
+            foreach (var node in nodes)
             {
-                string text = WebUtility.HtmlDecode(node.FirstChild.InnerText).Trim();
+                var text = WebUtility.HtmlDecode(node.FirstChild.InnerText).Trim();
                 if (String.IsNullOrEmpty(text))
                 {
                     continue;
                 }
 
-                string href = node.Attributes["href"]?.Value;
+                var href = node.Attributes["href"]?.Value;
                 if (String.IsNullOrEmpty(href) || href.StartsWith("http"))
                 {
                     continue;
                 }
-                Uri uri = new Uri(_uri, href);
-                IContentCategory cat = GetContentCategory(text);
+                var uri = new Uri(_uri, href);
+                var cat = GetContentCategory(text);
                 result.Add(CreateCrawlOffer(text, uri, cat));
             }
             return result;
@@ -151,7 +151,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             source.Tags = source.GetTagsFromNodes(source.DownloadDoc, "//div[@class='wallpaper__tags']/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
 
 
-            WallEntry wallEntry = source.WallEntry;
+            var wallEntry = source.WallEntry;
             if (wallEntry == null)
             {
                 return false;

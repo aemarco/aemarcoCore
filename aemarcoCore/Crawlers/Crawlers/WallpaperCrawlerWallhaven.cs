@@ -28,7 +28,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
         protected override List<CrawlOffer> GetCrawlsOffers()
         {
-            List<CrawlOffer> result = new List<CrawlOffer>
+            var result = new List<CrawlOffer>
             {
 
                 CreateCrawlOffer(
@@ -104,7 +104,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
 
 
-            WallEntry wallEntry = source.WallEntry;
+            var wallEntry = source.WallEntry;
             if (wallEntry == null)
             {
                 return false;

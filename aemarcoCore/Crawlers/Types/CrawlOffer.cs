@@ -64,7 +64,7 @@ namespace aemarcoCore.Crawlers.Types
         private int _numberOfEntriesPerPage;
         internal void ReportNumberOfEntriesPerPage(int count)
         {
-            int numberOfPages = _lastPage - _startPage + 1;
+            var numberOfPages = _lastPage - _startPage + 1;
             TotalEntries = numberOfPages * count;
             _numberOfEntriesPerPage = count;
         }
@@ -94,7 +94,7 @@ namespace aemarcoCore.Crawlers.Types
 
             _numberOfEntriesDoneForCurrentPage++;
 
-            int countBefore = (CurrentPage - _startPage) * _numberOfEntriesPerPage;
+            var countBefore = (CurrentPage - _startPage) * _numberOfEntriesPerPage;
             DoneEntries = countBefore + _numberOfEntriesDoneForCurrentPage;
         }
 

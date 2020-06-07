@@ -1,7 +1,6 @@
 ﻿using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
-using HtmlAgilityPack;
 using System;
 using System.Threading;
 
@@ -21,11 +20,11 @@ namespace aemarcoCore.Crawlers.Crawlers
 
         internal override PersonEntry GetPersonEntry()
         {
-            PersonEntry result = new PersonEntry(this);
+            var result = new PersonEntry(this);
 
-            string href = $"de/model/{NameToCrawl.Replace(' ', '-')}";
-            Uri target = new Uri(_uri, href);
-            HtmlDocument document = GetDocument(target);
+            var href = $"de/model/{NameToCrawl.Replace(' ', '-')}";
+            var target = new Uri(_uri, href);
+            var document = GetDocument(target);
             var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@class='trigger']/div/h1");
             var nodeWithBild = document.DocumentNode.SelectSingleNode("//div[@class='container']/img");
             var nodeWithData = document.DocumentNode.SelectSingleNode("//ul[@class='info2']");
@@ -33,7 +32,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             //Name
             if (nodeWithName != null)
             {
-                string n = nodeWithName.InnerText.Trim();
+                var n = nodeWithName.InnerText.Trim();
                 n = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(n.ToLower());
                 if (n.Contains(" "))
                 {
@@ -46,7 +45,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             if (nodeWithBild != null &&
                 nodeWithBild.Attributes["src"] != null)
             {
-                string address = nodeWithBild.Attributes["src"].Value;
+                var address = nodeWithBild.Attributes["src"].Value;
 
                 result.IncludeProfilePicture(address, 35, 39);
 
@@ -80,7 +79,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                     {
                         try
                         {
-                            string str = node.InnerText.Replace("Größe", string.Empty).Trim();
+                            var str = node.InnerText.Replace("Größe", string.Empty).Trim();
                             str = str.Substring(0, str.IndexOf("cm") - 1).Trim();
                             result.Größe = Convert.ToInt32(str);
                         }
@@ -90,7 +89,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                     {
                         try
                         {
-                            string str = node.InnerText.Replace("Gewicht:", string.Empty).Trim();
+                            var str = node.InnerText.Replace("Gewicht:", string.Empty).Trim();
                             str = str.Substring(0, str.IndexOf("kg") - 1).Trim();
                             result.Gewicht = Convert.ToInt32(str);
                         }

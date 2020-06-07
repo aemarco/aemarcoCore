@@ -108,7 +108,7 @@ namespace aemarcoCore.Crawlers
         /// </summary>
         public void AddCategoryFilter(Category category)
         {
-            string cat = category.ToString();
+            var cat = category.ToString();
             if (!_filterCategories.Contains(cat))
             {
                 _filterCategories.Add(cat);
@@ -123,7 +123,7 @@ namespace aemarcoCore.Crawlers
         /// <param name="sourceSite"></param>
         public void AddSourceSiteFilter(SourceSite sourceSite)
         {
-            string site = sourceSite.ToString();
+            var site = sourceSite.ToString();
             if (!_filterSourceSites.Contains(site))
             {
                 _filterSourceSites.Add(site);
@@ -168,7 +168,7 @@ namespace aemarcoCore.Crawlers
             try
             {
                 //start all crawlers
-                List<Task<bool>> tasks = new List<Task<bool>>();
+                var tasks = new List<Task<bool>>();
                 foreach (var crawler in _crawlers.Keys)
                 {
                     _result.CrawlersInvolved.Add(crawler.GetType().Name);
@@ -209,7 +209,7 @@ namespace aemarcoCore.Crawlers
                 .Where(x => x.IsSubclassOf(typeof(WallpaperCrawlerBasis)))
                 .ToList();
 
-            foreach (Type type in crawlerTypes)
+            foreach (var type in crawlerTypes)
             {
                 var instance = (WallpaperCrawlerBasis)Activator.CreateInstance(type, _startPage, _lastPage, _onlyNews, _cancellationToken);
 
@@ -268,7 +268,7 @@ namespace aemarcoCore.Crawlers
                 {
                     if (!_reportPath.Exists) _reportPath.Create();
 
-                    string filename = $"{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.json";
+                    var filename = $"{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.json";
                     if (!String.IsNullOrWhiteSpace(_result.ResultName))
                         filename.Insert(0, $"{_result.ResultName}_");
 
@@ -294,10 +294,10 @@ namespace aemarcoCore.Crawlers
             {
                 lock (_progressLock)
                 {
-                    WallpaperCrawlerBasis instance = (WallpaperCrawlerBasis)sender;
+                    var instance = (WallpaperCrawlerBasis)sender;
                     _crawlers[instance] = e.ProgressPercentage;
 
-                    int progress = _crawlers.Values.Sum() / _crawlers.Values.Count;
+                    var progress = _crawlers.Values.Sum() / _crawlers.Values.Count;
 
                     //falls IProgress
                     if (_progress != null)
@@ -308,7 +308,7 @@ namespace aemarcoCore.Crawlers
                     //falls Event
                     if (Progress != null)
                     {
-                        foreach (Delegate d in Progress.GetInvocationList())
+                        foreach (var d in Progress.GetInvocationList())
                         {
                             if (!(d.Target is ISynchronizeInvoke syncer))
                             {
@@ -337,7 +337,7 @@ namespace aemarcoCore.Crawlers
 
                 if (KnownEntry != null)
                 {
-                    foreach (Delegate d in KnownEntry.GetInvocationList())
+                    foreach (var d in KnownEntry.GetInvocationList())
                     {
                         if (!(d.Target is ISynchronizeInvoke syncer))
                         {
@@ -364,7 +364,7 @@ namespace aemarcoCore.Crawlers
 
                 if (NewEntry != null)
                 {
-                    foreach (Delegate d in NewEntry.GetInvocationList())
+                    foreach (var d in NewEntry.GetInvocationList())
                     {
                         if (!(d.Target is ISynchronizeInvoke syncer))
                         {
@@ -399,7 +399,7 @@ namespace aemarcoCore.Crawlers
 
                 if (KnownAlbum != null)
                 {
-                    foreach (Delegate d in KnownAlbum.GetInvocationList())
+                    foreach (var d in KnownAlbum.GetInvocationList())
                     {
                         if (!(d.Target is ISynchronizeInvoke syncer))
                         {
@@ -433,7 +433,7 @@ namespace aemarcoCore.Crawlers
 
                 if (NewAlbum != null)
                 {
-                    foreach (Delegate d in NewAlbum.GetInvocationList())
+                    foreach (var d in NewAlbum.GetInvocationList())
                     {
                         if (!(d.Target is ISynchronizeInvoke syncer))
                         {
@@ -457,7 +457,7 @@ namespace aemarcoCore.Crawlers
         {
             if (Completed != null)
             {
-                foreach (Delegate d in Completed.GetInvocationList())
+                foreach (var d in Completed.GetInvocationList())
                 {
                     if (!(d.Target is ISynchronizeInvoke syncer))
                     {

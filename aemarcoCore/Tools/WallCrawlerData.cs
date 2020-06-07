@@ -88,7 +88,7 @@ namespace aemarcoCore.Tools
             {
                 if (!_isInitiallized) Init();
 
-                bool known = _knownUrls.Contains(entry.Url);
+                var known = _knownUrls.Contains(entry.Url);
                 if (!known)
                 {
                     _knownUrls.Add(entry.Url);
@@ -109,7 +109,7 @@ namespace aemarcoCore.Tools
             {
                 if (_dataFile != null)
                 {
-                    string json = JsonConvert.SerializeObject(
+                    var json = JsonConvert.SerializeObject(
                         _knownUrls.Distinct().ToList(),
                         Formatting.Indented);
                     File.WriteAllText(_dataFile.FullName, json);

@@ -28,7 +28,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
         protected override List<CrawlOffer> GetCrawlsOffers()
         {
-            List<CrawlOffer> result = new List<CrawlOffer>();
+            var result = new List<CrawlOffer>();
 
             
             result.Add(CreateCrawlOffer(
@@ -61,7 +61,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             source.DetailsDoc = source.GetChildDocumentFromRootNode();
 
             //details
-            string imageUri = GetImageUrl(source.DetailsDoc);
+            var imageUri = GetImageUrl(source.DetailsDoc);
             if (String.IsNullOrEmpty(imageUri)) return false;
 
             source.ImageUri = new Uri(imageUri);
@@ -70,7 +70,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             source.ContentCategory = catJob.Category;
             source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//ul[@class='tagcloud']/span/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
 
-            WallEntry wallEntry = source.WallEntry;
+            var wallEntry = source.WallEntry;
             if (wallEntry == null)
             {
                 return false;
@@ -90,14 +90,14 @@ namespace aemarcoCore.Crawlers.Crawlers
                 return null;
             }
             //search for node with highest resolution
-            int maxSum = 0;
+            var maxSum = 0;
             foreach (var node in allNodes)
             {
                 //get both number values
-                string[] txt = node.Attributes["title"]?.Value?.Split('x');
+                var txt = node.Attributes["title"]?.Value?.Split('x');
                 if (txt != null && txt.Length == 2)
                 {
-                    int sum = 0;
+                    var sum = 0;
 
                     try
                     {
@@ -128,14 +128,14 @@ namespace aemarcoCore.Crawlers.Crawlers
             #region Image Url
 
             //z.B. "/view-jana-jordan--1920x1200.html"
-            string name = targetNode.Attributes["href"]?.Value;
+            var name = targetNode.Attributes["href"]?.Value;
             //z.B. "jana-jordan--1920x1200.html"
             name = name.Substring(name.IndexOf("view") + 5);
             //z.B. "jana-jordan--1920x1200"
             name = name.Substring(0, name.IndexOf(".html"));
             //z.B. "https://zoomgirls.net/wallpapers/jana-jordan--1920x1200.jpg"
 
-            string url = new Uri(_uri, $"/wallpapers/{name}.jpg").AbsoluteUri;
+            var url = new Uri(_uri, $"/wallpapers/{name}.jpg").AbsoluteUri;
 
             #endregion
 

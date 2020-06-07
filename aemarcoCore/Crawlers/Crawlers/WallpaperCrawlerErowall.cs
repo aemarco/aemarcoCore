@@ -29,17 +29,17 @@ namespace aemarcoCore.Crawlers.Crawlers
 
         protected override List<CrawlOffer> GetCrawlsOffers()
         {
-            List<CrawlOffer> result = new List<CrawlOffer>();
+            var result = new List<CrawlOffer>();
 
             //main page
             var doc = GetDocument(_uri);
 
             //foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
-            foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@class='m']/li[@class='m']/a"))
+            foreach (var node in doc.DocumentNode.SelectNodes("//ul[@class='m']/li[@class='m']/a"))
             {
 
                 //z.B. "#brunette"
-                string text = WebUtility.HtmlDecode(node.InnerText).Trim();
+                var text = WebUtility.HtmlDecode(node.InnerText).Trim();
                 if (String.IsNullOrEmpty(text) || !text.StartsWith("#"))
                 {
                     continue;
@@ -59,7 +59,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
 
                 //z.B. "/search/brunette/"
-                string href = node.Attributes["href"]?.Value;
+                var href = node.Attributes["href"]?.Value;
                 if (String.IsNullOrEmpty(href))
                 {
                     continue;
@@ -70,8 +70,8 @@ namespace aemarcoCore.Crawlers.Crawlers
 
 
                 //z.B. "https://erowall.com/teg/brunette/"
-                Uri uri = new Uri(_uri, href);
-                IContentCategory cat = GetContentCategory(text);
+                var uri = new Uri(_uri, href);
+                var cat = GetContentCategory(text);
                 result.Add(CreateCrawlOffer(text, uri, cat));
             }
 
@@ -92,9 +92,9 @@ namespace aemarcoCore.Crawlers.Crawlers
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
             //details
-            Match match = Regex.Match(node.Attributes["href"]?.Value, @"/(\d+)/$");
+            var match = Regex.Match(node.Attributes["href"]?.Value, @"/(\d+)/$");
             // z.B. "24741"
-            string imageLink = match.Groups[1].Value;
+            var imageLink = match.Groups[1].Value;
 
             var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
@@ -109,7 +109,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             source.Tags = source.GetTagsFromNode(node, "title");
 
 
-            WallEntry wallEntry = source.WallEntry;
+            var wallEntry = source.WallEntry;
             if (wallEntry == null)
             {
                 return false;

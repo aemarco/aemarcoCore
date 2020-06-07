@@ -36,7 +36,7 @@ namespace aemarcoCore.Crawlers
         private List<AbyssCategory> _abyssCats;
         protected override List<CrawlOffer> GetCrawlsOffers()
         {
-            List<CrawlOffer> result = new List<CrawlOffer>();
+            var result = new List<CrawlOffer>();
 
             if (String.IsNullOrWhiteSpace(ConfigurationHelper.AbyssAPI_Key))
                 return result;
@@ -164,7 +164,7 @@ namespace aemarcoCore.Crawlers
 
         private bool AddWallEntry(CrawlOffer catJob, AbyssWallpaper wall)
         {
-            WallEntrySource source = new WallEntrySource();
+            var source = new WallEntrySource();
 
 
 
@@ -188,7 +188,7 @@ namespace aemarcoCore.Crawlers
 
 
 
-            WallEntry wallEntry = source.WallEntry;
+            var wallEntry = source.WallEntry;
             if (wallEntry == null)
             {
                 return false;
@@ -201,17 +201,17 @@ namespace aemarcoCore.Crawlers
         {
             // https://wall.alphacoders.com/api2.0/get.php?auth=YOUR_KEY&method=category_list
 
-            List<string> allParams = parameters.ToList();
+            var allParams = parameters.ToList();
             allParams.Insert(0, $"auth={ConfigurationHelper.AbyssAPI_Key}");
 
 
-            string queryUri = $"{_uri.AbsoluteUri}/api2.0/get.php";
-            string call = $"{queryUri}?{string.Join("&", allParams)}";
+            var queryUri = $"{_uri.AbsoluteUri}/api2.0/get.php";
+            var call = $"{queryUri}?{string.Join("&", allParams)}";
 
 
             var wr = WebRequest.Create(call);
             string result = null;
-            using (HttpWebResponse response = (HttpWebResponse)wr.GetResponse())
+            using (var response = (HttpWebResponse)wr.GetResponse())
             {
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -262,7 +262,7 @@ namespace aemarcoCore.Crawlers
             source.ContentCategory = CheckForRealCategory(catJob.Category, source.Tags, null);
 
 
-            WallEntry wallEntry = source.WallEntry;
+            var wallEntry = source.WallEntry;
             if (wallEntry == null)
             {
                 return false;

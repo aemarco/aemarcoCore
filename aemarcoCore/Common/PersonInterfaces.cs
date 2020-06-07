@@ -30,7 +30,7 @@ namespace aemarcoCore.Common
         string Geburtsort { get; }
         string Beruf { get; }
         DateTime? Karrierestart { get; }
-        string Karrierestatus { get; }
+        bool? StillActive { get;  }
         List<string> Aliase { get; }
         string Rasse { get; }
         string Haare { get; }

@@ -1,7 +1,6 @@
 ﻿using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
-using HtmlAgilityPack;
 using System;
 using System.Threading;
 
@@ -22,11 +21,11 @@ namespace aemarcoCore.Crawlers.Crawlers
         internal override int PersonPriority => 20;
         internal override PersonEntry GetPersonEntry()
         {
-            PersonEntry result = new PersonEntry(this);
+            var result = new PersonEntry(this);
 
-            string href = $"?q={NameToCrawl.Replace(' ', '+')}&s=s";
-            Uri target = new Uri(_uri, href);
-            HtmlDocument document = GetDocument(target);
+            var href = $"?q={NameToCrawl.Replace(' ', '+')}&s=s";
+            var target = new Uri(_uri, href);
+            var document = GetDocument(target);
             var nodeWithName = document.DocumentNode.SelectSingleNode("//td[contains(@valign, 'top') and contains(@colspan ,'2')]");
             var nodeWithBild = document.DocumentNode.SelectSingleNode("//img[@class='mthumb']");
             var nodeWithData = document.DocumentNode.SelectSingleNode("//div[@id='params_scroll']");
@@ -34,7 +33,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             //Name
             if (nodeWithName != null)
             {
-                string n = nodeWithName.InnerText.Trim();
+                var n = nodeWithName.InnerText.Trim();
                 n = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(n.ToLower());
                 if (n.Contains(" "))
                 {
@@ -47,7 +46,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             if (nodeWithBild != null &&
                 nodeWithBild.Attributes["src"] != null)
             {
-                string address = nodeWithBild.Attributes["src"].Value;
+                var address = nodeWithBild.Attributes["src"].Value;
                 if (!address.StartsWith("http"))
                 {
                     address = "https:" + address;
@@ -67,8 +66,8 @@ namespace aemarcoCore.Crawlers.Crawlers
                     //Geburtstag
                     if (node.InnerText.Contains("Geburtstag:"))
                     {
-                        string str = node.InnerText.Replace("Geburtstag: ", string.Empty).Trim();
-                        if (DateTime.TryParse(str, out DateTime dt))
+                        var str = node.InnerText.Replace("Geburtstag: ", string.Empty).Trim();
+                        if (DateTime.TryParse(str, out var dt))
                         {
                             result.Geburtstag = dt;
                         }
@@ -90,7 +89,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                     {
                         try
                         {
-                            string str = node.InnerText.Replace("Karrierestart:", string.Empty).Trim();
+                            var str = node.InnerText.Replace("Karrierestart:", string.Empty).Trim();
                             str = str.Replace("-", string.Empty).Trim();
 
                             result.Karrierestart = new DateTime(Convert.ToInt32(str), 1, 1);
@@ -99,12 +98,16 @@ namespace aemarcoCore.Crawlers.Crawlers
                     }
                     else if (node.InnerText.Contains("Karrierestatus:"))
                     {
-                        result.Karrierestatus = node.InnerText.Replace("Karrierestatus:", string.Empty).Trim();
+                        var str = node.InnerText
+                            .Replace("Karrierestatus:", string.Empty)
+                            .Trim();
+
+                        result.IncludeStillActive(str);
                     }
                     //Aliase
                     else if (node.InnerText.Contains("Auch bekannt als"))
                     {
-                        string aliasString = node.InnerText;
+                        var aliasString = node.InnerText;
                         //Auch bekannt als Becky Lesabre, Beth Porter.
                         aliasString = node.InnerText.Replace("Auch bekannt als", string.Empty);
                         aliasString = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(aliasString.ToLower());
@@ -112,7 +115,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                         if (aliasString.EndsWith("."))
                             aliasString = aliasString.Remove(aliasString.Length - 1);
                         // Becky Lesabre, Beth Porter
-                        foreach (string aliasItem in aliasString.Split(','))
+                        foreach (var aliasItem in aliasString.Split(','))
                         {
                             var al = aliasItem.Trim();
                             if (al.StartsWith(".")) al = al.Remove(0, 1);
@@ -139,8 +142,8 @@ namespace aemarcoCore.Crawlers.Crawlers
                     }
                     else if (node.InnerText.Contains("Maße:"))
                     {
-                        string temp = node.InnerText.Replace("Maße:", string.Empty).Trim();
-                        string maße = ConvertMaßeToMetric(temp);
+                        var temp = node.InnerText.Replace("Maße:", string.Empty).Trim();
+                        var maße = ConvertMaßeToMetric(temp);
                         result.Maße = maße;
                     }
                     else if (node.InnerText.Contains("Körbchengröße:"))
@@ -151,7 +154,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                     {
                         try
                         {
-                            string str = node.InnerText;
+                            var str = node.InnerText;
                             str = str.Substring(str.IndexOf("(") + 1);
                             str = str.Substring(0, str.IndexOf("cm)") - 1);
                             result.Größe = Convert.ToInt32(str);
@@ -162,7 +165,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                     {
                         try
                         {
-                            string str = node.InnerText;
+                            var str = node.InnerText;
                             str = str.Substring(str.IndexOf("(") + 1);
                             str = str.Substring(0, str.IndexOf("kg)") - 1);
                             result.Gewicht = Convert.ToInt32(str);

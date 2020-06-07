@@ -77,7 +77,7 @@ namespace aemarcoCore.Crawlers
         /// <param name="personSite"></param>
         public void AddPersonSiteFilter(PersonSite personSite)
         {
-            string site = personSite.ToString();
+            var site = personSite.ToString();
             if (!_filterPersonSites.Contains(site))
             {
                 _filterPersonSites.Add(site);
@@ -118,7 +118,7 @@ namespace aemarcoCore.Crawlers
 
 
             //start all crawlers
-            List<Task<bool>> tasks = new List<Task<bool>>();
+            var tasks = new List<Task<bool>>();
             foreach (var crawler in _crawlers.Keys)
             {
                 var task = Task<bool>.Factory.StartNew(crawler.Start);
@@ -156,7 +156,7 @@ namespace aemarcoCore.Crawlers
                 .Where(x => x.IsSubclassOf(typeof(PersonCrawlerBase)))
                 .ToList();
 
-            foreach (Type type in crawlerTypes)
+            foreach (var type in crawlerTypes)
             {
                 var instance = (PersonCrawlerBase)Activator.CreateInstance(type, _nameToCrawl, _cancellationToken);
 
@@ -183,7 +183,7 @@ namespace aemarcoCore.Crawlers
                         _reportPath.Create();
                     }
 
-                    string prefix = string.Empty;
+                    var prefix = string.Empty;
                     if (!String.IsNullOrWhiteSpace(_result.ResultName))
                     {
                         prefix = $"{_result.ResultName}_";
@@ -214,10 +214,10 @@ namespace aemarcoCore.Crawlers
             {
                 lock (_progressLock)
                 {
-                    PersonCrawlerBase instance = (PersonCrawlerBase)sender;
+                    var instance = (PersonCrawlerBase)sender;
                     _crawlers[instance] = e.ProgressPercentage;
 
-                    int progress = _crawlers.Values.Sum() / _crawlers.Values.Count;
+                    var progress = _crawlers.Values.Sum() / _crawlers.Values.Count;
 
 
                     //falls IProgress
@@ -229,7 +229,7 @@ namespace aemarcoCore.Crawlers
                     //falls Event
                     if (Progress != null)
                     {
-                        foreach (Delegate d in Progress.GetInvocationList())
+                        foreach (var d in Progress.GetInvocationList())
                         {
                             if (!(d.Target is ISynchronizeInvoke syncer))
                             {
@@ -258,7 +258,7 @@ namespace aemarcoCore.Crawlers
 
                 if (Entry != null)
                 {
-                    foreach (Delegate d in Entry.GetInvocationList())
+                    foreach (var d in Entry.GetInvocationList())
                     {
                         if (!(d.Target is ISynchronizeInvoke syncer))
                         {
@@ -282,7 +282,7 @@ namespace aemarcoCore.Crawlers
         {
             if (Completed != null)
             {
-                foreach (Delegate d in Completed.GetInvocationList())
+                foreach (var d in Completed.GetInvocationList())
                 {
                     if (!(d.Target is ISynchronizeInvoke syncer))
                     {

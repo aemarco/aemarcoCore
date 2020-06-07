@@ -38,7 +38,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         public void TearDown()
         {
             var app = AppDomain.CurrentDomain.BaseDirectory;
-            DirectoryInfo di = new DirectoryInfo(Path.Combine(app, "temp"));
+            var di = new DirectoryInfo(Path.Combine(app, "temp"));
 
             if (di.Exists) di.Delete(true);
         }
@@ -146,7 +146,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         {
             get
             {
-                List<object> result = new List<object>();
+                var result = new List<object>();
                 foreach (SourceSite site in Enum.GetValues(typeof(SourceSite)))
                 {
                     if (site.IsDisabled()) continue;

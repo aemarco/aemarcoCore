@@ -204,9 +204,9 @@ namespace aemarcoCore.Crawlers.Base
         {
             if (Progress != null)
             {
-                int done = _catJobs.Sum(x => x.DoneEntries);
-                int todo = _catJobs.Sum(x => x.TotalEntries);
-                int prog = (todo == 0) ? 0 : Convert.ToInt32(100.0 * done / todo);
+                var done = _catJobs.Sum(x => x.DoneEntries);
+                var todo = _catJobs.Sum(x => x.TotalEntries);
+                var prog = (todo == 0) ? 0 : Convert.ToInt32(100.0 * done / todo);
 
                 Progress(this, new ProgressChangedEventArgs(prog, null));
             }
@@ -283,12 +283,12 @@ namespace aemarcoCore.Crawlers.Base
         /// <returns>true if page contained any entries</returns>
         protected virtual bool GetPage(CrawlOffer catJob)
         {
-            bool result = false;
+            var result = false;
 
             //Seite mit Wallpaperliste
-            Uri pageUri = GetSiteUrlForCategory(catJob);
+            var pageUri = GetSiteUrlForCategory(catJob);
             var doc = GetDocument(pageUri);
-            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes(GetSearchStringGorEntryNodes());
+            var nodes = doc.DocumentNode.SelectNodes(GetSearchStringGorEntryNodes());
 
             //non entries on page
             if (nodes == null || !nodes.Any())
@@ -307,7 +307,7 @@ namespace aemarcoCore.Crawlers.Base
             }
 
             //handle each node
-            foreach (HtmlNode node in nodes)
+            foreach (var node in nodes)
             {
                 _cancellationToken.ThrowIfCancellationRequested();
 

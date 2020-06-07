@@ -29,8 +29,8 @@ namespace aemarcoCore.Crawlers.Crawlers
 
         protected override List<CrawlOffer> GetCrawlsOffers()
         {
-            List<CrawlOffer> result = new List<CrawlOffer>();
-            List<string> cats = new List<string>
+            var result = new List<CrawlOffer>();
+            var cats = new List<string>
             {
                 "Amateur",
                 "Anal", //HC
@@ -225,7 +225,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             var entryNodes = albumDoc.DocumentNode.SelectNodes("//li[@class='thumbwook']/a");
 
             List<string> tags = null;
-            AlbumEntry album = new AlbumEntry(albumName);
+            var album = new AlbumEntry(albumName);
             foreach (var entryNode in entryNodes)
             {
                 var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
@@ -251,7 +251,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 source.Tags = tags;
                 source.AlbumName = albumName;
 
-                WallEntry wallEntry = source.WallEntry;
+                var wallEntry = source.WallEntry;
                 if (wallEntry != null)
                 {
                     album.Entries.Add(wallEntry);

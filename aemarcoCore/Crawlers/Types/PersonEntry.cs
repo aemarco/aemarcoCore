@@ -27,7 +27,7 @@ namespace aemarcoCore.Crawlers.Types
         public string Geburtsort { get; internal set; }
         public string Beruf { get; internal set; }
         public DateTime? Karrierestart { get; internal set; }
-        public string Karrierestatus { get; internal set; }
+        public bool? StillActive { get; internal set; }
         public List<string> Aliase { get; internal set; }
         public string Rasse { get; internal set; }
         public string Haare { get; internal set; }

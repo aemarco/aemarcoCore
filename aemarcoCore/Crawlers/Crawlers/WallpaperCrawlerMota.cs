@@ -31,23 +31,23 @@ namespace aemarcoCore.Crawlers.Crawlers
 
         protected override List<CrawlOffer> GetCrawlsOffers()
         {
-            List<CrawlOffer> result = new List<CrawlOffer>();
+            var result = new List<CrawlOffer>();
 
             //main page
             var doc = GetDocument(_uri);
 
-            foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@class='root-menu__flex']/li/a"))
+            foreach (var node in doc.DocumentNode.SelectNodes("//ul[@class='root-menu__flex']/li/a"))
             {
 
                 //z.B. "World"
-                string text = WebUtility.HtmlDecode(node.InnerText).Trim();
+                var text = WebUtility.HtmlDecode(node.InnerText).Trim();
                 if (String.IsNullOrWhiteSpace(text) || text == "Sandbox" || text == "All categories")
                 {
                     continue;
                 }
 
                 //z.B. "/categories/view/name/world"
-                string href = node.Attributes["href"]?.Value;
+                var href = node.Attributes["href"]?.Value;
                 if (String.IsNullOrEmpty(href))
                 {
                     continue;
@@ -66,8 +66,8 @@ namespace aemarcoCore.Crawlers.Crawlers
 
                 //z.B. "https://motaen.com/categories/view/name/world"
                 //z.B. "https://ero.motaen.com/categories/view/name/erotica"
-                Uri uri = new Uri(targetUri, href);
-                IContentCategory cat = GetContentCategory(text);
+                var uri = new Uri(targetUri, href);
+                var cat = GetContentCategory(text);
                 result.Add(CreateCrawlOffer(text, uri, cat));
             }
 
@@ -126,7 +126,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
         {
             //z.B. "https://motaen.com/categories/view/name/male-celebrities"                
-            string href = catJob.CategoryUri.AbsolutePath;
+            var href = catJob.CategoryUri.AbsolutePath;
             href = href.Insert(href.IndexOf("view/") + 5, $"page/{catJob.CurrentPage}/order/date/");
             return new Uri(catJob.CategoryUri, href);
         }
@@ -162,7 +162,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//ul[@id='tags-container']/li/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
             source.ContentCategory = GetContentCategory(catJob.SiteCategoryName, source.Tags);
 
-            WallEntry wallEntry = source.WallEntry;
+            var wallEntry = source.WallEntry;
             if (wallEntry == null)
             {
                 return false;

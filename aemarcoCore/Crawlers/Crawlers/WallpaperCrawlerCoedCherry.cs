@@ -28,9 +28,9 @@ namespace aemarcoCore.Crawlers.Crawlers
 
         protected override List<CrawlOffer> GetCrawlsOffers()
         {
-            List<CrawlOffer> result = new List<CrawlOffer>();
+            var result = new List<CrawlOffer>();
 
-            List<string> cats = new List<string>
+            var cats = new List<string>
             {
                 "18",
                 "Alternative",
@@ -153,7 +153,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             var entryNodes = albumDoc.DocumentNode.SelectNodes("//div[@class='thumbs ']/figure/a");
 
             List<string> tags = null;
-            AlbumEntry album = new AlbumEntry(albumName);
+            var album = new AlbumEntry(albumName);
             foreach (var entryNode in entryNodes)
             {
                 //get tags during first node
@@ -177,7 +177,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 source.Tags = tags;
                 source.AlbumName = albumName;
 
-                WallEntry wallEntry = source.WallEntry;
+                var wallEntry = source.WallEntry;
                 if (wallEntry != null)
                 {
                     album.Entries.Add(wallEntry);
