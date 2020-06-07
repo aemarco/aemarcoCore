@@ -22,9 +22,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             bool onlyNews,
             CancellationToken cancellationToken)
             : base(1, 1, onlyNews, cancellationToken)
-        {
-
-        }
+        { }
 
         protected override List<CrawlOffer> GetCrawlsOffers()
         {

@@ -33,7 +33,7 @@ namespace aemarcoCore.Common
         List<IAlbumEntry> KnownAlbums { get; }
 
         [JsonIgnore]
-        string JSON { get; }
+        string Json { get; }
 
     }
 
@@ -59,7 +59,7 @@ namespace aemarcoCore.Common
 
 
         [JsonIgnore]
-        string JSON { get; }
+        string Json { get; }
     }
 
 }

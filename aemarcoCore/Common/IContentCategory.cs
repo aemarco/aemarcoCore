@@ -15,6 +15,6 @@ namespace aemarcoCore.Common
 
 
         [JsonIgnore]
-        string JSON { get; }
+        string Json { get; }
     }
 }

@@ -126,7 +126,7 @@ namespace aemarcoCore.Crawlers.Base
         /// <summary>
         /// used to convert feet and inches to cm
         /// </summary>
-        /// <param name="size">5' 5"</param>
+        /// <param name="str">5' 5"</param>
         /// <returns>165 as nullable int</returns>
         protected int? ConvertFeetAndInchToCm(string str)
         {
@@ -185,10 +185,10 @@ namespace aemarcoCore.Crawlers.Base
             Progress?.Invoke(this, new ProgressChangedEventArgs(prog, null));
         }
 
-        internal event EventHandler<IPersonEntryEventArgs> Entry;
+        internal event EventHandler<PersonEntryEventArgs> Entry;
         private void OnEntry(IPersonEntry entry)
         {
-            Entry?.Invoke(this, new IPersonEntryEventArgs { Entry = entry });
+            Entry?.Invoke(this, new PersonEntryEventArgs { Entry = entry });
         }
 
         #endregion

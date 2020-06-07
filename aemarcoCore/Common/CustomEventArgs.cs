@@ -2,27 +2,27 @@
 
 namespace aemarcoCore.Common
 {
-    public class IWallCrawlerResultEventArgs : EventArgs
+    public class WallCrawlerResultEventArgs : EventArgs
     {
         public IWallCrawlerResult Result { get; set; }
     }
 
-    public class IWallEntryEventArgs : EventArgs
+    public class WallEntryEventArgs : EventArgs
     {
         public IWallEntry Entry { get; set; }
     }
-    public class IAlbumEntryEventArgs : EventArgs
+    public class AlbumEntryEventArgs : EventArgs
     {
         public IAlbumEntry Entry { get; set; }
     }
 
-    public class IPersonCrawlerResultEventArgs : EventArgs
+    public class PersonCrawlerResultEventArgs : EventArgs
     {
         public IPersonCrawlerResult Result { get; set; }
 
     }
 
-    public class IPersonEntryEventArgs : EventArgs
+    public class PersonEntryEventArgs : EventArgs
     {
         public IPersonEntry Entry { get; set; }
 

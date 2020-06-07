@@ -14,7 +14,7 @@ namespace aemarcoCore
         public static Func<List<string>> KnownUrlsFunc { get; set; }
         /// <summary>
         /// A path to a file which will be used to load and save known Urls.
-        /// Its formatted in json List<string>
+        /// Its formatted in json List of string
         /// Enjoys 2. Priority
         /// </summary>
         public static string KnownUrlsFile { get; set; }
@@ -22,9 +22,9 @@ namespace aemarcoCore
 
         /// <summary>
         /// API Key to be used for Abyss
-        /// If non is provided, Abyss beeing skipped
+        /// If non is provided, Abyss being skipped
         /// </summary>
-        public static string AbyssAPI_Key { get; set; }
+        public static string AbyssApiKey { get; set; }
 
 
 

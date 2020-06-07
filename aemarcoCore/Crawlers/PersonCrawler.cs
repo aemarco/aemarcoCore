@@ -192,7 +192,7 @@ namespace aemarcoCore.Crawlers
                     File.WriteAllText
                         (
                         $"{_reportPath.FullName}\\{prefix}{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.json",
-                        _result.JSON
+                        _result.Json
                         );
                 }
                 catch { }
@@ -249,8 +249,8 @@ namespace aemarcoCore.Crawlers
         /// <summary>
         /// Delivers entries while crawling
         /// </summary>
-        public event EventHandler<IPersonEntryEventArgs> Entry;
-        private void Instance_OnEntry(object sender, IPersonEntryEventArgs e)
+        public event EventHandler<PersonEntryEventArgs> Entry;
+        private void Instance_OnEntry(object sender, PersonEntryEventArgs e)
         {
             lock (_entryLock)
             {
@@ -277,7 +277,7 @@ namespace aemarcoCore.Crawlers
         /// <summary>
         /// Delivers the IPersonCrawlerResult once crawling is completed
         /// </summary>
-        public event EventHandler<IPersonCrawlerResultEventArgs> Completed;
+        public event EventHandler<PersonCrawlerResultEventArgs> Completed;
         protected virtual void OnCompleted()
         {
             if (Completed != null)
@@ -286,11 +286,11 @@ namespace aemarcoCore.Crawlers
                 {
                     if (!(d.Target is ISynchronizeInvoke syncer))
                     {
-                        d.DynamicInvoke(this, new IPersonCrawlerResultEventArgs { Result = _result });
+                        d.DynamicInvoke(this, new PersonCrawlerResultEventArgs { Result = _result });
                     }
                     else
                     {
-                        syncer.BeginInvoke(d, new object[] { this, new IPersonCrawlerResultEventArgs { Result = _result } });  // cleanup omitted
+                        syncer.BeginInvoke(d, new object[] { this, new PersonCrawlerResultEventArgs { Result = _result } });  // cleanup omitted
                     }
                 }
             }

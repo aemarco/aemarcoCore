@@ -10,7 +10,7 @@ namespace aemarcoCore.Common
         List<IPersonEntry> Entries { get; }
         Exception Exception { get; set; }
         bool HasBeenAborted { get; set; }
-        string JSON { get; }
+        string Json { get; }
         string ResultName { get; set; }
     }
 
@@ -42,7 +42,7 @@ namespace aemarcoCore.Common
         string Piercings { get; }
 
         [JsonIgnore]
-        string JSON { get; }
+        string Json { get; }
     }
 
     public interface IProfilePicture

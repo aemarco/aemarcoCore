@@ -4,8 +4,10 @@
     //crawler
     public enum Category
     {
+        // ReSharper disable InconsistentNaming
         Men,
         Girls,
+        
         Girls_Celebrities,
         Girls_CelebrityFakes,
         Girls_Cars,
@@ -64,7 +66,7 @@
         Other_Brands,
         Other_Words
 
-
+        // ReSharper restore InconsistentNaming
     }
 
     //wall site
@@ -142,13 +144,20 @@
 
 
         [SupportedCategories(Category.Girls, Category.Girls_Hardcore, Category.Girls_Lesbians, Category.Girls_Asian, Category.Girls_Selfies, Category.Girls_Amateur)]
-        CoedCherry
+        CoedCherry,
+
+        [SupportedCategories(Category.Girls)]
+        NakedYoungModels
     }
 
 
     //person site
     public enum PersonSite
     {
+        // ReSharper disable InconsistentNaming
+
+
+
         IStripper,
         Pornpics,
         Porngatherer,
@@ -156,13 +165,23 @@
         CoedCherry,
         HookupHotshot,
         Babepedia
+
+
+
+        // ReSharper restore InconsistentNaming
     }
 
 
     internal enum CrawlMethod
     {
+        // ReSharper disable InconsistentNaming
+
+
         Classic,
         API
+
+
+        // ReSharper restore InconsistentNaming
     }
 
 }

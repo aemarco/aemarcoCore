@@ -41,7 +41,7 @@ namespace aemarcoCore.Crawlers.Types
         { get { return _entries; } }
 
         [JsonIgnore]
-        public string JSON
+        public string Json
         { get { return JsonConvert.SerializeObject(this, Formatting.Indented); } }
 
 

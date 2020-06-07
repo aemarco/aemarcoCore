@@ -273,7 +273,7 @@ namespace aemarcoCore.Crawlers
                         filename.Insert(0, $"{_result.ResultName}_");
 
 
-                    File.WriteAllText(Path.Combine(_reportPath.FullName, filename), _result.JSON);
+                    File.WriteAllText(Path.Combine(_reportPath.FullName, filename), _result.Json);
                 }
                 catch { }
             }
@@ -328,8 +328,8 @@ namespace aemarcoCore.Crawlers
         /// <summary>
         /// Delivers entries which are already known by the crawler
         /// </summary>
-        public event EventHandler<IWallEntryEventArgs> KnownEntry;
-        private void Instance_OnKnownEntry(object sender, IWallEntryEventArgs e)
+        public event EventHandler<WallEntryEventArgs> KnownEntry;
+        private void Instance_OnKnownEntry(object sender, WallEntryEventArgs e)
         {
             lock (_entryLock)
             {
@@ -355,8 +355,8 @@ namespace aemarcoCore.Crawlers
         /// <summary>
         /// Delivers entries which are new to the crawler
         /// </summary>
-        public event EventHandler<IWallEntryEventArgs> NewEntry;
-        private void Instance_OnNewEntry(object sender, IWallEntryEventArgs e)
+        public event EventHandler<WallEntryEventArgs> NewEntry;
+        private void Instance_OnNewEntry(object sender, WallEntryEventArgs e)
         {
             lock (_entryLock)
             {
@@ -383,8 +383,8 @@ namespace aemarcoCore.Crawlers
         /// <summary>
         /// Delivers album-entries which are already known by the crawler
         /// </summary>
-        public event EventHandler<IAlbumEntryEventArgs> KnownAlbum;
-        private void Instance_OnKnownAlbum(object sender, IAlbumEntryEventArgs e)
+        public event EventHandler<AlbumEntryEventArgs> KnownAlbum;
+        private void Instance_OnKnownAlbum(object sender, AlbumEntryEventArgs e)
         {
             lock (_entryLock)
             {
@@ -417,8 +417,8 @@ namespace aemarcoCore.Crawlers
         /// <summary>
         /// Delivers album-entries which are new to the crawler
         /// </summary>
-        public event EventHandler<IAlbumEntryEventArgs> NewAlbum;
-        private void Instance_OnNewAlbum(object sender, IAlbumEntryEventArgs e)
+        public event EventHandler<AlbumEntryEventArgs> NewAlbum;
+        private void Instance_OnNewAlbum(object sender, AlbumEntryEventArgs e)
         {
             lock (_entryLock)
             {
@@ -452,7 +452,7 @@ namespace aemarcoCore.Crawlers
         /// <summary>
         /// Delivers the IWallCrawlerResult once crawling is completed
         /// </summary>
-        public event EventHandler<IWallCrawlerResultEventArgs> Completed;
+        public event EventHandler<WallCrawlerResultEventArgs> Completed;
         protected virtual void OnCompleted()
         {
             if (Completed != null)
@@ -461,11 +461,11 @@ namespace aemarcoCore.Crawlers
                 {
                     if (!(d.Target is ISynchronizeInvoke syncer))
                     {
-                        d.DynamicInvoke(this, new IWallCrawlerResultEventArgs { Result = _result });
+                        d.DynamicInvoke(this, new WallCrawlerResultEventArgs { Result = _result });
                     }
                     else
                     {
-                        syncer.BeginInvoke(d, new object[] { this, new IWallCrawlerResultEventArgs { Result = _result } });  // cleanup omitted
+                        syncer.BeginInvoke(d, new object[] { this, new WallCrawlerResultEventArgs { Result = _result } });  // cleanup omitted
                     }
                 }
             }

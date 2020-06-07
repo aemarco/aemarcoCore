@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 
 namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
@@ -17,7 +16,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
     [SingleThreaded]
     public class WallpaperCrawlerTests
     {
-        IConfiguration _config;
+        private IConfiguration _config;
 
         [OneTimeSetUp]
         public void OneTimeSetup()
@@ -31,24 +30,24 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         public void Setup()
         {
             ConfigurationHelper.KnownUrlsFunc = () => new List<string>();
-            ConfigurationHelper.AbyssAPI_Key = _config.GetValue<string>("AbyssKey");
+            ConfigurationHelper.AbyssApiKey = _config.GetValue<string>("AbyssKey");
         }
 
         [TearDown]
         public void TearDown()
         {
             var app = AppDomain.CurrentDomain.BaseDirectory;
-            var di = new DirectoryInfo(Path.Combine(app, "temp"));
+            var di = new DirectoryInfo(Path.Combine(app!, "temp"));
 
             if (di.Exists) di.Delete(true);
         }
 
 
-
-        static object[] SiteCases
+        public static object[] SiteCases
         {
             get
             {
+                // ReSharper disable once CoVariantArrayConversion
                 return Enum.GetValues(typeof(SourceSite))
                     .Cast<SourceSite>()
                     .Where(x => !x.IsDisabled())
@@ -59,26 +58,27 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [TestCaseSource(nameof(SiteCases))]
         public void SourceSites_HaveACrawler(SourceSite site)
         {
-            if (site == SourceSite.Abyss && string.IsNullOrWhiteSpace(ConfigurationHelper.AbyssAPI_Key))
+            if (site == SourceSite.Abyss && string.IsNullOrWhiteSpace(ConfigurationHelper.AbyssApiKey))
                 Assert.Pass(); // skip abyss when there is no API key
 
 
-            var crawler = new WallpaperCrawler(CancellationToken.None, null, 0, 0);
+            var crawler = new WallpaperCrawler(CancellationToken.None);
             crawler.AddSourceSiteFilter(site);
             crawler.PrepareCrawlerList();
 
             var worker = crawler._crawlers.Keys.FirstOrDefault();
 
             worker.Should().NotBeNull();
-            worker.SourceSite.Should().Be(site);
+            worker!.SourceSite.Should().Be(site);
 
         }
 
 
-        static object[] DisabledSites
+        public static object[] DisabledSites
         {
             get
             {
+                // ReSharper disable once CoVariantArrayConversion
                 return Enum.GetValues(typeof(SourceSite))
                     .Cast<SourceSite>()
                     .Where(x => x.IsDisabled())
@@ -89,7 +89,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [TestCaseSource(nameof(DisabledSites))]
         public void Crawlers_Disabled_DontCrawl(SourceSite site)
         {
-            var crawler = new WallpaperCrawler(CancellationToken.None, null, 0, 0);
+            var crawler = new WallpaperCrawler(CancellationToken.None);
             crawler.AddSourceSiteFilter(site);
             crawler.PrepareCrawlerList();
 
@@ -100,10 +100,11 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         }
 
 
-        static object[] CategoryCases
+        public static object[] CategoryCases
         {
             get
             {
+                // ReSharper disable once CoVariantArrayConversion
                 return Enum.GetValues(typeof(Category))
                     .Cast<Category>()
                     .Select(x => new object[] { x })
@@ -116,11 +117,11 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
             var sites = Enum.GetValues(typeof(SourceSite))
                     .Cast<SourceSite>()
                     .Where(x => !x.IsDisabled())
-                    .Where(x => x != SourceSite.Abyss || !string.IsNullOrWhiteSpace(ConfigurationHelper.AbyssAPI_Key)) // skip abyss when there is no API key
+                    .Where(x => x != SourceSite.Abyss || !string.IsNullOrWhiteSpace(ConfigurationHelper.AbyssApiKey)) // skip abyss when there is no API key
                     .ToList();
 
             var sitesSupporting = sites.Where(x => x.Supports(cat.ToString())).ToList();
-            var crawler = new WallpaperCrawler(CancellationToken.None, null, 0, 0);
+            var crawler = new WallpaperCrawler(CancellationToken.None);
             crawler.AddCategoryFilter(cat);
             crawler.PrepareCrawlerList();
 
@@ -141,8 +142,8 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
 
         }
 
-
-        static object[] CrawlCases
+        private static readonly Random _random = new Random();
+        public static object[] CrawlCases
         {
             get
             {
@@ -158,16 +159,13 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
                         }
                     }
                 }
-                return result.ToArray();
+                return result.OrderBy(x => _random.Next()).ToArray();
             }
         }
         [TestCaseSource(nameof(CrawlCases))]
         public void Crawlers_Finds_Entries(SourceSite site, Category cat)
         {
-            Task.Delay(1200).GetAwaiter().GetResult();
-
-
-            if (site == SourceSite.Abyss && string.IsNullOrWhiteSpace(ConfigurationHelper.AbyssAPI_Key))
+            if (site == SourceSite.Abyss && string.IsNullOrWhiteSpace(ConfigurationHelper.AbyssApiKey))
                 Assert.Pass(); // skip abyss when there is no API key
 
             using var cts = new CancellationTokenSource();

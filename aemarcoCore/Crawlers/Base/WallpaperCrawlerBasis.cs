@@ -212,29 +212,29 @@ namespace aemarcoCore.Crawlers.Base
             }
         }
 
-        internal event EventHandler<IWallEntryEventArgs> KnownEntry;
+        internal event EventHandler<WallEntryEventArgs> KnownEntry;
         private void OnKnownEntry(IWallEntry entry)
         {
-            KnownEntry?.Invoke(this, new IWallEntryEventArgs { Entry = entry });
+            KnownEntry?.Invoke(this, new WallEntryEventArgs { Entry = entry });
         }
 
-        internal event EventHandler<IWallEntryEventArgs> NewEntry;
+        internal event EventHandler<WallEntryEventArgs> NewEntry;
         private void OnNewEntry(IWallEntry entry)
         {
-            NewEntry?.Invoke(this, new IWallEntryEventArgs { Entry = entry });
+            NewEntry?.Invoke(this, new WallEntryEventArgs { Entry = entry });
         }
 
 
 
-        internal event EventHandler<IAlbumEntryEventArgs> KnownAlbum;
+        internal event EventHandler<AlbumEntryEventArgs> KnownAlbum;
         private void OnKnownAlbum(IAlbumEntry entry)
         {
-            KnownAlbum?.Invoke(this, new IAlbumEntryEventArgs { Entry = entry });
+            KnownAlbum?.Invoke(this, new AlbumEntryEventArgs { Entry = entry });
         }
-        internal event EventHandler<IAlbumEntryEventArgs> NewAlbum;
+        internal event EventHandler<AlbumEntryEventArgs> NewAlbum;
         private void OnNewAlbum(IAlbumEntry entry)
         {
-            NewAlbum?.Invoke(this, new IAlbumEntryEventArgs { Entry = entry });
+            NewAlbum?.Invoke(this, new AlbumEntryEventArgs { Entry = entry });
         }
 
 

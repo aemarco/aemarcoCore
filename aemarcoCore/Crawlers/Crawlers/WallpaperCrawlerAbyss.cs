@@ -38,7 +38,7 @@ namespace aemarcoCore.Crawlers
         {
             var result = new List<CrawlOffer>();
 
-            if (String.IsNullOrWhiteSpace(ConfigurationHelper.AbyssAPI_Key))
+            if (String.IsNullOrWhiteSpace(ConfigurationHelper.AbyssApiKey))
                 return result;
 
             try
@@ -202,7 +202,7 @@ namespace aemarcoCore.Crawlers
             // https://wall.alphacoders.com/api2.0/get.php?auth=YOUR_KEY&method=category_list
 
             var allParams = parameters.ToList();
-            allParams.Insert(0, $"auth={ConfigurationHelper.AbyssAPI_Key}");
+            allParams.Insert(0, $"auth={ConfigurationHelper.AbyssApiKey}");
 
 
             var queryUri = $"{_uri.AbsoluteUri}/api2.0/get.php";
