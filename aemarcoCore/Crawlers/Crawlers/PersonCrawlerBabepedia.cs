@@ -114,8 +114,16 @@ namespace aemarcoCore.Crawlers.Crawlers
                             .Replace("\n", string.Empty)
                             .Trim();
 
-                        result.Geburtsort = str.Substring(0, str.LastIndexOf(',')).Trim();
-                        result.Land = str.Substring(str.LastIndexOf(',') + 1).Trim();
+                        var parts = str.Split(',');
+                        if (parts.Length == 1)
+                        {
+                            result.Land = parts[0].Trim();
+                        }
+                        else if (parts.Length == 2)
+                        {
+                            result.Geburtsort = parts[0].Trim();
+                            result.Land = parts[1].Trim();
+                        }
                     }
                     else if (node.InnerText.StartsWith("Profession:"))
                     {

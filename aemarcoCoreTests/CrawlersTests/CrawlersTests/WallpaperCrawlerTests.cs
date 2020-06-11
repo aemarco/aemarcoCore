@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 
 namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
@@ -114,6 +115,9 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [TestCaseSource(nameof(CategoryCases))]
         public void Crawlers_Keep_Support_Promises(Category cat)
         {
+            Task.Delay(1000).GetAwaiter().GetResult();
+
+
             var sites = Enum.GetValues(typeof(SourceSite))
                     .Cast<SourceSite>()
                     .Where(x => !x.IsDisabled())

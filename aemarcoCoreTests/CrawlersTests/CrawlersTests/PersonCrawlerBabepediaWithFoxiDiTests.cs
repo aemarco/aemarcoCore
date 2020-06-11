@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
 {
-    public class PersonCrawlerBabepediaTests : PersonCrawlerTestsBase
+    public class PersonCrawlerBabepediaWithFoxiDiTests : PersonCrawlerTestsBase
     {
         [OneTimeSetUp]
         public void Setup()
