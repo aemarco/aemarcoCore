@@ -62,7 +62,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
             //details
             var imageUri = GetImageUrl(source.DetailsDoc);
-            if (String.IsNullOrEmpty(imageUri)) return false;
+            if (string.IsNullOrEmpty(imageUri)) return false;
 
             source.ImageUri = new Uri(imageUri);
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='wallpaper-thumb']/img", "src");

@@ -37,13 +37,13 @@ namespace aemarcoCore.Crawlers.Crawlers
             foreach (var node in nodes)
             {
                 var text = WebUtility.HtmlDecode(node.FirstChild.InnerText).Trim();
-                if (String.IsNullOrEmpty(text))
+                if (string.IsNullOrEmpty(text))
                 {
                     continue;
                 }
 
                 var href = node.Attributes["href"]?.Value;
-                if (String.IsNullOrEmpty(href) || href.StartsWith("http"))
+                if (string.IsNullOrEmpty(href) || href.StartsWith("http"))
                 {
                     continue;
                 }

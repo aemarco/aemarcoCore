@@ -41,14 +41,14 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 //z.B. "asian"
                 var text = WebUtility.HtmlDecode(node.InnerText).Trim();
-                if (String.IsNullOrWhiteSpace(text))
+                if (string.IsNullOrWhiteSpace(text))
                 {
                     continue;
                 }
 
                 //z.B. "/search/asian"
                 var href = node.Attributes["href"]?.Value;
-                if (String.IsNullOrEmpty(href) || href.StartsWith("http"))
+                if (string.IsNullOrEmpty(href) || href.StartsWith("http"))
                 {
                     continue;
                 }
@@ -106,74 +106,18 @@ namespace aemarcoCore.Crawlers.Crawlers
 
 
             //damn.... no fun without referer --> special treatment needed :(
-
-            DownloadSingle(wallEntry);
-
-            if (wallEntry.Filepath != null || File.Exists(wallEntry.Filepath))
-            {
-                AddEntry(wallEntry, catJob);
-            }
+            source.DownloadWithReferer(wallEntry, $"{_uri.AbsoluteUri}{wallEntry.FileName.ToLower()}");
+            if (!wallEntry.IsValid || 
+                !string.IsNullOrWhiteSpace(wallEntry.Url) ||
+                string.IsNullOrWhiteSpace(wallEntry.FileContentAsBase64String)) 
+                return false;
+            
+            
+            AddEntry(wallEntry, catJob);
             return true;
         }
 
-        private void DownloadSingle(WallEntry wallEntry)
-        {
-            var target = GetTargetPath(wallEntry).FullName;
-            try
-            {
-                if (!File.Exists(target))
-                {
-                    Download(wallEntry, target);
-                }
-                wallEntry.Filepath = target;
-            }
-            catch { }
-        }
-        private FileInfo GetTargetPath(WallEntry wallEntry)
-        {
-            var app = AppDomain.CurrentDomain.BaseDirectory;
-            var di = new DirectoryInfo(Path.Combine(app, "temp"));
-            if (!di.Exists) di.Create();
-            var targetPath = Path.Combine(di.FullName, $"{wallEntry.FileName}{wallEntry.Extension}");
-            return new FileInfo(targetPath);
-        }
-        private void Download(WallEntry wallEntry, string target)
-        {
-            var referer = $"{_uri.AbsoluteUri}{wallEntry.FileName.ToLower()}";
-
-
-            var httpRequest = (HttpWebRequest)WebRequest.Create(wallEntry.Url);
-            httpRequest.Method = WebRequestMethods.Http.Get;
-            httpRequest.Referer = referer;
-
-            var httpResponse = (HttpWebResponse)httpRequest.GetResponse();
-            // returned values are returned as a stream, then read into a string
-            using (var httpResponseStream = httpResponse.GetResponseStream())
-            {
-                var bufferSize = 1024;
-                var buffer = new byte[bufferSize];
-                var bytesRead = 0;
-
-                using (var fileStream = File.Create(target))
-                {
-                    while ((bytesRead = httpResponseStream.Read(buffer, 0, bufferSize)) != 0)
-                    {
-                        fileStream.Write(buffer, 0, bytesRead);
-                    }
-                }
-            }
-
-            var okay = false;
-            using (var img = Image.FromFile(target))
-            {
-                if (img.Width > 0) okay = true;
-            }
-
-            if (!okay) File.Delete(target);
-
-        }
-
-
+        
     }
 
 }

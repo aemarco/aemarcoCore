@@ -40,7 +40,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
                 //z.B. "#brunette"
                 var text = WebUtility.HtmlDecode(node.InnerText).Trim();
-                if (String.IsNullOrEmpty(text) || !text.StartsWith("#"))
+                if (string.IsNullOrEmpty(text) || !text.StartsWith("#"))
                 {
                     continue;
                 }
@@ -48,7 +48,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 {
                     //z.B. "brunette"
                     text = text.Substring(1);
-                    if (String.IsNullOrEmpty(text))
+                    if (string.IsNullOrEmpty(text))
                     {
                         continue;
                     }
@@ -60,7 +60,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
                 //z.B. "/search/brunette/"
                 var href = node.Attributes["href"]?.Value;
-                if (String.IsNullOrEmpty(href))
+                if (string.IsNullOrEmpty(href))
                 {
                     continue;
                 }

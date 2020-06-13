@@ -3,6 +3,7 @@ using aemarcoCore.Crawlers.Base;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -66,6 +67,7 @@ namespace aemarcoCore.Crawlers.Types
                 }
             }
         }
+
 
         #endregion
 
@@ -198,7 +200,7 @@ namespace aemarcoCore.Crawlers.Types
             //z.B. "flowerdress, nadia p, susi r, suzanna, suzanna a, brunette, boobs, big tits"
             var result = new List<string>();
 
-            if (String.IsNullOrWhiteSpace(tagString))
+            if (string.IsNullOrWhiteSpace(tagString))
             {
                 return result;
             }
@@ -220,5 +222,54 @@ namespace aemarcoCore.Crawlers.Types
         #endregion
 
 
+        #region file
+
+       
+        public void DownloadWithReferer(WallEntry wallEntry, string referer)
+        {
+            try
+            {
+                byte[] bytes;
+                var httpRequest = (HttpWebRequest) WebRequest.Create(wallEntry.Url);
+                httpRequest.Method = WebRequestMethods.Http.Get;
+                httpRequest.Referer = referer;
+
+                var httpResponse = (HttpWebResponse) httpRequest.GetResponse();
+                // returned values are returned as a stream, then read into a string
+                using (var httpResponseStream = httpResponse.GetResponseStream())
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        httpResponseStream?.CopyTo(ms);
+                        bytes = ms.ToArray();
+                    }
+
+                    using (var ms = new MemoryStream(bytes))
+                    {
+                        using (var img = Image.FromStream(ms))
+                        {
+                            if (img.Width <= 0) bytes = null;
+                        }
+                    }
+                }
+
+                if (bytes != null)
+                {
+                    wallEntry.FileContentAsBase64String = Convert.ToBase64String(bytes);
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+            finally
+            {
+                wallEntry.Url = null;
+            }
+        }
+
+
+
+        #endregion
     }
 }

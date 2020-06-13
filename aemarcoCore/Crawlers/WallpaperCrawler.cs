@@ -269,7 +269,7 @@ namespace aemarcoCore.Crawlers
                     if (!_reportPath.Exists) _reportPath.Create();
 
                     var filename = $"{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.json";
-                    if (!String.IsNullOrWhiteSpace(_result.ResultName))
+                    if (!string.IsNullOrWhiteSpace(_result.ResultName))
                         filename.Insert(0, $"{_result.ResultName}_");
 
 

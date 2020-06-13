@@ -38,14 +38,14 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 //z.B. "Erotic Wallpapers"
                 var text = WebUtility.HtmlDecode(node.InnerText).Trim();
-                if (String.IsNullOrEmpty(text))
+                if (string.IsNullOrEmpty(text))
                 {
                     continue;
                 }
 
                 //z.B. "/wallpapers/erotic-wallpapers"
                 var href = node.Attributes["href"]?.Value;
-                if (String.IsNullOrEmpty(href))
+                if (string.IsNullOrEmpty(href))
                 {
                     continue;
                 }

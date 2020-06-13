@@ -184,7 +184,7 @@ namespace aemarcoCore.Crawlers
                     }
 
                     var prefix = string.Empty;
-                    if (!String.IsNullOrWhiteSpace(_result.ResultName))
+                    if (!string.IsNullOrWhiteSpace(_result.ResultName))
                     {
                         prefix = $"{_result.ResultName}_";
                     }

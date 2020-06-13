@@ -176,7 +176,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                     {
                         var pierc = node.InnerText.Replace("Piercings:", string.Empty).Trim();
                         pierc = pierc.Replace("None", string.Empty).Trim();
-                        if (!String.IsNullOrWhiteSpace(pierc))
+                        if (!string.IsNullOrWhiteSpace(pierc))
                         {
                             result.Piercings = pierc;
                         }

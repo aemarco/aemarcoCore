@@ -56,7 +56,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 foreach (var node in nodeWithData.ChildNodes)
                 {
-                    if (String.IsNullOrWhiteSpace(node.InnerText))
+                    if (string.IsNullOrWhiteSpace(node.InnerText))
                     {
                         continue;
                     }

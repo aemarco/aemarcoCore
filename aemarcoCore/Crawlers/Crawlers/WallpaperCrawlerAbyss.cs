@@ -38,7 +38,7 @@ namespace aemarcoCore.Crawlers
         {
             var result = new List<CrawlOffer>();
 
-            if (String.IsNullOrWhiteSpace(ConfigurationHelper.AbyssApiKey))
+            if (string.IsNullOrWhiteSpace(ConfigurationHelper.AbyssApiKey))
                 return result;
 
             try
@@ -183,7 +183,7 @@ namespace aemarcoCore.Crawlers
             source.Extension = $".{wallInf.file_type}";
             source.Tags = wallInfo.tags.Select(x => x.name).ToList();
             source.ContentCategory = CheckForRealCategory(catJob.Category, source.Tags, wallInf);
-            if (!String.IsNullOrWhiteSpace(wallInf.sub_category)) source.Tags.Insert(0, wallInf.sub_category);
+            if (!string.IsNullOrWhiteSpace(wallInf.sub_category)) source.Tags.Insert(0, wallInf.sub_category);
             source.SiteCategory = catJob.SiteCategoryName;
 
 
@@ -222,7 +222,7 @@ namespace aemarcoCore.Crawlers
 
                 }
             }
-            if (String.IsNullOrWhiteSpace(result)) throw new Exception("Abyss No Query Result");
+            if (string.IsNullOrWhiteSpace(result)) throw new Exception("Abyss No Query Result");
             return result;
         }
 

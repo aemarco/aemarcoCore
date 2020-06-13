@@ -54,9 +54,9 @@ namespace aemarcoCore.Common
         IContentCategory ContentCategory { get; }
         string SiteCategory { get; }
         List<string> Tags { get; }
-        string Filepath { get; }
         string AlbumName { get; }
 
+        string FileContentAsBase64String { get; }
 
         [JsonIgnore]
         string Json { get; }

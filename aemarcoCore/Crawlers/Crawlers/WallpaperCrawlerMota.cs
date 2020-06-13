@@ -41,14 +41,14 @@ namespace aemarcoCore.Crawlers.Crawlers
 
                 //z.B. "World"
                 var text = WebUtility.HtmlDecode(node.InnerText).Trim();
-                if (String.IsNullOrWhiteSpace(text) || text == "Sandbox" || text == "All categories")
+                if (string.IsNullOrWhiteSpace(text) || text == "Sandbox" || text == "All categories")
                 {
                     continue;
                 }
 
                 //z.B. "/categories/view/name/world"
                 var href = node.Attributes["href"]?.Value;
-                if (String.IsNullOrEmpty(href))
+                if (string.IsNullOrEmpty(href))
                 {
                     continue;
                 }
@@ -138,7 +138,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
             var hrefTest = node.Attributes["href"]?.Value;
-            if (String.IsNullOrWhiteSpace(hrefTest) || !hrefTest.StartsWith("/"))
+            if (string.IsNullOrWhiteSpace(hrefTest) || !hrefTest.StartsWith("/"))
                 return false;
 
 

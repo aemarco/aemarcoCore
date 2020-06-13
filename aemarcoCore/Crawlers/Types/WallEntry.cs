@@ -24,8 +24,7 @@ namespace aemarcoCore.Crawlers.Types
         }
 
 
-        public string Url { get; }
-        public string Filepath { get; set; }
+        public string Url { get; set; }
         public string ThumbnailUrl { get; }
         public string FileName { get; }
         public string Extension { get; }
@@ -33,6 +32,9 @@ namespace aemarcoCore.Crawlers.Types
         public string SiteCategory { get; }
         public List<string> Tags { get; }
         public string AlbumName { get; }
+
+
+        public string FileContentAsBase64String { get; set; }
 
 
         [JsonIgnore]
@@ -43,7 +45,7 @@ namespace aemarcoCore.Crawlers.Types
         {
             get
             {
-                //Once initiallized with valid extentions
+                //Once initialized with valid extensions
                 if (_crawlerExtensions == null)
                 {
                     _crawlerExtensions = new List<string>();
@@ -55,11 +57,11 @@ namespace aemarcoCore.Crawlers.Types
 
 
                 if (
-                    String.IsNullOrEmpty(Url) || //Entry muss Url oder File haben
-                    String.IsNullOrEmpty(ThumbnailUrl) || //Entry muss ThumbnailUrl haben
-                    String.IsNullOrEmpty(FileName) || //Entry muss FileName haben
-                    String.IsNullOrEmpty(Extension) || //Entry muss Extension haben
-                    String.IsNullOrEmpty(SiteCategory) || //Entry muss SiteCategory haben
+                    (string.IsNullOrEmpty(Url) && string.IsNullOrEmpty(FileContentAsBase64String)) || //Entry muss Url oder File haben
+                    string.IsNullOrEmpty(ThumbnailUrl) || //Entry muss ThumbnailUrl haben
+                    string.IsNullOrEmpty(FileName) || //Entry muss FileName haben
+                    string.IsNullOrEmpty(Extension) || //Entry muss Extension haben
+                    string.IsNullOrEmpty(SiteCategory) || //Entry muss SiteCategory haben
                     ContentCategory == null || //Entry muss ContentCategory haben
                     Tags == null || //Entry muss Tags haben                    
                     !_crawlerExtensions.Contains(Extension) //Extension muss erlaubt sein

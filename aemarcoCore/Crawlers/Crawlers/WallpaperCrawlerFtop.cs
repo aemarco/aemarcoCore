@@ -39,14 +39,14 @@ namespace aemarcoCore.Crawlers.Crawlers
 
                 //z.B. "Celebrities"
                 var text = WebUtility.HtmlDecode(node.InnerText).Trim();
-                if (String.IsNullOrEmpty(text) || text == "Sandbox")
+                if (string.IsNullOrEmpty(text) || text == "Sandbox")
                 {
                     continue;
                 }
 
                 //z.B. "/celebrities/
                 var href = node.Attributes["href"]?.Value;
-                if (String.IsNullOrEmpty(href))
+                if (string.IsNullOrEmpty(href))
                 {
                     continue;
                 }
