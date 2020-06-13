@@ -100,9 +100,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
             //damn.... no fun without referer --> special treatment needed :(
             source.DownloadWithReferer(wallEntry, $"{_uri.AbsoluteUri}{wallEntry.FileName.ToLower()}");
-            if (!wallEntry.IsValid || 
-                !string.IsNullOrWhiteSpace(wallEntry.Url) ||
-                string.IsNullOrWhiteSpace(wallEntry.FileContentAsBase64String)) 
+            if (!wallEntry.IsValid || string.IsNullOrWhiteSpace(wallEntry.FileContentAsBase64String)) 
                 return false;
             
             
