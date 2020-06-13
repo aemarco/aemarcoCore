@@ -262,10 +262,6 @@ namespace aemarcoCore.Crawlers.Types
             {
                 // ignored
             }
-            finally
-            {
-                wallEntry.Url = null;
-            }
         }
 
 

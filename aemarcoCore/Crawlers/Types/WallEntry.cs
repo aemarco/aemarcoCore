@@ -57,7 +57,7 @@ namespace aemarcoCore.Crawlers.Types
 
 
                 if (
-                    (string.IsNullOrEmpty(Url) && string.IsNullOrEmpty(FileContentAsBase64String)) || //Entry muss Url oder File haben
+                    string.IsNullOrEmpty(Url) || //Entry muss Url oder File haben
                     string.IsNullOrEmpty(ThumbnailUrl) || //Entry muss ThumbnailUrl haben
                     string.IsNullOrEmpty(FileName) || //Entry muss FileName haben
                     string.IsNullOrEmpty(Extension) || //Entry muss Extension haben
