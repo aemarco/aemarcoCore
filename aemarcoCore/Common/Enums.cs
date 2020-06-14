@@ -159,7 +159,7 @@
 
 
         IStripper,
-        Porngatherer,
+        [Disabled] Porngatherer,
         Nudevista,
         CoedCherry,
         HookupHotshot,

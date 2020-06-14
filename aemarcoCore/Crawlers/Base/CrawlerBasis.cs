@@ -12,11 +12,45 @@ namespace aemarcoCore.Crawlers.Base
         private static readonly SemaphoreSlim _gate = new SemaphoreSlim(1);
         private static readonly Random _random = new Random();
 
-        public static HtmlDocument GetDocument(Uri uri, int retry = 0)
+        protected abstract int MinDelay { get; }
+        protected abstract int MaxDelay { get; }
+
+        public HtmlDocument GetDocument(Uri uri, int retry = 0)
         {
             _gate.Wait();
-            Task.Delay(_random.Next(500, 1500)).GetAwaiter().GetResult();
 
+            if (MinDelay > 0 && MaxDelay > 0 && MaxDelay > MinDelay)
+                Task.Delay(_random.Next(MinDelay, MaxDelay)).GetAwaiter().GetResult();
+
+            try
+            {
+                return TryGetHtmlDocument(uri, retry);
+            }
+            finally
+            {
+                _gate.Release();
+            }
+        }
+
+
+
+        public static HtmlDocument GetHtmlDocument(Uri uri, int retry = 0)
+        {
+            _gate.Wait();
+
+            try
+            {
+                return TryGetHtmlDocument(uri, retry);
+            }
+            finally
+            {
+                _gate.Release();
+            }
+        }
+
+
+        private static HtmlDocument TryGetHtmlDocument(Uri uri, int retry = 0)
+        {
             try
             {
                 var web = new HtmlWeb()
@@ -38,20 +72,25 @@ namespace aemarcoCore.Crawlers.Base
 
                 if (ex.Status == WebExceptionStatus.TrustFailure)
                 {
-                    return GetDocument(new Uri(uri.AbsoluteUri.Replace("https", "http")));
+                    return TryGetHtmlDocument(new Uri(uri.AbsoluteUri.Replace("https", "http")));
                 }
                 else if (ex.Status == WebExceptionStatus.Timeout)
                 {
-                    return GetDocument(uri, ++retry);
+                    return TryGetHtmlDocument(uri, ++retry);
                 }
 
                 throw;
             }
-            finally
-            {
-                _gate.Release();
-            }
         }
+
+
+
+
+
+
+
+
+
 
     }
 }

@@ -16,6 +16,10 @@ namespace aemarcoCore.Crawlers.Crawlers
         private readonly Uri _uri = new Uri("https://www.coedcherry.com");
         internal override PersonSite PersonSite => PersonSite.CoedCherry;
         internal override int PersonPriority => 25;
+
+        protected override int MinDelay => 400;
+        protected override int MaxDelay => 2000;
+
         internal override PersonEntry GetPersonEntry()
         {
             var result = new PersonEntry(this);

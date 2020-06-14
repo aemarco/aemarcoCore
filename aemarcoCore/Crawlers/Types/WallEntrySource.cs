@@ -95,7 +95,7 @@ namespace aemarcoCore.Crawlers.Types
             }
             var href = subNode?.Attributes["href"]?.Value;
             var uri = new Uri(_baseUri, href);
-            return WallpaperCrawlerBasis.GetDocument(uri);
+            return CrawlerBasis.GetHtmlDocument(uri);
         }
         internal HtmlDocument GetChildDocumentFromDocument(HtmlDocument doc, string docToHrefNode)
         {

@@ -37,6 +37,11 @@ namespace aemarcoCore.Crawlers.Base
         /// </summary>
         internal virtual int PersonPriority => 0;
 
+
+        protected override int MinDelay => 0;
+        protected override int MaxDelay => 0;
+
+
         internal string NameToCrawl { get; }
     
 

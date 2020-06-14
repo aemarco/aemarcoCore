@@ -39,6 +39,9 @@ namespace aemarcoCore.Crawlers.Base
 
         internal abstract SourceSite SourceSite { get; }
 
+        protected override int MinDelay => 0;
+        protected override int MaxDelay => 0;
+
 
         private List<CrawlOffer> _catJobs;
         internal bool HasWorkingOffers
