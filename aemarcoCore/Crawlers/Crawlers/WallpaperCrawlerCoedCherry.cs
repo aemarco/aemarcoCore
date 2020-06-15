@@ -15,7 +15,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         private readonly Uri _uri = new Uri("https://www.coedcherry.com/");
 
         internal override SourceSite SourceSite => SourceSite.CoedCherry;
-        protected override int MinDelay => 400;
+        protected override int MinDelay => 800;
         protected override int MaxDelay => 2000;
         public WallpaperCrawlerCoedCherry(
             int startPage,
