@@ -122,6 +122,7 @@
         Pornpics,
 
         //
+        [Disabled]
         [SupportedCategories(Category.Fantasy_Art, Category.Hobbies_Animals, Category.Girls_Fantasy,
             Category.Vehicle_Planes, Category.Vehicle_Cars, Category.Girls_Celebrities,
             Category.Hobbies_Food, Category.Media_Games, Category.Girls, Category.Other_Holidays,
