@@ -1,6 +1,7 @@
 # aemarcoCore
 
-[![Build Status](https://dev.azure.com/aemarco/aemarcoCentral/_apis/build/status/aemarco.aemarcoCore?branchName=master)](https://dev.azure.com/aemarco/aemarcoCentral/_build/latest?definitionId=9&branchName=master)
+[![Build Status](https://dev.azure.com/aemarco/aemarcoCentral/_apis/build/status/aemarco.aemarcoCore?branchName=master)](https://dev.azure.com/aemarco/aemarcoCentral/_build/latest?definitionId=9&branchName=master)<br/>
+<img src="https://buildstats.info/nuget/aemarcoCore"> aemarcoCore<br/>
 
 
 Breaking changes may ocure(independend of version), even with already done code and interfaces.
