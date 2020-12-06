@@ -28,11 +28,16 @@ steps:
     configuration: '$(buildConfiguration)'
 
 
-
-- task: NuGetCommand@2
-  displayName: 'NuGet push'
+- task: CopyFiles@2
   inputs:
-    command: push
-    packagesToPush: '$(Build.SourcesDirectory)/aemarcoCore/bin/Release/*.nupkg'
-    nuGetFeedType: external
-    publishFeedCredentials: Nuget
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: '**/*.nupkg'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    flattenFolders: true
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+
