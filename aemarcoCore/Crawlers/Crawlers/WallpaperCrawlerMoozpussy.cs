@@ -48,7 +48,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
                 //z.B. "/search/asian"
                 var href = node.Attributes["href"]?.Value;
-                if (string.IsNullOrEmpty(href) || href.StartsWith("http"))
+                if (string.IsNullOrEmpty(href) || href.StartsWith("http") || !href.StartsWith("/search"))
                 {
                     continue;
                 }
@@ -106,9 +106,13 @@ namespace aemarcoCore.Crawlers.Crawlers
 
 
             //damn.... no fun without referer --> special treatment needed :(
-            source.DownloadWithReferer(wallEntry, $"{_uri.AbsoluteUri}{wallEntry.FileName.ToLower()}");
-            if (!wallEntry.IsValid || string.IsNullOrWhiteSpace(wallEntry.FileContentAsBase64String)) 
+            //source.DownloadWithReferer(wallEntry, $"{_uri.AbsoluteUri}{wallEntry.FileName.ToLower()}");
+            //if (!wallEntry.IsValid || string.IsNullOrWhiteSpace(wallEntry.FileContentAsBase64String)) 
+            //    return false;
+
+            if (!wallEntry.IsValid) 
                 return false;
+
             
             AddEntry(wallEntry, catJob);
             return true;

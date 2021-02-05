@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Threading;
 using aemarcoCore.Common;
@@ -64,14 +65,11 @@ namespace aemarcoCore.Crawlers.Crawlers
             //Alias
             if (nodeWithAlias != null)
             {
-                var str = nodeWithAlias.InnerText.Replace("aka ", string.Empty);
-                if (!string.IsNullOrWhiteSpace(str))
-                {
-                    foreach (var part in str.Split('/'))
-                    {
-                        result.Aliase.Add(part.Trim());
-                    }
-                }
+                var str = nodeWithAlias.InnerText?.Replace("aka ", string.Empty) ?? string.Empty;
+                var als = str.Split('/')
+                    .Select(x => x.Trim())
+                    .Where(x => !string.IsNullOrEmpty(x));
+                result.Aliase.AddRange(als);
             }
 
 

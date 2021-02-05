@@ -34,8 +34,6 @@ namespace aemarcoCore.Crawlers.Crawlers
             var cats = new List<string>
             {
                 "asian",
-                "lingerie",
-                "stockings",
                 "ass",
                 "bikini",
                 "blonde",
@@ -44,11 +42,13 @@ namespace aemarcoCore.Crawlers.Crawlers
                 "tits",
                 "brunette",
                 "legs",
+                "lingerie",
                 "models",
                 "naked",
                 "nude",
                 "pussy",
-                "redhead"
+                "redhead",
+                "stockings"
             };
 
             foreach (var cat in cats)
@@ -99,10 +99,12 @@ namespace aemarcoCore.Crawlers.Crawlers
             }
 
             //damn.... no fun without referer --> special treatment needed :(
-            source.DownloadWithReferer(wallEntry, $"{_uri.AbsoluteUri}{wallEntry.FileName.ToLower()}");
-            if (!wallEntry.IsValid || string.IsNullOrWhiteSpace(wallEntry.FileContentAsBase64String)) 
-                return false;
+            //source.DownloadWithReferer(wallEntry, $"{_uri.AbsoluteUri}{wallEntry.FileName.ToLower()}");
+            //if (!wallEntry.IsValid || string.IsNullOrWhiteSpace(wallEntry.FileContentAsBase64String)) 
+            //    return false;
             
+            if (!wallEntry.IsValid) 
+                return false;
             
             AddEntry(wallEntry, catJob);
             return true;

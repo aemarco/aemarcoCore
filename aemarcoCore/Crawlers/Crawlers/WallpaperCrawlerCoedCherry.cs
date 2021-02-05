@@ -31,7 +31,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
             var cats = new List<string>
             {
-                "18",
+                
                 "Alternative",
                 "Amateur",
                 "Artistic",
@@ -83,7 +83,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 "Outside",
                 "Painted toes",
                 "Petite",
-                "Pigtails ",
+                "Pigtails",
                 "Public",
                 "Pussy",
                 "Pov",
@@ -101,7 +101,6 @@ namespace aemarcoCore.Crawlers.Crawlers
                 "Striptease",
                 "Stockings",
                 "Tattoo",
-                "Teen",
                 "Thong",
                 "Tits",
                 "Tight",
@@ -145,7 +144,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             var albumName = node.Attributes["title"].Value;
             if (string.IsNullOrWhiteSpace(albumName)) return false;
 
-            var linkToAlbumUri = new Uri(linkToAlbum);
+            var linkToAlbumUri = new Uri(_uri, linkToAlbum);
             var albumDoc = GetDocument(linkToAlbumUri);
 
 

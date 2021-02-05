@@ -84,7 +84,7 @@
         //
         [SupportedCategories(Category.Girls_Celebrities, Category.Girls_Beaches, Category.Girls_Cars,
             Category.Girls_Bikes, Category.Girls_Lingerie, Category.Girls_Asian, Category.Girls_Holidays,
-            Category.Girls_Fantasy, Category.Girls_CelebrityFakes, Category.Girls_Fetish, Category.Girls)]
+            Category.Girls_Fantasy, Category.Girls_Fetish, Category.Girls)]
         Ftop,
 
         //

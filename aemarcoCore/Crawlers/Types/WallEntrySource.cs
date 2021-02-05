@@ -258,7 +258,7 @@ namespace aemarcoCore.Crawlers.Types
                     wallEntry.FileContentAsBase64String = Convert.ToBase64String(bytes);
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 // ignored
             }

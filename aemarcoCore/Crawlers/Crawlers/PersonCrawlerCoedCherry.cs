@@ -71,7 +71,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                         }
                     }
                     //Land
-                    else if (node.InnerText.Contains("Country") && !node.InnerText.Contains("\nState"))
+                    else if (node.InnerText.Contains("Country") && !node.InnerText.Contains("State/Country"))
                     {
                         result.Land = node.InnerText
                             .Replace("Country", string.Empty)

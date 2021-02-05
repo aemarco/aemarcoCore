@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
 {
-    public class PersonCrawlerPorngathererTests : PersonCrawlerTestsBase
+    public class PersonCrawlerPorngathererTestsAlettaOcean : PersonCrawlerTestsBase
     {
 
         [OneTimeSetUp]
@@ -16,7 +16,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
             ExpectedBirthday = new DateTime(1987,12,14, 0, 0, 0, DateTimeKind.Utc);
             ExpectedHeight = 172;
             ExpectedWeight = 58;
-            ExpectedProfilePictures.Add("https://cdn.pornsites.xxx/models/profiles/Aletta-Ocean-6394_4.jpg");
+            ExpectedProfilePictures.Add("https://cdn.pornsites.xxx/models/profiles/Aletta-Ocean-6394_13.jpg");
         }
     }
 }

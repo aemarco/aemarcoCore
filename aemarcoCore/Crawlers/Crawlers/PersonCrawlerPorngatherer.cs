@@ -24,8 +24,8 @@ namespace aemarcoCore.Crawlers.Crawlers
             var href = $"pornstars/{NameToCrawl.Replace(' ', '-')}";
             var target = new Uri(_uri, href);
             var document = GetDocument(target);
-            var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@class='maincon']/div/h2");
-            var nodeWithBild = document.DocumentNode.SelectSingleNode("//div[@class='maincon']/div/div/img");
+            var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@id='main']/header/h1");
+            var nodeWithBild = document.DocumentNode.SelectSingleNode("//div[@class='pornstar-box-con-big']/div/div/img");
             var nodeWithData = document.DocumentNode.SelectNodes("//table[@class='styled']/tr");
             //Name
             if (nodeWithName != null)
