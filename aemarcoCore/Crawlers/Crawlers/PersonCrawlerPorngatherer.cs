@@ -25,7 +25,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             var target = new Uri(_uri, href);
             var document = GetDocument(target);
             var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@id='main']/header/h1");
-            var nodeWithBild = document.DocumentNode.SelectSingleNode("//div[@class='pornstar-box-con-big']/div/div/img");
+            var pictureNodes = document.DocumentNode.SelectNodes("//div[@class='pornstar-box-con-big']/div/div/picture/img");
             var nodeWithData = document.DocumentNode.SelectNodes("//table[@class='styled']/tr");
             //Name
             if (nodeWithName != null)
@@ -39,15 +39,17 @@ namespace aemarcoCore.Crawlers.Crawlers
                 }
             }
 
-            //Bild
-            if (nodeWithBild != null &&
-                nodeWithBild.Attributes["data-src"] != null &&
-                nodeWithBild.Attributes["data-src"].Value != "No Profile Picture")
-            {
-                var address = nodeWithBild.Attributes["data-src"].Value;
 
-                result.IncludeProfilePicture(address);
-            }
+             //Bild
+             if (pictureNodes != null)
+                foreach(var pictureNode in pictureNodes)
+                {
+                    var attrib = pictureNode.Attributes["src"];
+                    if (attrib == null) continue;
+                    result.IncludeProfilePicture(attrib.Value);
+                }
+          
+          
 
             //data
 

@@ -62,11 +62,14 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             //z.B. "http://adultwalls.com/wallpapers/erotic-wallpapers/1?order=publish-date-newest&resolution=all&search="                
             //return $"{catJob.CategoryUri.AbsoluteUri}/{catJob.CurrentPage}?order=publish-date-newest&resolution=all&search=";
-            return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}/{catJob.CurrentPage}?order=publish-date-newest&resolution=all&search=");
+            
+            var result = new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}/{catJob.CurrentPage}?order=publish-date-newest&resolution=all&search=");
+            
+            return result;
         }
         protected override string GetSearchStringGorEntryNodes()
         {
-            return "//div[@class='thumb-container']/a";
+            return "//a[@class='thumbnail clearfix']";
         }
 
         protected override IContentCategory DefaultCategory => new ContentCategory(Category.Girls);
@@ -77,15 +80,16 @@ namespace aemarcoCore.Crawlers.Crawlers
 
             //docs
             source.DetailsDoc = source.GetChildDocumentFromRootNode();
-            source.DownloadDoc = source.GetChildDocumentFromDocument(source.DetailsDoc, "//a[@class='btn btn-danger']");
+            var dNode = source.DetailsDoc.DocumentNode.SelectSingleNode("//*[text()[contains(., 'Original Resolution')]]");
+            source.DownloadDoc = source.GetChildDocumentFromNode(dNode, "./a");
 
             //details
             source.ImageUri = source.GetUriFromDocument(source.DownloadDoc, "//div[@class='wallpaper-preview-container']/a/img", "src");
-            source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@class='img-rounded']", "src");
+            source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@class='box-main']/p/img", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, "wallpapers/", "/", catJob.SiteCategoryName);
             source.ContentCategory = catJob.Category;
-            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='col-md-12']/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
-
+            //source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='col-md-12']/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
+            source.Tags = new List<string>();
 
             var wallEntry = source.WallEntry;
             if (wallEntry == null)

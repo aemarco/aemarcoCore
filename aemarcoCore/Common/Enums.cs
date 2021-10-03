@@ -7,7 +7,7 @@
         // ReSharper disable InconsistentNaming
         Men,
         Girls,
-        
+
         Girls_Celebrities,
         Girls_CelebrityFakes,
         Girls_Cars,
@@ -27,7 +27,7 @@
         Girls_Gloryhole,
         Girls_Selfies,
         Girls_Fun,
-       
+
 
         Vehicle,
         Vehicle_Cars,
@@ -112,6 +112,7 @@
         Wallhaven,
 
         //
+        [Disabled]
         [SupportedCategories(Category.Girls_Lingerie, Category.Girls)]
         BabesUnivers,
 
@@ -137,6 +138,7 @@
 
         //
         [SupportedCategories(Category.Girls_Asian, Category.Girls_Lingerie, Category.Girls)]
+        [Disabled]
         Moozpussy,
 
 
@@ -163,7 +165,6 @@
         Porngatherer,
         Nudevista,
         CoedCherry,
-        HookupHotshot,
         Babepedia
 
 

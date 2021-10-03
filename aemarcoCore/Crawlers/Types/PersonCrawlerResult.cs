@@ -8,47 +8,30 @@ namespace aemarcoCore.Crawlers.Types
 {
     internal class PersonCrawlerResult : IPersonCrawlerResult
     {
-        private string _resultName;
-        private List<IPersonEntry> _entries;
-        private bool _hasBeenAborted;
-        private Exception _exception;
-
         internal PersonCrawlerResult()
         {
-            _resultName = string.Empty;
-            _hasBeenAborted = false;
-            _exception = null;
-            _entries = new List<IPersonEntry>();
+            ResultName = string.Empty;
+            HasBeenAborted = false;
+            Exception = null;
+            Entries = new List<IPersonEntry>();
         }
 
-        public string ResultName
-        {
-            get { return _resultName; }
-            set { _resultName = value; }
-        }
-        public bool HasBeenAborted
-        {
-            get => _hasBeenAborted;
-            set => _hasBeenAborted = value;
-        }
-        public Exception Exception
-        {
-            get => _exception;
-            set => _exception = value;
-        }
+        public string ResultName { get; set; }
 
-        public List<IPersonEntry> Entries
-        { get { return _entries; } }
+        public bool HasBeenAborted { get; set; }
+
+        public Exception Exception { get; set; }
+
+        public List<IPersonEntry> Entries { get; private set; }
 
         [JsonIgnore]
-        public string Json
-        { get { return JsonConvert.SerializeObject(this, Formatting.Indented); } }
+        public string Json => JsonConvert.SerializeObject(this, Formatting.Indented);
 
 
         internal void AddNewEntry(IPersonEntry entry)
         {
-            _entries.Add(entry);
-            _entries = _entries.OrderByDescending(x => x.PersonEntryPriority).ToList();
+            Entries.Add(entry);
+            Entries = Entries.OrderByDescending(x => x.PersonEntryPriority).ToList();
         }
 
 

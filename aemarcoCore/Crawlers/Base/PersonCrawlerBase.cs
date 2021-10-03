@@ -12,9 +12,9 @@ namespace aemarcoCore.Crawlers.Base
     {
         #region ctor
 
-       
+
         private CancellationToken _cancellationToken;
-        
+
         internal PersonCrawlerBase(
             string nameToCrawl,
             CancellationToken cancellationToken)
@@ -43,23 +43,18 @@ namespace aemarcoCore.Crawlers.Base
 
 
         internal string NameToCrawl { get; }
-    
+
 
         #endregion
 
         #region Starting 
 
-        internal bool Start()
+        internal void Start()
         {
             //Crawling
             DoWork();
 
-            if (_cancellationToken.IsCancellationRequested)
-            {
-                return false;
-
-            }
-            return true;
+            _cancellationToken.ThrowIfCancellationRequested();
         }
 
         #endregion
@@ -115,16 +110,13 @@ namespace aemarcoCore.Crawlers.Base
         /// <returns>"B"</returns>
         protected string ConvertMaßeToCupSize(string temp)
         {
-            string result = null;
 
-            if (!string.IsNullOrWhiteSpace(temp) && temp.Contains("-"))
-            {
-                var first = temp.Split('-')[0];
-                var resultString = Regex.Match(first, @"[^\d]+").Value;
-                if (!string.IsNullOrWhiteSpace(resultString)) result = resultString;
 
-            }
-            return result;
+            if (string.IsNullOrWhiteSpace(temp)) return null;
+            var first = temp.Split('-')[0];
+            var resultString = Regex.Match(first, @"[^\d]+").Value;
+            return resultString;
+
         }
 
 

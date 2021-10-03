@@ -219,7 +219,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             var albumName = new WallEntrySource().GetSubNodeAttribute(node, "alt", "./img");
             if (string.IsNullOrWhiteSpace(albumName)) return false;
 
-            var linkToAlbumUri = new Uri(linkToAlbum);
+            var linkToAlbumUri = new Uri(_uri, linkToAlbum);
             var albumDoc = GetDocument(linkToAlbumUri);
 
             var entryNodes = albumDoc.DocumentNode.SelectNodes("//li[@class='thumbwook']/a");

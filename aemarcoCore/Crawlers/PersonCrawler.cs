@@ -15,15 +15,15 @@ namespace aemarcoCore.Crawlers
     {
         #region fields
 
-        readonly Dictionary<PersonCrawlerBase, int> _crawlers = new Dictionary<PersonCrawlerBase, int>();
-        CancellationToken _cancellationToken;
-        readonly IProgress<int> _progress;
+        private readonly Dictionary<PersonCrawlerBase, int> _crawlers = new Dictionary<PersonCrawlerBase, int>();
+        private readonly CancellationToken _cancellationToken;
+        private readonly IProgress<int> _progress;
 
         //settings
-        readonly PersonCrawlerResult _result = new PersonCrawlerResult();
-        private DirectoryInfo _reportPath = null;
+        private readonly PersonCrawlerResult _result = new PersonCrawlerResult();
+        private DirectoryInfo _reportPath;
         private readonly string _nameToCrawl;
-        readonly List<string> _filterPersonSites = new List<string>();
+        private readonly List<string> _filterPersonSites = new List<string>();
 
 
         //events
@@ -37,6 +37,7 @@ namespace aemarcoCore.Crawlers
         /// <summary>
         /// Used to crawl various Websites for a Person
         /// </summary>
+        /// <param name="nameToCrawl">firstname lastname for the person</param>
         /// <param name="cancellationToken">can be used for cancellation</param>
         /// <param name="progress">can be used to report progress (there is also a Event for this)</param>
         public PersonCrawler(string nameToCrawl,
@@ -57,7 +58,7 @@ namespace aemarcoCore.Crawlers
         /// </summary>
         public string ReportPath
         {
-            set { _reportPath = new DirectoryInfo(value); }
+            set => _reportPath = new DirectoryInfo(value);
         }
 
         /// <summary>
@@ -66,7 +67,7 @@ namespace aemarcoCore.Crawlers
         /// </summary>
         public string ReportName
         {
-            set { _result.ResultName = value; }
+            set => _result.ResultName = value;
         }
 
 
@@ -91,22 +92,40 @@ namespace aemarcoCore.Crawlers
 
         #region Working
 
-        /// <summary>
-        /// Starts crawling by fire and forget
-        /// </summary>
-        public void StartAsync()
-        {
-            Task.Factory.StartNew(Start);
-        }
 
         /// <summary>
-        /// Starts crawling, returns Task<IPersonCrawlerResult> on completion
+        /// Starts crawling, returns Task of IPersonCrawlerResult on completion
         /// </summary>
         /// <returns>IPersonCrawlerResult</returns>
-        public async Task<IPersonCrawlerResult> StartAsyncTask()
+        public async Task<IPersonCrawlerResult> StartAsync()
         {
             return await Task.Factory.StartNew(Start);
+
+            //PrepareCrawlerList();
+            //foreach (var crawler in _crawlers.Keys)
+            //{
+            //    try
+            //    {
+            //        crawler.Start();
+            //    }
+            //    catch (OperationCanceledException)
+            //    {
+            //        _result.HasBeenAborted = true;
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        _result.Exception = ex;
+            //    }
+            //}
+
+            ////Writing Report
+            //WriteReport();
+
+            //OnCompleted();
+            //return Task.FromResult<IPersonCrawlerResult>(_result);
         }
+
+        //TODO: revert... test and refactor
 
         /// <summary>
         /// Starts crawling, returns on completion
@@ -114,25 +133,27 @@ namespace aemarcoCore.Crawlers
         /// <returns>IPersonCrawlerResult</returns>
         public IPersonCrawlerResult Start()
         {
+            //return StartAsync().GetAwaiter().GetResult();
+
             PrepareCrawlerList();
-
-
-            //start all crawlers
-            var tasks = new List<Task<bool>>();
-            foreach (var crawler in _crawlers.Keys)
-            {
-                var task = Task<bool>.Factory.StartNew(crawler.Start);
-                tasks.Add(task);
-            }
-
             try
             {
+                //start all crawlers
+                var tasks = new List<Task>();
+                foreach (var crawler in _crawlers.Keys)
+                {
+                    var task = Task.Factory.StartNew(crawler.Start);
+                    tasks.Add(task);
+                }
+
+
                 //awaiting end of crawling
                 Task.WaitAll(tasks.ToArray());
-                if (!tasks.All(x => x.Result) == true)
-                {
-                    _result.HasBeenAborted = true;
-                }
+
+            }
+            catch (OperationCanceledException)
+            {
+                _result.HasBeenAborted = true;
             }
             catch (Exception ex)
             {

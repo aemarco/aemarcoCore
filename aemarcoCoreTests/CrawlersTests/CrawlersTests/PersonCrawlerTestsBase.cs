@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using aemarcoCore.Common;
+﻿using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
 using FluentAssertions;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
 {
@@ -15,21 +15,22 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
 
         internal void SetupEntry(PersonCrawlerBase crawler)
         {
+            if (crawler.PersonSite.IsDisabled()) return;
+
+
             Entry = crawler.GetPersonEntry();
             ExpectedFirstName = crawler.NameToCrawl.Split(' ').First();
             ExpectedLastName = crawler.NameToCrawl.Split(' ').Last();
             _expectedPersonSite = crawler.PersonSite.ToString();
-
-            _byPassTests = crawler.PersonSite.IsDisabled();
         }
 
-        private bool _byPassTests;
+
         private string _expectedPersonSite;
 
         [Test]
         public void Entry_Matches_PersonSite()
         {
-            if (_byPassTests) Assert.Pass();
+            if (Entry is null) return;
             Assert.AreEqual(_expectedPersonSite, Entry.PersonEntrySource);
         }
 
@@ -39,7 +40,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [Test]
         public void Entry_IsValid()
         {
-            if (_byPassTests) Assert.Pass();
+            if (Entry is null) return;
             Assert.IsTrue(Entry.IsValid);
         }
 
@@ -48,7 +49,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [Test]
         public void Crawler_Finds_FirstName()
         {
-            if (_byPassTests) Assert.Pass();
+            if (Entry is null) return;
             Assert.AreEqual(ExpectedFirstName, Entry.FirstName);
         }
 
@@ -56,7 +57,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [Test]
         public void Crawler_Finds_LastName()
         {
-            if (_byPassTests) Assert.Pass();
+            if (Entry is null) return;
             Assert.AreEqual(ExpectedLastName, Entry.LastName);
         }
 
@@ -64,8 +65,8 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [Test]
         public void Crawler_Finds_Birthday()
         {
-            if (_byPassTests) Assert.Pass();
-            if (!ExpectedBirthday.HasValue) Assert.Pass();
+            if (Entry is null) return;
+            if (!ExpectedBirthday.HasValue) return;
             Assert.AreEqual(ExpectedBirthday!.Value, Entry.Geburtstag);
         }
 
@@ -73,8 +74,8 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [Test]
         public void Crawler_Finds_CareerStart()
         {
-            if (_byPassTests) Assert.Pass();
-            if (!ExpectedCareerStart.HasValue) Assert.Pass();
+            if (Entry is null) return;
+            if (!ExpectedCareerStart.HasValue) return;
             Assert.AreEqual(ExpectedCareerStart!.Value, Entry.Karrierestart);
         }
 
@@ -84,8 +85,8 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [Test]
         public void Crawler_Finds_Country()
         {
-            if (_byPassTests) Assert.Pass();
-            if (string.IsNullOrWhiteSpace(ExpectedCountry)) Assert.Pass();
+            if (Entry is null) return;
+            if (string.IsNullOrWhiteSpace(ExpectedCountry)) return;
             Assert.AreEqual(ExpectedCountry, Entry.Land);
         }
 
@@ -93,44 +94,44 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [Test]
         public void Crawler_Finds_Place()
         {
-            if (_byPassTests) Assert.Pass();
-            if (string.IsNullOrWhiteSpace(ExpectedPlace)) Assert.Pass();
+            if (Entry is null) return;
+            if (string.IsNullOrWhiteSpace(ExpectedPlace)) return;
             Assert.AreEqual(ExpectedPlace, Entry.Geburtsort);
         }
-        
+
         internal string ExpectedProfession { get; set; }
         [Test]
         public void Crawler_Finds_Profession()
         {
-            if (_byPassTests) Assert.Pass();
-            if (string.IsNullOrWhiteSpace(ExpectedProfession)) Assert.Pass();
+            if (Entry is null) return;
+            if (string.IsNullOrWhiteSpace(ExpectedProfession)) return;
             Assert.AreEqual(ExpectedProfession, Entry.Beruf);
         }
         internal string ExpectedEthnicity { get; set; }
         [Test]
         public void Crawler_Finds_Ethnicity()
         {
-            if (_byPassTests) Assert.Pass();
-            if (string.IsNullOrWhiteSpace(ExpectedEthnicity)) Assert.Pass();
+            if (Entry is null) return;
+            if (string.IsNullOrWhiteSpace(ExpectedEthnicity)) return;
             Assert.AreEqual(ExpectedEthnicity, Entry.Rasse);
         }
-        
+
         internal string ExpectedHairColor { get; set; }
         [Test]
         public void Crawler_Finds_Hair()
         {
-            if (_byPassTests) Assert.Pass();
-            if (string.IsNullOrWhiteSpace(ExpectedHairColor)) Assert.Pass();
+            if (Entry is null) return;
+            if (string.IsNullOrWhiteSpace(ExpectedHairColor)) return;
             Assert.AreEqual(ExpectedHairColor, Entry.Haare);
         }
 
-        
+
         internal string ExpectedEyeColor { get; set; }
         [Test]
         public void Crawler_Finds_Eyes()
         {
-            if (_byPassTests) Assert.Pass();
-            if (string.IsNullOrWhiteSpace(ExpectedEyeColor)) Assert.Pass();
+            if (Entry is null) return;
+            if (string.IsNullOrWhiteSpace(ExpectedEyeColor)) return;
             Assert.AreEqual(ExpectedEyeColor, Entry.Augen);
         }
 
@@ -138,8 +139,8 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [Test]
         public void Crawler_Finds_Height()
         {
-            if (_byPassTests) Assert.Pass();
-            if (!ExpectedHeight.HasValue) Assert.Pass();
+            if (Entry is null) return;
+            if (!ExpectedHeight.HasValue) return;
             Assert.AreEqual(ExpectedHeight!.Value, Entry.Größe);
         }
 
@@ -147,8 +148,8 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [Test]
         public void Crawler_Finds_Weight()
         {
-            if (_byPassTests) Assert.Pass();
-            if (!ExpectedWeight.HasValue) Assert.Pass();
+            if (Entry is null) return;
+            if (!ExpectedWeight.HasValue) return;
             Assert.AreEqual(ExpectedWeight!.Value, Entry.Gewicht);
         }
 
@@ -156,8 +157,8 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [Test]
         public void Crawler_Finds_Measurements()
         {
-            if (_byPassTests) Assert.Pass();
-            if (string.IsNullOrWhiteSpace(ExpectedMeasurements)) Assert.Pass();
+            if (Entry is null) return;
+            if (string.IsNullOrWhiteSpace(ExpectedMeasurements)) return;
             Assert.AreEqual(ExpectedMeasurements, Entry.Maße);
         }
 
@@ -165,8 +166,8 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [Test]
         public void Crawler_Finds_CupSize()
         {
-            if (_byPassTests) Assert.Pass();
-            if (string.IsNullOrWhiteSpace(ExpectedCupsize)) Assert.Pass();
+            if (Entry is null) return;
+            if (string.IsNullOrWhiteSpace(ExpectedCupsize)) return;
             Assert.AreEqual(ExpectedCupsize, Entry.Körbchengröße);
         }
 
@@ -174,8 +175,8 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [Test]
         public void Crawler_Finds_Piercings()
         {
-            if (_byPassTests) Assert.Pass();
-            if (string.IsNullOrWhiteSpace(ExpectedPiercings)) Assert.Pass();
+            if (Entry is null) return;
+            if (string.IsNullOrWhiteSpace(ExpectedPiercings)) return;
             Assert.AreEqual(ExpectedPiercings, Entry.Piercings);
         }
 
@@ -183,7 +184,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [Test]
         public void Crawler_Finds_StillActive()
         {
-            if (_byPassTests) Assert.Pass();
+            if (Entry is null) return;
             Assert.AreEqual(ExpectedStillActive, Entry.StillActive);
         }
 
@@ -191,7 +192,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [Test]
         public void Crawler_Finds_Pictures()
         {
-            if (_byPassTests) Assert.Pass();
+            if (Entry is null) return;
             foreach (var url in ExpectedProfilePictures)
             {
                 Entry.ProfilePictures.Should().Contain(x => x.Url == url);
@@ -202,7 +203,7 @@ namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
         [Test]
         public void Crawler_Finds_Aliases()
         {
-            if (_byPassTests) Assert.Pass();
+            if (Entry is null) return;
             foreach (var al in ExpectedAliases)
             {
                 Assert.IsTrue(Entry.Aliase.Contains(al));

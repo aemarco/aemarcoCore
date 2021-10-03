@@ -1,12 +1,11 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.RegularExpressions;
-using System.Threading;
-using aemarcoCore.Common;
+﻿using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
+using System;
+using System.Globalization;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace aemarcoCore.Crawlers.Crawlers
 {
@@ -80,8 +79,8 @@ namespace aemarcoCore.Crawlers.Crawlers
                 {
                     //skipping
                     if (node.Name != "li") continue;
-                    
-                   
+
+
                     if (node.InnerText.StartsWith("Born:"))
                     {
                         var str = node.InnerText
@@ -162,6 +161,20 @@ namespace aemarcoCore.Crawlers.Crawlers
                         {
                             string maße = ConvertMaßeToMetric(temp);
                             result.Maße = maße;
+
+
+                        }
+
+                    }
+                    else if (node.InnerText.StartsWith("Bra/cup size:"))
+                    {
+                        string temp = node.InnerText
+                            .Replace("Bra/cup size:", string.Empty)
+                            .Replace("\n", string.Empty)
+                            .Trim();
+
+                        if (!string.IsNullOrWhiteSpace(temp))
+                        {
 
                             string cup = ConvertMaßeToCupSize(temp);
                             result.Körbchengröße = cup;

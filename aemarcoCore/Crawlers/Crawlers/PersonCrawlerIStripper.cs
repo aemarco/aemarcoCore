@@ -22,7 +22,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             var result = new PersonEntry(this);
 
-            var href = $"de/model/{NameToCrawl.Replace(' ', '-')}";
+            var href = $"de/models/{NameToCrawl.Replace(' ', '-')}";
             var target = new Uri(_uri, href);
             var document = GetDocument(target);
             var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@class='trigger']/div/h1");

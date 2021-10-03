@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace aemarcoCoreTests.CrawlersTests.CrawlersTests
 {
-    public class PersonCrawlerIStripperTests : PersonCrawlerTestsBase
+    public class PersonCrawlerIStripperTestsWithAlletaOcean : PersonCrawlerTestsBase
     {
         
         [OneTimeSetUp]

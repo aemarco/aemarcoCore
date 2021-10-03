@@ -109,6 +109,7 @@ namespace aemarcoCore.Crawlers.Base
                 case "lingerie":
                 case "underwear":
                 case "stockings":
+                case "Ligerie beauty models":
                     return new ContentCategory(Category.Girls_Lingerie);
                 case "Lesbian":
                 case "Lesbians":
