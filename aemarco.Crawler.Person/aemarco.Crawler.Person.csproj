@@ -3,7 +3,7 @@
 	<!-- project definition -->
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<AssemblyVersion>2.1.9.0</AssemblyVersion>
+		<AssemblyVersion>2.1.10.0</AssemblyVersion>
 		<ApplicationIcon>girl.ico</ApplicationIcon>
 
 		<RootNamespace>aemarcoCommons.PersonCrawler</RootNamespace>
