@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading;
+﻿using aemarco.Crawler.Core.Helpers;
 using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 namespace aemarcoCore.Crawlers.Crawlers
 {
@@ -15,14 +14,14 @@ namespace aemarcoCore.Crawlers.Crawlers
     {
 
 
-        private readonly Uri _uri = new Uri("https://nakedyoungmodels.com/");
+        private readonly Uri _uri = new Uri("https://hotnakedgirls.porn/");
 
 
         public WallpaperCrawlerNakedYoungModels(
-            int startPage, 
-            int lastPage, 
-            bool onlyNews, 
-            CancellationToken cancellationToken) 
+            int startPage,
+            int lastPage,
+            bool onlyNews,
+            CancellationToken cancellationToken)
             : base(startPage, lastPage, onlyNews, cancellationToken)
         { }
 
@@ -35,13 +34,13 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             var result = new List<CrawlOffer>();
 
-            
+
             var newOffer = CreateCrawlOffer(
-                "NakedYoungModels", 
+                "NakedYoungModels",
                 new Uri(_uri, $"/new/"),
                 new ContentCategory(Category.Girls));
             result.Add(newOffer);
-            
+
             return result;
         }
 
@@ -63,21 +62,23 @@ namespace aemarcoCore.Crawlers.Crawlers
             if (string.IsNullOrWhiteSpace(albumName) || string.IsNullOrWhiteSpace(linkToAlbum)) return false;
 
             var linkToAlbumUri = new Uri(linkToAlbum);
-            var albumDoc = GetDocument(linkToAlbumUri);
+            var albumDoc = HtmlHelper.GetHtmlDocument(linkToAlbumUri);
 
 
             var entryNodes = albumDoc.DocumentNode.SelectNodes("//p[@class='img']/span[@class='download']/a");
 
-           
+
             var album = new AlbumEntry(albumName);
             foreach (var entryNode in entryNodes)
             {
-                
-                var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
-                
 
-                //details
-                source.ImageUri = new Uri(entryNode.Attributes["href"].Value);
+                var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName)
+                {
+                    //details
+                    ImageUri = new Uri(entryNode.Attributes["href"].Value)
+                };
+
+
                 source.ThumbnailUri = source.ImageUri;
                 (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
                 source.ContentCategory = catJob.Category;

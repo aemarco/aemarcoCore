@@ -14,14 +14,6 @@ namespace aemarcoCore.Common
             return attr != null;
         }
 
-        public static bool IsDisabled(this PersonSite site)
-        {
-            var attr = site.GetAttribute<DisabledAttribute>();
-            return attr != null;
-        }
-
-
-
         public static bool SupportsAny(this SourceSite site, IEnumerable<string> categories)
         {
             return categories.Any(x => site.Supports(x));

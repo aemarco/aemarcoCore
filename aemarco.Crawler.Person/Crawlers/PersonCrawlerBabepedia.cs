@@ -1,28 +1,28 @@
 ﻿using aemarco.Crawler.Core.Attributes;
 using aemarco.Crawler.Core.Helpers;
-using aemarcoCore.Common;
-using aemarcoCore.Crawlers.Base;
-using aemarcoCore.Crawlers.Types;
+using aemarcoCommons.PersonCrawler.Base;
+using aemarcoCommons.PersonCrawler.Model;
 using System;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace aemarcoCore.Crawlers.Crawlers
+namespace aemarcoCommons.PersonCrawler.Crawlers
 {
     [PersonCrawler("Babepedia", 0)]
     internal class PersonCrawlerBabepedia : PersonCrawlerBase
     {
-        public PersonCrawlerBabepedia(string nameToCrawl, CancellationToken cancellationToken)
-            : base(nameToCrawl, cancellationToken)
+        public PersonCrawlerBabepedia(string nameToCrawl)
+            : base(nameToCrawl)
         { }
 
         private readonly Uri _uri = new Uri("https://www.babepedia.com");
-        
-        internal override PersonEntry GetPersonEntry()
+
+        internal override Task<PersonInfo> GetPersonEntry(CancellationToken cancellationToken)
         {
-            var result = new PersonEntry(this);
+            var result = new PersonInfo(this);
 
             // /models/foxy-di/biography
             var href = $"/babe/{NameToCrawl.Replace(' ', '_')}";
@@ -51,7 +51,8 @@ namespace aemarcoCore.Crawlers.Crawlers
             if (nodeWithPicture?.Attributes["href"] != null)
             {
                 var uri = new Uri(_uri, nodeWithPicture.Attributes["href"].Value);
-                result.IncludeProfilePicture(uri.AbsoluteUri);
+
+                result.ProfilePictures.Add(ProfilePicture.FromUrl(uri.AbsoluteUri));
             }
 
             if (nodeWithOtherPictures != null)
@@ -59,7 +60,8 @@ namespace aemarcoCore.Crawlers.Crawlers
                 foreach (var node in nodeWithOtherPictures.Where(x => x.Attributes["href"] != null))
                 {
                     var uri = new Uri(_uri, node.Attributes["href"].Value);
-                    result.IncludeProfilePicture(uri.AbsoluteUri);
+
+                    result.ProfilePictures.Add(ProfilePicture.FromUrl(uri.AbsoluteUri));
                 }
             }
 
@@ -71,7 +73,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 var als = str.Split('/')
                     .Select(x => x.Trim())
                     .Where(x => !string.IsNullOrEmpty(x));
-                result.Aliase.AddRange(als);
+                result.Aliases.AddRange(als);
             }
 
 
@@ -80,6 +82,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 foreach (var node in nodeWithData.ChildNodes)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     //skipping
                     if (node.Name != "li") continue;
 
@@ -103,7 +106,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                             var monthName = mNames.First(x => Regex.IsMatch(str, x));
                             var index = mNames.IndexOf(monthName);
                             var month = index + 1;
-                            result.Geburtstag = new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
+                            result.Birthday = new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
 
                         }
                     }
@@ -117,38 +120,38 @@ namespace aemarcoCore.Crawlers.Crawlers
                         var parts = str.Split(',');
                         if (parts.Length == 1)
                         {
-                            result.Land = parts[0].Trim();
+                            result.Country = parts[0].Trim();
                         }
                         else if (parts.Length == 2)
                         {
-                            result.Geburtsort = parts[0].Trim();
-                            result.Land = parts[1].Trim();
+                            result.City = parts[0].Trim();
+                            result.Country = parts[1].Trim();
                         }
                     }
                     else if (node.InnerText.StartsWith("Profession:"))
                     {
-                        result.Beruf = node.InnerText
+                        result.Profession = node.InnerText
                             .Replace("Profession:", string.Empty)
                             .Replace("\n", string.Empty)
                             .Trim();
                     }
                     else if (node.InnerText.StartsWith("Ethnicity:"))
                     {
-                        result.Rasse = node.InnerText
+                        result.Ethnicity = node.InnerText
                             .Replace("Ethnicity:", string.Empty)
                             .Replace("\n", string.Empty)
                             .Trim();
                     }
                     else if (node.InnerText.StartsWith("Hair color:"))
                     {
-                        result.Haare = node.InnerText
+                        result.HairColor = node.InnerText
                             .Replace("Hair color:", string.Empty)
                             .Replace("\n", string.Empty)
                             .Trim();
                     }
                     else if (node.InnerText.StartsWith("Eye color:"))
                     {
-                        result.Augen = node.InnerText
+                        result.EyeColor = node.InnerText
                             .Replace("Eye color:", string.Empty)
                             .Replace("\n", string.Empty)
                             .Trim();
@@ -163,7 +166,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                         if (!string.IsNullOrWhiteSpace(temp))
                         {
                             string maße = ConvertMaßeToMetric(temp);
-                            result.Maße = maße;
+                            result.Measurements = maße;
 
 
                         }
@@ -180,7 +183,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                         {
 
                             string cup = ConvertMaßeToCupSize(temp);
-                            result.Körbchengröße = cup;
+                            result.CupSize = cup;
                         }
 
                     }
@@ -193,7 +196,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                         var match = Regex.Match(str.Substring(str.IndexOf('(')), @"\d+");
                         if (match.Success)
                         {
-                            result.Größe = int.Parse(match.Value);
+                            result.Height = int.Parse(match.Value);
                         }
                     }
                     else if (node.InnerText.StartsWith("Weight:"))
@@ -205,7 +208,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                         var match = Regex.Match(str.Substring(str.IndexOf('(')), @"\d+");
                         if (match.Success)
                         {
-                            result.Gewicht = int.Parse(match.Value);
+                            result.Weight = int.Parse(match.Value);
                         }
                     }
                     else if (node.InnerText.StartsWith("Years active:"))
@@ -218,17 +221,15 @@ namespace aemarcoCore.Crawlers.Crawlers
                         var matchStart = Regex.Match(str, @"\d+");
                         if (matchStart.Success && int.TryParse(matchStart.Value, out var year))
                         {
-                            result.Karrierestart = new DateTime(year, 1, 1);
+                            result.CareerStart = new DateTime(year, 1, 1);
                         }
-                        result.IncludeStillActive(str);
+                        result.StillActive = IsStillActive(str);
                     }
                 }
             }
 
 
-
-            return result;
-
+            return Task.FromResult(result);
         }
 
 

@@ -4,9 +4,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <ApplicationIcon>girl.ico</ApplicationIcon>
-    <AssemblyVersion>2.1.8.0</AssemblyVersion>
+    <AssemblyVersion>2.1.9.0</AssemblyVersion>
+
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageId>aemarcoCore</PackageId>
     <PackageVersion>$(AssemblyVersion)</PackageVersion>
     <Authors>aemarco</Authors>
@@ -17,9 +17,10 @@
     <Description>Some stuff</Description>
     <Copyright>Copyright 2017</Copyright>
     <PackageTags>Crawler,FSK18,Wallpaper</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageIcon>girl.png</PackageIcon>
     
+    <PackageIcon>girl.png</PackageIcon>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     
   </PropertyGroup>
   <ItemGroup>
@@ -30,10 +31,14 @@
   
 
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.16" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="3.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <None Include="girl.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  
+
+  <ItemGroup>
+    <ProjectReference Include="..\aemarco.Crawler.Core\aemarco.Crawler.Core.csproj" />
   </ItemGroup>
 
 </Project>

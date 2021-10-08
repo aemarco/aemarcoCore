@@ -3,6 +3,7 @@ using aemarcoCore.Crawlers.Base;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using aemarco.Crawler.Core.Extensions;
 
 namespace aemarcoCore.Crawlers.Types
 {
@@ -11,8 +12,11 @@ namespace aemarcoCore.Crawlers.Types
        
         public PersonEntry(PersonCrawlerBase crawler)
         {
-            PersonEntrySource = crawler.PersonSite.ToString();
-            PersonEntryPriority = crawler.PersonPriority;
+            var info = crawler.GetType().ToCrawlerInfo();
+
+            PersonEntrySource = info.FriendlyName;
+            PersonEntryPriority = info.Priority;
+
             Aliase = new List<string>();
             ProfilePictures = new List<IProfilePicture>();
         }

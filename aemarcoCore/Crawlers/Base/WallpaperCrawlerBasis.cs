@@ -1,4 +1,5 @@
-﻿using aemarcoCore.Common;
+﻿using aemarco.Crawler.Core.Helpers;
+using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Types;
 using aemarcoCore.Tools;
 using HtmlAgilityPack;
@@ -10,7 +11,7 @@ using System.Threading;
 
 namespace aemarcoCore.Crawlers.Base
 {
-    internal abstract class WallpaperCrawlerBasis : CrawlerBasis
+    internal abstract class WallpaperCrawlerBasis
     {
         #region ctor
 
@@ -39,9 +40,7 @@ namespace aemarcoCore.Crawlers.Base
 
         internal abstract SourceSite SourceSite { get; }
 
-        protected override int MinDelay => 0;
-        protected override int MaxDelay => 0;
-
+       
 
         private List<CrawlOffer> _catJobs;
         internal bool HasWorkingOffers
@@ -291,7 +290,7 @@ namespace aemarcoCore.Crawlers.Base
 
             //Seite mit Wallpaperliste
             var pageUri = GetSiteUrlForCategory(catJob);
-            var doc = GetDocument(pageUri);
+            var doc = HtmlHelper.GetHtmlDocument(pageUri);
             var nodes = doc.DocumentNode.SelectNodes(GetSearchStringGorEntryNodes());
 
             //non entries on page

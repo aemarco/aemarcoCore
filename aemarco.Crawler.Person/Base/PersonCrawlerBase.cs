@@ -1,62 +1,37 @@
-﻿using aemarcoCore.Common;
-using aemarcoCore.Crawlers.Types;
-using System;
+﻿using aemarcoCommons.PersonCrawler.Model;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace aemarcoCore.Crawlers.Base
+namespace aemarcoCommons.PersonCrawler.Base
 {
     internal abstract class PersonCrawlerBase
     {
-        #region ctor
-
-
-        private CancellationToken _cancellationToken;
-
-        internal PersonCrawlerBase(
-            string nameToCrawl,
-            CancellationToken cancellationToken)
+        internal PersonCrawlerBase(string nameToCrawl)
         {
             NameToCrawl = nameToCrawl;
-            _cancellationToken = cancellationToken;
         }
-
-        #endregion
-
-        #region props
-
         internal string NameToCrawl { get; }
 
-        #endregion
 
-        #region Starting 
+        internal abstract Task<PersonInfo> GetPersonEntry(CancellationToken cancellationToken);
 
-        internal void Start()
+
+
+        protected bool? IsStillActive(string text)
         {
-            //Crawling
-            DoWork();
+            if (Regex.IsMatch(text, "active", RegexOptions.IgnoreCase) ||
+                Regex.IsMatch(text, "present", RegexOptions.IgnoreCase))
+                return true;
 
-            _cancellationToken.ThrowIfCancellationRequested();
+
+            if (Regex.IsMatch(text, "retired", RegexOptions.IgnoreCase) ||
+                Regex.Match(text, @"\d+").Groups.Count == 2) // 2013 - 2015
+                return false;
+
+            return null;
         }
-
-        #endregion
-
-        #region Crawling
-
-        private void DoWork()
-        {
-            var entry = GetPersonEntry();
-            OnProgress(100);
-            if (entry.IsValid)
-            {
-                OnEntry(entry);
-            }
-        }
-
-        internal abstract PersonEntry GetPersonEntry();
-
 
 
 
@@ -153,22 +128,6 @@ namespace aemarcoCore.Crawlers.Base
         }
 
 
-        #endregion
 
-        #region Events
-
-        internal event EventHandler<ProgressChangedEventArgs> Progress;
-        protected void OnProgress(int prog)
-        {
-            Progress?.Invoke(this, new ProgressChangedEventArgs(prog, null));
-        }
-
-        internal event EventHandler<PersonEntryEventArgs> Entry;
-        private void OnEntry(IPersonEntry entry)
-        {
-            Entry?.Invoke(this, new PersonEntryEventArgs { Entry = entry });
-        }
-
-        #endregion
     }
 }

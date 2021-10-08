@@ -1,4 +1,5 @@
-﻿using aemarcoCore.Common;
+﻿using aemarco.Crawler.Core.Helpers;
+using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
@@ -220,7 +221,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             if (string.IsNullOrWhiteSpace(albumName)) return false;
 
             var linkToAlbumUri = new Uri(_uri, linkToAlbum);
-            var albumDoc = GetDocument(linkToAlbumUri);
+            var albumDoc = HtmlHelper.GetHtmlDocument(linkToAlbumUri);
 
             var entryNodes = albumDoc.DocumentNode.SelectNodes("//li[@class='thumbwook']/a");
 

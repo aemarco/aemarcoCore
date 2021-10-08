@@ -1,4 +1,5 @@
-﻿using aemarcoCore.Common;
+﻿using aemarco.Crawler.Core.Extensions;
+using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
 using System;
@@ -71,19 +72,34 @@ namespace aemarcoCore.Crawlers
         }
 
 
+
+        public IEnumerable<string> GetAvailableCrawlers()
+        {
+            var crawlerInfos = System.Reflection.Assembly
+               .GetAssembly(typeof(PersonCrawlerBase))
+               .GetTypes()
+               .Where(x => x.IsSubclassOf(typeof(PersonCrawlerBase)))
+               .Select(x => x.ToCrawlerInfo())
+               .Where(x => x.IsEnabled)
+               .OrderBy(x => x.Priority)
+               .ToList();
+
+            foreach (var crawlerInfo in crawlerInfos)
+            {
+                yield return crawlerInfo.FriendlyName;
+            }
+        }
         /// <summary>
         /// Not using means all sites will be crawled
         /// Using means only sites added will be crawled
         /// </summary>
         /// <param name="personSite"></param>
-        public void AddPersonSiteFilter(PersonSite personSite)
+        public void AddPersonSiteFilter(string crawler)
         {
-            var site = personSite.ToString();
-            if (!_filterPersonSites.Contains(site))
+            if (!_filterPersonSites.Contains(crawler))
             {
-                _filterPersonSites.Add(site);
+                _filterPersonSites.Add(crawler);
             }
-
         }
 
 
@@ -100,29 +116,6 @@ namespace aemarcoCore.Crawlers
         public async Task<IPersonCrawlerResult> StartAsync()
         {
             return await Task.Factory.StartNew(Start);
-
-            //PrepareCrawlerList();
-            //foreach (var crawler in _crawlers.Keys)
-            //{
-            //    try
-            //    {
-            //        crawler.Start();
-            //    }
-            //    catch (OperationCanceledException)
-            //    {
-            //        _result.HasBeenAborted = true;
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        _result.Exception = ex;
-            //    }
-            //}
-
-            ////Writing Report
-            //WriteReport();
-
-            //OnCompleted();
-            //return Task.FromResult<IPersonCrawlerResult>(_result);
         }
 
         //TODO: revert... test and refactor
@@ -179,13 +172,14 @@ namespace aemarcoCore.Crawlers
 
             foreach (var type in crawlerTypes)
             {
-                var instance = (PersonCrawlerBase)Activator.CreateInstance(type, _nameToCrawl, _cancellationToken);
-
-                if (_filterPersonSites.Count > 0 && !_filterPersonSites.Contains(instance.PersonSite.ToString()))
-                {
+                var info = type.ToCrawlerInfo();
+                if (_filterPersonSites.Count > 0 && _filterPersonSites.Contains(info.FriendlyName))
                     continue;
-                }
+                if (!info.IsEnabled)
+                    continue;
 
+
+                var instance = (PersonCrawlerBase)Activator.CreateInstance(type, _nameToCrawl, _cancellationToken);
                 instance.Progress += Instance_OnProgress;
                 instance.Entry += Instance_OnEntry;
 
@@ -212,7 +206,7 @@ namespace aemarcoCore.Crawlers
 
                     File.WriteAllText
                         (
-                        $"{_reportPath.FullName}\\{prefix}{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.json",
+                        $"{_reportPath.FullName}\\{prefix}{DateTime.UtcNow:yyyyMMddHHmmss}.json",
                         _result.Json
                         );
                 }

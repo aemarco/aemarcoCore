@@ -4,50 +4,29 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace aemarcoCore.Crawlers.Base
+namespace aemarco.Crawler.Core.Helpers
 {
-    internal abstract class CrawlerBasis
+    public static class HtmlHelper
     {
-
         private static readonly SemaphoreSlim _gate = new SemaphoreSlim(1);
         private static readonly Random _random = new Random();
 
-        protected abstract int MinDelay { get; }
-        protected abstract int MaxDelay { get; }
-
-        public HtmlDocument GetDocument(Uri uri, int retry = 0)
+        public static HtmlDocument GetHtmlDocument(Uri uri, int? minDelay = null, int? maxDelay = null)
         {
             _gate.Wait();
 
-            if (MinDelay > 0 && MaxDelay > 0 && MaxDelay > MinDelay)
-                Task.Delay(_random.Next(MinDelay, MaxDelay)).GetAwaiter().GetResult();
+            if (minDelay.HasValue && maxDelay.HasValue)
+                Task.Delay(_random.Next(minDelay.Value, maxDelay.Value)).GetAwaiter().GetResult();
 
             try
             {
-                return TryGetHtmlDocument(uri, retry);
+                return TryGetHtmlDocument(uri);
             }
             finally
             {
                 _gate.Release();
             }
         }
-
-
-
-        public static HtmlDocument GetHtmlDocument(Uri uri, int retry = 0)
-        {
-            _gate.Wait();
-
-            try
-            {
-                return TryGetHtmlDocument(uri, retry);
-            }
-            finally
-            {
-                _gate.Release();
-            }
-        }
-
 
         private static HtmlDocument TryGetHtmlDocument(Uri uri, int retry = 0)
         {
@@ -78,19 +57,9 @@ namespace aemarcoCore.Crawlers.Base
                 {
                     return TryGetHtmlDocument(uri, ++retry);
                 }
-
                 throw;
             }
         }
-
-
-
-
-
-
-
-
-
 
     }
 }

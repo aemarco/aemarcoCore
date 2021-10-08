@@ -1,28 +1,27 @@
 ﻿using aemarco.Crawler.Core.Attributes;
 using aemarco.Crawler.Core.Helpers;
-using aemarcoCore.Common;
-using aemarcoCore.Crawlers.Base;
-using aemarcoCore.Crawlers.Types;
+using aemarcoCommons.PersonCrawler.Base;
+using aemarcoCommons.PersonCrawler.Model;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace aemarcoCore.Crawlers.Crawlers
+namespace aemarcoCommons.PersonCrawler.Crawlers
 {
 
     [PersonCrawler("Porngatherer", 10)]
     internal class PersonCrawlerPorngatherer : PersonCrawlerBase
     {
-        public PersonCrawlerPorngatherer(string nameToCrawl, CancellationToken cancellationToken)
-              : base(nameToCrawl, cancellationToken)
-        {
-        }
+        public PersonCrawlerPorngatherer(string nameToCrawl)
+              : base(nameToCrawl)
+        { }
 
         private readonly Uri _uri = new Uri("https://pornsites.xxx");
-      
-       
-        internal override PersonEntry GetPersonEntry()
+
+
+        internal override Task<PersonInfo> GetPersonEntry(CancellationToken cancellationToken)
         {
-            var result = new PersonEntry(this);
+            var result = new PersonInfo(this);
 
             var href = $"pornstars/{NameToCrawl.Replace(' ', '-')}";
             var target = new Uri(_uri, href);
@@ -43,16 +42,17 @@ namespace aemarcoCore.Crawlers.Crawlers
             }
 
 
-             //Bild
-             if (pictureNodes != null)
-                foreach(var pictureNode in pictureNodes)
+            //Bild
+            if (pictureNodes != null)
+                foreach (var pictureNode in pictureNodes)
                 {
                     var attrib = pictureNode.Attributes["src"];
                     if (attrib == null) continue;
-                    result.IncludeProfilePicture(attrib.Value);
+
+                    result.ProfilePictures.Add(ProfilePicture.FromUrl(attrib.Value));
                 }
-          
-          
+
+
 
             //data
 
@@ -62,6 +62,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 foreach (var node in nodeWithData)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     //Geburtstag
                     if (node.InnerText.Contains("Age:"))
                     {
@@ -73,18 +74,18 @@ namespace aemarcoCore.Crawlers.Crawlers
 
                         if (DateTime.TryParse(str, out var dt))
                         {
-                            result.Geburtstag = dt;
+                            result.Birthday = dt;
                         }
                     }
                     //not tested
                     else if (node.InnerText.Contains("Hair color:"))
                     {
-                        result.Haare = node.InnerText.Replace("Hair color:", string.Empty).Trim();
+                        result.HairColor = node.InnerText.Replace("Hair color:", string.Empty).Trim();
                     }
                     //not tested
                     else if (node.InnerText.Contains("Eye color:"))
                     {
-                        result.Augen = node.InnerText.Replace("Eye color:", string.Empty).Trim();
+                        result.EyeColor = node.InnerText.Replace("Eye color:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Weight:"))
                     {
@@ -93,7 +94,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                             var str = node.InnerText.Replace("Weight:", string.Empty);
                             str = str.Substring(str.IndexOf("(") + 1);
                             str = str.Substring(0, str.IndexOf("kg)") - 1);
-                            result.Gewicht = Convert.ToInt32(str);
+                            result.Weight = Convert.ToInt32(str);
                         }
                         catch { }
                     }
@@ -104,26 +105,26 @@ namespace aemarcoCore.Crawlers.Crawlers
                             var str = node.InnerText.Replace("Height:", string.Empty);
                             str = str.Substring(str.IndexOf("(") + 1);
                             str = str.Substring(0, str.IndexOf("cm)") - 1);
-                            result.Größe = Convert.ToInt32(str);
+                            result.Height = Convert.ToInt32(str);
                         }
                         catch { }
                     }
                     //not tested
                     else if (node.InnerText.Contains("Ethnicity:"))
                     {
-                        result.Rasse = node.InnerText.Replace("Ethnicity:", string.Empty).Trim();
+                        result.Ethnicity = node.InnerText.Replace("Ethnicity:", string.Empty).Trim();
                     }
                     //not tested
                     else if (node.InnerText.Contains("Country:"))
                     {
-                        result.Land = node.InnerText.Replace("Country:", string.Empty).Trim();
+                        result.Country = node.InnerText.Replace("Country:", string.Empty).Trim();
                     }
                 }
             }
 
 
 
-            return result;
+            return Task.FromResult(result);
         }
     }
 }

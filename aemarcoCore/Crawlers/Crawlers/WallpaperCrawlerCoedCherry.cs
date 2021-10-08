@@ -1,4 +1,5 @@
-﻿using aemarcoCore.Common;
+﻿using aemarco.Crawler.Core.Helpers;
+using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
@@ -15,8 +16,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         private readonly Uri _uri = new Uri("https://www.coedcherry.com/");
 
         internal override SourceSite SourceSite => SourceSite.CoedCherry;
-        protected override int MinDelay => 800;
-        protected override int MaxDelay => 2000;
+      
         public WallpaperCrawlerCoedCherry(
             int startPage,
             int lastPage,
@@ -145,7 +145,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             if (string.IsNullOrWhiteSpace(albumName)) return false;
 
             var linkToAlbumUri = new Uri(_uri, linkToAlbum);
-            var albumDoc = GetDocument(linkToAlbumUri);
+            var albumDoc = HtmlHelper.GetHtmlDocument(linkToAlbumUri, 800, 2000);
 
 
             var entryNodes = albumDoc.DocumentNode.SelectNodes("//div[@class='thumbs ']/figure/a");

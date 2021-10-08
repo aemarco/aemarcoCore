@@ -1,30 +1,27 @@
 ﻿using aemarco.Crawler.Core.Attributes;
 using aemarco.Crawler.Core.Helpers;
-using aemarcoCore.Common;
-using aemarcoCore.Crawlers.Base;
-using aemarcoCore.Crawlers.Types;
+using aemarcoCommons.PersonCrawler.Base;
+using aemarcoCommons.PersonCrawler.Model;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
-
-namespace aemarcoCore.Crawlers.Crawlers
+namespace aemarcoCommons.PersonCrawler.Crawlers
 {
 
     [PersonCrawler("Nudevista", 20)]
     internal class PersonCrawlerNudevista : PersonCrawlerBase
     {
-
-        public PersonCrawlerNudevista(string nameToCrawl, CancellationToken cancellationToken)
-            : base(nameToCrawl, cancellationToken)
-        {
-        }
+        public PersonCrawlerNudevista(string nameToCrawl)
+            : base(nameToCrawl)
+        { }
 
         private readonly Uri _uri = new Uri("https://www.nudevista.at");
 
-        
-        internal override PersonEntry GetPersonEntry()
+
+        internal override Task<PersonInfo> GetPersonEntry(CancellationToken cancellationToken)
         {
-            var result = new PersonEntry(this);
+            var result = new PersonInfo(this);
 
             var href = $"?q={NameToCrawl.Replace(' ', '+')}&s=s";
             var target = new Uri(_uri, href);
@@ -54,11 +51,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 {
                     address = "https:" + address;
                 }
-
-                result.IncludeProfilePicture(address);
-
-
-               
+                result.ProfilePictures.Add(ProfilePicture.FromUrl(address));
             }
 
             //Data
@@ -66,27 +59,28 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 foreach (var node in nodeWithData.ChildNodes)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     //Geburtstag
                     if (node.InnerText.Contains("Geburtstag:"))
                     {
                         var str = node.InnerText.Replace("Geburtstag: ", string.Empty).Trim();
                         if (DateTime.TryParse(str, out var dt))
                         {
-                            result.Geburtstag = dt;
+                            result.Birthday = dt;
                         }
                     }
                     //Land
                     else if (node.InnerText.Contains("Land:"))
                     {
-                        result.Land = node.InnerText.Replace("Land:", string.Empty).Trim();
+                        result.Country = node.InnerText.Replace("Land:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Geburtsort:"))
                     {
-                        result.Geburtsort = node.InnerText.Replace("Geburtsort:", string.Empty).Trim();
+                        result.City = node.InnerText.Replace("Geburtsort:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Beruf:"))
                     {
-                        result.Beruf = node.InnerText.Replace("Beruf:", string.Empty).Trim();
+                        result.Profession = node.InnerText.Replace("Beruf:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Karrierestart:"))
                     {
@@ -95,7 +89,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                             var str = node.InnerText.Replace("Karrierestart:", string.Empty).Trim();
                             str = str.Replace("-", string.Empty).Trim();
 
-                            result.Karrierestart = new DateTime(Convert.ToInt32(str), 1, 1);
+                            result.CareerStart = new DateTime(Convert.ToInt32(str), 1, 1);
                         }
                         catch { }
                     }
@@ -104,8 +98,8 @@ namespace aemarcoCore.Crawlers.Crawlers
                         var str = node.InnerText
                             .Replace("Karrierestatus:", string.Empty)
                             .Trim();
+                        result.StillActive = IsStillActive(str);
 
-                        result.IncludeStillActive(str);
                     }
                     //Aliase
                     else if (node.InnerText.Contains("Auch bekannt als"))
@@ -126,32 +120,32 @@ namespace aemarcoCore.Crawlers.Crawlers
 
                             if (al.Length > 3 && al.Contains(" "))
                             {
-                                result.Aliase.Add(al);
+                                result.Aliases.Add(al);
                             }
 
                         }
                     }
                     else if (node.InnerText.Contains("Rasse:"))
                     {
-                        result.Rasse = node.InnerText.Replace("Rasse:", string.Empty).Trim();
+                        result.Ethnicity = node.InnerText.Replace("Rasse:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Haare:"))
                     {
-                        result.Haare = node.InnerText.Replace("Haare:", string.Empty).Trim();
+                        result.HairColor = node.InnerText.Replace("Haare:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Augen:"))
                     {
-                        result.Augen = node.InnerText.Replace("Augen:", string.Empty).Trim();
+                        result.EyeColor = node.InnerText.Replace("Augen:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Maße:"))
                     {
                         var temp = node.InnerText.Replace("Maße:", string.Empty).Trim();
                         var maße = ConvertMaßeToMetric(temp);
-                        result.Maße = maße;
+                        result.Measurements = maße;
                     }
                     else if (node.InnerText.Contains("Körbchengröße:"))
                     {
-                        result.Körbchengröße = node.InnerText.Replace("Körbchengröße:", string.Empty).Trim();
+                        result.CupSize = node.InnerText.Replace("Körbchengröße:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Größe:"))
                     {
@@ -160,7 +154,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                             var str = node.InnerText;
                             str = str.Substring(str.IndexOf("(") + 1);
                             str = str.Substring(0, str.IndexOf("cm)") - 1);
-                            result.Größe = Convert.ToInt32(str);
+                            result.Height = Convert.ToInt32(str);
                         }
                         catch { }
                     }
@@ -171,7 +165,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                             var str = node.InnerText;
                             str = str.Substring(str.IndexOf("(") + 1);
                             str = str.Substring(0, str.IndexOf("kg)") - 1);
-                            result.Gewicht = Convert.ToInt32(str);
+                            result.Weight = Convert.ToInt32(str);
                         }
                         catch { }
                     }
@@ -189,7 +183,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
 
 
-            return result;
+            return Task.FromResult(result);
 
         }
 

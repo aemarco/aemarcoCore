@@ -1,4 +1,5 @@
-﻿using aemarcoCore.Common;
+﻿using aemarco.Crawler.Core.Helpers;
+using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Base;
 using HtmlAgilityPack;
 using System;
@@ -95,7 +96,7 @@ namespace aemarcoCore.Crawlers.Types
             }
             var href = subNode?.Attributes["href"]?.Value;
             var uri = new Uri(_baseUri, href);
-            return CrawlerBasis.GetHtmlDocument(uri);
+            return HtmlHelper.GetHtmlDocument(uri);
         }
         internal HtmlDocument GetChildDocumentFromDocument(HtmlDocument doc, string docToHrefNode)
         {

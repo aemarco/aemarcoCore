@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<!-- project definition -->
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<AssemblyVersion>2.1.9.0</AssemblyVersion>
+		<ApplicationIcon>girl.ico</ApplicationIcon>
+
+		<RootNamespace>aemarcoCommons.PersonCrawler</RootNamespace>
+		<AssemblyName>aemarcoCommons.PersonCrawler</AssemblyName>
+	</PropertyGroup>
+
+	<!-- project references -->
+	<ItemGroup>
+		<ProjectReference Include="..\aemarco.Crawler.Core\aemarco.Crawler.Core.csproj" />
+	</ItemGroup>
+
+	<!-- proj build-->
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>$(AssemblyName)Tests</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
+
+	<!-- nuget build-->
+	<PropertyGroup>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageId>aemarcoPersonCrawler</PackageId>
+		<PackageVersion>$(AssemblyVersion)</PackageVersion>
+		<Authors>aemarco</Authors>
+		<Company>aemarco</Company>
+		<Product>aemarcoPersonCrawler</Product>
+		<Copyright>Copyright 2021</Copyright>
+		<PackageProjectUrl>https://github.com/aemarco/aemarcoCore</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/aemarco/aemarcoCore</RepositoryUrl>
+		<Description>crawling for person information</Description>
+		<PackageTags>Crawler,FSK18</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageIcon>girl.png</PackageIcon>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\LICENSE.md">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Include="girl.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
+
+</Project>

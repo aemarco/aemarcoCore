@@ -1,27 +1,27 @@
 ﻿using aemarco.Crawler.Core.Attributes;
 using aemarco.Crawler.Core.Helpers;
-using aemarcoCore.Common;
-using aemarcoCore.Crawlers.Base;
-using aemarcoCore.Crawlers.Types;
+using aemarcoCommons.PersonCrawler.Base;
+using aemarcoCommons.PersonCrawler.Model;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace aemarcoCore.Crawlers.Crawlers
+namespace aemarcoCommons.PersonCrawler.Crawlers
 {
     [PersonCrawler("IStripper", 30)]
     internal class PersonCrawlerIStripper : PersonCrawlerBase
     {
-        public PersonCrawlerIStripper(string nameToCrawl, CancellationToken cancellationToken)
-            : base(nameToCrawl, cancellationToken)
-        {
-        }
+
+        public PersonCrawlerIStripper(string nameToCrawl)
+            : base(nameToCrawl)
+        { }
 
         private readonly Uri _uri = new Uri("https://www.istripper.com");
 
 
-        internal override PersonEntry GetPersonEntry()
+        internal override Task<PersonInfo> GetPersonEntry(CancellationToken cancellationToken)
         {
-            var result = new PersonEntry(this);
+            var result = new PersonInfo(this);
 
             var href = $"de/models/{NameToCrawl.Replace(' ', '-')}";
             var target = new Uri(_uri, href);
@@ -48,15 +48,20 @@ namespace aemarcoCore.Crawlers.Crawlers
             {
                 var address = nodeWithBild.Attributes["src"].Value;
 
-                result.IncludeProfilePicture(address, 35, 39);
+
+
+                result.ProfilePictures.Add(ProfilePicture.FromUrl(address, 35, 39));
 
             }
 
             //Data
             if (nodeWithData != null)
             {
+
                 foreach (var node in nodeWithData.ChildNodes)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     if (string.IsNullOrWhiteSpace(node.InnerText))
                     {
                         continue;
@@ -64,15 +69,15 @@ namespace aemarcoCore.Crawlers.Crawlers
                     //Land
                     else if (node.InnerText.Contains("Land:"))
                     {
-                        result.Land = node.InnerText.Replace("Land:", string.Empty).Trim();
+                        result.Country = node.InnerText.Replace("Land:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Stadt:"))
                     {
-                        result.Geburtsort = node.InnerText.Replace("Stadt:", string.Empty).Trim();
+                        result.City = node.InnerText.Replace("Stadt:", string.Empty).Trim();
                     }
                     else if (node.InnerText.Contains("Maße:"))
                     {
-                        result.Maße = node.InnerText.Replace("Maße:", string.Empty)
+                        result.Measurements = node.InnerText.Replace("Maße:", string.Empty)
                             .Replace(" / ", "-")
                             .Trim();
                     }
@@ -82,7 +87,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                         {
                             var str = node.InnerText.Replace("Größe", string.Empty).Trim();
                             str = str.Substring(0, str.IndexOf("cm") - 1).Trim();
-                            result.Größe = Convert.ToInt32(str);
+                            result.Height = Convert.ToInt32(str);
                         }
                         catch { }
                     }
@@ -92,7 +97,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                         {
                             var str = node.InnerText.Replace("Gewicht:", string.Empty).Trim();
                             str = str.Substring(0, str.IndexOf("kg") - 1).Trim();
-                            result.Gewicht = Convert.ToInt32(str);
+                            result.Weight = Convert.ToInt32(str);
                         }
                         catch { }
                     }
@@ -100,7 +105,7 @@ namespace aemarcoCore.Crawlers.Crawlers
                 }
             }
 
-            return result;
+            return Task.FromResult(result);
 
         }
 

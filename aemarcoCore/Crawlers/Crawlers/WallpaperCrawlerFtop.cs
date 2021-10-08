@@ -1,4 +1,5 @@
-﻿using aemarcoCore.Common;
+﻿using aemarco.Crawler.Core.Helpers;
+using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
@@ -32,7 +33,7 @@ namespace aemarcoCore.Crawlers.Crawlers
             var result = new List<CrawlOffer>();
 
             //main page
-            var doc = GetDocument(_uri);
+            var doc = HtmlHelper.GetHtmlDocument(_uri);
 
             foreach (var node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
             {
