@@ -4,7 +4,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <ApplicationIcon>girl.ico</ApplicationIcon>
-    <AssemblyVersion>2.1.11.0</AssemblyVersion>
+    <AssemblyVersion>2.1.12.0</AssemblyVersion>
 
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>aemarcoCore</PackageId>
@@ -40,6 +40,16 @@
   <ItemGroup>
     <ProjectReference Include="..\aemarco.Crawler.Core\aemarco.Crawler.Core.csproj" />
   </ItemGroup>
+
+
+
+	<ItemGroup>
+		<None Include="bin\$(Configuration)\netstandard2.0\aemarco.Crawler.Core.dll">
+			<Pack>True</Pack>
+			<PackagePath>lib\netstandard2.0</PackagePath>
+		</None>
+	</ItemGroup>
+
 
 </Project>
     
