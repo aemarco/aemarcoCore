@@ -40,6 +40,7 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
 	<!-- nuget build, so that dll from proj reference will be included, but not the reference-->
+	<!-- https://josef.codes/dotnet-pack-include-referenced-projects/ -->
 	<PropertyGroup>
 		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
 	</PropertyGroup>

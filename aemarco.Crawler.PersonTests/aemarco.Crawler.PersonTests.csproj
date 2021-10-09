@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\aemarco.Crawler.Core\aemarco.Crawler.Core.csproj" />
     <ProjectReference Include="..\aemarco.Crawler.Person\aemarco.Crawler.Person.csproj" />
   </ItemGroup>
 
