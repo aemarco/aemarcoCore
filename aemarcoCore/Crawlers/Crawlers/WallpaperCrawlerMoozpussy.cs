@@ -1,12 +1,9 @@
-﻿using aemarco.Crawler.Core.Helpers;
-using aemarcoCore.Common;
+﻿using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Net;
 using System.Threading;
 
@@ -111,15 +108,15 @@ namespace aemarcoCore.Crawlers.Crawlers
             //if (!wallEntry.IsValid || string.IsNullOrWhiteSpace(wallEntry.FileContentAsBase64String)) 
             //    return false;
 
-            if (!wallEntry.IsValid) 
+            if (!wallEntry.IsValid)
                 return false;
 
-            
+
             AddEntry(wallEntry, catJob);
             return true;
         }
 
-        
+
     }
 
 }

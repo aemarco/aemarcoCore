@@ -1,6 +1,4 @@
-﻿using aemarco.Crawler.Core.Helpers;
-using aemarcoCore.Common;
-using aemarcoCore.Crawlers.Base;
+﻿using aemarcoCore.Common;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -225,17 +223,17 @@ namespace aemarcoCore.Crawlers.Types
 
         #region file
 
-       
+
         public void DownloadWithReferer(WallEntry wallEntry, string referer)
         {
             try
             {
                 byte[] bytes;
-                var httpRequest = (HttpWebRequest) WebRequest.Create(wallEntry.Url);
+                var httpRequest = (HttpWebRequest)WebRequest.Create(wallEntry.Url);
                 httpRequest.Method = WebRequestMethods.Http.Get;
                 httpRequest.Referer = referer;
 
-                var httpResponse = (HttpWebResponse) httpRequest.GetResponse();
+                var httpResponse = (HttpWebResponse)httpRequest.GetResponse();
                 // returned values are returned as a stream, then read into a string
                 using (var httpResponseStream = httpResponse.GetResponseStream())
                 {
@@ -259,7 +257,7 @@ namespace aemarcoCore.Crawlers.Types
                     wallEntry.FileContentAsBase64String = Convert.ToBase64String(bytes);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 // ignored
             }

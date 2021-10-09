@@ -1,4 +1,4 @@
-﻿using aemarco.Crawler.Core.Extensions;
+﻿using aemarcoCommons.PersonCrawler.Common;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Linq;

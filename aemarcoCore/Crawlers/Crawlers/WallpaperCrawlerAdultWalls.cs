@@ -1,5 +1,4 @@
-﻿using aemarco.Crawler.Core.Helpers;
-using aemarcoCore.Common;
+﻿using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
@@ -63,9 +62,9 @@ namespace aemarcoCore.Crawlers.Crawlers
         {
             //z.B. "http://adultwalls.com/wallpapers/erotic-wallpapers/1?order=publish-date-newest&resolution=all&search="                
             //return $"{catJob.CategoryUri.AbsoluteUri}/{catJob.CurrentPage}?order=publish-date-newest&resolution=all&search=";
-            
+
             var result = new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}/{catJob.CurrentPage}?order=publish-date-newest&resolution=all&search=");
-            
+
             return result;
         }
         protected override string GetSearchStringGorEntryNodes()

@@ -1,5 +1,4 @@
-﻿using aemarco.Crawler.Core.Helpers;
-using aemarcoCore.Common;
+﻿using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;
@@ -16,7 +15,7 @@ namespace aemarcoCore.Crawlers.Crawlers
         private readonly Uri _uri = new Uri("https://www.coedcherry.com/");
 
         internal override SourceSite SourceSite => SourceSite.CoedCherry;
-      
+
         public WallpaperCrawlerCoedCherry(
             int startPage,
             int lastPage,
@@ -31,7 +30,7 @@ namespace aemarcoCore.Crawlers.Crawlers
 
             var cats = new List<string>
             {
-                
+
                 "Alternative",
                 "Amateur",
                 "Artistic",

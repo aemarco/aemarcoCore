@@ -10,17 +10,15 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{F6C54684-1109-48C6-98D8-B4750D8BCC72}"
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
-		LICENSE.md = LICENSE.md
 		README.md = README.md
+		SolutionInfo.proj = SolutionInfo.proj
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarco.Crawler.Core", "aemarco.Crawler.Core\aemarco.Crawler.Core.csproj", "{B596A03E-3F00-4A8F-8EF6-3E8676BBFB43}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarco.Crawler.Person", "aemarco.Crawler.Person\aemarco.Crawler.Person.csproj", "{E0EAB8EE-D6CA-424D-846C-E32833605A36}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2F6DBB96-EC43-4C4B-A5A4-689A2225D367}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aemarco.Crawler.PersonTests", "aemarco.Crawler.PersonTests\aemarco.Crawler.PersonTests.csproj", "{7B9D8DC6-DBD3-463A-9EF5-CD99BFB18912}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarco.Crawler.PersonTests", "aemarco.Crawler.PersonTests\aemarco.Crawler.PersonTests.csproj", "{7B9D8DC6-DBD3-463A-9EF5-CD99BFB18912}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,10 +34,6 @@ Global
 		{890F1157-CC3C-466A-BA93-45827EAC0F13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{890F1157-CC3C-466A-BA93-45827EAC0F13}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{890F1157-CC3C-466A-BA93-45827EAC0F13}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B596A03E-3F00-4A8F-8EF6-3E8676BBFB43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B596A03E-3F00-4A8F-8EF6-3E8676BBFB43}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B596A03E-3F00-4A8F-8EF6-3E8676BBFB43}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B596A03E-3F00-4A8F-8EF6-3E8676BBFB43}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E0EAB8EE-D6CA-424D-846C-E32833605A36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E0EAB8EE-D6CA-424D-846C-E32833605A36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0EAB8EE-D6CA-424D-846C-E32833605A36}.Release|Any CPU.ActiveCfg = Release|Any CPU

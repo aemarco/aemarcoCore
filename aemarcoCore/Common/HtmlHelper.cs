@@ -4,7 +4,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace aemarco.Crawler.Core.Helpers
+namespace aemarcoCore.Common
 {
     public static class HtmlHelper
     {
@@ -36,7 +36,7 @@ namespace aemarco.Crawler.Core.Helpers
                 {
                     PreRequest = request =>
                     {
-                        request.AutomaticDecompression =  DecompressionMethods.Deflate | DecompressionMethods.GZip;
+                        request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
                         return true;
                     }
                 };

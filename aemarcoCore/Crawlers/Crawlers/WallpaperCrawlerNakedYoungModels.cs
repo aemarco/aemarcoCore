@@ -1,5 +1,4 @@
-﻿using aemarco.Crawler.Core.Helpers;
-using aemarcoCore.Common;
+﻿using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Base;
 using aemarcoCore.Crawlers.Types;
 using HtmlAgilityPack;

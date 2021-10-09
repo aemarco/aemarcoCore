@@ -1,5 +1,5 @@
-﻿using aemarco.Crawler.Core.Extensions;
-using aemarcoCommons.PersonCrawler.Base;
+﻿using aemarcoCommons.PersonCrawler.Base;
+using aemarcoCommons.PersonCrawler.Common;
 using aemarcoCommons.PersonCrawler.Model;
 using System;
 using System.Collections.Generic;

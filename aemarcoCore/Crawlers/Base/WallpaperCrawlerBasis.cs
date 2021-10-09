@@ -1,5 +1,4 @@
-﻿using aemarco.Crawler.Core.Helpers;
-using aemarcoCore.Common;
+﻿using aemarcoCore.Common;
 using aemarcoCore.Crawlers.Types;
 using aemarcoCore.Tools;
 using HtmlAgilityPack;
@@ -40,7 +39,7 @@ namespace aemarcoCore.Crawlers.Base
 
         internal abstract SourceSite SourceSite { get; }
 
-       
+
 
         private List<CrawlOffer> _catJobs;
         internal bool HasWorkingOffers

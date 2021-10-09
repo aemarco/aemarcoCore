@@ -1,5 +1,4 @@
-﻿using aemarco.Crawler.Core.Attributes;
-using aemarco.Crawler.Core.Extensions;
+﻿using aemarcoCommons.PersonCrawler.Common;
 using aemarcoCommons.PersonCrawler.Model;
 using FluentAssertions;
 using NUnit.Framework;

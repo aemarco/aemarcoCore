@@ -1,32 +1,19 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!--EXTERNAL_PROPERTIES: AssemblyVersion-->
+<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="..\SolutionInfo.proj" />
 
 	<!-- project definition -->
 	<PropertyGroup>
 	    <TargetFramework>netstandard2.0</TargetFramework>
-	    <AssemblyVersion>2.1.13.0</AssemblyVersion>
-
+	   
 		<ApplicationIcon>girl.ico</ApplicationIcon>
 	</PropertyGroup>
-
-	<!-- project references -->
-	<ItemGroup>
-		<ProjectReference Include="..\aemarco.Crawler.Core\aemarco.Crawler.Core.csproj" PrivateAssets="All"/>
-	</ItemGroup>
 
 	<!-- nuget references -->
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Windows.Compatibility" Version="3.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
 	</ItemGroup>
-
-
-	<!-- proj build-->
-	<ItemGroup>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>$(AssemblyName)Tests</_Parameter1>
-		</AssemblyAttribute>
-	</ItemGroup>
-
 
 	<!-- nuget build-->
 	<PropertyGroup>
@@ -45,15 +32,6 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
-	<!-- nuget build, so that dll from proj reference will be included, but not the reference-->
-	<PropertyGroup>
-		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
-	</PropertyGroup>
-	<Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
-		<ItemGroup>
-			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')->WithMetadataValue('PrivateAssets', 'All'))" />
-		</ItemGroup>
-	</Target>
 	<ItemGroup>
 		<None Include="girl.png" Pack="true" PackagePath="\" />
 	</ItemGroup>

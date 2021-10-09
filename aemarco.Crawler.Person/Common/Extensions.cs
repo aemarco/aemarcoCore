@@ -1,8 +1,8 @@
-﻿using aemarco.Crawler.Core.Attributes;
-using aemarcoCommons.Extensions.AttributeExtensions;
+﻿using aemarcoCommons.Extensions.AttributeExtensions;
 using System;
 
-namespace aemarco.Crawler.Core.Extensions
+
+namespace aemarcoCommons.PersonCrawler.Common
 {
     public static class Extensions
     {
@@ -12,4 +12,5 @@ namespace aemarco.Crawler.Core.Extensions
             return attr;
         }
     }
+
 }

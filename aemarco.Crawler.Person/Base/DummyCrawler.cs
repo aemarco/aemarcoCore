@@ -1,4 +1,4 @@
-﻿using aemarco.Crawler.Core.Attributes;
+﻿using aemarcoCommons.PersonCrawler.Common;
 using aemarcoCommons.PersonCrawler.Model;
 using System;
 using System.Threading;
