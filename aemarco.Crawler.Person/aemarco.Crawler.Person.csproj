@@ -3,16 +3,16 @@
 	<!-- project definition -->
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<AssemblyVersion>2.1.12.0</AssemblyVersion>
-		<ApplicationIcon>girl.ico</ApplicationIcon>
+		<AssemblyVersion>2.1.13.0</AssemblyVersion>
 
+		<ApplicationIcon>girl.ico</ApplicationIcon>
 		<RootNamespace>aemarcoCommons.PersonCrawler</RootNamespace>
 		<AssemblyName>aemarcoCommons.PersonCrawler</AssemblyName>
 	</PropertyGroup>
 
 	<!-- project references -->
 	<ItemGroup>
-		<ProjectReference Include="..\aemarco.Crawler.Core\aemarco.Crawler.Core.csproj" />
+		<ProjectReference Include="..\aemarco.Crawler.Core\aemarco.Crawler.Core.csproj" PrivateAssets="All" />
 	</ItemGroup>
 
 	<!-- proj build-->
@@ -30,28 +30,29 @@
 		<Authors>aemarco</Authors>
 		<Company>aemarco</Company>
 		<Product>aemarcoPersonCrawler</Product>
-		<Copyright>Copyright 2021</Copyright>
 		<PackageProjectUrl>https://github.com/aemarco/aemarcoCore</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/aemarco/aemarcoCore</RepositoryUrl>
 		<Description>crawling for person information</Description>
 		<PackageTags>Crawler,FSK18</PackageTags>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageIcon>girl.png</PackageIcon>
+		<Copyright>Copyright 2021</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
+	<!-- nuget build, so that dll from proj reference will be included, but not the reference-->
+	<PropertyGroup>
+		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+	</PropertyGroup>
+	<Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
+		<ItemGroup>
+			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')->WithMetadataValue('PrivateAssets', 'All'))" />
+		</ItemGroup>
+	</Target>
+
+
 	<ItemGroup>
-		<None Include="bin\$(Configuration)\netstandard2.0\aemarco.Crawler.Core.dll">
-			<Pack>True</Pack>
-			<PackagePath>lib\netstandard2.0</PackagePath>
-		</None>
-		<None Include="..\LICENSE.md">
-			<Pack>True</Pack>
-			<PackagePath></PackagePath>
-		</None>
-		<None Include="girl.png">
-			<Pack>True</Pack>
-			<PackagePath></PackagePath>
-		</None>
+		<None Include="..\LICENSE.md" Pack="true" PackagePath="\" />
+		<None Include="girl.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 </Project>
