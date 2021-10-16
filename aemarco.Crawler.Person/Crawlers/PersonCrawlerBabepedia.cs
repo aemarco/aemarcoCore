@@ -1,14 +1,14 @@
-﻿using aemarcoCommons.PersonCrawler.Base;
-using aemarcoCommons.PersonCrawler.Common;
-using aemarcoCommons.PersonCrawler.Model;
-using System;
+﻿using System;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using aemarco.Crawler.Person.Base;
+using aemarco.Crawler.Person.Common;
+using aemarco.Crawler.Person.Model;
 
-namespace aemarcoCommons.PersonCrawler.Crawlers
+namespace aemarco.Crawler.Person.Crawlers
 {
     [PersonCrawler("Babepedia", 0)]
     internal class PersonCrawlerBabepedia : PersonCrawlerBase

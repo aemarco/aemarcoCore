@@ -1,4 +1,4 @@
-﻿namespace aemarcoCommons.PersonCrawler.Model
+﻿namespace aemarco.Crawler.Person.Model
 {
     public class ProfilePicture
     {

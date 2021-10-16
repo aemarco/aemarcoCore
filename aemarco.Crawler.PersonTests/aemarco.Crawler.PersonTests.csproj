@@ -1,12 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-
-	  <RootNamespace>aemarcoCommons.PersonCrawlerTests</RootNamespace>
-	  <AssemblyName>aemarcoCommons.PersonCrawlerTests</AssemblyName>
-
-    <IsPackable>false</IsPackable>
+	  <TargetFramework>netcoreapp3.1</TargetFramework>
+	  <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

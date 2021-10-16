@@ -1,11 +1,11 @@
-﻿using aemarcoCommons.PersonCrawler.Base;
-using aemarcoCommons.PersonCrawler.Common;
-using aemarcoCommons.PersonCrawler.Model;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using aemarco.Crawler.Person.Base;
+using aemarco.Crawler.Person.Common;
+using aemarco.Crawler.Person.Model;
 
-namespace aemarcoCommons.PersonCrawler.Crawlers
+namespace aemarco.Crawler.Person.Crawlers
 {
     [PersonCrawler("IStripper", 30)]
     internal class PersonCrawlerIStripper : PersonCrawlerBase

@@ -1,10 +1,10 @@
-﻿using aemarcoCommons.PersonCrawler.Model;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using aemarco.Crawler.Person.Model;
 
-namespace aemarcoCommons.PersonCrawler.Base
+namespace aemarco.Crawler.Person.Base
 {
     internal abstract class PersonCrawlerBase
     {

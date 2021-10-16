@@ -1,12 +1,13 @@
-﻿using aemarcoCommons.PersonCrawler.Common;
-using aemarcoCommons.PersonCrawler.Model;
+﻿using aemarco.Crawler.Person;
+using aemarco.Crawler.Person.Common;
+using aemarco.Crawler.Person.Model;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace aemarcoCommons.PersonCrawlerTests.Base
+namespace aemarco.Crawler.PersonTests.Base
 {
     internal abstract class PersonCrawlerTestsBase<T>
     {
@@ -22,8 +23,8 @@ namespace aemarcoCommons.PersonCrawlerTests.Base
         [OneTimeSetUp]
         public void Init()
         {
-            var type = PersonCrawler.PersonCrawler
-                    .GetCrawlerTypes()
+            var type = PersonCrawler
+                    .GetAvailableCrawlerTypes()
                     .FirstOrDefault(x => x.FullName == typeof(T).FullName);
             Info = type.ToCrawlerInfo();
 
@@ -31,9 +32,9 @@ namespace aemarcoCommons.PersonCrawlerTests.Base
                 return;
 
 
-            var crawler = new PersonCrawler.PersonCrawler(_nameToCrawl);
+            var crawler = new PersonCrawler();
             crawler.AddPersonSiteFilter(Info.FriendlyName);
-            Entry = crawler.StartAsync().GetAwaiter().GetResult();
+            Entry = crawler.StartAsync(_nameToCrawl).GetAwaiter().GetResult();
         }
 
         internal PersonCrawlerAttribute Info { get; private set; }

@@ -1,19 +1,19 @@
-﻿using aemarcoCommons.PersonCrawler.Base;
-using aemarcoCommons.PersonCrawler.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using aemarco.Crawler.Person.Base;
+using aemarco.Crawler.Person.Common;
 
-namespace aemarcoCommons.PersonCrawler.Model
+namespace aemarco.Crawler.Person.Model
 {
     public class PersonInfo
     {
         internal PersonInfo(PersonCrawlerBase crawler)
         {
             var info = crawler.GetType().ToCrawlerInfo();
-
             PersonEntrySource = info.FriendlyName;
             PersonEntryPriority = info.Priority;
+
 
             ProfilePictures = new List<ProfilePicture>();
             Aliases = new List<string>();

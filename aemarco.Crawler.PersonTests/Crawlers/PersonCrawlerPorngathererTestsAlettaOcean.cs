@@ -1,8 +1,8 @@
-﻿using aemarcoCommons.PersonCrawler.Crawlers;
-using aemarcoCommons.PersonCrawlerTests.Base;
+﻿using aemarco.Crawler.Person.Crawlers;
+using aemarco.Crawler.PersonTests.Base;
 using System;
 
-namespace aemarcoCommons.PersonCrawlerTests.Crawlers
+namespace aemarco.Crawler.PersonTests.Crawlers
 {
     internal class PersonCrawlerPorngathererTestsAlettaOcean : PersonCrawlerTestsBase<PersonCrawlerPorngatherer>
     {

@@ -1,7 +1,7 @@
-﻿using aemarcoCommons.PersonCrawler.Crawlers;
-using aemarcoCommons.PersonCrawlerTests.Base;
+﻿using aemarco.Crawler.Person.Crawlers;
+using aemarco.Crawler.PersonTests.Base;
 
-namespace aemarcoCommons.PersonCrawlerTests.Crawlers
+namespace aemarco.Crawler.PersonTests.Crawlers
 {
     internal class PersonCrawlerIStripperTestsWithAlletaOcean : PersonCrawlerTestsBase<PersonCrawlerIStripper>
     {

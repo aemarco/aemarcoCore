@@ -1,10 +1,10 @@
-﻿using aemarcoCommons.PersonCrawler.Common;
-using aemarcoCommons.PersonCrawler.Model;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using aemarco.Crawler.Person.Common;
+using aemarco.Crawler.Person.Model;
 
-namespace aemarcoCommons.PersonCrawler.Base
+namespace aemarco.Crawler.Person.Base
 {
 
     [PersonCrawler("DummyCrawler", int.MaxValue, isEnabled: false)]

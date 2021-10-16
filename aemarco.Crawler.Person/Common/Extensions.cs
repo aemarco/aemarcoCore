@@ -1,8 +1,7 @@
-﻿using aemarcoCommons.Extensions.AttributeExtensions;
-using System;
+﻿using System;
+using aemarcoCommons.Extensions.AttributeExtensions;
 
-
-namespace aemarcoCommons.PersonCrawler.Common
+namespace aemarco.Crawler.Person.Common
 {
     public static class Extensions
     {

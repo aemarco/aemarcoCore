@@ -1,41 +1,26 @@
-﻿using aemarcoCommons.PersonCrawler.Base;
-using aemarcoCommons.PersonCrawler.Common;
-using aemarcoCommons.PersonCrawler.Model;
+﻿using aemarco.Crawler.Person.Base;
+using aemarco.Crawler.Person.Common;
+using aemarco.Crawler.Person.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace aemarcoCommons.PersonCrawler
+namespace aemarco.Crawler.Person
 {
     public class PersonCrawler
     {
-        private readonly string _nameToCrawl;
+
         private readonly List<string> _filterPersonSites = new List<string>();
 
         /// <summary>
-        /// Used to crawl various Websites for a Person
+        /// returns a list of crawler names, which are currently supported
         /// </summary>
-        /// <param name="nameToCrawl">firstname lastname for the person</param>
-        public PersonCrawler(string nameToCrawl)
-        {
-            _nameToCrawl = nameToCrawl;
-        }
-
-
+        /// <returns></returns>
         public IEnumerable<string> GetAvailableCrawlers()
         {
-            var crawlerInfos = GetCrawlerTypes()
-               .Select(x => x.ToCrawlerInfo())
-               .Where(x => x.IsEnabled)
-               .OrderBy(x => x.Priority)
-               .ToList();
-
-            foreach (var crawlerInfo in crawlerInfos)
-            {
-                yield return crawlerInfo.FriendlyName;
-            }
+            return GetAvailableCrawlerTypes().Select(type => type.ToCrawlerInfo().FriendlyName);
         }
 
         /// <summary>
@@ -56,25 +41,22 @@ namespace aemarcoCommons.PersonCrawler
         /// Do the crawling :)
         /// </summary>
         /// <returns>composed PersonEntry</returns>
-        public async Task<PersonInfo> StartAsync(CancellationToken cancellationToken = default)
+        public async Task<PersonInfo> StartAsync(string nameToCrawl, CancellationToken cancellationToken = default)
         {
             //start all crawlers
             var tasks = new List<Task<PersonInfo>>();
-            foreach (var type in GetCrawlerTypes())
+            foreach (var type in GetAvailableCrawlerTypes())
             {
-                var info = type.ToCrawlerInfo();
                 //skip filtered
-                if (_filterPersonSites.Count > 0 && !_filterPersonSites.Contains(info.FriendlyName))
-                    continue;
-                //skip disabled
-                if (!info.IsEnabled)
+                if (_filterPersonSites.Count > 0 && !_filterPersonSites.Contains(type.ToCrawlerInfo().FriendlyName))
                     continue;
 
-                var crawler = (PersonCrawlerBase)Activator.CreateInstance(type, _nameToCrawl);
+                var crawler = (PersonCrawlerBase)Activator.CreateInstance(type, nameToCrawl);
                 tasks.Add(Task.Run(() => crawler.GetPersonEntry(cancellationToken), cancellationToken));
             }
-            await Task.WhenAll(tasks);
 
+            //wait for being done
+            await Task.WhenAll(tasks);
             var entries = new List<PersonInfo>();
             foreach (var task in tasks)
             {
@@ -82,6 +64,8 @@ namespace aemarcoCommons.PersonCrawler
                 entries.Add(personInfo);
             }
 
+
+            //merge entries together according to priority
             PersonInfo result = null;
             foreach (var entry in entries
                 .OrderBy(x => x.PersonEntryPriority))
@@ -98,16 +82,17 @@ namespace aemarcoCommons.PersonCrawler
             return result;
         }
 
-        internal static List<Type> GetCrawlerTypes()
+        internal static List<Type> GetAvailableCrawlerTypes()
         {
             var types = System.Reflection.Assembly
                 .GetAssembly(typeof(PersonCrawlerBase))
                 .GetTypes()
                 .Where(x => x.IsSubclassOf(typeof(PersonCrawlerBase)))
+                .Where(x => x.ToCrawlerInfo()?.IsEnabled ?? false)
+                .OrderBy(x => x.ToCrawlerInfo().Priority)
                 .ToList();
             return types;
         }
-
     }
 
 

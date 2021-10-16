@@ -7,8 +7,6 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 
 		<ApplicationIcon>girl.ico</ApplicationIcon>
-		<RootNamespace>aemarcoCommons.PersonCrawler</RootNamespace>
-		<AssemblyName>aemarcoCommons.PersonCrawler</AssemblyName>
 	</PropertyGroup>
 
 	

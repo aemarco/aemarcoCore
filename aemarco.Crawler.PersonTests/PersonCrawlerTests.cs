@@ -1,11 +1,12 @@
-﻿using aemarcoCommons.PersonCrawler.Common;
+﻿using aemarco.Crawler.Person;
+using aemarco.Crawler.Person.Common;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace aemarcoCommons.PersonCrawlerTests
+namespace aemarco.Crawler.PersonTests
 {
     public class PersonCrawlerTests
     {
@@ -13,10 +14,10 @@ namespace aemarcoCommons.PersonCrawlerTests
         [Test]
         public void GetAvailableCrawlers_DeliversCorrectly()
         {
-            var types = PersonCrawler.PersonCrawler.GetCrawlerTypes();
+            var types = PersonCrawler.GetAvailableCrawlerTypes();
             var infos = types.Select(x => x.ToCrawlerInfo()).ToList();
 
-            var crawler = new PersonCrawler.PersonCrawler("none");
+            var crawler = new PersonCrawler();
             var available = crawler.GetAvailableCrawlers().ToList();
 
 
@@ -32,17 +33,17 @@ namespace aemarcoCommons.PersonCrawlerTests
         [Test]
         public async Task StartAsync_DoesNotCrawlDisabledCrawlers()
         {
-            var crawler = new PersonCrawler.PersonCrawler("Foxi Di");
-            await crawler.StartAsync(CancellationToken.None);
+            var crawler = new PersonCrawler();
+            await crawler.StartAsync("Foxi Di", CancellationToken.None);
         }
 
         [Test]
         public async Task StartAsync_MergesResults()
         {
-            var crawler = new PersonCrawler.PersonCrawler("Foxi Di");
-            var result = await crawler.StartAsync(CancellationToken.None);
+            var crawler = new PersonCrawler();
+            var result = await crawler.StartAsync("Foxi Di", CancellationToken.None);
 
-            result.ProfilePictures.Count.Should().Be(5);
+            result.ProfilePictures.Count.Should().Be(7);
             result.Aliases.Count.Should().Be(19);
             result.Piercings.Should().Be("Navel");
 

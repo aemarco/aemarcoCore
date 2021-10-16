@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace aemarcoCommons.PersonCrawler.Common
+namespace aemarco.Crawler.Person.Common
 {
     public class PersonCrawlerAttribute : Attribute
     {

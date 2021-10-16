@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarcoCore", "aemarcoCore\aemarcoCore.csproj", "{1CCBFEDC-E346-4A90-AFB3-EDDEF671B1EC}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarcoCoreTests", "aemarcoCoreTests\aemarcoCoreTests.csproj", "{890F1157-CC3C-466A-BA93-45827EAC0F13}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{F6C54684-1109-48C6-98D8-B4750D8BCC72}"
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
@@ -20,20 +16,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2F6DBB96
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarco.Crawler.PersonTests", "aemarco.Crawler.PersonTests\aemarco.Crawler.PersonTests.csproj", "{7B9D8DC6-DBD3-463A-9EF5-CD99BFB18912}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarco.Crawler.Wallpaper", "aemarco.Crawler.Wallpaper\aemarco.Crawler.Wallpaper.csproj", "{F2EB8B5A-FB9C-4F9E-8B1A-8B3564DAB193}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarco.Crawler.WallpaperTests", "aemarco.Crawler.WallpaperTests\aemarco.Crawler.WallpaperTests.csproj", "{01CA8BB8-B9BB-4B30-B285-977CA448CCC9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1CCBFEDC-E346-4A90-AFB3-EDDEF671B1EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1CCBFEDC-E346-4A90-AFB3-EDDEF671B1EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1CCBFEDC-E346-4A90-AFB3-EDDEF671B1EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1CCBFEDC-E346-4A90-AFB3-EDDEF671B1EC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{890F1157-CC3C-466A-BA93-45827EAC0F13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{890F1157-CC3C-466A-BA93-45827EAC0F13}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{890F1157-CC3C-466A-BA93-45827EAC0F13}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{890F1157-CC3C-466A-BA93-45827EAC0F13}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E0EAB8EE-D6CA-424D-846C-E32833605A36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E0EAB8EE-D6CA-424D-846C-E32833605A36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0EAB8EE-D6CA-424D-846C-E32833605A36}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -42,13 +34,21 @@ Global
 		{7B9D8DC6-DBD3-463A-9EF5-CD99BFB18912}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B9D8DC6-DBD3-463A-9EF5-CD99BFB18912}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B9D8DC6-DBD3-463A-9EF5-CD99BFB18912}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2EB8B5A-FB9C-4F9E-8B1A-8B3564DAB193}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2EB8B5A-FB9C-4F9E-8B1A-8B3564DAB193}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2EB8B5A-FB9C-4F9E-8B1A-8B3564DAB193}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2EB8B5A-FB9C-4F9E-8B1A-8B3564DAB193}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01CA8BB8-B9BB-4B30-B285-977CA448CCC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01CA8BB8-B9BB-4B30-B285-977CA448CCC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01CA8BB8-B9BB-4B30-B285-977CA448CCC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01CA8BB8-B9BB-4B30-B285-977CA448CCC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{890F1157-CC3C-466A-BA93-45827EAC0F13} = {2F6DBB96-EC43-4C4B-A5A4-689A2225D367}
 		{7B9D8DC6-DBD3-463A-9EF5-CD99BFB18912} = {2F6DBB96-EC43-4C4B-A5A4-689A2225D367}
+		{01CA8BB8-B9BB-4B30-B285-977CA448CCC9} = {2F6DBB96-EC43-4C4B-A5A4-689A2225D367}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0EC96D17-031A-4821-AF90-49577D41E2CF}
