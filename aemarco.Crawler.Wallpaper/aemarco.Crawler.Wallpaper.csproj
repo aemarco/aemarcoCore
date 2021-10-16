@@ -18,7 +18,7 @@
 	<!-- nuget build-->
 	<PropertyGroup>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageId>aemarcoCore</PackageId>
+		<PackageId>aemarcoWallpaperCrawler</PackageId>
 		<PackageVersion>$(AssemblyVersion)</PackageVersion>
 		<Authors>aemarco</Authors>
 		<Company>aemarco</Company>
