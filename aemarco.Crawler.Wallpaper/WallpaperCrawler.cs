@@ -61,7 +61,6 @@ namespace aemarco.Crawler.Wallpaper
                 yield return info.FriendlyName;
             }
         }
-
         /// <summary>
         /// Used to filter which sites to limit to
         /// Not using means all sites will be crawled
@@ -77,12 +76,15 @@ namespace aemarco.Crawler.Wallpaper
             }
         }
 
+
+
         //filter categories
         private readonly List<string> _filterCategories = new List<string>();
         public IEnumerable<string> GetAvailableCategories()
         {
             var categories = new List<string>();
-            foreach (var crawler in _wallCrawlers)
+            foreach (var crawler in _wallCrawlers
+                .Where(x => _filterSourceSites.Count == 0 || _filterSourceSites.Contains(x.GetType().ToCrawlerInfo().FriendlyName)))
             {
                 foreach (var offer in crawler.GetOffers())
                 {
