@@ -31,5 +31,8 @@
 	<ItemGroup>
 		<None Include="girl.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Update="aemarcoExtensions" Version="1.0.45" />
+	</ItemGroup>
 
 </Project>
