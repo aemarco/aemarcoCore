@@ -2,7 +2,7 @@
 
 	<!-- assembly and nuget version we spit out -->
 	<PropertyGroup>
-		<AssemblyVersion>2.1.18.0</AssemblyVersion>
+		<AssemblyVersion>2.1.20.0</AssemblyVersion>
 	</PropertyGroup>
 
 	<!-- ceremony-->
@@ -13,7 +13,6 @@
 
 	<!-- nuget references -->
 	<ItemGroup>
-		<PackageReference Include="aemarcoExtensions" Version="1.0.44" />
 		<PackageReference Include="HtmlAgilityPack" Version="1.11.16" />
 	</ItemGroup>
 
@@ -23,7 +22,6 @@
 			<_Parameter1>$(AssemblyName)Tests</_Parameter1>
 		</AssemblyAttribute>
 	</ItemGroup>
-
 
 
 </Project>

@@ -1,5 +1,6 @@
 ﻿using System;
-using aemarcoCommons.Extensions.AttributeExtensions;
+using System.Reflection;
+
 
 namespace aemarco.Crawler.Person.Common
 {
@@ -7,8 +8,8 @@ namespace aemarco.Crawler.Person.Common
     {
         public static PersonCrawlerAttribute ToCrawlerInfo(this Type crawlerType)
         {
-            var attr = crawlerType.GetAttribute<PersonCrawlerAttribute>();
-            return attr;
+            return crawlerType.GetCustomAttribute<PersonCrawlerAttribute>();
+
         }
     }
 

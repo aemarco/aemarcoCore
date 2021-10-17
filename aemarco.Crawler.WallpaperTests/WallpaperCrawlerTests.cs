@@ -1,6 +1,5 @@
 ﻿using aemarco.Crawler.Wallpaper;
 using aemarco.Crawler.Wallpaper.Common;
-using aemarcoCommons.Extensions.SortingExtensions;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
@@ -64,7 +63,7 @@ namespace aemarco.Crawler.WallpaperTests
         public void HandleFilter_HandlesCategories()
         {
             //filter does filter
-            var rand = _sourceCategories.Shuffle().FirstOrDefault();
+            var rand = _sourceCategories.FirstOrDefault();
             rand.Should().NotBeNullOrWhiteSpace();
             var c = GetCrawler();
             c.AddCategoryFilter(rand);

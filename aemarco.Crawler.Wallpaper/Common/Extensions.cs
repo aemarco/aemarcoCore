@@ -1,5 +1,6 @@
 ﻿using System;
-using aemarcoCommons.Extensions.AttributeExtensions;
+using System.Reflection;
+
 
 namespace aemarco.Crawler.Wallpaper.Common
 {
@@ -7,8 +8,8 @@ namespace aemarco.Crawler.Wallpaper.Common
     {
         public static WallpaperCrawlerAttribute ToCrawlerInfo(this Type crawlerType)
         {
-            var attr = crawlerType.GetAttribute<WallpaperCrawlerAttribute>();
-            return attr;
+            return crawlerType.GetCustomAttribute<WallpaperCrawlerAttribute>();
+
         }
     }
 }
