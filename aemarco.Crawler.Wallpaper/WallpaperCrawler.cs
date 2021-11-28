@@ -16,7 +16,7 @@ namespace aemarco.Crawler.Wallpaper
 
 
         // ReSharper disable once InconsistentNaming
-        internal readonly List<WallpaperCrawlerBasis> _wallCrawlers = new List<WallpaperCrawlerBasis>();
+        internal readonly List<WallpaperCrawlerBasis> _wallCrawlers = new();
 
         public WallpaperCrawler(int? startPage = null, int? lastPage = null)
         {
@@ -51,7 +51,7 @@ namespace aemarco.Crawler.Wallpaper
 
 
         //filter sites
-        private readonly List<string> _filterSourceSites = new List<string>();
+        private readonly List<string> _filterSourceSites = new();
         public IEnumerable<string> GetAvailableSourceSites()
         {
             foreach (var info in _wallCrawlers
@@ -79,7 +79,7 @@ namespace aemarco.Crawler.Wallpaper
 
 
         //filter categories
-        private readonly List<string> _filterCategories = new List<string>();
+        private readonly List<string> _filterCategories = new();
         public IEnumerable<string> GetAvailableCategories()
         {
             var categories = new List<string>();
@@ -193,7 +193,7 @@ namespace aemarco.Crawler.Wallpaper
         private static List<Type> GetAvailableCrawlerTypes()
         {
             var types = System.Reflection.Assembly
-                .GetAssembly(typeof(WallpaperCrawlerBasis))
+                .GetAssembly(typeof(WallpaperCrawlerBasis))!
                 .GetTypes()
                 .Where(x => x.IsSubclassOf(typeof(WallpaperCrawlerBasis)))
                 .Where(x => x.ToCrawlerInfo().IsEnabled)

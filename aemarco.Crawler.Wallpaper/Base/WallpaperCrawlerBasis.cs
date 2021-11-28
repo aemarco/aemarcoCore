@@ -24,7 +24,7 @@ namespace aemarco.Crawler.Wallpaper.Base
             _onlyNews = onlyNews;
         }
 
-        internal virtual bool IsAvailable => this.GetType().ToCrawlerInfo().IsEnabled;
+        internal virtual bool IsAvailable => GetType().ToCrawlerInfo().IsEnabled;
 
         internal event EventHandler EntryFound;
 
@@ -39,7 +39,7 @@ namespace aemarco.Crawler.Wallpaper.Base
         /// <param name="searchedCategories">strings of internal Category (enum)</param>
         internal void LimitAsPerFilterList(List<string> searchedCategories)
         {
-            _crawlOffers = _crawlOffers ?? GetCrawlsOffers().Where(x => x.Category != null).ToList();
+            _crawlOffers ??= GetCrawlsOffers().Where(x => x.Category != null).ToList();
             _crawlOffers = _crawlOffers
                 .Where(x => x.Category != null)
                 .Where(o =>
@@ -50,7 +50,7 @@ namespace aemarco.Crawler.Wallpaper.Base
 
         internal IEnumerable<CrawlOffer> GetOffers()
         {
-            _crawlOffers = _crawlOffers ?? GetCrawlsOffers().Where(x => x.Category != null).ToList();
+            _crawlOffers ??= GetCrawlsOffers().Where(x => x.Category != null).ToList();
             return _crawlOffers;
         }
 
@@ -190,7 +190,7 @@ namespace aemarco.Crawler.Wallpaper.Base
         /// </summary>
         private void HandleAll()
         {
-            _crawlOffers = _crawlOffers ?? GetCrawlsOffers().Where(x => x.Category != null).ToList();
+            _crawlOffers ??= GetCrawlsOffers().Where(x => x.Category != null).ToList();
             foreach (var offer in _crawlOffers)
             {
                 CancellationToken.ThrowIfCancellationRequested();
@@ -222,8 +222,6 @@ namespace aemarco.Crawler.Wallpaper.Base
         /// <returns>true if page contained any entries</returns>
         protected virtual bool HandlePage(CrawlOffer catJob)
         {
-            var result = false;
-
             //Seite mit Wallpaperliste
             var pageUri = GetSiteUrlForCategory(catJob);
             var doc = HtmlHelper.GetHtmlDocument(pageUri);
@@ -231,7 +229,7 @@ namespace aemarco.Crawler.Wallpaper.Base
 
             //non entries on page
             if (nodes == null || !nodes.Any())
-                return result;
+                return false;
 
 
             //report count to all classic jobs
@@ -245,6 +243,8 @@ namespace aemarco.Crawler.Wallpaper.Base
                 });
             }
 
+
+            var result = false;
             //handle each node
             foreach (var node in nodes)
             {
