@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography;
 
 namespace aemarco.Crawler.Wallpaper.Common
 {
@@ -10,7 +11,6 @@ namespace aemarco.Crawler.Wallpaper.Common
             IsEnabled = isEnabled;
 
         }
-
         public string FriendlyName { get; }
         public bool IsEnabled { get; }
     }

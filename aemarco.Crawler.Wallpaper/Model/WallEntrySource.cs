@@ -53,8 +53,15 @@ namespace aemarco.Crawler.Wallpaper.Model
         {
             get
             {
-                var entry = new WallEntry(ImageUri.AbsoluteUri, ThumbnailUri.AbsoluteUri,
-                    Filename, Extension, ContentCategory, SiteCategory, Tags, AlbumName);
+                var entry = new WallEntry(
+                    ImageUri.AbsoluteUri, 
+                    ThumbnailUri.AbsoluteUri,
+                    Filename,
+                    Extension, 
+                    ContentCategory, 
+                    SiteCategory, 
+                    Tags, 
+                    AlbumName);
 
                 if (entry.IsValid)
                 {

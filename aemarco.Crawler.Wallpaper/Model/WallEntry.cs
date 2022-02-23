@@ -8,8 +8,14 @@ namespace aemarco.Crawler.Wallpaper.Model
         private static List<string> _crawlerExtensions;
 
         internal WallEntry(
-            string url, string thumbnailUrl, string fileName, string extension,
-            ContentCategory contentCategory, string siteCategory, List<string> tags, string albumName)
+            string url, 
+            string thumbnailUrl, 
+            string fileName, 
+            string extension,
+            ContentCategory contentCategory, 
+            string siteCategory, 
+            List<string> tags, 
+            string albumName)
         {
             Url = url;
             ThumbnailUrl = thumbnailUrl;

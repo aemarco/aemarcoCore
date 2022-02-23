@@ -1,14 +1,16 @@
-﻿using aemarco.Crawler.Wallpaper.Base;
-using aemarco.Crawler.Wallpaper.Common;
-using aemarco.Crawler.Wallpaper.Model;
-using HtmlAgilityPack;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using aemarco.Crawler.Wallpaper.Base;
+using aemarco.Crawler.Wallpaper.Common;
+using aemarco.Crawler.Wallpaper.Model;
+using HtmlAgilityPack;
 
-namespace aemarco.Crawler.Wallpaper.Crawlers
+namespace aemarco.Crawler.Wallpaper.Crawlers.Obsolete
 {
+
+    //site no longer exists
     [WallpaperCrawler("BabesUnivers", false)]
     internal class WallpaperCrawlerBabesUnivers : WallpaperCrawlerBasis
     {

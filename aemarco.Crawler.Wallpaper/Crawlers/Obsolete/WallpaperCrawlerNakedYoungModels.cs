@@ -1,18 +1,17 @@
-﻿using aemarco.Crawler.Wallpaper.Base;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using aemarco.Crawler.Wallpaper.Base;
 using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Model;
 using HtmlAgilityPack;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace aemarco.Crawler.Wallpaper.Crawlers
+namespace aemarco.Crawler.Wallpaper.Crawlers.Obsolete
 {
-    [WallpaperCrawler("NakedYoungModels", true)]
+    //site no longer exists (sept 2021)
+    [WallpaperCrawler("NakedYoungModels", false)]
     internal class WallpaperCrawlerNakedYoungModels : WallpaperCrawlerBasis
     {
-
-
         private readonly Uri _uri = new Uri("https://hotnakedgirls.porn/");
 
 
@@ -22,11 +21,6 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
             bool onlyNews)
             : base(startPage, lastPage, onlyNews)
         { }
-
-
-
-
-
 
         protected override List<CrawlOffer> GetCrawlsOffers()
         {

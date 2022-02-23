@@ -104,7 +104,7 @@ namespace aemarco.Crawler.WallpaperTests
                         try
                         {
                             await crawler.StartAsync(source.Token);
-                            Assert.Fail();
+                            Assert.Fail($"{site} - {cat} failed.");
                         }
                         catch (OperationCanceledException)
                         { }

@@ -11,8 +11,6 @@ namespace aemarco.Crawler.Wallpaper.Model
         }
 
         public string Name { get; }
-
-
         public List<WallEntry> Entries { get; }
 
 
