@@ -1,15 +1,15 @@
-﻿using aemarco.Crawler.Wallpaper.Base;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using aemarco.Crawler.Wallpaper.Base;
 using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Model;
 using HtmlAgilityPack;
-using System;
-using System.Collections.Generic;
-using System.Net;
 
-namespace aemarco.Crawler.Wallpaper.Crawlers
+namespace aemarco.Crawler.Wallpaper.Crawlers.Obsolete
 {
 
-    [WallpaperCrawler("AdultWalls", true)]
+    [WallpaperCrawler("AdultWalls", false)]
     internal class WallpaperCrawlerAdultWalls : WallpaperCrawlerBasis
     {
         private readonly Uri _uri = new Uri("http://adultwalls.com");
@@ -28,33 +28,37 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
         protected override List<CrawlOffer> GetCrawlsOffers()
         {
             var result = new List<CrawlOffer>();
-
-            //main page
-            var doc = HtmlHelper.GetHtmlDocument(_uri);
-
-            //foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
-            foreach (var node in doc.DocumentNode.SelectNodes("//li[@class='sub-menu-item']/a"))
+            
+            try
             {
-                //z.B. "Erotic Wallpapers"
-                var text = WebUtility.HtmlDecode(node.InnerText).Trim();
-                if (string.IsNullOrEmpty(text))
+                //main page
+                var doc = HtmlHelper.GetHtmlDocument(_uri);
+                //foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
+                foreach (var node in doc.DocumentNode.SelectNodes("//li[@class='sub-menu-item']/a"))
                 {
-                    continue;
-                }
+                    //z.B. "Erotic Wallpapers"
+                    var text = WebUtility.HtmlDecode(node.InnerText).Trim();
+                    if (string.IsNullOrEmpty(text))
+                    {
+                        continue;
+                    }
 
-                //z.B. "/wallpapers/erotic-wallpapers"
-                var href = node.Attributes["href"]?.Value;
-                if (string.IsNullOrEmpty(href))
-                {
-                    continue;
-                }
+                    //z.B. "/wallpapers/erotic-wallpapers"
+                    var href = node.Attributes["href"]?.Value;
+                    if (string.IsNullOrEmpty(href))
+                    {
+                        continue;
+                    }
 
-                //z.B. "http://adultwalls.com/wallpapers/erotic-wallpapers"
-                var uri = new Uri(_uri, href);
-                var cat = GetContentCategory(text);
-                result.Add(CreateCrawlOffer(text, uri, cat));
+                    //z.B. "http://adultwalls.com/wallpapers/erotic-wallpapers"
+                    var uri = new Uri(_uri, href);
+                    var cat = GetContentCategory(text);
+                    result.Add(CreateCrawlOffer(text, uri, cat));
+                }
             }
-
+            // ReSharper disable once EmptyGeneralCatchClause
+            catch  { }
+            
             return result;
         }
         protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
