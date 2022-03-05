@@ -29,35 +29,30 @@ namespace aemarco.Crawler.Wallpaper.Crawlers.Obsolete
         {
             var result = new List<CrawlOffer>();
             
-            try
+            //main page
+            var doc = HtmlHelper.GetHtmlDocument(_uri);
+            //foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
+            foreach (var node in doc.DocumentNode.SelectNodes("//li[@class='sub-menu-item']/a"))
             {
-                //main page
-                var doc = HtmlHelper.GetHtmlDocument(_uri);
-                //foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
-                foreach (var node in doc.DocumentNode.SelectNodes("//li[@class='sub-menu-item']/a"))
+                //z.B. "Erotic Wallpapers"
+                var text = WebUtility.HtmlDecode(node.InnerText).Trim();
+                if (string.IsNullOrEmpty(text))
                 {
-                    //z.B. "Erotic Wallpapers"
-                    var text = WebUtility.HtmlDecode(node.InnerText).Trim();
-                    if (string.IsNullOrEmpty(text))
-                    {
-                        continue;
-                    }
-
-                    //z.B. "/wallpapers/erotic-wallpapers"
-                    var href = node.Attributes["href"]?.Value;
-                    if (string.IsNullOrEmpty(href))
-                    {
-                        continue;
-                    }
-
-                    //z.B. "http://adultwalls.com/wallpapers/erotic-wallpapers"
-                    var uri = new Uri(_uri, href);
-                    var cat = GetContentCategory(text);
-                    result.Add(CreateCrawlOffer(text, uri, cat));
+                    continue;
                 }
+
+                //z.B. "/wallpapers/erotic-wallpapers"
+                var href = node.Attributes["href"]?.Value;
+                if (string.IsNullOrEmpty(href))
+                {
+                    continue;
+                }
+
+                //z.B. "http://adultwalls.com/wallpapers/erotic-wallpapers"
+                var uri = new Uri(_uri, href);
+                var cat = GetContentCategory(text);
+                result.Add(CreateCrawlOffer(text, uri, cat));
             }
-            // ReSharper disable once EmptyGeneralCatchClause
-            catch  { }
             
             return result;
         }

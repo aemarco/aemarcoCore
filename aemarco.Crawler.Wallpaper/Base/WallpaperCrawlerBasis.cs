@@ -50,8 +50,15 @@ namespace aemarco.Crawler.Wallpaper.Base
 
         internal IEnumerable<CrawlOffer> GetOffers()
         {
-            _crawlOffers ??= GetCrawlsOffers().Where(x => x.Category != null).ToList();
-            return _crawlOffers;
+            try
+            {
+                _crawlOffers ??= GetCrawlsOffers().Where(x => x.Category != null).ToList();
+                return _crawlOffers;
+            }
+            catch { }
+
+            return Array.Empty<CrawlOffer>();
+
         }
 
 
