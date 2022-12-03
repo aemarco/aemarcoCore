@@ -6,6 +6,8 @@
 	<PropertyGroup>
 	    <TargetFramework>net6.0</TargetFramework>
 		<ApplicationIcon>girl.ico</ApplicationIcon>
+
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<!-- nuget references -->
