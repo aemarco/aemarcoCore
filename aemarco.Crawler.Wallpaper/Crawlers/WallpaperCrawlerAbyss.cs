@@ -4,9 +4,8 @@ using HtmlAgilityPack;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 
 namespace aemarco.Crawler.Wallpaper.Crawlers
 {
@@ -17,6 +16,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
         private int _queryCount = -1;
         private readonly Uri _uri = new("https://wall.alphacoders.com");
         private readonly Uri _mUri = new("https://mobile.alphacoders.com");
+        private HttpClient _httpClient;
 
         public WallpaperCrawlerAbyss(
             int startPage,
@@ -24,7 +24,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
             bool onlyNews)
             : base(startPage, lastPage, onlyNews)
         {
-
+            _httpClient = new HttpClient();
         }
 
 
@@ -56,13 +56,13 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
                 //check how much query counts are left
                 var qc = QueryApi("method=query_count");
                 var qcObj = JsonConvert.DeserializeObject<AbyssQueryCount>(qc);
-                _queryCount = qcObj.Counts.MonthCount;
+                _queryCount = qcObj!.Counts.MonthCount;
 
 
 
                 var str = QueryApi("method=category_list");
                 var catResult = JsonConvert.DeserializeObject<AbyssCategoryList>(str);
-                if (catResult.Success)
+                if (catResult!.Success)
                 {
                     _abyssCats = catResult.Categories.ToList();
                     foreach (var cat in catResult.Categories)
@@ -148,7 +148,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
                 $"page={catJob.CurrentPage}",
                 "check_last=1");
             var page = JsonConvert.DeserializeObject<AbyssWallpaperPage>(pageString);
-            if (!page.Success || !page.Wallpapers.Any())
+            if (!page!.Success || !page.Wallpapers.Any())
                 return false;
 
 
@@ -186,7 +186,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
                 "method=wallpaper_info",
                 $"id={wall.Id}");
             var wallInfo = JsonConvert.DeserializeObject<AbyssWallpaperInfoResult>(wallInfoString);
-            if (!wallInfo.Success) return false;
+            if (!wallInfo!.Success) return false;
             var wallInf = wallInfo.Wallpaper;
 
 
@@ -221,22 +221,14 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
             var queryUri = $"{_uri.AbsoluteUri}/api2.0/get.php";
             var call = $"{queryUri}?{string.Join("&", allParams)}";
 
+            var res = _httpClient.GetAsync(call).GetAwaiter().GetResult();
+            res.EnsureSuccessStatusCode();
+            var result = res.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            if (string.IsNullOrWhiteSpace(result))
+                throw new Exception("Abyss No Query Result");
 
-            var wr = WebRequest.Create(call);
-            string result = null;
-            using (var response = (HttpWebResponse)wr.GetResponse())
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    using (var sr = new StreamReader(response.GetResponseStream()))
-                    {
-                        result = sr.ReadToEnd();
-                    }
-
-                }
-            }
-            if (string.IsNullOrWhiteSpace(result)) throw new Exception("Abyss No Query Result");
             return result;
+
         }
 
 
