@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using aemarco.Crawler.Wallpaper.Base;
-using aemarco.Crawler.Wallpaper.Common;
+﻿using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Model;
 using HtmlAgilityPack;
+using System;
+using System.Collections.Generic;
 
 namespace aemarco.Crawler.Wallpaper.Crawlers
 {
-    [WallpaperCrawler("Pornomass", true)]
+    [WallpaperCrawler("Pornomass")]
     internal class WallpaperCrawlerPornomass : WallpaperCrawlerBasis
     {
         private readonly Uri _uri1 = new Uri("http://pornomass.com");
@@ -40,7 +39,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
         {
             //z.B. "http://pornomass.com/page/1"
             //return $"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}";
-            return new Uri(catJob.CategoryUri, $"/page/{ catJob.CurrentPage }");
+            return new Uri(catJob.CategoryUri, $"/page/{catJob.CurrentPage}");
         }
         protected override string GetSearchStringGorEntryNodes()
         {
@@ -54,7 +53,6 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
         {
             WallEntrySource source;
 
-            var thumbnail = string.Empty;
             if (catJob.SiteCategoryName == "Pornomass")
             {
                 source = new WallEntrySource(_uri1, node, catJob.SiteCategoryName);

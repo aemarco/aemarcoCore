@@ -1,5 +1,4 @@
-﻿using aemarco.Crawler.Wallpaper.Base;
-using aemarco.Crawler.Wallpaper.Common;
+﻿using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Model;
 using HtmlAgilityPack;
 using System;
@@ -10,7 +9,7 @@ using System.Text.RegularExpressions;
 namespace aemarco.Crawler.Wallpaper.Crawlers
 {
 
-    [WallpaperCrawler("Erowall", true)]
+    [WallpaperCrawler("Erowall")]
     internal class WallpaperCrawlerErowall : WallpaperCrawlerBasis
     {
         private readonly Uri _uri = new Uri("https://erowall.com");
@@ -81,7 +80,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
         {
             //z.B. "https://erowall.com/teg/brunette/page/1"       
             //return $"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}";
-            return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}page/{ catJob.CurrentPage }");
+            return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}page/{catJob.CurrentPage}");
         }
         protected override string GetSearchStringGorEntryNodes()
         {
@@ -90,8 +89,14 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
         protected override ContentCategory DefaultCategory => new ContentCategory(Category.Girls);
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
+            var href = node.Attributes["href"]?.Value;
+
+            if (href is null)
+                return false;
+
+
             //details
-            var match = Regex.Match(node.Attributes["href"]?.Value, @"/(\d+)/$");
+            var match = Regex.Match(href, @"/(\d+)/$");
             // z.B. "24741"
             var imageLink = match.Groups[1].Value;
 

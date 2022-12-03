@@ -1,10 +1,10 @@
-﻿using aemarco.Crawler.Wallpaper.Base;
-using aemarco.Crawler.Wallpaper.Common;
+﻿using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Crawlers;
 using aemarco.Crawler.Wallpaper.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,7 +32,10 @@ namespace aemarco.Crawler.Wallpaper
             var end = lastPage ?? 10;
             var news = !startPage.HasValue && !lastPage.HasValue;
 
-            foreach (var type in GetAvailableCrawlerTypes())
+            foreach (var type in Assembly
+                         .GetAssembly(typeof(WallpaperCrawlerBasis))!
+                         .GetTypes()
+                         .Where(x => x.IsAvailableCrawler()))
             {
                 var crawler = (WallpaperCrawlerBasis)Activator.CreateInstance(type, start, end, news);
                 _wallCrawlers.Add(crawler);
@@ -45,8 +48,10 @@ namespace aemarco.Crawler.Wallpaper
         {
             _knownUrlsFunc = knownUrlsFunc;
             foreach (var c in _wallCrawlers)
+            {
                 if (c is WallpaperCrawlerAbyss a)
                     a.ProvideApiKey(abyssApiKey);
+            }
         }
 
 
@@ -189,17 +194,5 @@ namespace aemarco.Crawler.Wallpaper
             _wallCrawlers.RemoveAll(c => !c.GetOffers().Any());
         }
 
-
-        private static List<Type> GetAvailableCrawlerTypes()
-        {
-            var types = System.Reflection.Assembly
-                .GetAssembly(typeof(WallpaperCrawlerBasis))!
-                .GetTypes()
-                .Where(x => x.IsSubclassOf(typeof(WallpaperCrawlerBasis)))
-                .Where(x => x.ToCrawlerInfo().IsEnabled)
-                .ToList();
-
-            return types;
-        }
     }
 }

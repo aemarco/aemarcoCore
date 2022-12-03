@@ -1,5 +1,4 @@
-﻿using aemarco.Crawler.Wallpaper.Base;
-using aemarco.Crawler.Wallpaper.Common;
+﻿using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Model;
 using HtmlAgilityPack;
 using System;
@@ -9,7 +8,7 @@ using System.Net;
 namespace aemarco.Crawler.Wallpaper.Crawlers
 {
 
-    [WallpaperCrawler("Zoompussy", true)]
+    [WallpaperCrawler("Zoompussy")]
     internal class WallpaperCrawlerZoompussy : WallpaperCrawlerBasis
     {
         private readonly Uri _uri = new Uri("http://zoompussy.com/");
@@ -77,15 +76,15 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@id='post_content']/blockquote/a/img", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
             source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
-            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='post_z']/a", new Func<HtmlNode, string>(x =>
+            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='post_z']/a", x =>
+            {
+                if (x.Attributes["href"] != null &&
+                    x.Attributes["href"].Value.StartsWith(_uri.AbsoluteUri))
                 {
-                    if (x.Attributes["href"] != null &&
-                        x.Attributes["href"].Value.StartsWith(_uri.AbsoluteUri))
-                    {
-                        return WebUtility.HtmlDecode(x.InnerText).Trim();
-                    }
-                    return null;
-                }));
+                    return WebUtility.HtmlDecode(x.InnerText).Trim();
+                }
+                return null;
+            });
 
 
             var wallEntry = source.WallEntry;

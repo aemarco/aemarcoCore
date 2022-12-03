@@ -2,7 +2,6 @@
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -54,13 +53,13 @@ namespace aemarco.Crawler.Wallpaper.Model
             get
             {
                 var entry = new WallEntry(
-                    ImageUri.AbsoluteUri, 
+                    ImageUri.AbsoluteUri,
                     ThumbnailUri.AbsoluteUri,
                     Filename,
-                    Extension, 
-                    ContentCategory, 
-                    SiteCategory, 
-                    Tags, 
+                    Extension,
+                    ContentCategory,
+                    SiteCategory,
+                    Tags,
                     AlbumName);
 
                 if (entry.IsValid)
@@ -99,7 +98,7 @@ namespace aemarco.Crawler.Wallpaper.Model
             {
                 return null;
             }
-            var href = subNode?.Attributes["href"]?.Value;
+            var href = subNode.Attributes["href"]?.Value;
             var uri = new Uri(_baseUri, href);
             return HtmlHelper.GetHtmlDocument(uri, minDelay, maxDelay);
         }
@@ -148,7 +147,7 @@ namespace aemarco.Crawler.Wallpaper.Model
             var pref = (prefix == null) ? string.Empty : $"{prefix}_";
 
             var url = imageUri.AbsoluteUri;
-            var main = url?.Substring(url.LastIndexOf("/") + 1);
+            var main = url[(url.LastIndexOf("/", StringComparison.Ordinal) + 1)..];
             main = WebUtility.HtmlDecode(main);
             var name = $"{pref}{main}";
 
@@ -159,8 +158,8 @@ namespace aemarco.Crawler.Wallpaper.Model
             var pref = (prefix == null) ? string.Empty : $"{prefix}_";
 
             var url = imageUri.AbsoluteUri;
-            var after = url.Substring(url.IndexOf(beforeName) + beforeName.Length);
-            var main = after.Substring(0, after.IndexOf(afterName));
+            var after = url.Substring(url.IndexOf(beforeName, StringComparison.Ordinal) + beforeName.Length);
+            var main = after.Substring(0, after.IndexOf(afterName, StringComparison.Ordinal));
             main = WebUtility.HtmlDecode(main);
             var name = $"{pref}{main}";
 
@@ -228,50 +227,5 @@ namespace aemarco.Crawler.Wallpaper.Model
         #endregion
 
 
-        #region file
-
-
-        public void DownloadWithReferer(WallEntry wallEntry, string referer)
-        {
-            try
-            {
-                byte[] bytes;
-                var httpRequest = (HttpWebRequest)WebRequest.Create(wallEntry.Url);
-                httpRequest.Method = WebRequestMethods.Http.Get;
-                httpRequest.Referer = referer;
-
-                var httpResponse = (HttpWebResponse)httpRequest.GetResponse();
-                // returned values are returned as a stream, then read into a string
-                using (var httpResponseStream = httpResponse.GetResponseStream())
-                {
-                    using (var ms = new MemoryStream())
-                    {
-                        httpResponseStream?.CopyTo(ms);
-                        bytes = ms.ToArray();
-                    }
-
-                    using (var ms = new MemoryStream(bytes))
-                    {
-                        using (var img = Image.FromStream(ms))
-                        {
-                            if (img.Width <= 0) bytes = null;
-                        }
-                    }
-                }
-
-                if (bytes != null)
-                {
-                    wallEntry.FileContentAsBase64String = Convert.ToBase64String(bytes);
-                }
-            }
-            catch
-            {
-                // ignored
-            }
-        }
-
-
-
-        #endregion
     }
 }

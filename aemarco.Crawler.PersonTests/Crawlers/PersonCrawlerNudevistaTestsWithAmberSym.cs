@@ -8,6 +8,7 @@ namespace aemarco.Crawler.PersonTests.Crawlers
     internal class PersonCrawlerNudevistaTestsWithAmberSym : PersonCrawlerTestsBase<PersonCrawlerNudevista>
     {
 
+        //https://www.nudevista.at/?q=Amber+Sym&s=s
         public PersonCrawlerNudevistaTestsWithAmberSym()
             : base("Amber Sym")
         {
@@ -29,7 +30,7 @@ namespace aemarco.Crawler.PersonTests.Crawlers
             ExpectedHairColor = "Brown";
             ExpectedEyeColor = "Brown";
             ExpectedMeasurements = "86-60-86";
-            ExpectedCupsize = "C (natural)";
+            ExpectedCupsize = "C (fake)";
             ExpectedHeight = 167;
             ExpectedWeight = 48;
             ExpectedPiercings = "Ears, Navel";

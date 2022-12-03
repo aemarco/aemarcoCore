@@ -1,5 +1,4 @@
-﻿using aemarco.Crawler.Wallpaper.Base;
-using aemarco.Crawler.Wallpaper.Common;
+﻿using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Model;
 using HtmlAgilityPack;
 using System;
@@ -8,7 +7,7 @@ using System.Net;
 
 namespace aemarco.Crawler.Wallpaper.Crawlers
 {
-    [WallpaperCrawler("Zoomgirls", true)]
+    [WallpaperCrawler("Zoomgirls")]
     internal class WallpaperCrawlerZoomgirls : WallpaperCrawlerBasis
     {
         private readonly Uri _uri = new Uri("https://zoomgirls.net");
@@ -43,7 +42,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
         {
             //z.B. "https://zoomgirls.net/latest_wallpapers/page/1"
             //return $"{catJob.CategoryUri.AbsoluteUri}/page/{catJob.CurrentPage}";
-            return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}/page/{ catJob.CurrentPage }");
+            return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}/page/{catJob.CurrentPage}");
         }
         protected override string GetSearchStringGorEntryNodes()
         {
@@ -66,7 +65,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='wallpaper-thumb']/img", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
             source.ContentCategory = catJob.Category;
-            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//ul[@class='tagcloud']/span/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
+            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//ul[@class='tagcloud']/span/a", x => WebUtility.HtmlDecode(x.InnerText).Trim());
 
             var wallEntry = source.WallEntry;
             if (wallEntry == null)
@@ -95,7 +94,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
                 var txt = node.Attributes["title"]?.Value?.Split('x');
                 if (txt != null && txt.Length == 2)
                 {
-                    var sum = 0;
+                    int sum;
 
                     try
                     {
@@ -127,10 +126,15 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
 
             //z.B. "/view-jana-jordan--1920x1200.html"
             var name = targetNode.Attributes["href"]?.Value;
+
+            if (name is null)
+                return null;
+
+
             //z.B. "jana-jordan--1920x1200.html"
-            name = name.Substring(name.IndexOf("view") + 5);
+            name = name[(name.IndexOf("view", StringComparison.Ordinal) + 5)..];
             //z.B. "jana-jordan--1920x1200"
-            name = name.Substring(0, name.IndexOf(".html"));
+            name = name[..name.IndexOf(".html", StringComparison.Ordinal)];
             //z.B. "https://zoomgirls.net/wallpapers/jana-jordan--1920x1200.jpg"
 
             var url = new Uri(_uri, $"/wallpapers/{name}.jpg").AbsoluteUri;

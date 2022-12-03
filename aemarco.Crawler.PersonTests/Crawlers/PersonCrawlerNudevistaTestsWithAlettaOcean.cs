@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace aemarco.Crawler.PersonTests.Crawlers
 {
+
     internal class PersonCrawlerNudevistaTestsWithAlettaOcean : PersonCrawlerTestsBase<PersonCrawlerNudevista>
     {
 

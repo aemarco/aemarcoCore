@@ -1,9 +1,9 @@
-﻿using aemarco.Crawler.Person.Base;
-using aemarco.Crawler.Person.Common;
+﻿using aemarco.Crawler.Person.Common;
 using aemarco.Crawler.Person.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -52,7 +52,7 @@ namespace aemarco.Crawler.Person
                     continue;
 
                 var crawler = (PersonCrawlerBase)Activator.CreateInstance(type, nameToCrawl);
-                tasks.Add(Task.Run(() => crawler.GetPersonEntry(cancellationToken), cancellationToken));
+                tasks.Add(Task.Run(() => crawler!.GetPersonEntry(cancellationToken), cancellationToken));
             }
 
             //wait for being done
@@ -84,11 +84,10 @@ namespace aemarco.Crawler.Person
 
         internal static List<Type> GetAvailableCrawlerTypes()
         {
-            var types = System.Reflection.Assembly
-                .GetAssembly(typeof(PersonCrawlerBase))
+            var types = Assembly
+                .GetAssembly(typeof(PersonCrawlerBase))!
                 .GetTypes()
-                .Where(x => x.IsSubclassOf(typeof(PersonCrawlerBase)))
-                .Where(x => x.ToCrawlerInfo()?.IsEnabled ?? false)
+                .Where(x => x.IsAvailableCrawler())
                 .OrderBy(x => x.ToCrawlerInfo().Priority)
                 .ToList();
             return types;

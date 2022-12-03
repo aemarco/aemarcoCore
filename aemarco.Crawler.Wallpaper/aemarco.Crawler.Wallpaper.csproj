@@ -4,14 +4,13 @@
 
 	<!-- project definition -->
 	<PropertyGroup>
-	    <TargetFramework>net5.0</TargetFramework>
+	    <TargetFramework>net6.0</TargetFramework>
 		<ApplicationIcon>girl.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<!-- nuget references -->
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Windows.Compatibility" Version="3.0.0" />
-		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
 	</ItemGroup>
 
 	<!-- nuget build-->

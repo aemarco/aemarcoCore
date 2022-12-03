@@ -94,7 +94,6 @@ namespace aemarco.Crawler.Wallpaper.Common
         public HtmlDocumentCacheEntry(HtmlDocument htmlDocument)
         {
             Timestamp = DateTimeOffset.Now;
-            ;
             HtmlDocument = htmlDocument;
         }
 

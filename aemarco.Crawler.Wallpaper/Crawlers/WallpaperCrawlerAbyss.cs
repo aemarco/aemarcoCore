@@ -1,5 +1,4 @@
-﻿using aemarco.Crawler.Wallpaper.Base;
-using aemarco.Crawler.Wallpaper.Common;
+﻿using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Model;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
@@ -12,14 +11,12 @@ using System.Net;
 namespace aemarco.Crawler.Wallpaper.Crawlers
 {
 
-    [WallpaperCrawler("Abyss", true)]
+    [WallpaperCrawler("Abyss")]
     internal class WallpaperCrawlerAbyss : WallpaperCrawlerBasis
     {
         private int _queryCount = -1;
         private readonly Uri _uri = new("https://wall.alphacoders.com");
-        private readonly Uri _muri = new("https://mobile.alphacoders.com");
-
-
+        private readonly Uri _mUri = new("https://mobile.alphacoders.com");
 
         public WallpaperCrawlerAbyss(
             int startPage,
@@ -30,12 +27,20 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
 
         }
 
-        internal override bool IsAvailable => base.IsAvailable && !string.IsNullOrWhiteSpace(_abyssApiKey);
+
+
+        internal override bool IsAvailable =>
+            base.IsAvailable &&
+            !string.IsNullOrWhiteSpace(_abyssApiKey);
+
         private string _abyssApiKey;
         public void ProvideApiKey(string abyssApiKey)
         {
             _abyssApiKey = abyssApiKey;
         }
+
+
+
 
 
         private List<AbyssCategory> _abyssCats;
@@ -51,40 +56,43 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
                 //check how much query counts are left
                 var qc = QueryApi("method=query_count");
                 var qcObj = JsonConvert.DeserializeObject<AbyssQueryCount>(qc);
-                _queryCount = qcObj.counts.month_count;
+                _queryCount = qcObj.Counts.MonthCount;
 
 
 
                 var str = QueryApi("method=category_list");
                 var catResult = JsonConvert.DeserializeObject<AbyssCategoryList>(str);
-                if (catResult.success)
+                if (catResult.Success)
                 {
-                    _abyssCats = catResult.categories.ToList();
-                    foreach (var cat in catResult.categories)
+                    _abyssCats = catResult.Categories.ToList();
+                    foreach (var cat in catResult.Categories)
                     {
-                        if (GetContentCategory(cat.name) is ContentCategory cc)
+                        if (GetContentCategory(cat.Name) is { } cc)
                         {
                             //add api stuff
                             if (_queryCount + 350 < 150000)
                             {
                                 //wallpaper from WallpaperAbyss
                                 _queryCount += 350;
-                                var uri = new Uri(cat.url);
-                                var crawlOffer = CreateCrawlOffer(cat.name, uri, cc);
+                                var uri = new Uri(cat.Url);
+                                var crawlOffer = CreateCrawlOffer(cat.Name, uri, cc);
                                 crawlOffer.CrawlMethod = CrawlMethod.API;
                                 crawlOffer.ReportNumberOfEntriesPerPage(30);
                                 result.Add(crawlOffer);
                             }
 
                             //add classic sites
-                            var muri = new Uri(_muri, $"/by-category/{cat.id}");
-                            var mOffer = CreateCrawlOffer(cat.name, muri, cc);
+                            var muri = new Uri(_mUri, $"/by-category/{cat.Id}");
+                            var mOffer = CreateCrawlOffer(cat.Name, muri, cc);
                             result.Add(mOffer);
                         }
                     }
                 }
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
 
             return result;
 
@@ -136,14 +144,15 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
             // https://wall.alphacoders.com/api2.0/get.php?auth=YOUR_KEY&method=category&id=10&page=10&info_level=2
             var pageString = QueryApi(
                 "method=category",
-                $"id={_abyssCats.First(x => x.name == catJob.SiteCategoryName).id}",
+                $"id={_abyssCats.First(x => x.Name == catJob.SiteCategoryName).Id}",
                 $"page={catJob.CurrentPage}",
                 "check_last=1");
             var page = JsonConvert.DeserializeObject<AbyssWallpaperPage>(pageString);
-            if (!page.success || !page.wallpapers.Any()) return result;
+            if (!page.Success || !page.Wallpapers.Any())
+                return false;
 
 
-            foreach (var w in page.wallpapers)
+            foreach (var w in page.Wallpapers)
             {
                 CancellationToken.ThrowIfCancellationRequested();
 
@@ -160,7 +169,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
             }
 
             catJob.ReportPageDone();
-            if (page.is_last) catJob.ReportEndReached();
+            if (page.IsLast) catJob.ReportEndReached();
 
             //valid Page contains minimum 1 valid Entry
             return result;
@@ -175,19 +184,19 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
             // https://wall.alphacoders.com/api2.0/get.php?auth=YOUR_KEY&method=wallpaper_info&id=595064
             var wallInfoString = QueryApi(
                 "method=wallpaper_info",
-                $"id={wall.id}");
+                $"id={wall.Id}");
             var wallInfo = JsonConvert.DeserializeObject<AbyssWallpaperInfoResult>(wallInfoString);
-            if (!wallInfo.success) return false;
-            var wallInf = wallInfo.wallpaper;
+            if (!wallInfo.Success) return false;
+            var wallInf = wallInfo.Wallpaper;
 
 
-            source.ImageUri = new Uri(wallInf.url_image);
-            source.ThumbnailUri = new Uri(wallInf.url_thumb);
-            source.Filename = $"Abyss_{wallInf.category}_{wallInf.sub_category}_{wallInf.id}";
-            source.Extension = $".{wallInf.file_type}";
-            source.Tags = wallInfo.tags.Select(x => x.name).ToList();
+            source.ImageUri = new Uri(wallInf.UrlImage);
+            source.ThumbnailUri = new Uri(wallInf.UrlThumb);
+            source.Filename = $"Abyss_{wallInf.Category}_{wallInf.SubCategory}_{wallInf.Id}";
+            source.Extension = $".{wallInf.FileType}";
+            source.Tags = wallInfo.Tags.Select(x => x.Name).ToList();
             source.ContentCategory = CheckForRealCategory(catJob.Category, source.Tags, wallInf);
-            if (!string.IsNullOrWhiteSpace(wallInf.sub_category)) source.Tags.Insert(0, wallInf.sub_category);
+            if (!string.IsNullOrWhiteSpace(wallInf.SubCategory)) source.Tags.Insert(0, wallInf.SubCategory);
             source.SiteCategory = catJob.SiteCategoryName;
 
 
@@ -247,10 +256,10 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
         }
         protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
         {
-            var source = new WallEntrySource(_muri, node, catJob.SiteCategoryName);
+            var source = new WallEntrySource(_mUri, node, catJob.SiteCategoryName);
 
             //docs
-            source.DetailsDoc = source.GetChildDocumentFromRootNode(null);
+            source.DetailsDoc = source.GetChildDocumentFromRootNode();
 
 
             //details
@@ -284,9 +293,9 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
             //api walls
             if (info != null)
             {
-                if (info.category == "Women")
+                if (info.Category == "Women")
                 {
-                    switch (info.sub_category)
+                    switch (info.SubCategory)
                     {
                         case "Asian":
                             return new ContentCategory(Category.Girls_Asian, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
@@ -310,9 +319,9 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
                             return new ContentCategory(Category.Girls_Guns, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
                     }
                 }
-                else if (info.category == "Vehicles")
+                else if (info.Category == "Vehicles")
                 {
-                    switch (info.sub_category)
+                    switch (info.SubCategory)
                     {
                         case "Motorcycle":
                             return new ContentCategory(Category.Vehicle_Bikes, cat.SuggestedMinAdultLevel, cat.SuggestedMaxAdultLevel);
@@ -368,16 +377,22 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
 
     public class AbyssCategoryList
     {
-        public bool success { get; set; }
-        public AbyssCategory[] categories { get; set; }
+        [JsonProperty("success")]
+        public bool Success { get; set; }
+        [JsonProperty("categories")]
+        public AbyssCategory[] Categories { get; set; }
     }
 
     public class AbyssCategory
     {
-        public string name { get; set; }
-        public int id { get; set; }
-        public int count { get; set; }
-        public string url { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
+        [JsonProperty("id")]
+        public int Id { get; set; }
+        [JsonProperty("count")]
+        public int Count { get; set; }
+        [JsonProperty("url")]
+        public string Url { get; set; }
     }
 
 
@@ -386,37 +401,54 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
 
     public class AbyssQueryCount
     {
-        public bool success { get; set; }
-        public AbyssCounts counts { get; set; }
+        [JsonProperty("success")]
+        public bool Success { get; set; }
+        [JsonProperty("counts")]
+        public AbyssCounts Counts { get; set; }
     }
 
     public class AbyssCounts
     {
-        public int month_count { get; set; }
-        public int month_price { get; set; }
-        public int last_month_count { get; set; }
-        public int last_month_price { get; set; }
+        [JsonProperty("month_count")]
+        public int MonthCount { get; set; }
+        [JsonProperty("month_price")]
+        public int MonthPrice { get; set; }
+        [JsonProperty("last_month_count")]
+        public int LastMonthCount { get; set; }
+        [JsonProperty("last_month_price")]
+        public int LastMonthPrice { get; set; }
     }
 
 
 
     public class AbyssWallpaperPage
     {
-        public bool success { get; set; }
-        public AbyssWallpaper[] wallpapers { get; set; }
-        public bool is_last { get; set; }
+        [JsonProperty("success")]
+        public bool Success { get; set; }
+        [JsonProperty("wallpapers")]
+        public AbyssWallpaper[] Wallpapers { get; set; }
+        [JsonProperty("is_last")]
+        public bool IsLast { get; set; }
     }
 
     public class AbyssWallpaper
     {
-        public string id { get; set; }
-        public string width { get; set; }
-        public string height { get; set; }
-        public string file_type { get; set; }
-        public string file_size { get; set; }
-        public string url_image { get; set; }
-        public string url_thumb { get; set; }
-        public string url_page { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
+        [JsonProperty("width")]
+        public string Width { get; set; }
+        [JsonProperty("height")]
+        public string Height { get; set; }
+        [JsonProperty("file_type")]
+        public string FileType { get; set; }
+        [JsonProperty("file_size")]
+        public string FileSize { get; set; }
+        [JsonProperty("url_image")]
+        public string UrlImage { get; set; }
+        [JsonProperty("url_thumb")]
+        public string UrlThumb { get; set; }
+        [JsonProperty("url_page")]
+        public string UrlPage { get; set; }
     }
 
 
@@ -424,39 +456,64 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
 
     public class AbyssWallpaperInfoResult
     {
-        public bool success { get; set; }
-        public AbyssWallpaperInfo wallpaper { get; set; }
-        public AbyssTag[] tags { get; set; }
+        [JsonProperty("success")]
+        public bool Success { get; set; }
+        [JsonProperty("wallpaper")]
+        public AbyssWallpaperInfo Wallpaper { get; set; }
+        [JsonProperty("tags")]
+        public AbyssTag[] Tags { get; set; }
     }
 
     public class AbyssWallpaperInfo
     {
-        public string id { get; set; }
-        public string name { get; set; }
-        public object featured { get; set; }
-        public string width { get; set; }
-        public string height { get; set; }
-        public string file_type { get; set; }
-        public string file_size { get; set; }
-        public string url_image { get; set; }
-        public string url_thumb { get; set; }
-        public string url_page { get; set; }
-        public string category { get; set; }
-        public string category_id { get; set; }
-        public string sub_category { get; set; }
-        public string sub_category_id { get; set; }
-        public string user_name { get; set; }
-        public string user_id { get; set; }
-        public object collection { get; set; }
-        public int collection_id { get; set; }
-        public object group { get; set; }
-        public int group_id { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
+        [JsonProperty("featured")]
+        public object Featured { get; set; }
+        [JsonProperty("width")]
+        public string Width { get; set; }
+        [JsonProperty("height")]
+        public string Height { get; set; }
+        [JsonProperty("file_type")]
+        public string FileType { get; set; }
+        [JsonProperty("file_size")]
+        public string FileSize { get; set; }
+        [JsonProperty("url_image")]
+        public string UrlImage { get; set; }
+        [JsonProperty("url_thumb")]
+        public string UrlThumb { get; set; }
+        [JsonProperty("url_page")]
+        public string UrlPage { get; set; }
+        [JsonProperty("category")]
+        public string Category { get; set; }
+        [JsonProperty("category_id")]
+        public string CategoryId { get; set; }
+        [JsonProperty("sub_category")]
+        public string SubCategory { get; set; }
+        [JsonProperty("sub_category_id")]
+        public string SubCategoryId { get; set; }
+        [JsonProperty("user_name")]
+        public string UserName { get; set; }
+        [JsonProperty("user_id")]
+        public string UserId { get; set; }
+        [JsonProperty("collection")]
+        public object Collection { get; set; }
+        [JsonProperty("collection_id")]
+        public int CollectionId { get; set; }
+        [JsonProperty("group")]
+        public object Group { get; set; }
+        [JsonProperty("group_id")]
+        public int GroupId { get; set; }
     }
 
     public class AbyssTag
     {
-        public string id { get; set; }
-        public string name { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
     }
 
 

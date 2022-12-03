@@ -1,11 +1,10 @@
-﻿using System;
+﻿using aemarco.Crawler.Person.Common;
+using aemarco.Crawler.Person.Model;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using aemarco.Crawler.Person.Base;
-using aemarco.Crawler.Person.Common;
-using aemarco.Crawler.Person.Model;
 
-namespace aemarco.Crawler.Person.Crawlers
+namespace aemarco.Crawler.Person.Crawlers.Obsolete
 {
     [PersonCrawler("CoedCherry", 25)]
     internal class PersonCrawlerCoedCherry : PersonCrawlerBase
@@ -64,7 +63,7 @@ namespace aemarco.Crawler.Person.Crawlers
                             .Replace("\n", string.Empty)
                             .Trim();
                         if (str.Contains("("))
-                            str = str.Substring(0, str.IndexOf("("));
+                            str = str.Substring(0, str.IndexOf("(", StringComparison.Ordinal));
 
 
 

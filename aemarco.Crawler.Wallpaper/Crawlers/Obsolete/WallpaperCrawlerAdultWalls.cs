@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using aemarco.Crawler.Wallpaper.Base;
-using aemarco.Crawler.Wallpaper.Common;
+﻿using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Model;
 using HtmlAgilityPack;
+using System;
+using System.Collections.Generic;
+using System.Net;
 
 namespace aemarco.Crawler.Wallpaper.Crawlers.Obsolete
 {
 
-    [WallpaperCrawler("AdultWalls", false)]
+    [WallpaperCrawler("AdultWalls")]
     internal class WallpaperCrawlerAdultWalls : WallpaperCrawlerBasis
     {
         private readonly Uri _uri = new Uri("http://adultwalls.com");
@@ -28,7 +27,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers.Obsolete
         protected override List<CrawlOffer> GetCrawlsOffers()
         {
             var result = new List<CrawlOffer>();
-            
+
             //main page
             var doc = HtmlHelper.GetHtmlDocument(_uri);
             //foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
@@ -53,7 +52,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers.Obsolete
                 var cat = GetContentCategory(text);
                 result.Add(CreateCrawlOffer(text, uri, cat));
             }
-            
+
             return result;
         }
         protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)

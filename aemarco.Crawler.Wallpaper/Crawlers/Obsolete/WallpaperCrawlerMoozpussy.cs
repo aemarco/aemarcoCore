@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using aemarco.Crawler.Wallpaper.Base;
-using aemarco.Crawler.Wallpaper.Common;
+﻿using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Model;
 using HtmlAgilityPack;
+using System;
+using System.Collections.Generic;
+using System.Net;
 
 namespace aemarco.Crawler.Wallpaper.Crawlers.Obsolete
 {
     //site no longer exists
-    [WallpaperCrawler("Moozpussy", false)]
+    [WallpaperCrawler("Moozpussy")]
     internal class WallpaperCrawlerMoozpussy : WallpaperCrawlerBasis
     {
         private readonly Uri _uri = new Uri("http://moozpussy.com/");
@@ -81,7 +80,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers.Obsolete
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@id='post_content']/div[@class='cent']/a/img", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
             source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
-            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='post_z']/a", new Func<HtmlNode, string>(x =>
+            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='post_z']/a", x =>
             {
                 if (x.Attributes["href"] != null &&
                     x.Attributes["href"].Value.StartsWith(_uri.AbsoluteUri))
@@ -89,7 +88,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers.Obsolete
                     return WebUtility.HtmlDecode(x.InnerText).Trim();
                 }
                 return null;
-            }));
+            });
 
 
             var wallEntry = source.WallEntry;

@@ -1,17 +1,16 @@
-﻿using System;
+﻿using aemarco.Crawler.Wallpaper.Common;
+using aemarco.Crawler.Wallpaper.Model;
+using HtmlAgilityPack;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using aemarco.Crawler.Wallpaper.Base;
-using aemarco.Crawler.Wallpaper.Common;
-using aemarco.Crawler.Wallpaper.Model;
-using HtmlAgilityPack;
 
 namespace aemarco.Crawler.Wallpaper.Crawlers.Obsolete
 {
 
     //site no longer exists
-    [WallpaperCrawler("BabesUnivers", false)]
+    [WallpaperCrawler("BabesUnivers")]
     internal class WallpaperCrawlerBabesUnivers : WallpaperCrawlerBasis
     {
         private readonly Uri _uri = new Uri("http://babesunivers.com/");
@@ -87,7 +86,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers.Obsolete
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@class='box-main']/p/img", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, "wallpapers/", "/", catJob.SiteCategoryName);
             source.ContentCategory = catJob.Category;
-            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='col-md-4']/a[@class='btn btn-default btn-xs']", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
+            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='col-md-4']/a[@class='btn btn-default btn-xs']", x => WebUtility.HtmlDecode(x.InnerText).Trim());
 
 
             var wallEntry = source.WallEntry;

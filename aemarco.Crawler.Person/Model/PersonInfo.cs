@@ -1,8 +1,7 @@
-﻿using System;
+﻿using aemarco.Crawler.Person.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using aemarco.Crawler.Person.Base;
-using aemarco.Crawler.Person.Common;
 
 namespace aemarco.Crawler.Person.Model
 {
@@ -38,22 +37,22 @@ namespace aemarco.Crawler.Person.Model
 
             ProfilePictures.AddRange(info.ProfilePictures);
             ProfilePictures = ProfilePictures.Distinct().ToList();
-            Birthday = Birthday ?? info.Birthday;
-            Country = Country ?? info.Country;
-            City = City ?? info.City;
-            Profession = Profession ?? info.Profession;
-            CareerStart = CareerStart ?? info.CareerStart;
-            StillActive = StillActive ?? info.StillActive;
+            Birthday ??= info.Birthday;
+            Country ??= info.Country;
+            City ??= info.City;
+            Profession ??= info.Profession;
+            CareerStart ??= info.CareerStart;
+            StillActive ??= info.StillActive;
             Aliases.AddRange(info.Aliases);
             Aliases = Aliases.Distinct().OrderBy(x => x).ToList();
-            Ethnicity = Ethnicity ?? info.Ethnicity;
-            HairColor = HairColor ?? info.HairColor;
-            EyeColor = EyeColor ?? info.EyeColor;
-            Measurements = Measurements ?? info.Measurements;
-            CupSize = CupSize ?? info.CupSize;
-            Height = Height ?? info.Height;
-            Weight = Weight ?? info.Weight;
-            Piercings = Piercings ?? info.Piercings;
+            Ethnicity ??= info.Ethnicity;
+            HairColor ??= info.HairColor;
+            EyeColor ??= info.EyeColor;
+            Measurements ??= info.Measurements;
+            CupSize ??= info.CupSize;
+            Height ??= info.Height;
+            Weight ??= info.Weight;
+            Piercings ??= info.Piercings;
         }
 
         public string FirstName { get; internal set; }

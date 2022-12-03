@@ -1,5 +1,4 @@
-﻿using aemarco.Crawler.Wallpaper.Base;
-using aemarco.Crawler.Wallpaper.Common;
+﻿using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Model;
 using HtmlAgilityPack;
 using System;
@@ -8,7 +7,7 @@ using System.Net;
 
 namespace aemarco.Crawler.Wallpaper.Crawlers
 {
-    [WallpaperCrawler("Wallpaperscraft", true)]
+    [WallpaperCrawler("Wallpaperscraft")]
     internal class WallpaperCrawlerWallCraft : WallpaperCrawlerBasis
     {
         private readonly Uri _uri = new Uri("https://wallpaperscraft.com");
@@ -145,7 +144,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@class='wallpaper__image']", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
             source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
-            source.Tags = source.GetTagsFromNodes(source.DownloadDoc, "//div[@class='wallpaper__tags']/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
+            source.Tags = source.GetTagsFromNodes(source.DownloadDoc, "//div[@class='wallpaper__tags']/a", x => WebUtility.HtmlDecode(x.InnerText).Trim());
 
 
             var wallEntry = source.WallEntry;

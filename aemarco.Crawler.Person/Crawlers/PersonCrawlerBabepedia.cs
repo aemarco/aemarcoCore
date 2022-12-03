@@ -1,12 +1,11 @@
-﻿using System;
+﻿using aemarco.Crawler.Person.Common;
+using aemarco.Crawler.Person.Model;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using aemarco.Crawler.Person.Base;
-using aemarco.Crawler.Person.Common;
-using aemarco.Crawler.Person.Model;
 
 namespace aemarco.Crawler.Person.Crawlers
 {
@@ -62,176 +61,183 @@ namespace aemarco.Crawler.Person.Crawlers
 
                     result.ProfilePictures.Add(ProfilePicture.FromUrl(uri.AbsoluteUri));
                 }
-            }
 
 
-            //Alias
-            if (nodeWithAlias != null)
-            {
-                var str = nodeWithAlias.InnerText?.Replace("aka ", string.Empty) ?? string.Empty;
-                var als = str.Split('/')
-                    .Select(x => x.Trim())
-                    .Where(x => !string.IsNullOrEmpty(x));
-                result.Aliases.AddRange(als);
-            }
-
-
-            //Data
-            if (nodeWithData != null)
-            {
-                foreach (var node in nodeWithData.ChildNodes)
+                //Alias
+                if (nodeWithAlias != null)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    //skipping
-                    if (node.Name != "li") continue;
-
-
-                    if (node.InnerText.StartsWith("Born:"))
-                    {
-                        var str = node.InnerText
-                            .Replace("Born:", string.Empty)
-                            .Replace("\n", string.Empty)
-                            .Trim();
-
-
-                        var matches = Regex.Matches(str, @"\d+");
-                        var mNames = CultureInfo.InvariantCulture.DateTimeFormat.MonthNames.ToList();
-
-                        if (matches.Count == 2 &&
-                            int.TryParse(matches[0].Value, out var day) &&
-                            int.TryParse(matches[1].Value, out var year) &&
-                            mNames.Any(x => !string.IsNullOrWhiteSpace(x) && Regex.IsMatch(str, x)))
+                    var str = nodeWithAlias.InnerText?.Replace("aka ", string.Empty) ?? string.Empty;
+                    var als = str.Split('/')
+                        .Select(x =>
                         {
-                            var monthName = mNames.First(x => Regex.IsMatch(str, x));
-                            var index = mNames.IndexOf(monthName);
-                            var month = index + 1;
-                            result.Birthday = new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
+                            x = x.Replace("&nbsp;", string.Empty);
 
-                        }
-                    }
-                    else if (node.InnerText.StartsWith("Birthplace:"))
+                            return x.Trim();
+                        })
+                        .Where(x => !string.IsNullOrEmpty(x));
+                    result.Aliases.AddRange(als);
+                }
+
+
+                //Data
+                if (nodeWithData != null)
+                {
+                    foreach (var node in nodeWithData.ChildNodes)
                     {
-                        var str = node.InnerText
-                            .Replace("Birthplace:", string.Empty)
-                            .Replace("\n", string.Empty)
-                            .Trim();
+                        cancellationToken.ThrowIfCancellationRequested();
+                        //skipping
+                        if (node.Name != "li") continue;
 
-                        var parts = str.Split(',');
-                        if (parts.Length == 1)
+
+                        if (node.InnerText.StartsWith("Born:"))
                         {
-                            result.Country = parts[0].Trim();
-                        }
-                        else if (parts.Length == 2)
-                        {
-                            result.City = parts[0].Trim();
-                            result.Country = parts[1].Trim();
-                        }
-                    }
-                    else if (node.InnerText.StartsWith("Profession:"))
-                    {
-                        result.Profession = node.InnerText
-                            .Replace("Profession:", string.Empty)
-                            .Replace("\n", string.Empty)
-                            .Trim();
-                    }
-                    else if (node.InnerText.StartsWith("Ethnicity:"))
-                    {
-                        result.Ethnicity = node.InnerText
-                            .Replace("Ethnicity:", string.Empty)
-                            .Replace("\n", string.Empty)
-                            .Trim();
-                    }
-                    else if (node.InnerText.StartsWith("Hair color:"))
-                    {
-                        result.HairColor = node.InnerText
-                            .Replace("Hair color:", string.Empty)
-                            .Replace("\n", string.Empty)
-                            .Trim();
-                    }
-                    else if (node.InnerText.StartsWith("Eye color:"))
-                    {
-                        result.EyeColor = node.InnerText
-                            .Replace("Eye color:", string.Empty)
-                            .Replace("\n", string.Empty)
-                            .Trim();
-                    }
-                    else if (node.InnerText.StartsWith("Measurements:"))
-                    {
-                        string temp = node.InnerText
-                            .Replace("Measurements:", string.Empty)
-                            .Replace("\n", string.Empty)
-                            .Trim();
-
-                        if (!string.IsNullOrWhiteSpace(temp))
-                        {
-                            string maße = ConvertMaßeToMetric(temp);
-                            result.Measurements = maße;
-
-
-                        }
-
-                    }
-                    else if (node.InnerText.StartsWith("Bra/cup size:"))
-                    {
-                        string temp = node.InnerText
-                            .Replace("Bra/cup size:", string.Empty)
-                            .Replace("\n", string.Empty)
-                            .Trim();
-
-                        if (!string.IsNullOrWhiteSpace(temp))
-                        {
-
-                            string cup = ConvertMaßeToCupSize(temp);
-                            result.CupSize = cup;
-                        }
-
-                    }
-                    else if (node.InnerText.StartsWith("Height:"))
-                    {
-                        var str = node.InnerText
-                                .Replace("Height:", string.Empty)
+                            var str = node.InnerText
+                                .Replace("Born:", string.Empty)
                                 .Replace("\n", string.Empty)
                                 .Trim();
-                        var match = Regex.Match(str.Substring(str.IndexOf('(')), @"\d+");
-                        if (match.Success)
-                        {
-                            result.Height = int.Parse(match.Value);
+
+
+                            var matches = Regex.Matches(str, @"\d+");
+                            var mNames = CultureInfo.InvariantCulture.DateTimeFormat.MonthNames.ToList();
+
+                            if (matches.Count == 2 &&
+                                int.TryParse(matches[0].Value, out var day) &&
+                                int.TryParse(matches[1].Value, out var year) &&
+                                mNames.Any(x => !string.IsNullOrWhiteSpace(x) && Regex.IsMatch(str, x)))
+                            {
+                                var monthName = mNames.First(x => Regex.IsMatch(str, x));
+                                var index = mNames.IndexOf(monthName);
+                                var month = index + 1;
+                                result.Birthday = new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
+
+                            }
                         }
-                    }
-                    else if (node.InnerText.StartsWith("Weight:"))
-                    {
-                        var str = node.InnerText
-                                .Replace("Weight:", string.Empty)
+                        else if (node.InnerText.StartsWith("Birthplace:"))
+                        {
+                            var str = node.InnerText
+                                .Replace("Birthplace:", string.Empty)
                                 .Replace("\n", string.Empty)
                                 .Trim();
-                        var match = Regex.Match(str.Substring(str.IndexOf('(')), @"\d+");
-                        if (match.Success)
-                        {
-                            result.Weight = int.Parse(match.Value);
-                        }
-                    }
-                    else if (node.InnerText.StartsWith("Years active:"))
-                    {
-                        var str = node.InnerText
-                            .Replace("Years active:", string.Empty)
-                            .Replace("\n", string.Empty)
-                            .Trim();
 
-                        var matchStart = Regex.Match(str, @"\d+");
-                        if (matchStart.Success && int.TryParse(matchStart.Value, out var year))
-                        {
-                            result.CareerStart = new DateTime(year, 1, 1);
+                            var parts = str.Split(',');
+                            if (parts.Length == 1)
+                            {
+                                result.Country = parts[0].Trim();
+                            }
+                            else if (parts.Length == 2)
+                            {
+                                result.City = parts[0].Trim();
+                                result.Country = parts[1].Trim();
+                            }
                         }
-                        result.StillActive = IsStillActive(str);
+                        else if (node.InnerText.StartsWith("Profession:"))
+                        {
+                            result.Profession = node.InnerText
+                                .Replace("Profession:", string.Empty)
+                                .Replace("\n", string.Empty)
+                                .Trim();
+                        }
+                        else if (node.InnerText.StartsWith("Ethnicity:"))
+                        {
+                            result.Ethnicity = node.InnerText
+                                .Replace("Ethnicity:", string.Empty)
+                                .Replace("\n", string.Empty)
+                                .Trim();
+                        }
+                        else if (node.InnerText.StartsWith("Hair color:"))
+                        {
+                            result.HairColor = node.InnerText
+                                .Replace("Hair color:", string.Empty)
+                                .Replace("\n", string.Empty)
+                                .Trim();
+                        }
+                        else if (node.InnerText.StartsWith("Eye color:"))
+                        {
+                            result.EyeColor = node.InnerText
+                                .Replace("Eye color:", string.Empty)
+                                .Replace("\n", string.Empty)
+                                .Trim();
+                        }
+                        else if (node.InnerText.StartsWith("Measurements:"))
+                        {
+                            string temp = node.InnerText
+                                .Replace("Measurements:", string.Empty)
+                                .Replace("\n", string.Empty)
+                                .Trim();
+
+                            if (!string.IsNullOrWhiteSpace(temp))
+                            {
+                                string maße = ConvertMaßeToMetric(temp);
+                                result.Measurements = maße;
+
+
+                            }
+
+                        }
+                        else if (node.InnerText.StartsWith("Bra/cup size:"))
+                        {
+                            string temp = node.InnerText
+                                .Replace("Bra/cup size:", string.Empty)
+                                .Replace("\n", string.Empty)
+                                .Trim();
+
+                            if (!string.IsNullOrWhiteSpace(temp))
+                            {
+
+                                string cup = ConvertMaßeToCupSize(temp);
+                                result.CupSize = cup;
+                            }
+
+                        }
+                        else if (node.InnerText.StartsWith("Height:"))
+                        {
+                            var str = node.InnerText
+                                    .Replace("Height:", string.Empty)
+                                    .Replace("\n", string.Empty)
+                                    .Trim();
+                            var match = Regex.Match(str.Substring(str.IndexOf('(')), @"\d+");
+                            if (match.Success)
+                            {
+                                result.Height = int.Parse(match.Value);
+                            }
+                        }
+                        else if (node.InnerText.StartsWith("Weight:"))
+                        {
+                            var str = node.InnerText
+                                    .Replace("Weight:", string.Empty)
+                                    .Replace("\n", string.Empty)
+                                    .Trim();
+                            var match = Regex.Match(str.Substring(str.IndexOf('(')), @"\d+");
+                            if (match.Success)
+                            {
+                                result.Weight = int.Parse(match.Value);
+                            }
+                        }
+                        else if (node.InnerText.StartsWith("Years active:"))
+                        {
+                            var str = node.InnerText
+                                .Replace("Years active:", string.Empty)
+                                .Replace("\n", string.Empty)
+                                .Trim();
+
+                            var matchStart = Regex.Match(str, @"\d+");
+                            if (matchStart.Success && int.TryParse(matchStart.Value, out var year))
+                            {
+                                result.CareerStart = new DateTime(year, 1, 1);
+                            }
+                            result.StillActive = IsStillActive(str);
+                        }
                     }
                 }
+
+
+
             }
 
-
             return Task.FromResult(result);
+
         }
 
-
-
     }
+
 }

@@ -21,9 +21,9 @@ namespace aemarco.Crawler.PersonTests.Crawlers
             ExpectedBirthday = new DateTime(1994, 9, 14, 0, 0, 0, DateTimeKind.Utc);
             ExpectedCountry = "Russian Federation";
             ExpectedPlace = "St. Petersburg";
-            ExpectedProfession = "Porn Star";
+            ExpectedProfession = "Glamour Model (former), Porn Star (former)";
             ExpectedCareerStart = new DateTime(2013, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            ExpectedStillActive = true;
+            ExpectedStillActive = false;
             ExpectedAliases.AddRange(new List<string>
                 {
                     "Foxi Di",
@@ -39,7 +39,7 @@ namespace aemarco.Crawler.PersonTests.Crawlers
             ExpectedEyeColor = "Hazel";
             ExpectedMeasurements = "86-60-86";
             ExpectedCupsize = "B";
-            ExpectedHeight = 165;
+            ExpectedHeight = 157;
             ExpectedWeight = 45;
         }
     }

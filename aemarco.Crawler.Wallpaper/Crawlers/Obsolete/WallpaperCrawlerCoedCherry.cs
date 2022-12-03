@@ -1,5 +1,4 @@
-﻿using aemarco.Crawler.Wallpaper.Base;
-using aemarco.Crawler.Wallpaper.Common;
+﻿using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Model;
 using HtmlAgilityPack;
 using System;
@@ -7,16 +6,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 
-namespace aemarco.Crawler.Wallpaper.Crawlers
+namespace aemarco.Crawler.Wallpaper.Crawlers.Obsolete
 {
-    [WallpaperCrawler("CoedCherry", true)]
+    [WallpaperCrawler("CoedCherry")]
     internal class WallpaperCrawlerCoedCherry : WallpaperCrawlerBasis
     {
         private readonly Uri _uri = new Uri("https://www.coedcherry.com/");
 
 
         public WallpaperCrawlerCoedCherry(
+            // ReSharper disable once UnusedParameter.Local
             int startPage,
+            // ReSharper disable once UnusedParameter.Local
             int lastPage,
             bool onlyNews)
             : base(1, 1, onlyNews)
@@ -157,10 +158,10 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
                     tags = source.GetTagsFromNodes(
                         albumDoc,
                         "//a[@rel='tag']",
-                        new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText)
-                                .Replace("#", string.Empty)
-                                .Replace("-", " ")
-                                .Trim()));
+                        x => WebUtility.HtmlDecode(x.InnerText)
+                            .Replace("#", string.Empty)
+                            .Replace("-", " ")
+                            .Trim());
                 }
 
                 //details

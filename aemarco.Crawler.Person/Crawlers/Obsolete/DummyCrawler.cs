@@ -1,13 +1,13 @@
-﻿using System;
+﻿using aemarco.Crawler.Person.Common;
+using aemarco.Crawler.Person.Model;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using aemarco.Crawler.Person.Common;
-using aemarco.Crawler.Person.Model;
 
-namespace aemarco.Crawler.Person.Base
+namespace aemarco.Crawler.Person.Crawlers.Obsolete
 {
 
-    [PersonCrawler("DummyCrawler", int.MaxValue, isEnabled: false)]
+    [PersonCrawler("DummyCrawler", int.MaxValue)]
     internal class DummyCrawler : PersonCrawlerBase
     {
         public DummyCrawler(string nameToCrawl)

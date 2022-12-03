@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using aemarco.Crawler.Person.Model;
+using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using aemarco.Crawler.Person.Model;
 
-namespace aemarco.Crawler.Person.Base
+namespace aemarco.Crawler.Person.Common
 {
     internal abstract class PersonCrawlerBase
     {
@@ -27,8 +28,11 @@ namespace aemarco.Crawler.Person.Base
 
 
             if (Regex.IsMatch(text, "retired", RegexOptions.IgnoreCase) ||
-                Regex.Match(text, @"\d+").Groups.Count == 2) // 2013 - 2015
+                Regex.IsMatch(text, @"- \d{4,4}")) // - 2015
                 return false;
+
+
+
 
             return null;
         }
@@ -90,18 +94,18 @@ namespace aemarco.Crawler.Person.Base
             var inches = 0;
             if (str.Contains("'"))
             {
-                var feetstring = str.Substring(0, str.IndexOf("'")).Trim();
-                if (int.TryParse(feetstring, out var feet)) inches += feet * 12;
-                str = str.Substring(str.IndexOf("'") + 1);
+                var feetString = str[..str.IndexOf("'", StringComparison.Ordinal)].Trim();
+                if (int.TryParse(feetString, out var feet)) inches += feet * 12;
+                str = str.Substring(str.IndexOf("'", StringComparison.Ordinal) + 1);
             }
             if (str.Contains("\""))
             {
-                var inchstring = str.Substring(0, str.IndexOf("\"")).Trim();
-                if (int.TryParse(inchstring, out var inch)) inches += inch;
+                var inchString = str[..str.IndexOf("\"", StringComparison.Ordinal)].Trim();
+                if (int.TryParse(inchString, out var inch)) inches += inch;
             }
 
             var cm = (int)(inches * 2.54);
-            return (cm > 0) ? cm : default(int?);
+            return cm > 0 ? cm : default(int?);
         }
 
 
@@ -124,7 +128,7 @@ namespace aemarco.Crawler.Person.Base
                 kilos = (int)(1.0 * lbs / 2.20462);
             }
 
-            return (kilos > 0) ? kilos : default(int?);
+            return kilos > 0 ? kilos : default(int?);
         }
 
 

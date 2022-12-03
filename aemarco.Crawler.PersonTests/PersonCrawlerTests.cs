@@ -23,10 +23,7 @@ namespace aemarco.Crawler.PersonTests
 
             foreach (var info in infos)
             {
-                if (info.IsEnabled)
-                    available.Should().Contain(info.FriendlyName);
-                else
-                    available.Should().NotContain(info.FriendlyName);
+                available.Should().Contain(info.FriendlyName);
             }
         }
 
@@ -44,7 +41,7 @@ namespace aemarco.Crawler.PersonTests
             var result = await crawler.StartAsync("Foxi Di", CancellationToken.None);
 
             result.ProfilePictures.Count.Should().Be(7);
-            result.Aliases.Count.Should().Be(19);
+            result.Aliases.Count.Should().Be(13);
             result.Piercings.Should().Be("Navel");
 
         }

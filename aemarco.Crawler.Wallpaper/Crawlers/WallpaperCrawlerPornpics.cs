@@ -1,5 +1,4 @@
-﻿using aemarco.Crawler.Wallpaper.Base;
-using aemarco.Crawler.Wallpaper.Common;
+﻿using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Model;
 using HtmlAgilityPack;
 using System;
@@ -9,15 +8,17 @@ using System.Net;
 
 namespace aemarco.Crawler.Wallpaper.Crawlers
 {
-    [WallpaperCrawler("Pornpics", true)]
+    [WallpaperCrawler("Pornpics")]
     internal class WallpaperCrawlerPornpics : WallpaperCrawlerBasis
     {
-        private readonly Uri _uri = new Uri("https://www.pornpics.com/");
+        private readonly Uri _uri = new("https://www.pornpics.com/");
 
 
 
         public WallpaperCrawlerPornpics(
+            // ReSharper disable once UnusedParameter.Local
             int startPage,
+            // ReSharper disable once UnusedParameter.Local
             int lastPage,
             bool onlyNews)
             : base(1, 1, onlyNews)
@@ -232,12 +233,12 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
                     tags = source.GetTagsFromNodes(
                         albumDoc,
                         "//div[@class='gallery-info__item tags']/div/a/span",
-                        new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
+                        x => WebUtility.HtmlDecode(x.InnerText).Trim());
 
                     tags.AddRange(source.GetTagsFromNodes(
                         albumDoc,
                         "//div[@class='gallery-info__item']/div/a/span",
-                        new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim())));
+                        x => WebUtility.HtmlDecode(x.InnerText).Trim()));
                 }
 
 

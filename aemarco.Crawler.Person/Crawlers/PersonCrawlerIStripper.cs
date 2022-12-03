@@ -1,9 +1,8 @@
-﻿using System;
+﻿using aemarco.Crawler.Person.Common;
+using aemarco.Crawler.Person.Model;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using aemarco.Crawler.Person.Base;
-using aemarco.Crawler.Person.Common;
-using aemarco.Crawler.Person.Model;
 
 namespace aemarco.Crawler.Person.Crawlers
 {
@@ -65,8 +64,10 @@ namespace aemarco.Crawler.Person.Crawlers
                     {
                         continue;
                     }
+
+
                     //Land
-                    else if (node.InnerText.Contains("Land:"))
+                    if (node.InnerText.Contains("Land:"))
                     {
                         result.Country = node.InnerText.Replace("Land:", string.Empty).Trim();
                     }
@@ -85,20 +86,26 @@ namespace aemarco.Crawler.Person.Crawlers
                         try
                         {
                             var str = node.InnerText.Replace("Größe", string.Empty).Trim();
-                            str = str.Substring(0, str.IndexOf("cm") - 1).Trim();
+                            str = str.Substring(0, str.IndexOf("cm", StringComparison.Ordinal) - 1).Trim();
                             result.Height = Convert.ToInt32(str);
                         }
-                        catch { }
+                        catch
+                        {
+                            // ignored
+                        }
                     }
                     else if (node.InnerText.Contains("Gewicht:"))
                     {
                         try
                         {
                             var str = node.InnerText.Replace("Gewicht:", string.Empty).Trim();
-                            str = str.Substring(0, str.IndexOf("kg") - 1).Trim();
+                            str = str.Substring(0, str.IndexOf("kg", StringComparison.Ordinal) - 1).Trim();
                             result.Weight = Convert.ToInt32(str);
                         }
-                        catch { }
+                        catch
+                        {
+                            // ignored
+                        }
                     }
 
                 }

@@ -1,5 +1,4 @@
-﻿using aemarco.Crawler.Wallpaper.Base;
-using aemarco.Crawler.Wallpaper.Common;
+﻿using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Model;
 using HtmlAgilityPack;
 using System;
@@ -9,7 +8,7 @@ using System.Net;
 namespace aemarco.Crawler.Wallpaper.Crawlers
 {
 
-    [WallpaperCrawler("Wallhaven", true)]
+    [WallpaperCrawler("Wallhaven")]
     internal class WallpaperCrawlerWallhaven : WallpaperCrawlerBasis
     {
         private readonly Uri _uri = new Uri("https://wallhaven.cc");
@@ -59,7 +58,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
         {
 
             //z.B. "https://alpha.wallhaven.cc/search?q=&categories=001&purity=010&sorting=date_added&order=desc&page=1"
-            return new Uri($"{catJob.CategoryUri.AbsoluteUri}&page={ catJob.CurrentPage }");
+            return new Uri($"{catJob.CategoryUri.AbsoluteUri}&page={catJob.CurrentPage}");
         }
         protected override string GetSearchStringGorEntryNodes()
         {
@@ -95,7 +94,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
             //details
             source.ImageUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@id='wallpaper']", "src");
             source.ThumbnailUri = new Uri(_uri, source.GetSubNodeAttribute(node, "data-src", "./img[@alt='loading']"));
-            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//ul[@id='tags']/li", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
+            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//ul[@id='tags']/li", x => WebUtility.HtmlDecode(x.InnerText).Trim());
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
             source.ContentCategory = GetContentCategory(catJob.SiteCategoryName);
 

@@ -1,5 +1,4 @@
-﻿using aemarco.Crawler.Wallpaper.Common;
-using aemarco.Crawler.Wallpaper.Model;
+﻿using aemarco.Crawler.Wallpaper.Model;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace aemarco.Crawler.Wallpaper.Base
+namespace aemarco.Crawler.Wallpaper.Common
 {
     internal abstract class WallpaperCrawlerBasis
     {
@@ -24,7 +23,9 @@ namespace aemarco.Crawler.Wallpaper.Base
             _onlyNews = onlyNews;
         }
 
-        internal virtual bool IsAvailable => GetType().ToCrawlerInfo().IsEnabled;
+        internal virtual bool IsAvailable => GetType().IsAvailableCrawler();
+
+
 
         internal event EventHandler EntryFound;
 
@@ -55,7 +56,10 @@ namespace aemarco.Crawler.Wallpaper.Base
                 _crawlOffers ??= GetCrawlsOffers().Where(x => x.Category != null).ToList();
                 return _crawlOffers;
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
 
             return Array.Empty<CrawlOffer>();
 

@@ -26,11 +26,11 @@ namespace aemarco.Crawler.PersonTests.Base
             var type = PersonCrawler
                     .GetAvailableCrawlerTypes()
                     .FirstOrDefault(x => x.FullName == typeof(T).FullName);
+
+            if (type is null)
+                throw new Exception($"Type {typeof(T).FullName} not available");
+
             Info = type.ToCrawlerInfo();
-
-            if (!Info.IsEnabled)
-                return;
-
 
             var crawler = new PersonCrawler();
             crawler.AddPersonSiteFilter(Info.FriendlyName);

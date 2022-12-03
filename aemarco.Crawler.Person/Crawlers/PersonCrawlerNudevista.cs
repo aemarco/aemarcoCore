@@ -1,9 +1,8 @@
-﻿using System;
+﻿using aemarco.Crawler.Person.Common;
+using aemarco.Crawler.Person.Model;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using aemarco.Crawler.Person.Base;
-using aemarco.Crawler.Person.Common;
-using aemarco.Crawler.Person.Model;
 
 namespace aemarco.Crawler.Person.Crawlers
 {
@@ -90,7 +89,10 @@ namespace aemarco.Crawler.Person.Crawlers
 
                             result.CareerStart = new DateTime(Convert.ToInt32(str), 1, 1);
                         }
-                        catch { }
+                        catch
+                        {
+                            // ignored
+                        }
                     }
                     else if (node.InnerText.Contains("Karrierestatus:"))
                     {
@@ -103,9 +105,8 @@ namespace aemarco.Crawler.Person.Crawlers
                     //Aliase
                     else if (node.InnerText.Contains("Auch bekannt als"))
                     {
-                        var aliasString = node.InnerText;
                         //Auch bekannt als Becky Lesabre, Beth Porter.
-                        aliasString = node.InnerText.Replace("Auch bekannt als", string.Empty);
+                        var aliasString = node.InnerText.Replace("Auch bekannt als", string.Empty);
                         aliasString = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(aliasString.ToLower());
                         // Becky Lesabre, Beth Porter.
                         if (aliasString.EndsWith("."))
@@ -151,22 +152,28 @@ namespace aemarco.Crawler.Person.Crawlers
                         try
                         {
                             var str = node.InnerText;
-                            str = str.Substring(str.IndexOf("(") + 1);
-                            str = str.Substring(0, str.IndexOf("cm)") - 1);
+                            str = str.Substring(str.IndexOf("(", StringComparison.Ordinal) + 1);
+                            str = str.Substring(0, str.IndexOf("cm)", StringComparison.Ordinal) - 1);
                             result.Height = Convert.ToInt32(str);
                         }
-                        catch { }
+                        catch
+                        {
+                            // ignored
+                        }
                     }
                     else if (node.InnerText.Contains("Gewicht:"))
                     {
                         try
                         {
                             var str = node.InnerText;
-                            str = str.Substring(str.IndexOf("(") + 1);
-                            str = str.Substring(0, str.IndexOf("kg)") - 1);
+                            str = str.Substring(str.IndexOf("(", StringComparison.Ordinal) + 1);
+                            str = str.Substring(0, str.IndexOf("kg)", StringComparison.Ordinal) - 1);
                             result.Weight = Convert.ToInt32(str);
                         }
-                        catch { }
+                        catch
+                        {
+                            // ignored
+                        }
                     }
                     else if (node.InnerText.Contains("Piercings:"))
                     {

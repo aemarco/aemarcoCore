@@ -15,11 +15,10 @@ namespace aemarco.Crawler.PersonTests.Crawlers
                 "https://www.babepedia.com/pics/Chloe%20Temple.jpg",
                 "https://www.babepedia.com/pics/Chloe%20Temple2.jpg",
                 "https://www.babepedia.com/pics/Chloe%20Temple3.jpg",
-                "https://www.babepedia.com/pics/Chloe%20Temple4.jpg"
             });
-            ExpectedBirthday = new DateTime(1998, 2, 6, 0, 0, 0, DateTimeKind.Utc);
+            ExpectedBirthday = new DateTime(2000, 2, 6, 0, 0, 0, DateTimeKind.Utc);
             ExpectedCountry = "United States";
-            ExpectedProfession = "Porn Star";
+            ExpectedProfession = "Adult Model, Porn Star";
             ExpectedAliases.AddRange(new List<string>
             {
                 "Clara Fargo"
@@ -29,7 +28,7 @@ namespace aemarco.Crawler.PersonTests.Crawlers
             ExpectedEyeColor = "Brown";
             ExpectedMeasurements = "81-60-88";
             ExpectedCupsize = "B";
-            ExpectedHeight = 157;
+            ExpectedHeight = 160;
             ExpectedStillActive = true;
         }
     }

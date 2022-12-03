@@ -1,5 +1,4 @@
-﻿using aemarco.Crawler.Wallpaper.Base;
-using aemarco.Crawler.Wallpaper.Common;
+﻿using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Model;
 using HtmlAgilityPack;
 using System;
@@ -8,7 +7,7 @@ using System.Net;
 
 namespace aemarco.Crawler.Wallpaper.Crawlers
 {
-    [WallpaperCrawler("Ftop", true)]
+    [WallpaperCrawler("Ftop")]
     internal class WallpaperCrawlerFtop : WallpaperCrawlerBasis
     {
 
@@ -86,7 +85,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@class='img-responsive img-rounded']", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
             source.ContentCategory = catJob.Category;
-            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='well well-sm']/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
+            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='well well-sm']/a", x => WebUtility.HtmlDecode(x.InnerText).Trim());
 
 
 

@@ -1,5 +1,4 @@
-﻿using aemarco.Crawler.Wallpaper.Base;
-using aemarco.Crawler.Wallpaper.Common;
+﻿using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Model;
 using HtmlAgilityPack;
 using System;
@@ -10,7 +9,7 @@ using System.Net;
 namespace aemarco.Crawler.Wallpaper.Crawlers
 {
 
-    [WallpaperCrawler("Mota", true)]
+    [WallpaperCrawler("Mota")]
     internal class WallpaperCrawlerMota : WallpaperCrawlerBasis
     {
         public WallpaperCrawlerMota(
@@ -51,7 +50,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
                     continue;
                 }
 
-                Uri targetUri = null;
+                Uri targetUri;
                 if (node.Attributes["class"]?.Value == "erotica")
                 {
                     targetUri = _erouri;
@@ -125,7 +124,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
         {
             //z.B. "https://motaen.com/categories/view/name/male-celebrities"                
             var href = catJob.CategoryUri.AbsolutePath;
-            href = href.Insert(href.IndexOf("view/") + 5, $"page/{catJob.CurrentPage}/order/date/");
+            href = href.Insert(href.IndexOf("view/", StringComparison.Ordinal) + 5, $"page/{catJob.CurrentPage}/order/date/");
             return new Uri(catJob.CategoryUri, href);
         }
         protected override string GetSearchStringGorEntryNodes()
@@ -157,7 +156,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers
             source.ImageUri = source.GetUriFromDocument(source.DownloadDoc, "//div[@class='full-img col-md-9']/img", "src");
             source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@class='desk-img']/img", "src");
             (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
-            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//ul[@id='tags-container']/li/a", new Func<HtmlNode, string>(x => WebUtility.HtmlDecode(x.InnerText).Trim()));
+            source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//ul[@id='tags-container']/li/a", x => WebUtility.HtmlDecode(x.InnerText).Trim());
             source.ContentCategory = GetContentCategory(catJob.SiteCategoryName, source.Tags);
 
             var wallEntry = source.WallEntry;

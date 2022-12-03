@@ -11,6 +11,19 @@ namespace aemarco.Crawler.Person.Common
             return crawlerType.GetCustomAttribute<PersonCrawlerAttribute>();
 
         }
+
+
+        public static bool IsAvailableCrawler(this Type crawlerType)
+        {
+            if (!crawlerType.IsSubclassOf(typeof(PersonCrawlerBase)))
+                return false;
+
+            if (crawlerType.Namespace is null || crawlerType.Namespace.EndsWith("Obsolete"))
+                return false;
+
+
+            return true;
+        }
     }
 
 }
