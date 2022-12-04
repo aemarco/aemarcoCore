@@ -47,12 +47,18 @@ internal class Zoomgirls : WallpaperCrawlerBasis
         //docs
         source.DetailsDoc = source.GetChildDocumentFromRootNode();
         if (source.DetailsDoc is null)
+        {
+            AddWarning($"Could not read DetailsDoc from node {node.InnerHtml}");
             return false;
+        }
 
         //details
         var imageUri = GetImageUrl(source.DetailsDoc);
         if (string.IsNullOrEmpty(imageUri))
+        {
+            AddWarning($"Could not get ImageUri from node {source.DetailsDoc.DocumentNode.InnerHtml}");
             return false;
+        }
 
         source.ImageUri = new Uri(imageUri);
         source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='wallpaper-thumb']/img", "src");

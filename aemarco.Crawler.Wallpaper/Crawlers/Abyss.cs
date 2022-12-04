@@ -225,17 +225,23 @@ internal class Abyss : WallpaperCrawlerBasis
         //docs
         source.DetailsDoc = source.GetChildDocumentFromRootNode();
         if (source.DetailsDoc is null)
+        {
+            AddWarning($"Could not read DetailsDoc from node {node.InnerHtml}");
             return false;
+        }
 
         //details
         source.ImageUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@class='img-full-size']", "src");
-
+        if (source.ImageUri is null)
+        {
+            AddWarning($"Could not get ImageUri from node {source.DetailsDoc.DocumentNode.InnerHtml}");
+            return false;
+        }
         var thumbUrl = source.GetSubNodeAttribute(source.RootNode, "src", "./img[@class='img-responsive']");
         if (thumbUrl is not null)
             source.ThumbnailUri = new Uri(thumbUrl);
 
-        if (source.ImageUri is not null)
-            (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
+        (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
 
 
         source.Tags = source.GetTagsFromNode(source.RootNode, "title", "./img[@class='img-responsive']");

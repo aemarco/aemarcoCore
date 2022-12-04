@@ -65,14 +65,21 @@ internal class Wallhaven : WallpaperCrawlerBasis
         //docs
         source.DetailsDoc = source.GetChildDocumentFromRootNode("./a[@class='preview']");
         if (source.DetailsDoc is null)
+        {
+            AddWarning($"Could not read DetailsDoc from node {node.InnerHtml}");
             return false;
+        }
 
         //details
         source.ImageUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@id='wallpaper']", "src");
+        if (source.ImageUri is null)
+        {
+            AddWarning($"Could not get ImageUri from node {source.DetailsDoc.DocumentNode.InnerHtml}");
+            return false;
+        }
         source.ThumbnailUri = new Uri(_uri, source.GetSubNodeAttribute(node, "data-src", "./img[@alt='loading']"));
         source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//ul[@id='tags']/li", x => WebUtility.HtmlDecode(x.InnerText).Trim());
-        if (source.ImageUri is not null)
-            (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
+        (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
         source.ContentCategory = catJob.Category;
 
 

@@ -15,6 +15,8 @@ namespace aemarco.Crawler.WallpaperTests;
 [SingleThreaded]
 public class WallpaperCrawlerTests
 {
+    private Random _random = new();
+
 
     [Test]
     public void GetAvailableSites_Delivers()
@@ -91,6 +93,9 @@ public class WallpaperCrawlerTests
     [TestCaseSource(nameof(CrawlerCombinations))]
     public async Task Crawler_DoesWork(string site, string cat)
     {
+
+        await WaitForSite(site);
+
         var crawler = GetCrawler();
         crawler.AddSourceSiteFilter(site);
         crawler.AddCategoryFilter(cat);
@@ -111,6 +116,8 @@ public class WallpaperCrawlerTests
         catch (OperationCanceledException)
         { }
 
+        c.Result.Warnings.Count.Should().Be(0);
+
         if (c.Result.NewEntries.FirstOrDefault() is { } wallEntry)
         {
             await TestContext.Out.WriteLineAsync(
@@ -127,6 +134,8 @@ public class WallpaperCrawlerTests
         }
         else
             Assert.Fail($"{site} - {cat} found no entry.");
+
+
     }
 
 
@@ -184,6 +193,17 @@ public class WallpaperCrawlerTests
         return result;
     }
 
+    private async Task WaitForSite(string site)
+    {
+        var min = 100;
+        var max = 101;
+        if (site == "Wallpaperscraft")
+        {
+            min = 700;
+            max = 2500;
+        }
+        await Task.Delay(_random.Next(min, max));
+    }
     private static void OutputOffers(WallpaperCrawler crawler)
     {
         var offers = crawler._wallCrawlers

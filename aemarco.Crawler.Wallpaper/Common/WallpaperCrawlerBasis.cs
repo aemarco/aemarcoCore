@@ -176,11 +176,11 @@ internal abstract class WallpaperCrawlerBasis
             NumberOfCrawlersInvolved = 1
         };
 
-        await Task.Delay(100, CancellationToken)
-            .ConfigureAwait(false);
-
-        HandleAll();
-        CancellationToken.ThrowIfCancellationRequested();
+        await Task.Run(() =>
+        {
+            HandleAll();
+            CancellationToken.ThrowIfCancellationRequested();
+        }, cancellationToken);
 
         return Result;
     }
@@ -349,6 +349,11 @@ internal abstract class WallpaperCrawlerBasis
             _knownUrls.AddRange(entry.Entries.Select(x => x.Url!));
         }
         EntryFound?.Invoke(this, EventArgs.Empty);
+    }
+
+    protected void AddWarning(string warning)
+    {
+        Result.Warnings.Add($"{GetType().ToCrawlerInfo().FriendlyName}: {warning}");
     }
 
     #endregion

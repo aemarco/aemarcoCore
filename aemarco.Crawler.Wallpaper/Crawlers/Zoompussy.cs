@@ -69,13 +69,20 @@ internal class Zoompussy : WallpaperCrawlerBasis
         //docs
         source.DetailsDoc = source.GetChildDocumentFromRootNode();
         if (source.DetailsDoc is null)
+        {
+            AddWarning($"Could not read DetailsDoc from node {node.InnerHtml}");
             return false;
+        }
 
         //details
         source.ImageUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@id='post_content']/blockquote/a", "href");
+        if (source.ImageUri is null)
+        {
+            AddWarning($"Could not get ImageUri from node {source.DetailsDoc.DocumentNode.InnerHtml}");
+            return false;
+        }
         source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@id='post_content']/blockquote/a/img", "src");
-        if (source.ImageUri is not null)
-            (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
+        (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
         source.ContentCategory = catJob.Category;
         source.Tags = source.GetTagsFromNodes(
             source.DetailsDoc,

@@ -134,16 +134,26 @@ internal class WallCraft : WallpaperCrawlerBasis
         //docs
         source.DetailsDoc = source.GetChildDocumentFromRootNode("./a", 700, 2500);
         if (source.DetailsDoc is null)
+        {
+            AddWarning($"Could not read DetailsDoc from node {node.InnerHtml}");
             return false;
+        }
         source.DownloadDoc = source.GetChildDocumentFromDocument(source.DetailsDoc, "//div[@class='wallpaper-table__row']/span[@class='wallpaper-table__cell']/a", 700, 2500);
         if (source.DownloadDoc is null)
+        {
+            AddWarning($"Could not read DownloadDoc from node {node.InnerHtml}");
             return false;
+        }
 
         //details
         source.ImageUri = source.GetUriFromDocument(source.DownloadDoc, "//img[@class='wallpaper__image']", "src");
+        if (source.ImageUri is null)
+        {
+            AddWarning($"Could not get ImageUri from node {source.DownloadDoc.DocumentNode.InnerHtml}");
+            return false;
+        }
         source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@class='wallpaper__image']", "src");
-        if (source.ImageUri is not null)
-            (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
+        (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
         source.ContentCategory = catJob.Category;
         source.Tags = source.GetTagsFromNodes(source.DownloadDoc, "//div[@class='wallpaper__tags']/a", x => WebUtility.HtmlDecode(x.InnerText).Trim());
 

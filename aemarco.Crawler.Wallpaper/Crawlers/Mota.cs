@@ -140,7 +140,10 @@ internal class Mota : WallpaperCrawlerBasis
         //docs
         source.DetailsDoc = source.GetChildDocumentFromRootNode();
         if (source.DetailsDoc is null)
+        {
+            AddWarning($"Could not read DetailsDoc from node {node.InnerHtml}");
             return false;
+        }
 
         var detailLinkNode = source.DetailsDoc.DocumentNode.SelectNodes("//div[@class='download-wallpaper']/ul")
             .ToList()
@@ -149,13 +152,20 @@ internal class Mota : WallpaperCrawlerBasis
             .First(x => x.FirstChild.Name == "a");
         source.DownloadDoc = source.GetChildDocumentFromNode(detailLinkNode, "./a");
         if (source.DownloadDoc is null)
+        {
+            AddWarning($"Could not read DownloadDoc from node {node.InnerHtml}");
             return false;
+        }
 
         //details
         source.ImageUri = source.GetUriFromDocument(source.DownloadDoc, "//div[@class='full-img col-md-9']/img", "src");
+        if (source.ImageUri is null)
+        {
+            AddWarning($"Could not get ImageUri from node {source.DownloadDoc.DocumentNode.InnerHtml}");
+            return false;
+        }
         source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@class='desk-img']/img", "src");
-        if (source.ImageUri is not null)
-            (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
+        (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
         source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//ul[@id='tags-container']/li/a", x => WebUtility.HtmlDecode(x.InnerText).Trim());
         source.ContentCategory = GetContentCategory(catJob.SiteCategoryName, source.Tags);
 

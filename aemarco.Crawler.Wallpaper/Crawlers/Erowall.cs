@@ -84,24 +84,32 @@ internal class Erowall : WallpaperCrawlerBasis
     protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
     {
         var href = node.Attributes["href"]?.Value;
-
         if (href is null)
+        {
+            AddWarning($"Could not read href from node {node.InnerHtml}");
             return false;
-
-
-        //details
-        var match = Regex.Match(href, @"/(\d+)/$");
-        // z.B. "24741"
-        var imageLink = match.Groups[1].Value;
+        }
 
         var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
         //docs
         source.DetailsDoc = source.GetChildDocumentFromRootNode();
         if (source.DetailsDoc is null)
+        {
+            AddWarning($"Could not read DetailsDoc from node {node.InnerHtml}");
             return false;
+        }
 
         //details
+        var match = Regex.Match(href, @"/(\d+)/$");
+        // z.B. "24741"
+        var imageLink = match.Groups[1].Value;
+        if (string.IsNullOrWhiteSpace(imageLink))
+        {
+            AddWarning($"Could not get imageLink from href {href}");
+            return false;
+        }
+
         source.ImageUri = new Uri(_uri, $"/wallpapers/original/{imageLink}.jpg");
         source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@class='view-left']/a/img", "src");
         (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);

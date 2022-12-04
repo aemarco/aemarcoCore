@@ -1,4 +1,5 @@
-﻿namespace aemarco.Crawler.Wallpaper;
+﻿// ReSharper disable UnusedMethodReturnValue.Global
+namespace aemarco.Crawler.Wallpaper;
 
 public class WallpaperCrawler
 {
@@ -143,7 +144,8 @@ public class WallpaperCrawler
             NewEntries = entries.SelectMany(x => x.NewEntries).ToList(),
             KnownEntries = entries.SelectMany(x => x.KnownEntries).ToList(),
             NewAlbums = entries.SelectMany(x => x.NewAlbums).ToList(),
-            KnownAlbums = entries.SelectMany(x => x.KnownAlbums).ToList()
+            KnownAlbums = entries.SelectMany(x => x.KnownAlbums).ToList(),
+            Warnings = entries.SelectMany(x => x.Warnings).ToList()
         };
         return result;
     }
