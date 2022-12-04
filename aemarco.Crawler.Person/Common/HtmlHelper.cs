@@ -1,66 +1,59 @@
-﻿using System;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using HtmlAgilityPack;
+﻿namespace aemarco.Crawler.Person.Common;
 
-namespace aemarco.Crawler.Person.Common
+public static class HtmlHelper
 {
-    public static class HtmlHelper
+    private static readonly SemaphoreSlim Gate = new SemaphoreSlim(1);
+    private static readonly Random Random = new Random();
+
+    public static HtmlDocument GetHtmlDocument(Uri uri, int? minDelay = null, int? maxDelay = null)
     {
-        private static readonly SemaphoreSlim Gate = new SemaphoreSlim(1);
-        private static readonly Random Random = new Random();
+        Gate.Wait();
 
-        public static HtmlDocument GetHtmlDocument(Uri uri, int? minDelay = null, int? maxDelay = null)
+        if (minDelay.HasValue && maxDelay.HasValue)
+            Task.Delay(Random.Next(minDelay.Value, maxDelay.Value)).GetAwaiter().GetResult();
+
+        try
         {
-            Gate.Wait();
-
-            if (minDelay.HasValue && maxDelay.HasValue)
-                Task.Delay(Random.Next(minDelay.Value, maxDelay.Value)).GetAwaiter().GetResult();
-
-            try
-            {
-                return TryGetHtmlDocument(uri);
-            }
-            finally
-            {
-                Gate.Release();
-            }
+            return TryGetHtmlDocument(uri);
         }
-
-        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
-        private static HtmlDocument TryGetHtmlDocument(Uri uri, int retry = 0)
+        finally
         {
-            try
-            {
-                var web = new HtmlWeb()
-                {
-                    PreRequest = request =>
-                    {
-                        request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
-                        return true;
-                    }
-                };
-                return web.Load(uri);
-            }
-            catch (WebException ex)
-            {
-                if (retry >= 5)
-                {
-                    throw;
-                }
+            Gate.Release();
+        }
+    }
 
-                if (ex.Status == WebExceptionStatus.TrustFailure)
+    // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
+    private static HtmlDocument TryGetHtmlDocument(Uri uri, int retry = 0)
+    {
+        try
+        {
+            var web = new HtmlWeb()
+            {
+                PreRequest = request =>
                 {
-                    return TryGetHtmlDocument(new Uri(uri.AbsoluteUri.Replace("https", "http")));
+                    request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
+                    return true;
                 }
-                else if (ex.Status == WebExceptionStatus.Timeout)
-                {
-                    return TryGetHtmlDocument(uri, ++retry);
-                }
+            };
+            return web.Load(uri);
+        }
+        catch (WebException ex)
+        {
+            if (retry >= 5)
+            {
                 throw;
             }
-        }
 
+            if (ex.Status == WebExceptionStatus.TrustFailure)
+            {
+                return TryGetHtmlDocument(new Uri(uri.AbsoluteUri.Replace("https", "http")));
+            }
+            else if (ex.Status == WebExceptionStatus.Timeout)
+            {
+                return TryGetHtmlDocument(uri, ++retry);
+            }
+            throw;
+        }
     }
+
 }

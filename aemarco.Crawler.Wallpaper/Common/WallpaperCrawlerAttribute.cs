@@ -1,14 +1,11 @@
-﻿using System;
+﻿namespace aemarco.Crawler.Wallpaper.Common;
 
-namespace aemarco.Crawler.Wallpaper.Common
+public class WallpaperCrawlerAttribute : Attribute
 {
-    public class WallpaperCrawlerAttribute : Attribute
+    public WallpaperCrawlerAttribute(string friendlyName)
     {
-        public WallpaperCrawlerAttribute(string friendlyName)
-        {
-            FriendlyName = friendlyName;
-        }
-        public string FriendlyName { get; }
-
+        FriendlyName = friendlyName;
     }
+    public string FriendlyName { get; }
+
 }

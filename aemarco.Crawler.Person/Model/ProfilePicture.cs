@@ -1,20 +1,19 @@
-﻿namespace aemarco.Crawler.Person.Model
-{
-    public class ProfilePicture
-    {
-        public static ProfilePicture FromUrl(string url, int? suggestedMinAdultLevel = null, int? suggestedMaxAdultLevel = null)
-        {
-            var result = new ProfilePicture
-            {
-                Url = url,
-                SuggestedMinAdultLevel = suggestedMinAdultLevel,
-                SuggestedMaxAdultLevel = suggestedMaxAdultLevel
-            };
-            return result;
-        }
+﻿// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
-        public string Url { get; set; }
-        public int? SuggestedMinAdultLevel { get; set; }
-        public int? SuggestedMaxAdultLevel { get; set; }
+namespace aemarco.Crawler.Person.Model;
+
+public record ProfilePicture(string Url)
+{
+    public ProfilePicture(string url, int suggestedMinAdultLevel, int suggestedMaxAdultLevel)
+        : this(url)
+    {
+        SuggestedMinAdultLevel = suggestedMinAdultLevel;
+        SuggestedMaxAdultLevel = suggestedMaxAdultLevel;
     }
+
+    public string Url { get; } = Url;
+
+    public int? SuggestedMinAdultLevel { get; }
+    public int? SuggestedMaxAdultLevel { get; }
 }

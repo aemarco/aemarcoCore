@@ -31,9 +31,6 @@
 		<None Include="girl.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Base\" />
-	</ItemGroup>
-	<ItemGroup>
 	  <PackageReference Update="HtmlAgilityPack" Version="1.11.46" />
 	</ItemGroup>
 	
