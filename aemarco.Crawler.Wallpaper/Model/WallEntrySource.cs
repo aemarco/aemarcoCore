@@ -113,6 +113,16 @@ internal class WallEntrySource
         return value;
     }
 
+    internal static string? GetSubNodeInnerText(HtmlNode node, string? nodeToTargetNode = null)
+    {
+        var subNode = nodeToTargetNode is null
+            ? node
+            : node.SelectSingleNode(nodeToTargetNode);
+
+        var value = subNode?.InnerText.Trim();
+        return value;
+    }
+
     #endregion
 
     #region filedetails
