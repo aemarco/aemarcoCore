@@ -65,66 +65,72 @@ internal class Boombo : WallpaperCrawlerBasis
 
         var albumDoc = HtmlHelper.GetHtmlDocument(new Uri(linkToAlbum));
 
+        var album = new AlbumEntry(albumName);
+
         var entryNodes = albumDoc.DocumentNode
             .SelectNodes("//a[@class='highslide']");
-
-
-
-        var album = new AlbumEntry(albumName);
-        foreach (var entryNode in entryNodes)
+        if (entryNodes is not null && entryNodes.Count > 0)
         {
-            var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
-
-            //details
-            source.ImageUri = new Uri(entryNode.Attributes["href"].Value);
-            if (source.ImageUri is null)
+            foreach (var entryNode in entryNodes)
             {
-                AddWarning($"Could not get ImageUri from node {entryNode.InnerHtml}");
-                return false;
-            }
-            source.ThumbnailUri = source.ImageUri;
-            (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
-            source.ContentCategory = catJob.Category;
-            source.Tags = source.GetTagsFromNode(
-                entryNode,
-                "alt", "./img");
-            source.AlbumName = albumName;
+                var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
-            var wallEntry = source.WallEntry;
-            if (wallEntry != null)
-            {
-                album.Entries.Add(wallEntry);
+                //details
+                source.ImageUri = new Uri(entryNode.Attributes["href"].Value);
+                if (source.ImageUri is null)
+                {
+                    AddWarning($"Could not get ImageUri from node {entryNode.InnerHtml}");
+                    return false;
+                }
+                source.ThumbnailUri = source.ImageUri;
+                (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
+                source.ContentCategory = catJob.Category;
+                source.Tags = source.GetTagsFromNode(
+                    entryNode,
+                    "alt", "./img");
+                source.AlbumName = albumName;
+
+                var wallEntry = source.WallEntry;
+                if (wallEntry != null)
+                {
+                    album.Entries.Add(wallEntry);
+                }
             }
         }
+
+
 
         var otherEntryNodes = albumDoc.DocumentNode
             .SelectNodes("//div[@class='text']/div/img");
-
-        foreach (var entryNode in otherEntryNodes)
+        if (otherEntryNodes is not null && otherEntryNodes.Count > 0)
         {
-            var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
-
-            //details
-            source.ImageUri = new Uri(_uri, entryNode.Attributes["data-src"].Value);
-            if (source.ImageUri is null)
+            foreach (var entryNode in otherEntryNodes)
             {
-                AddWarning($"Could not get ImageUri from node {entryNode.InnerHtml}");
-                return false;
-            }
-            source.ThumbnailUri = source.ImageUri;
-            (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
-            source.ContentCategory = catJob.Category;
-            source.Tags = source.GetTagsFromNode(
-                entryNode,
-                "alt");
-            source.AlbumName = albumName;
+                var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
-            var wallEntry = source.WallEntry;
-            if (wallEntry != null)
-            {
-                album.Entries.Add(wallEntry);
+                //details
+                source.ImageUri = new Uri(_uri, entryNode.Attributes["data-src"].Value);
+                if (source.ImageUri is null)
+                {
+                    AddWarning($"Could not get ImageUri from node {entryNode.InnerHtml}");
+                    return false;
+                }
+                source.ThumbnailUri = source.ImageUri;
+                (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
+                source.ContentCategory = catJob.Category;
+                source.Tags = source.GetTagsFromNode(
+                    entryNode,
+                    "alt");
+                source.AlbumName = albumName;
+
+                var wallEntry = source.WallEntry;
+                if (wallEntry != null)
+                {
+                    album.Entries.Add(wallEntry);
+                }
             }
         }
+
 
         if (album.Entries.Any())
         {
