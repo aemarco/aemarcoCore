@@ -4,6 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,25 +16,22 @@ public class PersonCrawlerTests
     [Test]
     public void GetAvailableCrawlers_DeliversCorrectly()
     {
-        var types = PersonCrawler.GetAvailableCrawlerTypes();
-        var infos = types.Select(x => x.ToCrawlerInfo()).ToList();
+        var crawlerNames = Assembly
+            .GetAssembly(typeof(PersonCrawlerBase))!
+            .GetTypes()
+            .Where(x => x.IsAvailableCrawler())
+            .Select(x => x.ToCrawlerInfo().FriendlyName)
+            .ToList();
 
         var crawler = new PersonCrawler();
         var available = crawler.GetAvailableCrawlers().ToList();
 
-
-        foreach (var info in infos)
+        foreach (var crawlerName in crawlerNames)
         {
-            available.Should().Contain(info.FriendlyName);
+            available.Should().Contain(crawlerName);
         }
     }
 
-    [Test]
-    public async Task StartAsync_DoesNotCrawlDisabledCrawlers()
-    {
-        var crawler = new PersonCrawler();
-        await crawler.StartAsync("Foxi Di", CancellationToken.None);
-    }
 
     [Test]
     public async Task StartAsync_MergesResults()
@@ -47,7 +45,6 @@ public class PersonCrawlerTests
         result.ProfilePictures.Count.Should().Be(7);
         result.Aliases.Count.Should().Be(18);
         result.Piercings.Should().Be("Navel");
-
     }
 
 

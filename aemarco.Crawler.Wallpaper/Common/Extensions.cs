@@ -1,15 +1,15 @@
 ﻿namespace aemarco.Crawler.Wallpaper.Common;
 
-public static class Extensions
+internal static class Extensions
 {
-    public static WallpaperCrawlerAttribute ToCrawlerInfo(this Type crawlerType)
+    internal static WallpaperCrawlerAttribute ToCrawlerInfo(this Type crawlerType)
     {
         var result = crawlerType.GetCustomAttribute<WallpaperCrawlerAttribute>();
         return result ?? throw new Exception($"PersonCrawler not defined on {crawlerType.FullName}");
     }
 
 
-    public static bool IsAvailableCrawler(this Type crawlerType)
+    internal static bool IsAvailableCrawler(this Type crawlerType)
     {
         if (!crawlerType.IsSubclassOf(typeof(WallpaperCrawlerBasis)))
             return false;

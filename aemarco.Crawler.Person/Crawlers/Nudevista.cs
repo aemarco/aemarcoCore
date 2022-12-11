@@ -7,7 +7,7 @@ internal class Nudevista : PersonCrawlerBase
         : base(nameToCrawl)
     { }
 
-    private readonly Uri _uri = new Uri("https://www.nudevista.at");
+    private readonly Uri _uri = new("https://www.nudevista.at");
 
 
     internal override Task<PersonInfo> GetPersonEntry(CancellationToken cancellationToken)
@@ -18,7 +18,7 @@ internal class Nudevista : PersonCrawlerBase
         var target = new Uri(_uri, href);
         var document = HtmlHelper.GetHtmlDocument(target);
         var nodeWithName = document.DocumentNode.SelectSingleNode("//td[contains(@valign, 'top') and contains(@colspan ,'2')]");
-        var nodeWithBild = document.DocumentNode.SelectSingleNode("//img[@class='mthumb']");
+        var nodeWithPicture = document.DocumentNode.SelectSingleNode("//img[@class='mthumb']");
         var nodeWithData = document.DocumentNode.SelectSingleNode("//div[@id='params_scroll']");
 
         //Name
@@ -28,16 +28,16 @@ internal class Nudevista : PersonCrawlerBase
             n = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(n.ToLower());
             if (n.Contains(" "))
             {
-                result.FirstName = n.Substring(0, n.IndexOf(' '));
-                result.LastName = n.Substring(n.IndexOf(' ') + 1);
+                result.FirstName = n[..n.IndexOf(' ')];
+                result.LastName = n[(n.IndexOf(' ') + 1)..];
             }
         }
 
-        //Bild
-        if (nodeWithBild != null &&
-            nodeWithBild.Attributes["src"] != null)
+        //Picture
+        if (nodeWithPicture != null &&
+            nodeWithPicture.Attributes["src"] != null)
         {
-            var address = nodeWithBild.Attributes["src"].Value;
+            var address = nodeWithPicture.Attributes["src"].Value;
             if (!address.StartsWith("http"))
             {
                 address = "https:" + address;
@@ -133,7 +133,7 @@ internal class Nudevista : PersonCrawlerBase
                 else if (node.InnerText.Contains("Maße:"))
                 {
                     var temp = node.InnerText.Replace("Maße:", string.Empty).Trim();
-                    var maße = ConvertMaßeToMetric(temp);
+                    var maße = ConvertMeasurementsToMetric(temp);
                     result.Measurements = maße;
                 }
                 else if (node.InnerText.Contains("Körbchengröße:"))
@@ -145,8 +145,8 @@ internal class Nudevista : PersonCrawlerBase
                     try
                     {
                         var str = node.InnerText;
-                        str = str.Substring(str.IndexOf("(", StringComparison.Ordinal) + 1);
-                        str = str.Substring(0, str.IndexOf("cm)", StringComparison.Ordinal) - 1);
+                        str = str[(str.IndexOf("(", StringComparison.Ordinal) + 1)..];
+                        str = str[..(str.IndexOf("cm)", StringComparison.Ordinal) - 1)];
                         result.Height = Convert.ToInt32(str);
                     }
                     catch
@@ -159,8 +159,8 @@ internal class Nudevista : PersonCrawlerBase
                     try
                     {
                         var str = node.InnerText;
-                        str = str.Substring(str.IndexOf("(", StringComparison.Ordinal) + 1);
-                        str = str.Substring(0, str.IndexOf("kg)", StringComparison.Ordinal) - 1);
+                        str = str[(str.IndexOf("(", StringComparison.Ordinal) + 1)..];
+                        str = str[..(str.IndexOf("kg)", StringComparison.Ordinal) - 1)];
                         result.Weight = Convert.ToInt32(str);
                     }
                     catch

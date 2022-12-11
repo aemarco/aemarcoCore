@@ -1,13 +1,13 @@
 ﻿namespace aemarco.Crawler.Person.Crawlers;
 
-[PersonCrawler("Porngatherer", 10)]
-internal class Porngatherer : PersonCrawlerBase
+[PersonCrawler("Pornsites", 10)]
+internal class Pornsites : PersonCrawlerBase
 {
-    public Porngatherer(string nameToCrawl)
+    public Pornsites(string nameToCrawl)
         : base(nameToCrawl)
     { }
 
-    private readonly Uri _uri = new Uri("https://pornsites.xxx");
+    private readonly Uri _uri = new("https://pornsites.xxx");
 
 
     internal override Task<PersonInfo> GetPersonEntry(CancellationToken cancellationToken)
@@ -27,8 +27,8 @@ internal class Porngatherer : PersonCrawlerBase
             n = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(n.ToLower());
             if (n.Contains(" "))
             {
-                result.FirstName = n.Substring(0, n.IndexOf(' '));
-                result.LastName = n.Substring(n.IndexOf(' ') + 1);
+                result.FirstName = n[..n.IndexOf(' ')];
+                result.LastName = n[(n.IndexOf(' ') + 1)..];
             }
         }
 
@@ -60,7 +60,7 @@ internal class Porngatherer : PersonCrawlerBase
                     var str = node.InnerText
                         .Replace("Age:", string.Empty)
                         .Trim();
-                    str = str.Substring(0, str.IndexOf(' '));
+                    str = str[..str.IndexOf(' ')];
 
 
                     if (DateTime.TryParse(str, out var dt))
@@ -83,8 +83,8 @@ internal class Porngatherer : PersonCrawlerBase
                     try
                     {
                         var str = node.InnerText.Replace("Weight:", string.Empty);
-                        str = str.Substring(str.IndexOf("(", StringComparison.Ordinal) + 1);
-                        str = str.Substring(0, str.IndexOf("kg)", StringComparison.Ordinal) - 1);
+                        str = str[(str.IndexOf("(", StringComparison.Ordinal) + 1)..];
+                        str = str[..(str.IndexOf("kg)", StringComparison.Ordinal) - 1)];
                         result.Weight = Convert.ToInt32(str);
                     }
                     catch
@@ -97,8 +97,8 @@ internal class Porngatherer : PersonCrawlerBase
                     try
                     {
                         var str = node.InnerText.Replace("Height:", string.Empty);
-                        str = str.Substring(str.IndexOf("(", StringComparison.Ordinal) + 1);
-                        str = str.Substring(0, str.IndexOf("cm)", StringComparison.Ordinal) - 1);
+                        str = str[(str.IndexOf("(", StringComparison.Ordinal) + 1)..];
+                        str = str[..(str.IndexOf("cm)", StringComparison.Ordinal) - 1)];
                         result.Height = Convert.ToInt32(str);
                     }
                     catch

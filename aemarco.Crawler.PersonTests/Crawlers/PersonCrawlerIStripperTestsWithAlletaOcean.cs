@@ -3,6 +3,10 @@ using aemarco.Crawler.PersonTests.Base;
 
 namespace aemarco.Crawler.PersonTests.Crawlers;
 
+
+//https://www.istripper.com/de/models/Aletta-Ocean
+
+
 internal class PersonCrawlerIStripperTestsWithAlletaOcean : PersonCrawlerTestsBase<Stripper>
 {
 
@@ -10,7 +14,7 @@ internal class PersonCrawlerIStripperTestsWithAlletaOcean : PersonCrawlerTestsBa
         : base("Aletta Ocean")
     {
         ExpectedCountry = "Hungary";
-        ExpectedPlace = "Budapest";
+        ExpectedCity = "Budapest";
         ExpectedHeight = 178;
         ExpectedWeight = 57;
         ExpectedMeasurements = "86-66-94";

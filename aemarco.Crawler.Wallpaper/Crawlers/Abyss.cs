@@ -63,7 +63,7 @@ internal class Abyss : WallpaperCrawlerBasis
                         _queryCount += 350;
                         var uri = new Uri(cat.Url);
                         var crawlOffer = CreateCrawlOffer(cat.Name, uri, cc);
-                        crawlOffer.CrawlMethod = CrawlMethod.API;
+                        crawlOffer.CrawlMethod = CrawlMethod.Api;
                         crawlOffer.ReportNumberOfEntriesPerPage(30);
                         result.Add(crawlOffer);
                     }
@@ -110,7 +110,7 @@ internal class Abyss : WallpaperCrawlerBasis
         return catJob.CrawlMethod switch
         {
             CrawlMethod.Classic => base.HandlePage(catJob),
-            CrawlMethod.API => HandleAbyssApiPage(catJob),
+            CrawlMethod.Api => HandleAbyssApiPage(catJob),
             _ => throw new NotImplementedException($"{catJob.CrawlMethod} not implemented.")
         };
     }

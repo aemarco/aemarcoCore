@@ -5,7 +5,7 @@ public class WallpaperCrawler
 {
 
     // ReSharper disable once InconsistentNaming
-    internal readonly List<WallpaperCrawlerBasis> _wallCrawlers = new();
+    internal readonly List<WallpaperCrawlerBasis> _wallCrawlers;
 
     public WallpaperCrawler(int? startPage = null, int? lastPage = null)
     {
@@ -21,6 +21,9 @@ public class WallpaperCrawler
         var end = lastPage ?? 10;
         var news = !startPage.HasValue && !lastPage.HasValue;
 
+
+
+        _wallCrawlers = new List<WallpaperCrawlerBasis>();
         foreach (var type in Assembly
                      .GetAssembly(typeof(WallpaperCrawlerBasis))!
                      .GetTypes()

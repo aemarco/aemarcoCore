@@ -4,7 +4,7 @@ using System;
 
 namespace aemarco.Crawler.PersonTests.Crawlers;
 
-internal class PersonCrawlerPorngathererTestsAlettaOcean : PersonCrawlerTestsBase<Porngatherer>
+internal class PersonCrawlerPorngathererTestsAlettaOcean : PersonCrawlerTestsBase<Pornsites>
 {
 
     //https://pornsites.xxx/pornstars/Aletta-Ocean

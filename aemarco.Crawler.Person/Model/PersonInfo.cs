@@ -35,14 +35,10 @@ public class PersonInfo
     public int? Weight { get; internal set; }
     public string? Piercings { get; internal set; }
 
-
-
-
-
-
-
     internal void Merge(PersonInfo info)
     {
+        FirstName ??= info.FirstName;
+        LastName ??= info.LastName;
 
         if (info.FirstName != FirstName || info.LastName != LastName)
         {//not a first degree match
@@ -77,4 +73,5 @@ public class PersonInfo
         Weight ??= info.Weight;
         Piercings ??= info.Piercings;
     }
+
 }

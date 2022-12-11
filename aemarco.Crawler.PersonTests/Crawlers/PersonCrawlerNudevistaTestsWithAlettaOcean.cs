@@ -14,7 +14,7 @@ internal class PersonCrawlerNudevistaTestsWithAlettaOcean : PersonCrawlerTestsBa
         ExpectedProfilePictures.Add("https://b99.nudevista.com/_/083/137083_370.jpg");
         ExpectedBirthday = new DateTime(1987, 12, 14, 0, 0, 0, DateTimeKind.Utc);
         ExpectedCountry = "Hungary";
-        ExpectedPlace = "Budapest";
+        ExpectedCity = "Budapest";
         ExpectedProfession = "Pornstar";
         ExpectedCareerStart = new DateTime(2007, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         ExpectedStillActive = null;

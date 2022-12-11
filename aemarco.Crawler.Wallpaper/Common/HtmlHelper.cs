@@ -2,10 +2,9 @@
 
 public static class HtmlHelper
 {
-    private static readonly SemaphoreSlim Gate = new SemaphoreSlim(1);
-    private static readonly Random Random = new Random();
-
-    private static readonly Dictionary<string, HtmlDocumentCacheEntry> DocumentsCache = new Dictionary<string, HtmlDocumentCacheEntry>();
+    private static readonly SemaphoreSlim Gate = new(1);
+    private static readonly Random Random = new();
+    private static readonly Dictionary<string, HtmlDocumentCacheEntry> DocumentsCache = new();
 
     private static void CacheCleanup()
     {
@@ -17,8 +16,6 @@ public static class HtmlHelper
             }
         }
     }
-
-
 
     public static HtmlDocument GetHtmlDocument(Uri uri, int? minDelay = null, int? maxDelay = null)
     {
@@ -71,7 +68,7 @@ public static class HtmlHelper
             {
                 return TryGetHtmlDocument(new Uri(uri.AbsoluteUri.Replace("https", "http")));
             }
-            else if (ex.Status == WebExceptionStatus.Timeout)
+            if (ex.Status == WebExceptionStatus.Timeout)
             {
                 return TryGetHtmlDocument(uri, ++retry);
             }
@@ -88,7 +85,6 @@ public class HtmlDocumentCacheEntry
         Timestamp = DateTimeOffset.Now;
         HtmlDocument = htmlDocument;
     }
-
     public DateTimeOffset Timestamp { get; }
     public HtmlDocument HtmlDocument { get; }
 }

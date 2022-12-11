@@ -107,15 +107,15 @@ internal abstract class PersonCrawlerTestsBase<T>
         Assert.AreEqual(ExpectedCountry, Entry.Country);
     }
 
-    protected string? ExpectedPlace { get; set; }
+    protected string? ExpectedCity { get; set; }
     [Test]
     public void Crawler_Finds_Place()
     {
         if (Entry is null)
             return;
-        if (string.IsNullOrWhiteSpace(ExpectedPlace))
+        if (string.IsNullOrWhiteSpace(ExpectedCity))
             return;
-        Assert.AreEqual(ExpectedPlace, Entry.City);
+        Assert.AreEqual(ExpectedCity, Entry.City);
     }
 
     protected string? ExpectedProfession { get; set; }

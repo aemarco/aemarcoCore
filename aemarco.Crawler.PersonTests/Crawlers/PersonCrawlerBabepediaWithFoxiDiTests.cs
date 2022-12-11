@@ -5,6 +5,10 @@ using System.Collections.Generic;
 
 namespace aemarco.Crawler.PersonTests.Crawlers;
 
+
+//https://www.babepedia.com/babe/Foxy_Di
+
+
 internal class PersonCrawlerBabepediaWithFoxiDiTests : PersonCrawlerTestsBase<Babepedia>
 {
     public PersonCrawlerBabepediaWithFoxiDiTests()
@@ -20,7 +24,7 @@ internal class PersonCrawlerBabepediaWithFoxiDiTests : PersonCrawlerTestsBase<Ba
         });
         ExpectedBirthday = new DateTime(1994, 9, 14, 0, 0, 0, DateTimeKind.Utc);
         ExpectedCountry = "Russian Federation";
-        ExpectedPlace = "St. Petersburg";
+        ExpectedCity = "St. Petersburg";
         ExpectedProfession = "Glamour Model (former), Porn Star (former)";
         ExpectedCareerStart = new DateTime(2013, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         ExpectedStillActive = false;

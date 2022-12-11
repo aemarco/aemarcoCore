@@ -71,12 +71,6 @@ public enum Category
 
 internal enum CrawlMethod
 {
-    // ReSharper disable InconsistentNaming
-
-
     Classic,
-    API
-
-
-    // ReSharper restore InconsistentNaming
+    Api
 }
