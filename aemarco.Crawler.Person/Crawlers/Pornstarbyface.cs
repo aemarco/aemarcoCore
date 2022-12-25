@@ -26,7 +26,7 @@ internal class Pornstarbyface : PersonCrawlerBase
         //Name
         if (nodeWithName != null)
         {
-            var n = nodeWithName.InnerText.Trim();
+            var n = GetInnerText(nodeWithName);
             n = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(n.ToLower());
             if (n.Contains(" "))
             {
@@ -38,7 +38,7 @@ internal class Pornstarbyface : PersonCrawlerBase
         //Pictures
         if (nodeWithPicture?.Attributes["src"]?.Value is { } imageRef)
         {
-            var uri = new Uri(_uri, imageRef);
+            var uri = new Uri(_uri, WebUtility.HtmlDecode(imageRef));
             result.ProfilePictures.Add(new ProfilePicture(uri.AbsoluteUri));
         }
 
