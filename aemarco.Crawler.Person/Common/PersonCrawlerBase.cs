@@ -107,6 +107,7 @@ internal abstract class PersonCrawlerBase
     /// - 14 March 1988
     /// - Geburtstag: November 4, 1989
     /// - Age:14.Dec.1987 (35)
+    /// Birthday: 14 Mar 1988
     /// </summary>
     /// <param name="text"></param>
     /// <returns></returns>
@@ -114,6 +115,15 @@ internal abstract class PersonCrawlerBase
     {
         if (string.IsNullOrWhiteSpace(text))
             return null;
+
+        // handles:
+        // Age:14.Dec.1987 (35)
+        // Birthday: 14 Mar 1988
+        var doted = Regex.Match(text, @"\d{1,2}\.*\s*(\w+)\.*\s*\d{4}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        if (doted.Success)
+        {
+            return DateOnly.Parse(doted.Groups[0].Value);
+        }
 
         // handles:
         // Born: Sunday 6Th Of February 2000
@@ -141,13 +151,7 @@ internal abstract class PersonCrawlerBase
                 DateTimeStyles.AllowWhiteSpaces);
         }
 
-        // handles:
-        // Age:14.Dec.1987 (35)
-        var doted = Regex.Match(text, @"\d{1,2}\.(\w+)\.\d{4}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        if (doted.Success)
-        {
-            return DateOnly.Parse(doted.Groups[0].Value);
-        }
+
 
         return null;
     }

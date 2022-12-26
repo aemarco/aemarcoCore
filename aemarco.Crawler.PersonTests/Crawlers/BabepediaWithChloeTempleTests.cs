@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace aemarco.Crawler.PersonTests.Crawlers;
 
-internal class PersonCrawlerBabepediaWithChloeTempleTests : PersonCrawlerTestsBase<Babepedia>
+internal class BabepediaWithChloeTempleTests : PersonCrawlerTestsBase<Babepedia>
 {
 
     //https://www.babepedia.com/babe/Chloe_Temple
-    public PersonCrawlerBabepediaWithChloeTempleTests()
+    public BabepediaWithChloeTempleTests()
         : base("Chloe Temple")
     {
         //first and last name expected automatically

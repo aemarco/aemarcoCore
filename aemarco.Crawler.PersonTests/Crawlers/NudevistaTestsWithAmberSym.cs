@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace aemarco.Crawler.PersonTests.Crawlers;
 
-internal class PersonCrawlerNudevistaTestsWithAmberSym : PersonCrawlerTestsBase<Nudevista>
+internal class NudevistaTestsWithAmberSym : PersonCrawlerTestsBase<Nudevista>
 {
 
     //https://www.nudevista.at/?q=Amber+Sym&s=s
-    public PersonCrawlerNudevistaTestsWithAmberSym()
+    public NudevistaTestsWithAmberSym()
         : base("Amber Sym")
     {
         //first and last name expected automatically

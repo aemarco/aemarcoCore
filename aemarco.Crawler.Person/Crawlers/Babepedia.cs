@@ -1,6 +1,6 @@
 ﻿namespace aemarco.Crawler.Person.Crawlers;
 
-[PersonCrawler("Babepedia", 1)]
+[PersonCrawler("Babepedia", 20)]
 internal class Babepedia : PersonCrawlerBase
 {
     public Babepedia(string nameToCrawl)

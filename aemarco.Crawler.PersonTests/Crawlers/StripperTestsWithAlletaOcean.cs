@@ -3,10 +3,10 @@ using aemarco.Crawler.PersonTests.Base;
 
 namespace aemarco.Crawler.PersonTests.Crawlers;
 
-internal class PersonCrawlerIStripperTestsWithAlletaOcean : PersonCrawlerTestsBase<Stripper>
+internal class StripperTestsWithAlletaOcean : PersonCrawlerTestsBase<Stripper>
 {
     //https://www.istripper.com/de/models/Aletta-Ocean
-    public PersonCrawlerIStripperTestsWithAlletaOcean()
+    public StripperTestsWithAlletaOcean()
         : base("Aletta Ocean")
     {
         //first and last name expected automatically

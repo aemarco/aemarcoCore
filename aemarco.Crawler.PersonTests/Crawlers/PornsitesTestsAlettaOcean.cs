@@ -4,11 +4,11 @@ using System;
 
 namespace aemarco.Crawler.PersonTests.Crawlers;
 
-internal class PersonCrawlerPornsitesTestsAlettaOcean : PersonCrawlerTestsBase<Pornsites>
+internal class PornsitesTestsAlettaOcean : PersonCrawlerTestsBase<Pornsites>
 {
 
     //https://pornsites.xxx/pornstars/Aletta-Ocean
-    public PersonCrawlerPornsitesTestsAlettaOcean()
+    public PornsitesTestsAlettaOcean()
         : base("Aletta Ocean")
     {
         //first and last name expected automatically
