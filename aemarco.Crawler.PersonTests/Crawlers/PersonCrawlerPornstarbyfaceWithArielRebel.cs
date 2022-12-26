@@ -5,13 +5,14 @@ using System.Collections.Generic;
 
 namespace aemarco.Crawler.PersonTests.Crawlers;
 
-//https://pornstarbyface.com/girls/Ariel-Rebel
-
 internal class PersonCrawlerPornstarbyfaceWithArielRebel : PersonCrawlerTestsBase<Pornstarbyface>
 {
+
+    //https://pornstarbyface.com/girls/Ariel-Rebel
     public PersonCrawlerPornstarbyfaceWithArielRebel()
         : base("Ariel Rebel")
     {
+        //first and last name expected automatically
         ExpectedProfilePictures.AddRange(new List<string>
         {
             "https://pornstarbyface.com/ImgFiles/Ariel%20Rebel/1.jpg"
@@ -25,14 +26,13 @@ internal class PersonCrawlerPornstarbyfaceWithArielRebel : PersonCrawlerTestsBas
         });
         ExpectedCountry = "Canada";
         ExpectedCity = "Quebec";
-        ExpectedBirthday = new DateTime(1988, 3, 14, 0, 0, 0, DateTimeKind.Utc);
+        ExpectedBirthday = new DateOnly(1988, 3, 14);
         //ignore sign
         ExpectedEthnicity = "Caucasian";
         ExpectedEyeColor = "Hazelnuts";
         ExpectedHairColor = "Brunette";
-        ExpectedHeight = 152;
+        ExpectedHeight = 157;
         ExpectedWeight = 44;
-        ExpectedCupsize = "A";
-        ExpectedMeasurements = "86-58-81";
+        ExpectedMeasurementDetails = "86A-58-81";
     }
 }

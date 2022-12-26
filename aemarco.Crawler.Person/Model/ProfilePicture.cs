@@ -5,7 +5,7 @@ namespace aemarco.Crawler.Person.Model;
 
 public record ProfilePicture(string Url)
 {
-    public ProfilePicture(string url, int suggestedMinAdultLevel, int suggestedMaxAdultLevel)
+    public ProfilePicture(string url, int? suggestedMinAdultLevel, int? suggestedMaxAdultLevel)
         : this(url)
     {
         SuggestedMinAdultLevel = suggestedMinAdultLevel;

@@ -4,123 +4,61 @@
 internal class Pornsites : PersonCrawlerBase
 {
     public Pornsites(string nameToCrawl)
-        : base(nameToCrawl)
+        : base(nameToCrawl, new Uri("https://pornsites.xxx"))
     { }
 
-    private readonly Uri _uri = new("https://pornsites.xxx");
 
-
-    internal override Task<PersonInfo> GetPersonEntry(CancellationToken cancellationToken)
+    protected override string GetSiteHref()
     {
-        var result = new PersonInfo(this);
-
+        // pornstars/Aletta-Ocean
         var href = $"pornstars/{NameToCrawl.Replace(' ', '-')}";
-        var target = new Uri(_uri, href);
-        var document = HtmlHelper.GetHtmlDocument(target);
-        var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@id='main']/header/h1");
-        var pictureNodes = document.DocumentNode.SelectNodes("//div[@class='pornstar-box-con-big']/div[@class='pornstar-box']/picture/img");
-        var nodeWithData = document.DocumentNode.SelectNodes("//table[@class='styled']/tr");
+        return href;
+    }
+
+    protected override Task HandleDocument(HtmlDocument document, CancellationToken cancellationToken)
+    {
+
         //Name
-        if (nodeWithName != null)
-        {
-            var n = nodeWithName.InnerText.Trim();
-            n = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(n.ToLower());
-            if (n.Contains(" "))
-            {
-                result.FirstName = n[..n.IndexOf(' ')];
-                result.LastName = n[(n.IndexOf(' ') + 1)..];
-            }
-        }
+        var nameNode = document.DocumentNode.SelectSingleNode("//div[@id='main']/header/h1");
+        AddNameFromInnerText(nameNode);
 
-
-        //Bild
-        if (pictureNodes != null)
-            foreach (var pictureNode in pictureNodes)
-            {
-                var attrib = pictureNode.Attributes["src"];
-                if (attrib == null) continue;
-
-                result.ProfilePictures.Add(new ProfilePicture(attrib.Value));
-            }
-
-
-
-        //data
+        //Pictures
+        var picNodes = document.DocumentNode
+            .SelectNodes("//div[@class='pornstar-box-con-big']/div[@class='pornstar-box']/picture/img");
+        AddProfilePictures(picNodes, "src");
 
 
         //Data
-        if (nodeWithData != null)
+        var nodeWithData = document.DocumentNode.SelectNodes("//table[@class='styled']/tr");
+        if (nodeWithData is null)
+            return Task.CompletedTask;
+
+
+        foreach (var node in nodeWithData)
         {
-            foreach (var node in nodeWithData)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                //Geburtstag
-                if (node.InnerText.Contains("Age:"))
-                {
-                    var str = node.InnerText
-                        .Replace("Age:", string.Empty)
-                        .Trim();
-                    str = str[..str.IndexOf(' ')];
+            cancellationToken.ThrowIfCancellationRequested();
+            var nodeText = GetInnerText(node);
 
 
-                    if (DateTime.TryParse(str, out var dt))
-                    {
-                        result.Birthday = dt;
-                    }
-                }
-                //not tested
-                else if (node.InnerText.Contains("Hair color:"))
-                {
-                    result.HairColor = node.InnerText.Replace("Hair color:", string.Empty).Trim();
-                }
-                //not tested
-                else if (node.InnerText.Contains("Eye color:"))
-                {
-                    result.EyeColor = node.InnerText.Replace("Eye color:", string.Empty).Trim();
-                }
-                else if (node.InnerText.Contains("Weight:"))
-                {
-                    try
-                    {
-                        var str = node.InnerText.Replace("Weight:", string.Empty);
-                        str = str[(str.IndexOf("(", StringComparison.Ordinal) + 1)..];
-                        str = str[..(str.IndexOf("kg)", StringComparison.Ordinal) - 1)];
-                        result.Weight = Convert.ToInt32(str);
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
-                }
-                else if (node.InnerText.Contains("Height:"))
-                {
-                    try
-                    {
-                        var str = node.InnerText.Replace("Height:", string.Empty);
-                        str = str[(str.IndexOf("(", StringComparison.Ordinal) + 1)..];
-                        str = str[..(str.IndexOf("cm)", StringComparison.Ordinal) - 1)];
-                        result.Height = Convert.ToInt32(str);
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
-                }
-                //not tested
-                else if (node.InnerText.Contains("Ethnicity:"))
-                {
-                    result.Ethnicity = node.InnerText.Replace("Ethnicity:", string.Empty).Trim();
-                }
-                //not tested
-                else if (node.InnerText.Contains("Country:"))
-                {
-                    result.Country = node.InnerText.Replace("Country:", string.Empty).Trim();
-                }
-            }
+            //Geburtstag
+            if (nodeText.StartsWith("Age:"))
+                Result.Birthday = FindBirthdayInText(nodeText);
+            else if (nodeText.StartsWith("Hair Color:"))
+                Result.HairColor = GetInnerText(node, removals: "Hair Color:");
+            else if (nodeText.StartsWith("Eye Color:"))
+                Result.EyeColor = GetInnerText(node, removals: "Eye Color:");
+            else if (nodeText.StartsWith("Cupsize:"))
+                UpdateFromMeasurementsText(nodeText, true);
+            else if (nodeText.StartsWith("Weight:"))
+                Result.Weight = FindWeightInText(nodeText);
+            else if (nodeText.StartsWith("Height:"))
+                Result.Height = FindHeightInText(nodeText);
+            else if (nodeText.StartsWith("Country:"))
+                Result.Country = GetInnerText(node, removals: "Country:");
+            else if (nodeText.StartsWith("Ethnicity:"))
+                Result.Ethnicity = GetInnerText(node, removals: "Ethnicity:");
         }
 
-
-
-        return Task.FromResult(result);
+        return Task.CompletedTask;
     }
 }

@@ -7,28 +7,35 @@ namespace aemarco.Crawler.PersonTests.Crawlers;
 
 internal class PersonCrawlerBabepediaWithChloeTempleTests : PersonCrawlerTestsBase<Babepedia>
 {
+
+    //https://www.babepedia.com/babe/Chloe_Temple
     public PersonCrawlerBabepediaWithChloeTempleTests()
         : base("Chloe Temple")
     {
+        //first and last name expected automatically
         ExpectedProfilePictures.AddRange(new List<string>
         {
             "https://www.babepedia.com/pics/Chloe%20Temple.jpg",
             "https://www.babepedia.com/pics/Chloe%20Temple2.jpg",
             "https://www.babepedia.com/pics/Chloe%20Temple3.jpg",
         });
-        ExpectedBirthday = new DateTime(2000, 2, 6, 0, 0, 0, DateTimeKind.Utc);
-        ExpectedCountry = "United States";
-        ExpectedProfession = "Adult Model, Porn Star";
         ExpectedAliases.AddRange(new List<string>
         {
-            "Clara Fargo"
+            "Clara Fargo",
+            "Larissa"
         });
+        ExpectedBirthday = new DateOnly(2000, 2, 6);
+        ExpectedCountry = "United States";
+        ExpectedCity = "Arizona";
         ExpectedEthnicity = "Caucasian";
+        ExpectedProfession = "Adult Model, Porn Star";
         ExpectedHairColor = "Blonde";
         ExpectedEyeColor = "Brown";
-        ExpectedMeasurements = "81-60-88";
-        ExpectedCupsize = "B";
         ExpectedHeight = 160;
+        ExpectedWeight = 46;
+        ExpectedMeasurementDetails = "81B-60-88";
+        ExpectedCareerStart = new DateOnly(2018, 1, 1);
         ExpectedStillActive = true;
+        ExpectedPiercings = "Both Nipples";
     }
 }

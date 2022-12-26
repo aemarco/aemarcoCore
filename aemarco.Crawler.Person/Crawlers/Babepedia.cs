@@ -4,223 +4,98 @@
 internal class Babepedia : PersonCrawlerBase
 {
     public Babepedia(string nameToCrawl)
-        : base(nameToCrawl)
+        : base(nameToCrawl, new Uri("https://www.babepedia.com"))
     { }
 
-    private readonly Uri _uri = new("https://www.babepedia.com");
 
-    internal override Task<PersonInfo> GetPersonEntry(CancellationToken cancellationToken)
+    protected override string GetSiteHref()
     {
-        var result = new PersonInfo(this);
-
-        // /models/foxy-di/biography
+        // /babe/Chloe_Temple
         var href = $"/babe/{NameToCrawl.Replace(' ', '_')}";
-        var target = new Uri(_uri, href);
-        var document = HtmlHelper.GetHtmlDocument(target);
-        var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@id='bioarea']/h1");
-        var nodeWithPicture = document.DocumentNode.SelectSingleNode("//div[@id='profimg']/a[@class='img']");
-        var nodeWithOtherPictures = document.DocumentNode.SelectNodes("//div[@id='profselect']/div[@class='prof']/a[@class='img']");
-        var nodeWithAlias = document.DocumentNode.SelectSingleNode("//div[@id='bioarea']/h2");
-        var nodeWithData = document.DocumentNode.SelectSingleNode("//div[@id='bioarea']/ul");
+        return href;
+    }
 
+    protected override Task HandleDocument(HtmlDocument document, CancellationToken cancellationToken)
+    {
         //Name
-        if (nodeWithName != null)
-        {
-            var n = nodeWithName.InnerText.Trim();
-            n = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(n.ToLower());
-            if (n.Contains(" "))
-            {
-                result.FirstName = n[..n.IndexOf(' ')];
-                result.LastName = n[(n.IndexOf(' ') + 1)..];
-            }
-        }
+        var nameNode = document.DocumentNode.SelectSingleNode("//div[@id='bioarea']/h1");
+        AddNameFromInnerText(nameNode);
 
         //Pictures
-        if (nodeWithPicture?.Attributes["href"] != null)
+        var picNode = document.DocumentNode
+            .SelectSingleNode("//div[@id='profimg']/a[@class='img']");
+        AddProfilePicture(picNode, "href", UrlFromHref);
+        var addPicNodes = document.DocumentNode
+            .SelectNodes("//div[@id='profselect']/div[@class='prof']/a[@class='img']");
+        AddProfilePictures(addPicNodes, "href", UrlFromHref);
+
+        //Aliases
+        var nodeWithAlias = document.DocumentNode
+            .SelectSingleNode("//div[@id='bioarea']/h2");
+        if (nodeWithAlias is not null)
         {
-            var uri = new Uri(_uri, nodeWithPicture.Attributes["href"].Value);
-
-            result.ProfilePictures.Add(new ProfilePicture(uri.AbsoluteUri));
-        }
-        if (nodeWithOtherPictures != null)
-        {
-            foreach (var node in nodeWithOtherPictures.Where(x => x.Attributes["href"] != null))
-            {
-                var uri = new Uri(_uri, node.Attributes["href"].Value);
-
-                result.ProfilePictures.Add(new ProfilePicture(uri.AbsoluteUri));
-            }
-
-        }
-
-        //Alias
-        if (nodeWithAlias != null)
-        {
-            var str = nodeWithAlias.InnerText?.Replace("aka ", string.Empty) ?? string.Empty;
-            var als = str.Split('/')
-                .Select(x =>
-                {
-                    x = x.Replace("&nbsp;", string.Empty);
-
-                    return x.Trim();
-                })
-                .Where(x => !string.IsNullOrEmpty(x));
-            result.Aliases.AddRange(als);
+            var cleaned = GetInnerText(nodeWithAlias).Replace("aka ", string.Empty, StringComparison.OrdinalIgnoreCase);
+            Result.Aliases = GetListFromCsv(cleaned, '/');
         }
 
         //Data
-        if (nodeWithData != null)
+        var nodeWithData = document.DocumentNode
+            .SelectSingleNode("//div[@id='bioarea']/ul");
+        if (nodeWithData is null)
+            return Task.CompletedTask;
+
+        foreach (var node in nodeWithData.ChildNodes
+                     .Where(x => x.Name == "li"))
         {
-            foreach (var node in nodeWithData.ChildNodes)
+            cancellationToken.ThrowIfCancellationRequested();
+            var nodeText = GetInnerText(node);
+
+
+            if (nodeText.StartsWith("Born:"))
+                Result.Birthday = FindBirthdayInText(nodeText);
+            else if (nodeText.StartsWith("Birthplace:"))
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                //skipping
-                if (node.Name != "li") continue;
-
-
-                if (node.InnerText.StartsWith("Born:"))
+                var str = GetInnerText(node, removals: "Birthplace:");
+                var parts = GetListFromCsv(str, ',');
+                switch (parts.Count)
                 {
-                    var str = node.InnerText
-                        .Replace("Born:", string.Empty)
-                        .Replace("\n", string.Empty)
-                        .Trim();
-
-
-                    var matches = Regex.Matches(str, @"\d+");
-                    var mNames = System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat.MonthNames.ToList();
-
-                    if (matches.Count == 2 &&
-                        int.TryParse(matches[0].Value, out var day) &&
-                        int.TryParse(matches[1].Value, out var year) &&
-                        mNames.Any(x => !string.IsNullOrWhiteSpace(x) && Regex.IsMatch(str, x)))
-                    {
-                        var monthName = mNames.First(x => Regex.IsMatch(str, x));
-                        var index = mNames.IndexOf(monthName);
-                        var month = index + 1;
-                        result.Birthday = new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
-
-                    }
-                }
-                else if (node.InnerText.StartsWith("Birthplace:"))
-                {
-                    var str = node.InnerText
-                        .Replace("Birthplace:", string.Empty)
-                        .Replace("\n", string.Empty)
-                        .Trim();
-
-                    var parts = str.Split(',');
-                    if (parts.Length == 1)
-                    {
-                        result.Country = parts[0].Trim();
-                    }
-                    else if (parts.Length == 2)
-                    {
-                        result.City = parts[0].Trim();
-                        result.Country = parts[1].Trim();
-                    }
-                }
-                else if (node.InnerText.StartsWith("Profession:"))
-                {
-                    result.Profession = node.InnerText
-                        .Replace("Profession:", string.Empty)
-                        .Replace("\n", string.Empty)
-                        .Trim();
-                }
-                else if (node.InnerText.StartsWith("Ethnicity:"))
-                {
-                    result.Ethnicity = node.InnerText
-                        .Replace("Ethnicity:", string.Empty)
-                        .Replace("\n", string.Empty)
-                        .Trim();
-                }
-                else if (node.InnerText.StartsWith("Hair color:"))
-                {
-                    result.HairColor = node.InnerText
-                        .Replace("Hair color:", string.Empty)
-                        .Replace("\n", string.Empty)
-                        .Trim();
-                }
-                else if (node.InnerText.StartsWith("Eye color:"))
-                {
-                    result.EyeColor = node.InnerText
-                        .Replace("Eye color:", string.Empty)
-                        .Replace("\n", string.Empty)
-                        .Trim();
-                }
-                else if (node.InnerText.StartsWith("Measurements:"))
-                {
-                    string temp = node.InnerText
-                        .Replace("Measurements:", string.Empty)
-                        .Replace("\n", string.Empty)
-                        .Trim();
-
-                    if (!string.IsNullOrWhiteSpace(temp))
-                    {
-                        var maße = ConvertMeasurementsToMetric(temp);
-                        result.Measurements = maße;
-
-
-                    }
-
-                }
-                else if (node.InnerText.StartsWith("Bra/cup size:"))
-                {
-                    string temp = node.InnerText
-                        .Replace("Bra/cup size:", string.Empty)
-                        .Replace("\n", string.Empty)
-                        .Trim();
-
-                    if (!string.IsNullOrWhiteSpace(temp))
-                    {
-
-                        var cup = ConvertMaßeToCupSize(temp);
-                        result.CupSize = cup;
-                    }
-
-                }
-                else if (node.InnerText.StartsWith("Height:"))
-                {
-                    var str = node.InnerText
-                        .Replace("Height:", string.Empty)
-                        .Replace("\n", string.Empty)
-                        .Trim();
-                    var match = Regex.Match(str[str.IndexOf('(')..], @"\d+");
-                    if (match.Success)
-                    {
-                        result.Height = int.Parse(match.Value);
-                    }
-                }
-                else if (node.InnerText.StartsWith("Weight:"))
-                {
-                    var str = node.InnerText
-                        .Replace("Weight:", string.Empty)
-                        .Replace("\n", string.Empty)
-                        .Trim();
-                    var match = Regex.Match(str[str.IndexOf('(')..], @"\d+");
-                    if (match.Success)
-                    {
-                        result.Weight = int.Parse(match.Value);
-                    }
-                }
-                else if (node.InnerText.StartsWith("Years active:"))
-                {
-                    var str = node.InnerText
-                        .Replace("Years active:", string.Empty)
-                        .Replace("\n", string.Empty)
-                        .Trim();
-
-                    var matchStart = Regex.Match(str, @"\d+");
-                    if (matchStart.Success && int.TryParse(matchStart.Value, out var year))
-                    {
-                        result.CareerStart = new DateTime(year, 1, 1);
-                    }
-                    result.StillActive = IsStillActive(str);
+                    case 1:
+                        Result.Country = parts[0];
+                        break;
+                    case 2:
+                        Result.City = parts[0];
+                        Result.Country = parts[1];
+                        break;
                 }
             }
+            else if (nodeText.StartsWith("Profession:"))
+                Result.Profession = GetInnerText(node, removals: "Profession:");
+            else if (nodeText.StartsWith("Ethnicity:"))
+                Result.Ethnicity = GetInnerText(node, removals: "Ethnicity:");
+            else if (nodeText.StartsWith("Hair Color:"))
+                Result.HairColor = GetInnerText(node, removals: "Hair Color:");
+            else if (nodeText.StartsWith("Eye Color:"))
+                Result.EyeColor = GetInnerText(node, removals: "Eye Color:");
+            else if (nodeText.StartsWith("Measurements:"))
+                UpdateFromMeasurementsText(nodeText, true);
+            else if (nodeText.StartsWith("Bra/Cup Size:"))
+                UpdateFromCupText(GetInnerText(node, removals: "Bra/Cup Size:"));
+            else if (nodeText.StartsWith("Height:"))
+                Result.Height = FindHeightInText(nodeText);
+            else if (nodeText.StartsWith("Weight:"))
+                Result.Weight = FindWeightInText(nodeText);
+            else if (nodeText.StartsWith("Years Active:"))
+            {
+                Result.CareerStart = FindCareerStartInText(nodeText);
+                Result.StillActive = FindStillActiveInText(nodeText);
+            }
+            else if (nodeText.StartsWith("Piercings:"))
+                Result.Piercings = GetInnerText(node, removals: "Piercings:");
+
+
         }
 
-        return Task.FromResult(result);
-
+        return Task.CompletedTask;
     }
 
 }

@@ -7,17 +7,12 @@ namespace aemarco.Crawler.PersonTests.Crawlers;
 
 internal class PersonCrawlerNudevistaTestsWithAlettaOcean : PersonCrawlerTestsBase<Nudevista>
 {
-
+    //https://www.nudevista.at/?q=aletta+ocean&s=s
     public PersonCrawlerNudevistaTestsWithAlettaOcean()
         : base("Aletta Ocean")
     {
+        //first and last name expected automatically
         ExpectedProfilePictures.Add("https://b99.nudevista.com/_/083/137083_370.jpg");
-        ExpectedBirthday = new DateTime(1987, 12, 14, 0, 0, 0, DateTimeKind.Utc);
-        ExpectedCountry = "Hungary";
-        ExpectedCity = "Budapest";
-        ExpectedProfession = "Pornstar";
-        ExpectedCareerStart = new DateTime(2007, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        ExpectedStillActive = null;
         ExpectedAliases.AddRange(new List<string>
         {
             "Aletta Alien",
@@ -33,14 +28,19 @@ internal class PersonCrawlerNudevistaTestsWithAlettaOcean : PersonCrawlerTestsBa
             "Jessica Kline",
             "Nikita Charm"
         });
+        ExpectedBirthday = new DateOnly(1987, 12, 14);
+        ExpectedCountry = "Hungary";
+        ExpectedCity = "Budapest";
+        ExpectedProfession = "Pornstar";
         ExpectedEthnicity = "Caucasian";
         ExpectedHairColor = "Black";
         ExpectedEyeColor = "Green";
-        ExpectedMeasurements = "96-66-93";
-        ExpectedCupsize = "D (fake)";
+        ExpectedMeasurementDetails = "96D-66-93";
         ExpectedHeight = 172;
         ExpectedWeight = 59;
         ExpectedPiercings = "Clit, Navel, Tongue";
+        ExpectedCareerStart = new DateOnly(2007, 1, 1);
+        ExpectedStillActive = null;
     }
 
 

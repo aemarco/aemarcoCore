@@ -19,7 +19,9 @@
 	<PropertyGroup>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>aemarcoWallpaperCrawler</PackageId>
+		<!-- ReSharper disable UnknownProperty -->
 		<PackageVersion>$(AssemblyVersion)</PackageVersion>
+		<!-- ReSharper restore UnknownProperty -->
 		<Authors>aemarco</Authors>
 		<Company>aemarco</Company>
 		<Product>aemarcoCore</Product>

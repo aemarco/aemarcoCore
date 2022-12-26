@@ -19,18 +19,43 @@ public class PersonInfo
 
 
     public List<ProfilePicture> ProfilePictures { get; } = new();
-    public DateTime? Birthday { get; internal set; }
+    public DateOnly? Birthday { get; internal set; }
     public string? Country { get; internal set; }
     public string? City { get; internal set; }
     public string? Profession { get; internal set; }
-    public DateTime? CareerStart { get; internal set; }
+    public DateOnly? CareerStart { get; internal set; }
     public bool? StillActive { get; internal set; }
-    public List<string> Aliases { get; } = new();
+    public List<string> Aliases { get; internal set; } = new();
+
+
+    /// <example>
+    ///Caucasian
+    ///Latin
+    ///Asian
+    ///Black
+    ///Mixed-race (primarily Latin)
+    ///Mixed-race (primarily Asian)
+    ///Ebony
+    ///Mixed-race (primarily Caucasian)
+    ///United States
+    ///Middle Eastern
+    ///Mixed-race (primarily Black)
+    ///Indian
+    ///Japanese
+    ///Mixed-race
+    ///Exotic
+    ///American
+    ///Euro
+    ///Other
+    ///Thai
+    ///United Kingdom
+    ///Russian Federation
+    ///Czech Republic
+    /// </example>
     public string? Ethnicity { get; internal set; }
     public string? HairColor { get; internal set; }
     public string? EyeColor { get; internal set; }
-    public string? Measurements { get; internal set; }
-    public string? CupSize { get; internal set; }
+    public MeasurementDetails? MeasurementDetails { get; set; }
     public int? Height { get; internal set; }
     public int? Weight { get; internal set; }
     public string? Piercings { get; internal set; }
@@ -67,8 +92,7 @@ public class PersonInfo
         Ethnicity ??= info.Ethnicity;
         HairColor ??= info.HairColor;
         EyeColor ??= info.EyeColor;
-        Measurements ??= info.Measurements;
-        CupSize ??= info.CupSize;
+        MeasurementDetails ??= info.MeasurementDetails;
         Height ??= info.Height;
         Weight ??= info.Weight;
         Piercings ??= info.Piercings;

@@ -5,12 +5,12 @@ public static class HtmlHelper
     private static readonly SemaphoreSlim Gate = new(1);
     private static readonly Random Random = new();
 
-    public static HtmlDocument GetHtmlDocument(Uri uri, int? minDelay = null, int? maxDelay = null)
+    public static async Task<HtmlDocument> GetHtmlDocument(Uri uri, int? minDelay = null, int? maxDelay = null)
     {
-        Gate.Wait();
+        await Gate.WaitAsync();
 
         if (minDelay.HasValue && maxDelay.HasValue)
-            Task.Delay(Random.Next(minDelay.Value, maxDelay.Value)).GetAwaiter().GetResult();
+            await Task.Delay(Random.Next(minDelay.Value, maxDelay.Value));
 
         try
         {

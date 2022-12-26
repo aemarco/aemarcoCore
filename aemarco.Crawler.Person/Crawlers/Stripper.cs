@@ -5,101 +5,53 @@ internal class Stripper : PersonCrawlerBase
 {
 
     public Stripper(string nameToCrawl)
-        : base(nameToCrawl)
+        : base(nameToCrawl, new Uri("https://www.istripper.com"))
     { }
 
-    private readonly Uri _uri = new("https://www.istripper.com");
 
-
-    internal override Task<PersonInfo> GetPersonEntry(CancellationToken cancellationToken)
+    protected override string GetSiteHref()
     {
-        var result = new PersonInfo(this);
-
+        // de/models/Aletta-Ocean
         var href = $"de/models/{NameToCrawl.Replace(' ', '-')}";
-        var target = new Uri(_uri, href);
-        var document = HtmlHelper.GetHtmlDocument(target);
-        var nodeWithName = document.DocumentNode.SelectSingleNode("//div[@class='trigger']/div/h1");
-        var nodeWithPicture = document.DocumentNode.SelectSingleNode("//div[@class='container']/img");
-        var nodeWithData = document.DocumentNode.SelectSingleNode("//ul[@class='info2']");
+        return href;
+    }
 
+    protected override Task HandleDocument(HtmlDocument document, CancellationToken cancellationToken)
+    {
         //Name
-        if (nodeWithName != null)
-        {
-            var n = nodeWithName.InnerText.Trim();
-            n = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(n.ToLower());
-            if (n.Contains(" "))
-            {
-                result.FirstName = n[..n.IndexOf(' ')];
-                result.LastName = n[(n.IndexOf(' ') + 1)..];
-            }
-        }
+        var nameNode = document.DocumentNode.SelectSingleNode("//div[@class='trigger']/div/h1");
+        AddNameFromInnerText(nameNode);
 
         //Picture
-        if (nodeWithPicture?.Attributes["src"]?.Value is { } picRef)
-        {
-            result.ProfilePictures.Add(new ProfilePicture(picRef, 35, 39));
-        }
+        var picNode = document.DocumentNode.SelectSingleNode("//div[@class='container']/img");
+        AddProfilePicture(picNode, "src",
+            suggestedMinAdultLevel: 35,
+            suggestedMaxAdultLevel: 39);
 
         //Data
-        if (nodeWithData == null)
-            return Task.FromResult(result);
+        var nodeWithData = document.DocumentNode.SelectSingleNode("//ul[@class='info2']");
+        if (nodeWithData is null)
+            return Task.CompletedTask;
 
-
-        foreach (var node in nodeWithData.ChildNodes)
+        foreach (var node in nodeWithData.ChildNodes
+                     .Where(x => !string.IsNullOrWhiteSpace(x.InnerText)))
         {
             cancellationToken.ThrowIfCancellationRequested();
+            var nodeText = GetInnerText(node);
 
-            if (string.IsNullOrWhiteSpace(node.InnerText))
-            {
-                continue;
-            }
-
-
-            //Land
             if (node.InnerText.Contains("Land:"))
-            {
-                result.Country = node.InnerText.Replace("Land:", string.Empty).Trim();
-            }
+                Result.Country = GetInnerText(node, removals: "Land:");
             else if (node.InnerText.Contains("Stadt:"))
-            {
-                result.City = node.InnerText.Replace("Stadt:", string.Empty).Trim();
-            }
-            else if (node.InnerText.Contains("Maße:"))
-            {
-                result.Measurements = node.InnerText.Replace("Maße:", string.Empty)
-                    .Replace(" / ", "-")
-                    .Trim();
-            }
+                Result.City = GetInnerText(node, removals: "Stadt:");
             else if (node.InnerText.Contains("Größe"))
-            {
-                try
-                {
-                    var str = node.InnerText.Replace("Größe", string.Empty).Trim();
-                    str = str[..(str.IndexOf("cm", StringComparison.Ordinal) - 1)].Trim();
-                    result.Height = Convert.ToInt32(str);
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
+                Result.Height = FindHeightInText(nodeText);
             else if (node.InnerText.Contains("Gewicht:"))
-            {
-                try
-                {
-                    var str = node.InnerText.Replace("Gewicht:", string.Empty).Trim();
-                    str = str[..(str.IndexOf("kg", StringComparison.Ordinal) - 1)].Trim();
-                    result.Weight = Convert.ToInt32(str);
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-
+                Result.Weight = FindWeightInText(nodeText);
+            else if (node.InnerText.Contains("Maße:"))
+                UpdateFromMeasurementsText(nodeText);
         }
 
-        return Task.FromResult(result);
+        return Task.CompletedTask;
 
     }
 

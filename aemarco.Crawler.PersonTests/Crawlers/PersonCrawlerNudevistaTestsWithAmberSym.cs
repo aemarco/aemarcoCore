@@ -12,12 +12,8 @@ internal class PersonCrawlerNudevistaTestsWithAmberSym : PersonCrawlerTestsBase<
     public PersonCrawlerNudevistaTestsWithAmberSym()
         : base("Amber Sym")
     {
+        //first and last name expected automatically
         ExpectedProfilePictures.Add("https://b99.nudevista.com/_/319/145319_370.jpg");
-        ExpectedBirthday = new DateTime(1989, 11, 4, 0, 0, 0, DateTimeKind.Utc);
-        ExpectedCountry = "USA";
-        ExpectedProfession = "Fashion Model";
-        ExpectedCareerStart = new DateTime(2013, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        ExpectedStillActive = false;
         ExpectedAliases.AddRange(new List<string>
         {
             "Amber Symm",
@@ -26,13 +22,17 @@ internal class PersonCrawlerNudevistaTestsWithAmberSym : PersonCrawlerTestsBase<
             "Tara Marie Price",
             "Tara P."
         });
+        ExpectedBirthday = new DateOnly(1989, 11, 4);
+        ExpectedCountry = "USA";
+        ExpectedProfession = "Fashion Model";
         ExpectedEthnicity = "Caucasian";
         ExpectedHairColor = "Brown";
         ExpectedEyeColor = "Brown";
-        ExpectedMeasurements = "86-60-86";
-        ExpectedCupsize = "C (fake)";
+        ExpectedMeasurementDetails = "86C-60-86";
         ExpectedHeight = 167;
         ExpectedWeight = 48;
         ExpectedPiercings = "Ears, Navel";
+        ExpectedCareerStart = new DateOnly(2013, 1, 1);
+        ExpectedStillActive = false;
     }
 }
