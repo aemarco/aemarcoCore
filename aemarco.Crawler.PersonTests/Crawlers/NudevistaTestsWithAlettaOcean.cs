@@ -1,4 +1,5 @@
 ﻿using aemarco.Crawler.Person.Crawlers;
+using aemarco.Crawler.Person.Model;
 using aemarco.Crawler.PersonTests.Base;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,7 @@ internal class NudevistaTestsWithAlettaOcean : PersonCrawlerTestsBase<Nudevista>
             "Jessica Kline",
             "Nikita Charm"
         });
+        ExpectedGender = Gender.Female;
         ExpectedBirthday = new DateOnly(1987, 12, 14);
         ExpectedCountry = "Hungary";
         ExpectedCity = "Budapest";

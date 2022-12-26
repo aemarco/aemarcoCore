@@ -1,4 +1,5 @@
 ﻿using aemarco.Crawler.Person.Crawlers;
+using aemarco.Crawler.Person.Model;
 using aemarco.Crawler.PersonTests.Base;
 
 namespace aemarco.Crawler.PersonTests.Crawlers;
@@ -10,6 +11,7 @@ internal class StripperTestsWithAlletaOcean : PersonCrawlerTestsBase<Stripper>
         : base("Aletta Ocean")
     {
         //first and last name expected automatically
+        ExpectedGender = Gender.Female; //gender is assumed
         ExpectedProfilePictures.Add(
             "http://www.istripper.com/free/sets/a0822/illustrations/full.png");
         ExpectedCountry = "Hungary";

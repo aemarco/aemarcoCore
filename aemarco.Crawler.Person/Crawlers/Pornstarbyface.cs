@@ -34,6 +34,9 @@ internal class Pornstarbyface : PersonCrawlerBase
             .SelectNodes("//div[@class='star-info']/div/b");
         if (nodesWithData is null)
             return Task.CompletedTask;
+
+        Result.Gender = Gender.Female;
+
         foreach (var node in nodesWithData)
         {
             cancellationToken.ThrowIfCancellationRequested();

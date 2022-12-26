@@ -1,4 +1,5 @@
 ﻿using aemarco.Crawler.Person.Crawlers;
+using aemarco.Crawler.Person.Model;
 using aemarco.Crawler.PersonTests.Base;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ internal class NudevistaTestsWithAmberSym : PersonCrawlerTestsBase<Nudevista>
             "Tara Marie Price",
             "Tara P."
         });
+        ExpectedGender = Gender.Female;
         ExpectedBirthday = new DateOnly(1989, 11, 4);
         ExpectedCountry = "USA";
         ExpectedProfession = "Fashion Model";

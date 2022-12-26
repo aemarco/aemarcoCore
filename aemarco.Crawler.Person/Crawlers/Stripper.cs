@@ -33,6 +33,8 @@ internal class Stripper : PersonCrawlerBase
         if (nodeWithData is null)
             return Task.CompletedTask;
 
+        Result.Gender = Gender.Female;
+
         foreach (var node in nodeWithData.ChildNodes
                      .Where(x => !string.IsNullOrWhiteSpace(x.InnerText)))
         {

@@ -16,8 +16,7 @@ public class PersonInfo
 
     public string? FirstName { get; internal set; }
     public string? LastName { get; internal set; }
-
-
+    public Gender? Gender { get; internal set; }
     public List<ProfilePicture> ProfilePictures { get; } = new();
     public DateOnly? Birthday { get; internal set; }
     public string? Country { get; internal set; }

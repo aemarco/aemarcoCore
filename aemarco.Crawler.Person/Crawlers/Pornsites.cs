@@ -43,6 +43,8 @@ internal class Pornsites : PersonCrawlerBase
             //Geburtstag
             if (nodeText.StartsWith("Age:"))
                 Result.Birthday = FindBirthdayInText(nodeText);
+            else if (nodeText.StartsWith("Gender:"))
+                UpdateGenderFromText(nodeText);
             else if (nodeText.StartsWith("Hair Color:"))
                 Result.HairColor = GetInnerText(node, removals: "Hair Color:");
             else if (nodeText.StartsWith("Eye Color:"))

@@ -88,6 +88,26 @@ internal abstract class PersonCrawlerTestsBase<T>
                 Formatting.Indented));
     }
 
+    protected Gender? ExpectedGender { get; set; }
+    [Test]
+    public void Crawler_Finds_Gender()
+    {
+        if (Entry is null)
+            return;
+
+        if (ExpectedGender is null)
+        {
+            NothingExpected(Entry.Gender);
+            return;
+        }
+
+        Assert.AreEqual(ExpectedGender, Entry.Gender);
+        TestContext.Out.WriteLine(
+            JsonConvert.SerializeObject(
+                Entry.Gender,
+                Formatting.Indented));
+    }
+
     protected DateOnly? ExpectedBirthday { get; set; }
     [Test]
     public void Crawler_Finds_Birthday()

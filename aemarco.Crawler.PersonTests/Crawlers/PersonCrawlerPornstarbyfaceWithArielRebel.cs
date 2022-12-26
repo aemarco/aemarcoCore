@@ -1,4 +1,5 @@
 ﻿using aemarco.Crawler.Person.Crawlers;
+using aemarco.Crawler.Person.Model;
 using aemarco.Crawler.PersonTests.Base;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ internal class PersonCrawlerPornstarbyfaceWithArielRebel : PersonCrawlerTestsBas
         : base("Ariel Rebel")
     {
         //first and last name expected automatically
+        ExpectedGender = Gender.Female; //gender is assumed
         ExpectedProfilePictures.AddRange(new List<string>
         {
             "https://pornstarbyface.com/ImgFiles/Ariel%20Rebel/1.jpg"

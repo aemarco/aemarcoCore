@@ -1,4 +1,5 @@
 ﻿using aemarco.Crawler.Person.Crawlers;
+using aemarco.Crawler.Person.Model;
 using aemarco.Crawler.PersonTests.Base;
 using System;
 
@@ -15,6 +16,7 @@ internal class PornsitesTestsAlettaOcean : PersonCrawlerTestsBase<Pornsites>
         ExpectedProfilePictures.Add(
             "https://cdn.pornsites.xxx/models/6394/aletta-ocean-4.jpg");
         ExpectedBirthday = new DateOnly(1987, 12, 14);
+        ExpectedGender = Gender.Female;
         ExpectedHairColor = "Black";
         ExpectedEyeColor = "Grey";
         ExpectedMeasurementDetails = "96DDD-66-93";

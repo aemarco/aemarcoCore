@@ -111,7 +111,7 @@ internal abstract class PersonCrawlerBase
     /// </summary>
     /// <param name="text"></param>
     /// <returns></returns>
-    protected DateOnly? FindBirthdayInText(string text)
+    protected DateOnly? FindBirthdayInText(string? text)
     {
         if (string.IsNullOrWhiteSpace(text))
             return null;
@@ -154,6 +154,24 @@ internal abstract class PersonCrawlerBase
 
 
         return null;
+    }
+
+    /// <summary>
+    /// Tries to find gender from given text
+    /// - Gender:Female
+    /// Geschlecht: Female
+    /// </summary>
+    /// <param name="text"></param>
+    protected void UpdateGenderFromText(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return;
+
+        var match = Regex.Match(text, @"(Female|Male)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        if (match.Success && Enum.TryParse<Gender>(match.Value, out var gender))
+        {
+            Result.Gender = gender;
+        }
     }
 
     /// <summary>

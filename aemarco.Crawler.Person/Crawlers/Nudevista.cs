@@ -41,8 +41,9 @@ internal class Nudevista : PersonCrawlerBase
 
             var nodeText = GetInnerText(node);
 
-
-            if (nodeText.StartsWith("Geburtstag:"))
+            if (nodeText.StartsWith("Geschlecht:"))
+                UpdateGenderFromText(nodeText);
+            else if (nodeText.StartsWith("Geburtstag:"))
                 Result.Birthday = FindBirthdayInText(nodeText);
             else if (nodeText.StartsWith("Land:"))
                 Result.Country = GetInnerText(node, removals: "Land:");
