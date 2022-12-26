@@ -76,6 +76,7 @@ public class PersonInfo
             }
         }
 
+        Gender ??= info.Gender;
         ProfilePictures.AddRange(info.ProfilePictures
             .Where(x => !ProfilePictures.Contains(x)));
         Birthday ??= info.Birthday;
@@ -92,6 +93,7 @@ public class PersonInfo
         HairColor ??= info.HairColor;
         EyeColor ??= info.EyeColor;
         MeasurementDetails ??= info.MeasurementDetails;
+        MeasurementDetails?.Merge(info.MeasurementDetails);
         Height ??= info.Height;
         Weight ??= info.Weight;
         Piercings ??= info.Piercings;

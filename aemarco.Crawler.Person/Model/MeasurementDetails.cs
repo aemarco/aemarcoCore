@@ -1,5 +1,5 @@
 ﻿namespace aemarco.Crawler.Person.Model;
-public class MeasurementDetails
+public record MeasurementDetails
 {
 
     public int? Bust { get; internal set; }
@@ -19,10 +19,14 @@ public class MeasurementDetails
         return $"{Bust}{Cup}-{Waist}-{Hip}";
     }
 
+    public void Merge(MeasurementDetails? info)
+    {
+        if (info is null)
+            return;
 
-
-    //TODO: merge
-
-
-
+        Bust ??= info.Bust;
+        Waist ??= info.Waist;
+        Hip ??= info.Hip;
+        Cup ??= info.Cup;
+    }
 }

@@ -28,7 +28,6 @@ internal class Nudevista : PersonCrawlerBase
         AddProfilePicture(picNode, "src",
             x => new Uri(x.StartsWith("http") ? x : $"https:{x}"));
 
-        //TODO: multiple pictures
 
         //Data
         var nodeWithData = document.DocumentNode.SelectSingleNode("//div[@id='params_scroll']");
