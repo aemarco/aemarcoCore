@@ -47,12 +47,19 @@ public class PersonCrawler
         }
 
         //wait for being done
-        await Task.WhenAll(tasks);
         var entries = new List<PersonInfo>();
+        var errors = new List<Exception>();
         foreach (var task in tasks)
         {
-            var personInfo = await task;
-            entries.Add(personInfo);
+            try
+            {
+                var personInfo = await task;
+                entries.Add(personInfo);
+            }
+            catch (Exception ex)
+            {
+                errors.Add(ex);
+            }
         }
 
 
@@ -70,6 +77,7 @@ public class PersonCrawler
 
             result.Merge(entry);
         }
+        result?.Errors.AddRange(errors);
         return result;
     }
 

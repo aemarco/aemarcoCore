@@ -99,4 +99,5 @@ public class PersonInfo
         Piercings ??= info.Piercings;
     }
 
+    public List<Exception> Errors { get; } = new();
 }
