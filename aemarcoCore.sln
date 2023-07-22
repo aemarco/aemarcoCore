@@ -15,12 +15,15 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarco.Crawler.Person", "aemarco.Crawler.Person\aemarco.Crawler.Person.csproj", "{E0EAB8EE-D6CA-424D-846C-E32833605A36}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2F6DBB96-EC43-4C4B-A5A4-689A2225D367}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarco.Crawler.PersonTests", "aemarco.Crawler.PersonTests\aemarco.Crawler.PersonTests.csproj", "{7B9D8DC6-DBD3-463A-9EF5-CD99BFB18912}"
+	ProjectSection(SolutionItems) = preProject
+		Tests\Directory.Build.props = Tests\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarco.Crawler.Wallpaper", "aemarco.Crawler.Wallpaper\aemarco.Crawler.Wallpaper.csproj", "{F2EB8B5A-FB9C-4F9E-8B1A-8B3564DAB193}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarco.Crawler.WallpaperTests", "aemarco.Crawler.WallpaperTests\aemarco.Crawler.WallpaperTests.csproj", "{01CA8BB8-B9BB-4B30-B285-977CA448CCC9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarco.Crawler.PersonTests", "Tests\aemarco.Crawler.PersonTests\aemarco.Crawler.PersonTests.csproj", "{A1F51F78-D052-4838-8257-24D1B8683054}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarco.Crawler.WallpaperTests", "Tests\aemarco.Crawler.WallpaperTests\aemarco.Crawler.WallpaperTests.csproj", "{6B2DC543-ED30-4F3D-90F7-88DAB54ACB2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,25 +35,25 @@ Global
 		{E0EAB8EE-D6CA-424D-846C-E32833605A36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0EAB8EE-D6CA-424D-846C-E32833605A36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0EAB8EE-D6CA-424D-846C-E32833605A36}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7B9D8DC6-DBD3-463A-9EF5-CD99BFB18912}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7B9D8DC6-DBD3-463A-9EF5-CD99BFB18912}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7B9D8DC6-DBD3-463A-9EF5-CD99BFB18912}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7B9D8DC6-DBD3-463A-9EF5-CD99BFB18912}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F2EB8B5A-FB9C-4F9E-8B1A-8B3564DAB193}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F2EB8B5A-FB9C-4F9E-8B1A-8B3564DAB193}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2EB8B5A-FB9C-4F9E-8B1A-8B3564DAB193}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2EB8B5A-FB9C-4F9E-8B1A-8B3564DAB193}.Release|Any CPU.Build.0 = Release|Any CPU
-		{01CA8BB8-B9BB-4B30-B285-977CA448CCC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{01CA8BB8-B9BB-4B30-B285-977CA448CCC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{01CA8BB8-B9BB-4B30-B285-977CA448CCC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{01CA8BB8-B9BB-4B30-B285-977CA448CCC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1F51F78-D052-4838-8257-24D1B8683054}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1F51F78-D052-4838-8257-24D1B8683054}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1F51F78-D052-4838-8257-24D1B8683054}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1F51F78-D052-4838-8257-24D1B8683054}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B2DC543-ED30-4F3D-90F7-88DAB54ACB2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B2DC543-ED30-4F3D-90F7-88DAB54ACB2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B2DC543-ED30-4F3D-90F7-88DAB54ACB2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B2DC543-ED30-4F3D-90F7-88DAB54ACB2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{7B9D8DC6-DBD3-463A-9EF5-CD99BFB18912} = {2F6DBB96-EC43-4C4B-A5A4-689A2225D367}
-		{01CA8BB8-B9BB-4B30-B285-977CA448CCC9} = {2F6DBB96-EC43-4C4B-A5A4-689A2225D367}
+		{A1F51F78-D052-4838-8257-24D1B8683054} = {2F6DBB96-EC43-4C4B-A5A4-689A2225D367}
+		{6B2DC543-ED30-4F3D-90F7-88DAB54ACB2C} = {2F6DBB96-EC43-4C4B-A5A4-689A2225D367}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0EC96D17-031A-4821-AF90-49577D41E2CF}
