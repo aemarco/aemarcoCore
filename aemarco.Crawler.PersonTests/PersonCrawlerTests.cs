@@ -42,7 +42,7 @@ public class PersonCrawlerTests
         if (result is null)
             throw new Exception("Did not get a PersonInfo");
 
-        result.ProfilePictures.Count.Should().Be(8);
+        result.ProfilePictures.Count.Should().Be(6);
         result.Aliases.Count.Should().Be(28);
         result.Piercings.Should().Be("Navel");
     }

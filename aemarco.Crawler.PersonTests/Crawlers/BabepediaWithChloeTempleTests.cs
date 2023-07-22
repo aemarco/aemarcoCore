@@ -24,7 +24,7 @@ internal class BabepediaWithChloeTempleTests : PersonCrawlerTestsBase<Babepedia>
             "Clara Fargo",
             "Larissa"
         });
-        ExpectedBirthday = new DateOnly(2000, 2, 6);
+        ExpectedBirthday = new DateOnly(1998, 2, 6);
         ExpectedCountry = "United States";
         ExpectedCity = "Arizona";
         ExpectedEthnicity = "Caucasian";
@@ -32,7 +32,7 @@ internal class BabepediaWithChloeTempleTests : PersonCrawlerTestsBase<Babepedia>
         ExpectedHairColor = "Blonde";
         ExpectedEyeColor = "Brown";
         ExpectedHeight = 160;
-        ExpectedWeight = 46;
+        ExpectedWeight = 45;
         ExpectedMeasurementDetails = "81B-60-88";
         ExpectedCareerStart = new DateOnly(2018, 1, 1);
         ExpectedStillActive = true;

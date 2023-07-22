@@ -36,14 +36,14 @@ internal class BabepediaWithFoxiDiTests : PersonCrawlerTestsBase<Babepedia>
         ExpectedCountry = "Russian Federation";
         ExpectedCity = "St. Petersburg";
         ExpectedEthnicity = "Caucasian";
-        ExpectedProfession = "Glamour Model (Former), Porn Star (Former)";
+        ExpectedProfession = "Adult Model, Glamour Model, Porn Star";
         ExpectedHairColor = "Brown";
         ExpectedEyeColor = "Hazel";
         ExpectedHeight = 157;
-        ExpectedWeight = 45;
+        ExpectedWeight = 49;
         ExpectedMeasurementDetails = "86B-60-86";
         ExpectedCareerStart = new DateOnly(2013, 1, 1);
-        ExpectedStillActive = false;
+        ExpectedStillActive = true;
         ExpectedPiercings = "Navel";
     }
 }

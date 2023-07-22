@@ -27,7 +27,7 @@ internal class BabesAndStarsWithArielRebelTests : PersonCrawlerTestsBase<BabesAn
         });
         ExpectedProfilePictures.AddRange(new List<string>
         {
-            "https://static.babesandstars.com/models/2000/2094/250x330.jpg"
+            "https://www.babesandstars.com/models/2000/2094/250x330.jpg"
         });
 
         ExpectedCountry = "Canada";

@@ -24,8 +24,8 @@ public static class HtmlHelper
         try
         {
             CacheCleanup();
-            if (DocumentsCache.ContainsKey(uri.AbsoluteUri))
-                return DocumentsCache[uri.AbsoluteUri].HtmlDocument;
+            if (DocumentsCache.TryGetValue(uri.AbsoluteUri, out var value))
+                return value.HtmlDocument;
 
             if (minDelay.HasValue && maxDelay.HasValue)
                 Task.Delay(Random.Next(minDelay.Value, maxDelay.Value)).GetAwaiter().GetResult();
