@@ -158,21 +158,34 @@ internal abstract class PersonCrawlerBase
 
     /// <summary>
     /// Tries to find gender from given text
-    /// - Gender:Female
-    /// Geschlecht: Female
     /// </summary>
     /// <param name="text"></param>
+
+
+
+
     protected void UpdateGenderFromText(string? text)
     {
         if (string.IsNullOrWhiteSpace(text))
             return;
 
-        var match = Regex.Match(text, @"(Female|Male)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        if (match.Success && Enum.TryParse<Gender>(match.Value, out var gender))
+        KeyValuePair<string, Gender>[] genderMatches =
         {
-            Result.Gender = gender;
-        }
+            new("Female", Gender.Female),
+            new("Male", Gender.Male),
+            new("Trans", Gender.Other),
+            new("tranny", Gender.Other)
+        };
+        Result.Gender = genderMatches
+            .Where(pair => Regex.IsMatch(text, pair.Key, RegexOptions.Compiled | RegexOptions.IgnoreCase))
+            .Select(pair => (Gender?)pair.Value)
+            .FirstOrDefault();
+
+
     }
+
+
+
 
     /// <summary>
     /// Tries to find the height in cm from text

@@ -41,7 +41,7 @@ internal class Nudevista : PersonCrawlerBase
             var nodeText = GetInnerText(node);
 
             if (nodeText.StartsWith("Geschlecht:"))
-                UpdateGenderFromText(nodeText);
+                UpdateGenderFromText(nodeText); // female male tranny
             else if (nodeText.StartsWith("Geburtstag:"))
                 Result.Birthday = FindBirthdayInText(nodeText);
             else if (nodeText.StartsWith("Land:"))
