@@ -21,9 +21,11 @@ steps:
   inputs:
     restoreSolution: '$(solution)'
 
-- task: VSBuild@1
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build'
   inputs:
-    solution: '$(solution)'
+    command: 'build'
+    projects: '**/*.csproj'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
