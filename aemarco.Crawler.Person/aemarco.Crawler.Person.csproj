@@ -1,40 +1,19 @@
-﻿<!--EXTERNAL_PROPERTIES: AssemblyVersion-->
-<Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="..\SolutionInfo.proj" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<!-- project definition -->
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<ApplicationIcon>girl.ico</ApplicationIcon>
-
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<!-- nuget build-->
 	<PropertyGroup>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>aemarcoPersonCrawler</PackageId>
-		<!-- ReSharper disable UnknownProperty -->
-		<PackageVersion>$(AssemblyVersion)</PackageVersion>
-		<!-- ReSharper restore UnknownProperty -->
-		<Authors>aemarco</Authors>
-		<Company>aemarco</Company>
 		<Product>aemarcoPersonCrawler</Product>
-		<PackageProjectUrl>https://github.com/aemarco/aemarcoCore</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/aemarco/aemarcoCore</RepositoryUrl>
 		<Description>crawling for person information</Description>
-		<PackageTags>Crawler,FSK18</PackageTags>
+		<PackageTags>Crawler,FSK18,Person</PackageTags>
 		<PackageIcon>girl.png</PackageIcon>
-		<Copyright>Copyright 2021</Copyright>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
-	<ItemGroup>
-		<None Include="girl.png" Pack="true" PackagePath="\" />
-	</ItemGroup>
-	<ItemGroup>
-	  <PackageReference Update="HtmlAgilityPack" Version="1.11.46" />
-	</ItemGroup>
-	
 
 </Project>

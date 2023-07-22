@@ -1,12 +1,9 @@
-﻿<!--EXTERNAL_PROPERTIES: AssemblyVersion-->
-<Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="..\SolutionInfo.proj" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<!-- project definition -->
 	<PropertyGroup>
 	    <TargetFramework>net6.0</TargetFramework>
 		<ApplicationIcon>girl.ico</ApplicationIcon>
-
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
@@ -17,29 +14,12 @@
 
 	<!-- nuget build-->
 	<PropertyGroup>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>aemarcoWallpaperCrawler</PackageId>
-		<!-- ReSharper disable UnknownProperty -->
-		<PackageVersion>$(AssemblyVersion)</PackageVersion>
-		<!-- ReSharper restore UnknownProperty -->
-		<Authors>aemarco</Authors>
-		<Company>aemarco</Company>
-		<Product>aemarcoCore</Product>
-		<PackageProjectUrl>https://github.com/aemarco/aemarcoCore</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/aemarco/aemarcoCore</RepositoryUrl>
-		<Description>Some stuff</Description>
+		<Product>aemarcoWallpaperCrawler</Product>
+		<Description>crawling for wallpapers</Description>
 		<PackageTags>Crawler,FSK18,Wallpaper</PackageTags>
 		<PackageIcon>girl.png</PackageIcon>
-		<Copyright>Copyright 2017</Copyright>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
-	<ItemGroup>
-		<None Include="girl.png" Pack="true" PackagePath="\" />
-	</ItemGroup>
-	<ItemGroup>
-	  <PackageReference Update="HtmlAgilityPack" Version="1.11.46" />
-	</ItemGroup>
 
 </Project>
     
