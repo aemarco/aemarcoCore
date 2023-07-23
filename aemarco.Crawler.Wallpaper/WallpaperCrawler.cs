@@ -1,4 +1,5 @@
 ﻿// ReSharper disable UnusedMethodReturnValue.Global
+
 namespace aemarco.Crawler.Wallpaper;
 
 public class WallpaperCrawler
@@ -6,7 +7,6 @@ public class WallpaperCrawler
 
     // ReSharper disable once InconsistentNaming
     internal readonly List<WallpaperCrawlerBasis> _wallCrawlers;
-
     public WallpaperCrawler(int? startPage = null, int? lastPage = null)
     {
         if (startPage < 1)
@@ -40,11 +40,11 @@ public class WallpaperCrawler
     public void Configure(Func<List<string>>? knownUrlsFunc = null, string? abyssApiKey = null)
     {
         _knownUrlsFunc = knownUrlsFunc;
-        foreach (var c in _wallCrawlers)
-        {
-            if (abyssApiKey is not null && c is Abyss a)
-                a.ProvideApiKey(abyssApiKey);
-        }
+        //foreach (var c in _wallCrawlers)
+        //{
+        //    if (abyssApiKey is not null && c is Abyss a)
+        //        a.ProvideApiKey(abyssApiKey);
+        //}
     }
 
 

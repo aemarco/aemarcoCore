@@ -1,9 +1,6 @@
-﻿using aemarco.Crawler.Person.Crawlers;
-using aemarco.Crawler.PersonTests.Base;
-using System;
-using System.Collections.Generic;
+﻿namespace aemarco.Crawler.PersonTests.Crawlers;
 
-namespace aemarco.Crawler.PersonTests.Crawlers;
+
 
 internal class BabepediaWithFoxiDiTests : PersonCrawlerTestsBase<Babepedia>
 {
@@ -12,8 +9,6 @@ internal class BabepediaWithFoxiDiTests : PersonCrawlerTestsBase<Babepedia>
     public BabepediaWithFoxiDiTests()
         : base("Foxi Di")
     {
-        //first and last name expected automatically
-        ExpectedFirstName = "Foxy";
         ExpectedAliases.AddRange(new List<string>
         {
             "Foxi Di",

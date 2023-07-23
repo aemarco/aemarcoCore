@@ -1,18 +1,17 @@
 ﻿namespace aemarco.Crawler.Person.Crawlers;
 
-[PersonCrawler("IStripper", 40)]
+[PersonCrawler("IStripper", 50)]
 internal class Stripper : PersonCrawlerBase
 {
 
-    public Stripper(string nameToCrawl)
-        : base(nameToCrawl, new Uri("https://www.istripper.com"))
+    public Stripper()
+        : base(new Uri("https://www.istripper.com"))
     { }
 
-
-    protected override string GetSiteHref()
+    protected override string GetSiteHref(string nameToCrawl)
     {
         // de/models/Aletta-Ocean
-        var href = $"de/models/{NameToCrawl.Replace(' ', '-')}";
+        var href = $"de/models/{nameToCrawl.Replace(' ', '-')}";
         return href;
     }
 
@@ -20,11 +19,11 @@ internal class Stripper : PersonCrawlerBase
     {
         //Name
         var nameNode = document.DocumentNode.SelectSingleNode("//div[@class='trigger']/div/h1");
-        AddNameFromInnerText(nameNode);
+        UpdateName(nameNode);
 
         //Picture
         var picNode = document.DocumentNode.SelectSingleNode("//div[@class='container']/img");
-        AddProfilePicture(picNode, "src",
+        UpdateProfilePictures(picNode, "src",
             suggestedMinAdultLevel: 35,
             suggestedMaxAdultLevel: 39);
 
@@ -39,23 +38,20 @@ internal class Stripper : PersonCrawlerBase
                      .Where(x => !string.IsNullOrWhiteSpace(x.InnerText)))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var nodeText = GetInnerText(node);
+            var nodeText = node.TextWithout();
 
             if (node.InnerText.Contains("Land:"))
-                Result.Country = GetInnerText(node, removals: "Land:");
+                Result.Country = node.TextWithout("Land:");
             else if (node.InnerText.Contains("Stadt:"))
-                Result.City = GetInnerText(node, removals: "Stadt:");
+                Result.City = node.TextWithout("Stadt:");
             else if (node.InnerText.Contains("Größe"))
-                Result.Height = FindHeightInText(nodeText);
+                Result.Height = DataParser.FindHeightInText(nodeText);
             else if (node.InnerText.Contains("Gewicht:"))
-                Result.Weight = FindWeightInText(nodeText);
+                Result.Weight = DataParser.FindWeightInText(nodeText);
             else if (node.InnerText.Contains("Maße:"))
-                UpdateFromMeasurementsText(nodeText);
+                UpdateMeasurements(nodeText);
         }
-
         return Task.CompletedTask;
-
     }
-
 
 }

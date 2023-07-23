@@ -1,17 +1,17 @@
 ﻿namespace aemarco.Crawler.Person.Crawlers;
 
-[PersonCrawler("Pornsites", 30)]
+[PersonCrawler("Pornsites", 40)]
 internal class Pornsites : PersonCrawlerBase
 {
-    public Pornsites(string nameToCrawl)
-        : base(nameToCrawl, new Uri("https://pornsites.xxx"))
+
+    public Pornsites()
+        : base(new Uri("https://pornsites.xxx"))
     { }
 
-
-    protected override string GetSiteHref()
+    protected override string GetSiteHref(string nameToCrawl)
     {
         // pornstars/Aletta-Ocean
-        var href = $"pornstars/{NameToCrawl.Replace(' ', '-')}";
+        var href = $"pornstars/{nameToCrawl.Replace(' ', '-')}";
         return href;
     }
 
@@ -20,12 +20,12 @@ internal class Pornsites : PersonCrawlerBase
 
         //Name
         var nameNode = document.DocumentNode.SelectSingleNode("//div[@id='main']/header/h1");
-        AddNameFromInnerText(nameNode);
+        UpdateName(nameNode);
 
         //Pictures
         var picNodes = document.DocumentNode
             .SelectNodes("//div[@class='pornstar-box-con-big']/div[@class='pornstar-box']/picture/img");
-        AddProfilePictures(picNodes, "src");
+        UpdateProfilePictures(picNodes, "src");
 
 
         //Data
@@ -37,30 +37,30 @@ internal class Pornsites : PersonCrawlerBase
         foreach (var node in nodeWithData)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var nodeText = GetInnerText(node);
+            var nodeText = node.TextWithout();
 
 
             //Geburtstag
             if (nodeText.StartsWith("Age:"))
-                Result.Birthday = FindBirthdayInText(nodeText);
+                Result.Birthday = DataParser.FindBirthdayInText(nodeText);
             else if (nodeText.StartsWith("Gender:"))
-                UpdateGenderFromText(nodeText); //female male trans
+                Result.Gender = DataParser.FindGenderInText(nodeText); //female male trans
             else if (nodeText.StartsWith("Hair Color:"))
-                Result.HairColor = GetInnerText(node, removals: "Hair Color:");
+                Result.HairColor = node.TextWithout("Hair Color:");
             else if (nodeText.StartsWith("Eye Color:"))
-                Result.EyeColor = GetInnerText(node, removals: "Eye Color:");
+                Result.EyeColor = node.TextWithout("Eye Color:");
             else if (nodeText.StartsWith("Cupsize:"))
-                UpdateFromMeasurementsText(nodeText, true);
+                UpdateMeasurements(nodeText, true);
             else if (nodeText.StartsWith("Weight:"))
-                Result.Weight = FindWeightInText(nodeText);
+                Result.Weight = DataParser.FindWeightInText(nodeText);
             else if (nodeText.StartsWith("Height:"))
-                Result.Height = FindHeightInText(nodeText);
+                Result.Height = DataParser.FindHeightInText(nodeText);
             else if (nodeText.StartsWith("Country:"))
-                Result.Country = GetInnerText(node, removals: "Country:");
+                Result.Country = node.TextWithout("Country:");
             else if (nodeText.StartsWith("Ethnicity:"))
-                Result.Ethnicity = GetInnerText(node, removals: "Ethnicity:");
+                Result.Ethnicity = node.TextWithout("Ethnicity:");
         }
-
         return Task.CompletedTask;
     }
+
 }

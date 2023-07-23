@@ -1,17 +1,17 @@
 ﻿namespace aemarco.Crawler.Person.Crawlers;
 
-[PersonCrawler("Nudevista", 20)]
+[PersonCrawler("Nudevista", 30)]
 internal class Nudevista : PersonCrawlerBase
 {
-    public Nudevista(string nameToCrawl)
-        : base(nameToCrawl, new Uri("https://www.nudevista.at"))
+
+    public Nudevista()
+        : base(new Uri("https://www.nudevista.at"))
     { }
 
-
-    protected override string GetSiteHref()
+    protected override string GetSiteHref(string nameToCrawl)
     {
         // ?q=Aletta+Ocean&s=s
-        var href = $"?q={NameToCrawl.Replace(' ', '+')}&s=s";
+        var href = $"?q={nameToCrawl.Replace(' ', '+')}&s=s";
         return href;
     }
 
@@ -21,12 +21,18 @@ internal class Nudevista : PersonCrawlerBase
 
         //Name
         var nameNode = document.DocumentNode.SelectSingleNode("//td[contains(@valign, 'top') and contains(@colspan ,'2')]");
-        AddNameFromInnerText(nameNode);
+        UpdateName(nameNode);
 
         //Picture
         var picNode = document.DocumentNode.SelectSingleNode("//img[@class='mthumb']");
-        AddProfilePicture(picNode, "src",
-            x => new Uri(x.StartsWith("http") ? x : $"https:{x}"));
+        if (picNode?.Attributes["src"]?.Value is { } imageRef)
+        {
+            var url = imageRef.StartsWith("http")
+                ? imageRef
+                : $"https:{imageRef}";
+            UpdateProfilePictures(new Uri(url));
+        }
+
 
 
         //Data
@@ -38,22 +44,22 @@ internal class Nudevista : PersonCrawlerBase
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var nodeText = GetInnerText(node);
+            var nodeText = node.TextWithout();
 
             if (nodeText.StartsWith("Geschlecht:"))
-                UpdateGenderFromText(nodeText); // female male tranny
+                Result.Gender = DataParser.FindGenderInText(nodeText); // female male tranny
             else if (nodeText.StartsWith("Geburtstag:"))
-                Result.Birthday = FindBirthdayInText(nodeText);
+                Result.Birthday = DataParser.FindBirthdayInText(nodeText);
             else if (nodeText.StartsWith("Land:"))
-                Result.Country = GetInnerText(node, removals: "Land:");
+                Result.Country = node.TextWithout("Land:");
             else if (nodeText.StartsWith("Geburtsort:"))
-                Result.City = GetInnerText(node, removals: "Geburtsort:");
+                Result.City = node.TextWithout("Geburtsort:");
             else if (nodeText.StartsWith("Beruf:"))
-                Result.Profession = GetInnerText(node, removals: "Beruf:");
+                Result.Profession = node.TextWithout("Beruf:");
             else if (nodeText.StartsWith("Karrierestart:"))
-                Result.CareerStart = FindCareerStartInText(nodeText);
+                Result.CareerStart = DataParser.FindCareerStartInText(nodeText);
             else if (nodeText.StartsWith("Karrierestatus:"))
-                Result.StillActive = FindStillActiveInText(node.InnerText);
+                Result.StillActive = DataParser.FindStillActiveInText(node.InnerText);
             else if (nodeText.StartsWith("Auch Bekannt Als"))
             {
                 //Auch bekannt als Becky Lesabre, Beth Porter.
@@ -69,7 +75,7 @@ internal class Nudevista : PersonCrawlerBase
                     if (al.StartsWith(".")) al = al.Remove(0, 1);
                     al = al.Trim();
 
-                    if (al.Length > 3 && al.Contains(" "))
+                    if (al.Length > 3 && al.Contains(' '))
                     {
                         Result.Aliases.Add(al);
                     }
@@ -77,28 +83,23 @@ internal class Nudevista : PersonCrawlerBase
                 }
             }
             else if (nodeText.StartsWith("Rasse:"))
-                Result.Ethnicity = GetInnerText(node, removals: "Rasse:");
+                Result.Ethnicity = node.TextWithout("Rasse:");
             else if (nodeText.StartsWith("Haare:"))
-                Result.HairColor = GetInnerText(node, removals: "Haare:");
+                Result.HairColor = node.TextWithout("Haare:");
             else if (nodeText.StartsWith("Augen:"))
-                Result.EyeColor = GetInnerText(node, removals: "Augen:");
+                Result.EyeColor = node.TextWithout("Augen:");
             else if (nodeText.StartsWith("Maße:"))
-                UpdateFromMeasurementsText(nodeText, true);
+                UpdateMeasurements(nodeText, true);
             else if (nodeText.StartsWith("Körbchengröße:"))
-                UpdateFromCupText(GetInnerText(node, removals: "Körbchengröße:"));
+                UpdateMeasurements(nodeText, true);
             else if (nodeText.StartsWith("Größe:"))
-                Result.Height = FindHeightInText(nodeText);
+                Result.Height = DataParser.FindHeightInText(nodeText);
             else if (nodeText.StartsWith("Gewicht:"))
-                Result.Weight = FindWeightInText(nodeText);
+                Result.Weight = DataParser.FindWeightInText(nodeText);
             else if (nodeText.StartsWith("Piercings:"))
-                Result.Piercings = GetInnerText(node, removals: new[] { "Piercings:", "None" });
-
-
+                Result.Piercings = node.TextWithout("Piercings:", "None");
         }
         return Task.CompletedTask;
-
     }
-
-
 
 }

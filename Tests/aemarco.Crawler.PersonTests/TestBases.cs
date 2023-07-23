@@ -1,49 +1,35 @@
-﻿using aemarco.Crawler.Person;
-using aemarco.Crawler.Person.Common;
-using aemarco.Crawler.Person.Model;
-using FluentAssertions;
-using Newtonsoft.Json;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-// ReSharper disable PropertyCanBeMadeInitOnly.Global
-// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
-// ReSharper disable MemberCanBePrivate.Global
+﻿namespace aemarco.Crawler.PersonTests;
 
-namespace aemarco.Crawler.PersonTests.Base;
-
-internal abstract class PersonCrawlerTestsBase<T>
+internal abstract class PersonCrawlerTestsBase<T> : TestBase
 {
-    private readonly string _nameToCrawl;
 
+    private readonly string _nameToCrawl;
+    private readonly CrawlerInfo _crawlerInfo;
     protected PersonCrawlerTestsBase(string nameToCrawl)
     {
-        ExpectedFirstName = nameToCrawl.Split(' ')[0];
-        ExpectedLastName = nameToCrawl.Split(' ')[1];
+
         _nameToCrawl = nameToCrawl;
+        ExpectedFirstName = _nameToCrawl.Split(' ')[0];
+        ExpectedLastName = _nameToCrawl.Split(' ')[1];
+
+        var type = PersonCrawler
+                       .GetAvailableCrawlerTypes()
+                       .FirstOrDefault(x => x.FullName == typeof(T).FullName)
+                   ?? throw new Exception($"Type {typeof(T).FullName} not available");
+        _crawlerInfo = CrawlerInfo.FromCrawlerType(type)
+            ?? throw new Exception("Could not get CrawlerInfo");
     }
+
 
     [OneTimeSetUp]
-    public void Init()
+    public async Task Init()
     {
-        var type = PersonCrawler
-            .GetAvailableCrawlerTypes()
-            .FirstOrDefault(x => x.FullName == typeof(T).FullName);
-
-        if (type is null)
-            throw new Exception($"Type {typeof(T).FullName} not available");
-
-        Info = type.ToCrawlerInfo();
-
         var crawler = new PersonCrawler();
-        crawler.AddPersonSiteFilter(Info.FriendlyName);
-        Entry = crawler.StartAsync(_nameToCrawl).GetAwaiter().GetResult();
+        crawler.AddPersonSiteFilter(_crawlerInfo.FriendlyName);
+        Entry = await crawler.StartAsync(_nameToCrawl);
     }
 
-    protected PersonCrawlerAttribute Info { get; private set; } = null!;
-    protected PersonInfo? Entry { get; private set; }
-
+    private PersonInfo? Entry { get; set; }
 
 
 
@@ -53,39 +39,32 @@ internal abstract class PersonCrawlerTestsBase<T>
         if (Entry is null)
             return;
 
-        Assert.AreEqual(Info.FriendlyName, Entry.PersonEntrySource);
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.PersonEntrySource,
-                Formatting.Indented));
+        Entry.CrawlerInfos.Count.Should().Be(1);
+
+
+
+        Assert.AreEqual(_crawlerInfo, Entry.CrawlerInfos[0]);
+        PrintJson(Entry.CrawlerInfos[0]);
     }
 
-    protected string ExpectedFirstName { get; set; }
+    protected string ExpectedFirstName { get; init; }
     [Test]
     public void Crawler_Finds_FirstName()
     {
         if (Entry is null)
             return;
-
         Assert.AreEqual(ExpectedFirstName, Entry.FirstName);
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.FirstName,
-                Formatting.Indented));
+        PrintJson(Entry.FirstName);
     }
 
-    protected string ExpectedLastName { get; set; }
+    protected string ExpectedLastName { get; init; }
     [Test]
     public void Crawler_Finds_LastName()
     {
         if (Entry is null)
             return;
-
         Assert.AreEqual(ExpectedLastName, Entry.LastName);
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.LastName,
-                Formatting.Indented));
+        PrintJson(Entry.LastName);
     }
 
     protected Gender? ExpectedGender { get; set; }
@@ -100,12 +79,8 @@ internal abstract class PersonCrawlerTestsBase<T>
             NothingExpected(Entry.Gender);
             return;
         }
-
         Assert.AreEqual(ExpectedGender, Entry.Gender);
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.Gender,
-                Formatting.Indented));
+        PrintJson(Entry.Gender?.ToString());
     }
 
     protected DateOnly? ExpectedBirthday { get; set; }
@@ -122,10 +97,7 @@ internal abstract class PersonCrawlerTestsBase<T>
         }
 
         Assert.AreEqual(ExpectedBirthday!.Value, Entry.Birthday);
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.Birthday,
-                Formatting.Indented));
+        PrintJson(Entry.Birthday);
     }
 
     protected DateOnly? ExpectedCareerStart { get; set; }
@@ -142,11 +114,8 @@ internal abstract class PersonCrawlerTestsBase<T>
         }
 
         Assert.AreEqual(ExpectedCareerStart.Value, Entry.CareerStart);
+        PrintJson(Entry.CareerStart);
 
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.CareerStart,
-                Formatting.Indented));
     }
 
     protected string? ExpectedCountry { get; set; }
@@ -161,11 +130,9 @@ internal abstract class PersonCrawlerTestsBase<T>
             return;
         }
         Assert.AreEqual(ExpectedCountry, Entry.Country);
+        PrintJson(Entry.Country);
 
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.Country,
-                Formatting.Indented));
+
     }
 
     protected string? ExpectedCity { get; set; }
@@ -180,11 +147,7 @@ internal abstract class PersonCrawlerTestsBase<T>
             return;
         }
         Assert.AreEqual(ExpectedCity, Entry.City);
-
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.City,
-                Formatting.Indented));
+        PrintJson(Entry.City);
     }
 
     protected string? ExpectedProfession { get; set; }
@@ -199,11 +162,7 @@ internal abstract class PersonCrawlerTestsBase<T>
             return;
         }
         Assert.AreEqual(ExpectedProfession, Entry.Profession);
-
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.Profession,
-                Formatting.Indented));
+        PrintJson(Entry.Profession);
     }
 
     protected string? ExpectedEthnicity { get; set; }
@@ -218,11 +177,7 @@ internal abstract class PersonCrawlerTestsBase<T>
             return;
         }
         Assert.AreEqual(ExpectedEthnicity, Entry.Ethnicity);
-
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.Ethnicity,
-                Formatting.Indented));
+        PrintJson(Entry.Ethnicity);
     }
 
     protected string? ExpectedHairColor { get; set; }
@@ -238,10 +193,8 @@ internal abstract class PersonCrawlerTestsBase<T>
         }
         Assert.AreEqual(ExpectedHairColor, Entry.HairColor);
 
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.HairColor,
-                Formatting.Indented));
+        PrintJson(Entry.HairColor);
+
     }
 
 
@@ -257,10 +210,8 @@ internal abstract class PersonCrawlerTestsBase<T>
             return;
         }
         Assert.AreEqual(ExpectedEyeColor, Entry.EyeColor);
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.EyeColor,
-                Formatting.Indented));
+        PrintJson(Entry.EyeColor);
+
     }
 
     protected int? ExpectedHeight { get; set; }
@@ -277,10 +228,8 @@ internal abstract class PersonCrawlerTestsBase<T>
         }
         Assert.AreEqual(ExpectedHeight!.Value, Entry.Height);
 
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.Height,
-                Formatting.Indented));
+        PrintJson(Entry.Height);
+
     }
 
     protected int? ExpectedWeight { get; set; }
@@ -295,11 +244,8 @@ internal abstract class PersonCrawlerTestsBase<T>
             return;
         }
         Assert.AreEqual(ExpectedWeight!.Value, Entry.Weight);
+        PrintJson(Entry.Weight);
 
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.Weight,
-                Formatting.Indented));
     }
 
     protected string? ExpectedMeasurementDetails { get; set; }
@@ -313,12 +259,8 @@ internal abstract class PersonCrawlerTestsBase<T>
             NothingExpected(Entry.MeasurementDetails);
             return;
         }
-        Assert.AreEqual(ExpectedMeasurementDetails, Entry.MeasurementDetails?.ToString());
-
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.MeasurementDetails,
-                Formatting.Indented));
+        Assert.AreEqual(ExpectedMeasurementDetails, Entry.MeasurementDetails.ToString());
+        PrintJson(Entry.MeasurementDetails);
     }
 
 
@@ -336,10 +278,8 @@ internal abstract class PersonCrawlerTestsBase<T>
         }
         Assert.AreEqual(ExpectedPiercings, Entry.Piercings);
 
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.Piercings,
-                Formatting.Indented));
+        PrintJson(Entry.Piercings);
+
     }
 
     protected bool? ExpectedStillActive { get; set; }
@@ -350,10 +290,8 @@ internal abstract class PersonCrawlerTestsBase<T>
             return;
 
         Assert.AreEqual(ExpectedStillActive, Entry.StillActive);
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.StillActive,
-                Formatting.Indented));
+        PrintJson(Entry.StillActive);
+
     }
 
     protected List<string> ExpectedProfilePictures { get; set; } = new();
@@ -373,10 +311,8 @@ internal abstract class PersonCrawlerTestsBase<T>
         {
             Entry.ProfilePictures.Should().Contain(x => x.Url == url);
         }
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.ProfilePictures,
-                Formatting.Indented));
+        PrintJson(Entry.ProfilePictures);
+
     }
 
     protected List<string> ExpectedAliases { get; set; } = new();
@@ -396,22 +332,28 @@ internal abstract class PersonCrawlerTestsBase<T>
         {
             Entry.Aliases.Should().Contain(al);
         }
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Entry.Aliases,
-                Formatting.Indented));
+        PrintJson(Entry.Aliases);
+
     }
 
 
-    private void NothingExpected(object? found)
+    private static void NothingExpected(object? found)
+    {
+        PrintJson(new
+        {
+            Expected = "Noting",
+            Found = found ?? "Nothing"
+        });
+    }
+}
+
+internal abstract class TestBase
+{
+    protected static void PrintJson(object? obj)
     {
         TestContext.Out.WriteLine(
             JsonConvert.SerializeObject(
-               new
-               {
-                   Expected = "Noting",
-                   Found = found ?? "Nothing"
-               },
-               Formatting.Indented));
+                obj,
+                Formatting.Indented));
     }
 }

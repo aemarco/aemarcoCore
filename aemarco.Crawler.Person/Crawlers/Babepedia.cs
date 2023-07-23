@@ -1,17 +1,18 @@
 ﻿namespace aemarco.Crawler.Person.Crawlers;
 
+
 [PersonCrawler("Babepedia", 20)]
 internal class Babepedia : PersonCrawlerBase
 {
-    public Babepedia(string nameToCrawl)
-        : base(nameToCrawl, new Uri("https://www.babepedia.com"))
+
+    public Babepedia()
+        : base(new Uri("https://www.babepedia.com"))
     { }
 
-
-    protected override string GetSiteHref()
+    protected override string GetSiteHref(string nameToCrawl)
     {
         // /babe/Chloe_Temple
-        var href = $"/babe/{NameToCrawl.Replace(' ', '_')}";
+        var href = $"/babe/{nameToCrawl.Replace(' ', '_')}";
         return href;
     }
 
@@ -19,23 +20,23 @@ internal class Babepedia : PersonCrawlerBase
     {
         //Name
         var nameNode = document.DocumentNode.SelectSingleNode("//div[@id='bioarea']/h1");
-        AddNameFromInnerText(nameNode);
+        UpdateName(nameNode);
 
         //Pictures
         var picNode = document.DocumentNode
             .SelectSingleNode("//div[@id='profimg']/a[@class='img']");
-        AddProfilePicture(picNode, "href", UrlFromHref);
+        UpdateProfilePictures(picNode, "href");
         var addPicNodes = document.DocumentNode
             .SelectNodes("//div[@id='profselect']/div[@class='prof']/a[@class='img']");
-        AddProfilePictures(addPicNodes, "href", UrlFromHref);
+        UpdateProfilePictures(addPicNodes, "href");
 
         //Aliases
         var nodeWithAlias = document.DocumentNode
             .SelectSingleNode("//div[@id='bioarea']/h2");
         if (nodeWithAlias is not null)
         {
-            var cleaned = GetInnerText(nodeWithAlias).Replace("aka ", string.Empty, StringComparison.OrdinalIgnoreCase);
-            Result.Aliases = GetListFromCsv(cleaned, '/');
+            var cleaned = nodeWithAlias.TextWithout().TextWithoutBeginning("aka");
+            Result.Aliases = DataParser.FindStringsInText(cleaned, '/');
         }
 
         //Data
@@ -48,15 +49,16 @@ internal class Babepedia : PersonCrawlerBase
                      .Where(x => x.Name == "li"))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var nodeText = GetInnerText(node);
+
+            var nodeText = node.TextWithout();
 
 
             if (nodeText.StartsWith("Born:"))
-                Result.Birthday = FindBirthdayInText(nodeText);
+                Result.Birthday = DataParser.FindBirthdayInText(nodeText);
             else if (nodeText.StartsWith("Birthplace:"))
             {
-                var str = GetInnerText(node, removals: "Birthplace:");
-                var parts = GetListFromCsv(str, ',');
+                var str = node.TextWithout("Birthplace:");
+                var parts = DataParser.FindStringsInText(str);
                 switch (parts.Count)
                 {
                     case 1:
@@ -69,32 +71,29 @@ internal class Babepedia : PersonCrawlerBase
                 }
             }
             else if (nodeText.StartsWith("Profession:"))
-                Result.Profession = GetInnerText(node, removals: "Profession:");
+                Result.Profession = node.TextWithout("Profession:");
             else if (nodeText.StartsWith("Ethnicity:"))
-                Result.Ethnicity = GetInnerText(node, removals: "Ethnicity:");
+                Result.Ethnicity = node.TextWithout("Ethnicity:");
             else if (nodeText.StartsWith("Hair Color:"))
-                Result.HairColor = GetInnerText(node, removals: "Hair Color:");
+                Result.HairColor = node.TextWithout("Hair Color:");
             else if (nodeText.StartsWith("Eye Color:"))
-                Result.EyeColor = GetInnerText(node, removals: "Eye Color:");
+                Result.EyeColor = node.TextWithout("Eye Color:");
             else if (nodeText.StartsWith("Measurements:"))
-                UpdateFromMeasurementsText(nodeText, true);
+                UpdateMeasurements(nodeText, true);
             else if (nodeText.StartsWith("Bra/Cup Size:"))
-                UpdateFromCupText(GetInnerText(node, removals: "Bra/Cup Size:"));
+                UpdateMeasurements(nodeText, true);
             else if (nodeText.StartsWith("Height:"))
-                Result.Height = FindHeightInText(nodeText);
+                Result.Height = DataParser.FindHeightInText(nodeText);
             else if (nodeText.StartsWith("Weight:"))
-                Result.Weight = FindWeightInText(nodeText);
+                Result.Weight = DataParser.FindWeightInText(nodeText);
             else if (nodeText.StartsWith("Years Active:"))
             {
-                Result.CareerStart = FindCareerStartInText(nodeText);
-                Result.StillActive = FindStillActiveInText(nodeText);
+                Result.CareerStart = DataParser.FindCareerStartInText(nodeText);
+                Result.StillActive = DataParser.FindStillActiveInText(nodeText);
             }
             else if (nodeText.StartsWith("Piercings:"))
-                Result.Piercings = GetInnerText(node, removals: "Piercings:");
-
-
+                Result.Piercings = node.TextWithout("Piercings:");
         }
-
         return Task.CompletedTask;
     }
 

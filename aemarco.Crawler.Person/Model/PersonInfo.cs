@@ -1,21 +1,12 @@
 ﻿namespace aemarco.Crawler.Person.Model;
 
-public class PersonInfo
+public record PersonInfo
 {
-    internal PersonInfo(PersonCrawlerBase crawler)
-    {
-        var info = crawler.GetType().ToCrawlerInfo();
-        PersonEntrySource = info.FriendlyName;
-        PersonEntryPriority = info.Priority;
-    }
-
-    internal string PersonEntrySource { get; }
-    internal int PersonEntryPriority { get; }
-
-
 
     public string? FirstName { get; internal set; }
     public string? LastName { get; internal set; }
+
+
     public Gender? Gender { get; internal set; }
     public List<ProfilePicture> ProfilePictures { get; } = new();
     public DateOnly? Birthday { get; internal set; }
@@ -25,8 +16,6 @@ public class PersonInfo
     public DateOnly? CareerStart { get; internal set; }
     public bool? StillActive { get; internal set; }
     public List<string> Aliases { get; internal set; } = new();
-
-
     /// <example>
     ///Caucasian
     ///Latin
@@ -54,7 +43,7 @@ public class PersonInfo
     public string? Ethnicity { get; internal set; }
     public string? HairColor { get; internal set; }
     public string? EyeColor { get; internal set; }
-    public MeasurementDetails? MeasurementDetails { get; set; }
+    public MeasurementDetails MeasurementDetails { get; internal set; } = MeasurementDetails.Empty;
     public int? Height { get; internal set; }
     public int? Weight { get; internal set; }
     public string? Piercings { get; internal set; }
@@ -77,27 +66,28 @@ public class PersonInfo
         }
 
         Gender ??= info.Gender;
-        ProfilePictures.AddRange(info.ProfilePictures
-            .Where(x => !ProfilePictures.Contains(x)));
+        ProfilePictures.AddRange(info.ProfilePictures.Where(x => !ProfilePictures.Contains(x)));
         Birthday ??= info.Birthday;
         Country ??= info.Country;
         City ??= info.City;
         Profession ??= info.Profession;
         CareerStart ??= info.CareerStart;
         StillActive ??= info.StillActive;
-        Aliases.AddRange(info.Aliases);
-        Aliases.AddRange(info.Aliases
-            .Where(x => !Aliases.Contains(x)));
+        Aliases.AddRange(info.Aliases.Where(x => !Aliases.Contains(x)));
         Aliases.Sort();
         Ethnicity ??= info.Ethnicity;
         HairColor ??= info.HairColor;
         EyeColor ??= info.EyeColor;
-        MeasurementDetails ??= info.MeasurementDetails;
-        MeasurementDetails?.Merge(info.MeasurementDetails);
+        MeasurementDetails = MeasurementDetails.Combine(info.MeasurementDetails);
         Height ??= info.Height;
         Weight ??= info.Weight;
         Piercings ??= info.Piercings;
+
+        CrawlerInfos.AddRange(info.CrawlerInfos.Where(x => !CrawlerInfos.Contains(x)));
+        Errors.AddRange(info.Errors.Where(x => !Errors.Contains(x)));
     }
 
+    public List<CrawlerInfo> CrawlerInfos { get; } = new();
     public List<Exception> Errors { get; } = new();
+
 }

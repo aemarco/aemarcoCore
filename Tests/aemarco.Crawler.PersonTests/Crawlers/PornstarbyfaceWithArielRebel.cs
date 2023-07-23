@@ -1,16 +1,10 @@
-﻿using aemarco.Crawler.Person.Crawlers;
-using aemarco.Crawler.Person.Model;
-using aemarco.Crawler.PersonTests.Base;
-using System;
-using System.Collections.Generic;
+﻿namespace aemarco.Crawler.PersonTests.Crawlers;
 
-namespace aemarco.Crawler.PersonTests.Crawlers;
-
-internal class PersonCrawlerPornstarbyfaceWithArielRebel : PersonCrawlerTestsBase<Pornstarbyface>
+internal class PornstarbyfaceWithArielRebel : PersonCrawlerTestsBase<Pornstarbyface>
 {
 
     //https://pornstarbyface.com/girls/Ariel-Rebel
-    public PersonCrawlerPornstarbyfaceWithArielRebel()
+    public PornstarbyfaceWithArielRebel()
         : base("Ariel Rebel")
     {
         //first and last name expected automatically

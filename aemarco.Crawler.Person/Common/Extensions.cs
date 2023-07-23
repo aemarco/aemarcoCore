@@ -1,23 +1,22 @@
 ﻿namespace aemarco.Crawler.Person.Common;
 
-internal static class Extensions
+public static class Extensions
 {
-    internal static PersonCrawlerAttribute ToCrawlerInfo(this Type crawlerType)
+    public static string TextWithout(this HtmlNode node, params string[] except)
     {
-        var result = crawlerType.GetCustomAttribute<PersonCrawlerAttribute>();
-        return result ?? throw new Exception($"PersonCrawler not defined on {crawlerType.FullName}");
+        var str = node.InnerText;
+        str = WebUtility.HtmlDecode(str);
+        foreach (var removal in except)
+            str = str.Replace(removal, string.Empty, StringComparison.OrdinalIgnoreCase);
+        str = str.Trim();
+        str = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(str);
+        return str;
     }
 
-
-    internal static bool IsAvailableCrawler(this Type crawlerType)
+    public static string TextWithoutBeginning(this string text, string removeAtStart)
     {
-        if (!crawlerType.IsSubclassOf(typeof(PersonCrawlerBase)))
-            return false;
-
-        if (crawlerType.Namespace is null || crawlerType.Namespace.EndsWith("Obsolete"))
-            return false;
-
-
-        return true;
+        return text.StartsWith(removeAtStart, StringComparison.OrdinalIgnoreCase)
+            ? text[removeAtStart.Length..].TrimStart()
+            : text;
     }
 }

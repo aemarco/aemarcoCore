@@ -9,9 +9,9 @@ public class PersonCrawler
     /// returns a list of crawler names, which are currently supported
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<string> GetAvailableCrawlers()
+    public static IEnumerable<string> GetAvailableCrawlers()
     {
-        return GetAvailableCrawlerTypes().Select(type => type.ToCrawlerInfo().FriendlyName);
+        return GetAvailableCrawlerTypes().Select(t => CrawlerInfo.FromCrawlerType(t).FriendlyName);
     }
 
     /// <summary>
@@ -39,16 +39,15 @@ public class PersonCrawler
         foreach (var type in GetAvailableCrawlerTypes())
         {
             //skip filtered
-            if (_filterPersonSites.Count > 0 && !_filterPersonSites.Contains(type.ToCrawlerInfo().FriendlyName))
+            if (_filterPersonSites.Count > 0 && !_filterPersonSites.Contains(CrawlerInfo.FromCrawlerType(type).FriendlyName))
                 continue;
 
-            var crawler = (PersonCrawlerBase)Activator.CreateInstance(type, nameToCrawl)!;
-            tasks.Add(Task.Run(() => crawler.GetPersonEntry(cancellationToken), cancellationToken));
+            var crawler = (PersonCrawlerBase)Activator.CreateInstance(type)!;
+            tasks.Add(Task.Run(() => crawler.GetPersonEntry(nameToCrawl, cancellationToken), cancellationToken));
         }
 
         //wait for being done
         var entries = new List<PersonInfo>();
-        var errors = new List<Exception>();
         foreach (var task in tasks)
         {
             try
@@ -58,26 +57,27 @@ public class PersonCrawler
             }
             catch (Exception ex)
             {
-                errors.Add(ex);
+                var personInfo = new PersonInfo();
+                personInfo.Errors.Add(ex);
+                entries.Add(personInfo);
             }
         }
 
+        if (entries.Count == 0)
+            return null;
 
         //merge entries together according to priority
-        PersonInfo? result = null;
-        foreach (var entry in entries
-                     .OrderBy(x => x.PersonEntryPriority))
+        var (firstName, lastName) = DataParser.FindNameInText(nameToCrawl);
+        var result = new PersonInfo
         {
-            //first entry
-            if (result == null)
-            {
-                result = entry;
-                continue;
-            }
-
+            FirstName = firstName,
+            LastName = lastName
+        };
+        foreach (var entry in entries
+                     .OrderBy(x => x.CrawlerInfos.First().Priority))
+        {
             result.Merge(entry);
         }
-        result?.Errors.AddRange(errors);
         return result;
     }
 
@@ -86,8 +86,9 @@ public class PersonCrawler
         var types = Assembly
             .GetAssembly(typeof(PersonCrawlerBase))!
             .GetTypes()
-            .Where(x => x.IsAvailableCrawler())
-            .OrderBy(x => x.ToCrawlerInfo().Priority)
+            .Where(x => x.IsSubclassOf(typeof(PersonCrawlerBase)))
+            .Where(x => x.GetCustomAttribute<ObsoleteAttribute>() is null)
+            .OrderBy(x => CrawlerInfo.FromCrawlerType(x).Priority)
             .ToList();
         return types;
     }
