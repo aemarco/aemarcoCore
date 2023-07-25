@@ -125,8 +125,9 @@ internal class WallCraft : WallpaperCrawlerBasis
     }
 
 
-    protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
+    protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
+        var node = pageNode.Node;
 
 
         var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);

@@ -7,12 +7,19 @@ internal class WallEntrySource
     #region ctor
 
     private readonly Uri _baseUri;
+
+
     internal WallEntrySource(Uri baseUri, HtmlNode rootNode, string siteCategory)
     {
         _baseUri = baseUri;
         RootNode = rootNode;
         SiteCategory = siteCategory;
     }
+
+    internal WallEntrySource(Uri baseUri, PageNode pageNode, string siteCategory)
+        : this(baseUri, pageNode.Node, siteCategory)
+    { }
+
 
     internal HtmlNode RootNode { get; }
 
@@ -56,8 +63,32 @@ internal class WallEntrySource
 
     #region Documents
 
+    private PageDocument? _detailsPageDocument;
+    internal PageDocument? DetailsPageDocument
+    {
+        get => _detailsPageDocument;
+        set
+        {
+            _detailsPageDocument = value;
+            DetailsDoc = _detailsPageDocument?.Document;
+        }
+    }
     internal HtmlDocument? DetailsDoc { get; set; }
+
+
+    private PageDocument? _downloadPageDocument;
+    internal PageDocument? DownloadPageDocument
+    {
+        get => _downloadPageDocument;
+        set
+        {
+            _downloadPageDocument = value;
+            DownloadDoc = _downloadPageDocument?.Document;
+        }
+    }
     internal HtmlDocument? DownloadDoc { get; set; }
+
+
 
     internal HtmlDocument? GetChildDocumentFromRootNode(string? nodeToSubNode = null, int? minDelay = null, int? maxDelay = null)
     {
@@ -73,6 +104,10 @@ internal class WallEntrySource
             return null;
 
         var href = subNode.Attributes["href"]?.Value;
+
+        //var curr = new Uri("https://ftopx.com/celebrities/page/1/");
+        //var test = new Uri(curr, href);
+
         var uri = new Uri(_baseUri, href);
         return HtmlHelper.GetHtmlDocument(uri, minDelay, maxDelay);
     }

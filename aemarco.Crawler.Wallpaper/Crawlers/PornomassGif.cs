@@ -41,8 +41,9 @@ internal class PornomassGif : WallpaperCrawlerBasis
     {
         return "//div[@class='fit-box']/a[@class='fit-wrapper']";
     }
-    protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
+    protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
+        var node = pageNode.Node;
         var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
         //doc
         source.DetailsDoc = source.GetChildDocumentFromRootNode();

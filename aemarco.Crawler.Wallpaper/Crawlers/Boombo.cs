@@ -55,8 +55,9 @@ internal class Boombo : WallpaperCrawlerBasis
         return "//div[@class='short3']/a";
     }
 
-    protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
+    protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
+        var node = pageNode.Node;
         var linkToAlbum = node.Attributes["href"]?.Value;
         var albumName = WallEntrySource.GetSubNodeInnerText(node, "./div[@class='reltit']");
         if (string.IsNullOrWhiteSpace(linkToAlbum) ||

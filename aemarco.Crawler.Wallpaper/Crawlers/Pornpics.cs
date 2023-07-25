@@ -208,8 +208,9 @@ internal class Pornpics : WallpaperCrawlerBasis
 
     protected override ContentCategory DefaultCategory => new(Category.Girls);
 
-    protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
+    protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
+        var node = pageNode.Node;
 
         var linkToAlbum = node.Attributes["href"]?.Value;
         var albumName = WallEntrySource.GetSubNodeAttrib(node, "alt", "./img");

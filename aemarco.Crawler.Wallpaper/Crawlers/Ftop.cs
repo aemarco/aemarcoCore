@@ -40,7 +40,7 @@ internal class Ftop : WallpaperCrawlerBasis
                 continue;
             }
 
-            //z.B. "/celebrities/
+            //z.B. "celebrities/index.html
             var href = node.Attributes["href"]?.Value;
             if (string.IsNullOrEmpty(href))
             {
@@ -48,7 +48,7 @@ internal class Ftop : WallpaperCrawlerBasis
             }
 
             //z.B. "https://ftopx.com/celebrities"
-            var uri = new Uri(_uri, href);
+            var uri = new Uri(_uri, href[..href.LastIndexOf('/')]);
             result.Add(CreateCrawlOffer(text, uri, cat));
         }
 
@@ -57,9 +57,13 @@ internal class Ftop : WallpaperCrawlerBasis
     }
     protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
     {
-        //z.B. "http://ftopx.com/celebrities/page/1/?sort=p.approvedAt&direction=desc"
-        //return $"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}/?sort=p.approvedAt&direction=desc";
-        return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}page/{catJob.CurrentPage}/?sort=p.approvedAt&direction=desc");
+        //z.B. "http://ftopx.com/celebrities/
+        var res = catJob.CategoryUri.AbsoluteUri;
+        //z.B. "http://ftopx.com/celebrities/
+        res = res.EndsWith('/') ? res : $"{res}/";
+        //z.B. "http://ftopx.com/celebrities/page/1/?sort=p.approvedAt&direction=desc
+        var result = new Uri($"{res}page/{catJob.CurrentPage}/?sort=p.approvedAt&direction=desc");
+        return result;
     }
     protected override string GetSearchStringGorEntryNodes()
     {
@@ -68,39 +72,55 @@ internal class Ftop : WallpaperCrawlerBasis
 
     protected override ContentCategory DefaultCategory => new(Category.Girls);
 
-    protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
+    protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
-        node = node.ParentNode.ParentNode;
+        pageNode = new PageNode(pageNode, pageNode.Node.ParentNode.ParentNode);
+        var source = new WallEntrySource(_uri, pageNode, catJob.SiteCategoryName);
 
-        var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
         //docs
-        source.DetailsDoc = source.GetChildDocumentFromRootNode("./div[@class='thumbnail']/a");
-        if (source.DetailsDoc is null)
+        source.DetailsPageDocument = pageNode
+            .GetChild("./div[@class='thumbnail']/a")?
+            .GetHref()?
+            .Navigate();
+        if (source.DetailsPageDocument is null)
         {
-            AddWarning($"Could not read DetailsDoc from node {node.InnerHtml}");
-            return false;
-        }
-        source.DownloadDoc = source.GetChildDocumentFromDocument(source.DetailsDoc, "//div[@class='res-origin']/a");
-        if (source.DownloadDoc is null)
-        {
-            AddWarning($"Could not read DownloadDoc from node {node.InnerHtml}");
+            AddWarning($"Could not find DetailsDoc from {pageNode.Node.InnerHtml}");
             return false;
         }
 
+        source.DownloadPageDocument = source.DetailsPageDocument
+            .FindNode("//div[@class='res-origin']/a")?
+            .GetHref()?
+            .Navigate();
+        if (source.DownloadPageDocument is null || source.DownloadDoc is null)
+        {
+            AddWarning($"Could not find DownloadDoc from {source.DetailsPageDocument.Document.DocumentNode.InnerHtml}");
+            return false;
+        }
+
+
         //details
-        source.ImageUri = source.GetUriFromDocument(source.DownloadDoc, "//a[@type='button']", "href");
+        source.ImageUri = source.DownloadPageDocument
+            .FindNode("//a[@type='button']")?
+            .GetHref()?
+            .Uri;
         if (source.ImageUri is null)
         {
             AddWarning($"Could not get ImageUri from node {source.DownloadDoc.DocumentNode.InnerHtml}");
             return false;
         }
 
-        source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@class='img-responsive img-rounded']", "src");
+
+        source.ThumbnailUri = source.DetailsPageDocument
+            .FindNode("//img[@class='img-responsive img-rounded']")?
+            .GetSrc()?
+            .Uri;
+
+
         (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
         source.ContentCategory = catJob.Category;
-        source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//div[@class='well well-sm']/a", x => WebUtility.HtmlDecode(x.InnerText).Trim());
-
+        source.Tags = source.GetTagsFromNodes(source.DetailsPageDocument.Document, "//div[@class='well well-sm']/a", x => WebUtility.HtmlDecode(x.InnerText).Trim());
 
 
         var wallEntry = source.WallEntry;

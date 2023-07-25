@@ -81,8 +81,9 @@ internal class Erowall : WallpaperCrawlerBasis
         return "//div[@class='wpmini']/a";
     }
     protected override ContentCategory DefaultCategory => new(Category.Girls);
-    protected override bool AddWallEntry(HtmlNode node, CrawlOffer catJob)
+    protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
+        var node = pageNode.Node;
         var href = node.Attributes["href"]?.Value;
         if (href is null)
         {

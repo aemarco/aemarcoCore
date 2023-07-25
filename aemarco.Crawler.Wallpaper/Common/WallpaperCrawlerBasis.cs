@@ -230,19 +230,19 @@ internal abstract class WallpaperCrawlerBasis
     protected virtual bool HandlePage(CrawlOffer catJob)
     {
         //site with wallpaper list
-        var pageUri = GetSiteUrlForCategory(catJob);
-        var doc = HtmlHelper.GetHtmlDocument(pageUri);
-        var nodes = doc.DocumentNode.SelectNodes(GetSearchStringGorEntryNodes());
+        var pageUri = new PageUri(GetSiteUrlForCategory(catJob));
+        var pageDoc = pageUri.Navigate();
+        var pageNodes = pageDoc.FindNodes(GetSearchStringGorEntryNodes());
 
         //non entries on page
-        if (nodes == null || !nodes.Any())
+        if (pageNodes.Count == 0)
             return false;
 
 
         //report count to all classic jobs
-        if (nodes.Count > _entriesPerPage)
+        if (pageNodes.Count > _entriesPerPage)
         {
-            _entriesPerPage = nodes.Count;
+            _entriesPerPage = pageNodes.Count;
             _crawlOffers!.ForEach(j =>
             {
                 if (j.CrawlMethod == CrawlMethod.Classic)
@@ -253,7 +253,7 @@ internal abstract class WallpaperCrawlerBasis
 
         var result = false;
         //handle each node
-        foreach (var node in nodes)
+        foreach (var node in pageNodes)
         {
             CancellationToken.ThrowIfCancellationRequested();
 
@@ -262,7 +262,6 @@ internal abstract class WallpaperCrawlerBasis
                 catJob.ReportEndReached();
                 return true;
             }
-
             if (AddWallEntry(node, catJob))
             {
                 result = true;
@@ -290,10 +289,10 @@ internal abstract class WallpaperCrawlerBasis
     /// <summary>
     /// handles 1 entry in a page
     /// </summary>
-    /// <param name="node">Html node for entry</param>
+    /// <param name="pageNode">Html node for entry</param>
     /// <param name="catJob">current job</param>
     /// <returns>true if found a valid entry</returns>
-    protected abstract bool AddWallEntry(HtmlNode node, CrawlOffer catJob);
+    protected abstract bool AddWallEntry(PageNode pageNode, CrawlOffer catJob);
 
 
     /// <summary>
