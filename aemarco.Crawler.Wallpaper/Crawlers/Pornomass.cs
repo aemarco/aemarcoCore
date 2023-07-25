@@ -58,6 +58,7 @@ internal class Pornomass : WallpaperCrawlerBasis
         source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='photo-blink']/img", "src");
         //details
         source.ImageUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='photo-blink']", "href");
+
         if (source.ImageUri is null)
         {
             AddWarning($"Could not get ImageUri from node {source.DetailsDoc.DocumentNode.InnerHtml}");

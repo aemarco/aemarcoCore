@@ -53,6 +53,8 @@ internal class NudeGirlsHd : WallpaperCrawlerBasis
             source.ThumbnailUri = new Uri(thumb);
         //details
         source.ImageUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@class='b-card-content js-fit-box js-responzer-box']/a", "href");
+
+
         if (source.ImageUri is null)
         {
             AddWarning($"Could not get ImageUri from node {source.DetailsDoc.DocumentNode.InnerHtml}");

@@ -77,6 +77,7 @@ internal class Zoompussy : WallpaperCrawlerBasis
 
         //details
         source.ImageUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@id='post_content']/blockquote/a", "href");
+
         if (source.ImageUri is null)
         {
             AddWarning($"Could not get ImageUri from node {source.DetailsDoc.DocumentNode.InnerHtml}");

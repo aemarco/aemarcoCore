@@ -148,6 +148,7 @@ internal class WallCraft : WallpaperCrawlerBasis
 
         //details
         source.ImageUri = source.GetUriFromDocument(source.DownloadDoc, "//img[@class='wallpaper__image']", "src");
+
         if (source.ImageUri is null)
         {
             AddWarning($"Could not get ImageUri from node {source.DownloadDoc.DocumentNode.InnerHtml}");

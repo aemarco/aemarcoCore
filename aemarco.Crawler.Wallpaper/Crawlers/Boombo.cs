@@ -77,7 +77,7 @@ internal class Boombo : WallpaperCrawlerBasis
                 var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
                 //details
-                source.ImageUri = new Uri(entryNode.Attributes["href"].Value);
+                source.ImageUri = new PageUri(new Uri(entryNode.Attributes["href"].Value));
                 if (source.ImageUri is null)
                 {
                     AddWarning($"Could not get ImageUri from node {entryNode.InnerHtml}");
@@ -110,7 +110,7 @@ internal class Boombo : WallpaperCrawlerBasis
                 var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
 
                 //details
-                source.ImageUri = new Uri(_uri, entryNode.Attributes["data-src"].Value);
+                source.ImageUri = new PageUri(new Uri(_uri, entryNode.Attributes["data-src"].Value));
                 if (source.ImageUri is null)
                 {
                     AddWarning($"Could not get ImageUri from node {entryNode.InnerHtml}");

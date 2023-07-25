@@ -113,7 +113,7 @@ internal class Erowall : WallpaperCrawlerBasis
 
         source.ImageUri = new Uri(_uri, $"/wallpapers/original/{imageLink}.jpg");
         source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@class='view-left']/a/img", "src");
-        (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
+        (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri!, catJob.SiteCategoryName);
         source.ContentCategory = catJob.Category;
         source.Tags = source.GetTagsFromNode(node, "title");
 

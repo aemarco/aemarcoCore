@@ -8,6 +8,10 @@ internal record PageUri(Uri Uri)
         var document = HtmlHelper.GetHtmlDocument(Uri);
         return new PageDocument(this, document);
     }
+
+
+    public static implicit operator Uri(PageUri x) => x.Uri;
+    public static implicit operator PageUri?(Uri? x) => x is null ? null : new PageUri(x);
 }
 
 

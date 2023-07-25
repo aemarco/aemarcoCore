@@ -241,7 +241,7 @@ internal class Pornpics : WallpaperCrawlerBasis
             }
 
             //details
-            source.ImageUri = new Uri(entryNode.Attributes["href"].Value);
+            source.ImageUri = new PageUri(new Uri(entryNode.Attributes["href"].Value));
             if (source.ImageUri is null)
             {
                 AddWarning($"Could not get ImageUri from node {entryNode.InnerHtml}");

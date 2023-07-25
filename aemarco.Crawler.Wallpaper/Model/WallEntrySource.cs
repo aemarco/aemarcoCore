@@ -7,29 +7,24 @@ internal class WallEntrySource
     #region ctor
 
     private readonly Uri _baseUri;
-
-
     internal WallEntrySource(Uri baseUri, HtmlNode rootNode, string siteCategory)
     {
         _baseUri = baseUri;
         RootNode = rootNode;
         SiteCategory = siteCategory;
     }
-
     internal WallEntrySource(Uri baseUri, PageNode pageNode, string siteCategory)
         : this(baseUri, pageNode.Node, siteCategory)
     { }
 
-
     internal HtmlNode RootNode { get; }
-
 
     #endregion
 
-    #region Output
+    #region 4Output
 
-    internal Uri? ImageUri { get; set; }
-    internal Uri? ThumbnailUri { get; set; }
+    internal PageUri? ImageUri { get; set; }
+    internal PageUri? ThumbnailUri { get; set; }
     public string? Filename { get; set; }
     public string? Extension { get; set; }
     public ContentCategory? ContentCategory { get; set; }
@@ -43,8 +38,8 @@ internal class WallEntrySource
         get
         {
             var entry = new WallEntry(
-                ImageUri?.AbsoluteUri,
-                ThumbnailUri?.AbsoluteUri,
+                ImageUri?.Uri.AbsoluteUri,
+                ThumbnailUri?.Uri.AbsoluteUri,
                 Filename,
                 Extension,
                 ContentCategory,
@@ -162,6 +157,8 @@ internal class WallEntrySource
 
     #region filedetails
 
+    internal (string filename, string extension) GetFileDetails(PageUri imageUri, string? prefix = null)
+        => GetFileDetails(imageUri.Uri, prefix);
     internal (string filename, string extension) GetFileDetails(Uri imageUri, string? prefix = null)
     {
         var pref = prefix is null

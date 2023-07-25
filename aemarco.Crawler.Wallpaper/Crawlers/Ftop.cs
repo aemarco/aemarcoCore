@@ -95,7 +95,7 @@ internal class Ftop : WallpaperCrawlerBasis
             .Navigate();
         if (source.DownloadPageDocument is null || source.DownloadDoc is null)
         {
-            AddWarning($"Could not find DownloadDoc from {source.DetailsPageDocument.Document.DocumentNode.InnerHtml}");
+            AddWarning($"Could not find DownloadDoc from {source.DetailsPageDocument.Uri.AbsoluteUri}");
             return false;
         }
 
@@ -103,19 +103,18 @@ internal class Ftop : WallpaperCrawlerBasis
         //details
         source.ImageUri = source.DownloadPageDocument
             .FindNode("//a[@type='button']")?
-            .GetHref()?
-            .Uri;
+            .GetHref();
         if (source.ImageUri is null)
         {
-            AddWarning($"Could not get ImageUri from node {source.DownloadDoc.DocumentNode.InnerHtml}");
+            AddWarning($"Could not get ImageUri from node {source.DownloadPageDocument.Uri.AbsoluteUri}");
             return false;
         }
-
-
         source.ThumbnailUri = source.DetailsPageDocument
             .FindNode("//img[@class='img-responsive img-rounded']")?
-            .GetSrc()?
-            .Uri;
+            .GetSrc();
+
+
+        //TODO continue refactor
 
 
         (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);

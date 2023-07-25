@@ -61,7 +61,7 @@ internal class Zoomgirls : WallpaperCrawlerBasis
             return false;
         }
 
-        source.ImageUri = new Uri(imageUri);
+        source.ImageUri = new PageUri(new Uri(imageUri));
         source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='wallpaper-thumb']/img", "src");
         (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
         source.ContentCategory = catJob.Category;

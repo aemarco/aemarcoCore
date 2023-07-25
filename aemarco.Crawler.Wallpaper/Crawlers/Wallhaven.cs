@@ -73,6 +73,7 @@ internal class Wallhaven : WallpaperCrawlerBasis
 
         //details
         source.ImageUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@id='wallpaper']", "src");
+
         if (source.ImageUri is null)
         {
             AddWarning($"Could not get ImageUri from node {source.DetailsDoc.DocumentNode.InnerHtml}");
