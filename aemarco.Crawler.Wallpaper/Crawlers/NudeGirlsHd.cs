@@ -17,17 +17,17 @@ internal class NudeGirlsHd : WallpaperCrawlerBasis
         {
             CreateCrawlOffer(
                 "NudePics",
-                _uri,
+                _uri!,
                 new ContentCategory(Category.Girls))
         };
         return result;
     }
 
-    protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
+    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob)
     {
         //z.B. "https://nudegirlshd.com/page/2"
         //return $"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}";
-        return new Uri(catJob.CategoryUri, $"/page/{catJob.CurrentPage}");
+        return new Uri(catJob.CategoryUri, $"/page/{catJob.CurrentPage}")!;
     }
 
     protected override string GetSearchStringGorEntryNodes()
@@ -38,7 +38,7 @@ internal class NudeGirlsHd : WallpaperCrawlerBasis
     protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
         var node = pageNode.Node;
-        var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
+        var source = new WallEntrySource(_uri, pageNode, catJob.Category, catJob.SiteCategoryName);
 
         //doc
         source.DetailsDoc = source.GetChildDocumentFromRootNode();
@@ -48,7 +48,7 @@ internal class NudeGirlsHd : WallpaperCrawlerBasis
             return false;
         }
         //details
-        var thumb = source.GetSubNodeAttribute(node, "src", "//img");
+        var thumb = WallEntrySource.GetSubNodeAttribute(node, "src", "//img");
         if (!string.IsNullOrWhiteSpace(thumb))
             source.ThumbnailUri = new Uri(thumb);
         //details
@@ -60,19 +60,18 @@ internal class NudeGirlsHd : WallpaperCrawlerBasis
             AddWarning($"Could not get ImageUri from node {source.DetailsDoc.DocumentNode.InnerHtml}");
             return false;
         }
-        (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
 
 
         source.Tags = new List<string>();
         //add category-tags
         source.Tags.AddRange(
-            source.GetTagsFromNodes(source.DetailsDoc, "//span[@class='b-photogrid-text']", x => WebUtility.HtmlDecode(x.InnerText).Trim()));
+            WallEntrySource.GetTagsFromNodes(source.DetailsDoc, "//span[@class='b-photogrid-text']", x => WebUtility.HtmlDecode(x.InnerText).Trim()));
 
-        source.ContentCategory = CheckForRealCategory(catJob.Category, source.Tags);
+        source.OverrideCategory(CheckForRealCategory(catJob.Category, source.Tags));
 
         //add tag-tags
         source.Tags.AddRange(
-            source.GetTagsFromNodes(source.DetailsDoc, "//a[@class='b-button']/span", x => WebUtility.HtmlDecode(x.InnerText).Trim()));
+            WallEntrySource.GetTagsFromNodes(source.DetailsDoc, "//a[@class='b-button']/span", x => WebUtility.HtmlDecode(x.InnerText).Trim()));
 
         var wallEntry = source.WallEntry;
         if (wallEntry == null)
@@ -83,7 +82,7 @@ internal class NudeGirlsHd : WallpaperCrawlerBasis
         return true;
     }
 
-    private ContentCategory CheckForRealCategory(
+    private static ContentCategory CheckForRealCategory(
         ContentCategory cat,
         List<string> tags)
     {

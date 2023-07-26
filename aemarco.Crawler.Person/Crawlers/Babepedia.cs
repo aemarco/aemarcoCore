@@ -1,6 +1,12 @@
 ﻿namespace aemarco.Crawler.Person.Crawlers;
 
 
+//https://www.babepedia.com/babe/Chloe_Temple
+//https://web.archive.org/web/20230528093234/https://www.babepedia.com/babe/Chloe_Temple
+
+//https://www.zenrows.com/blog/bypass-cloudflare#how-cloudflare-detects-bots
+
+[Obsolete]
 [PersonCrawler("Babepedia", 20)]
 internal class Babepedia : PersonCrawlerBase
 {

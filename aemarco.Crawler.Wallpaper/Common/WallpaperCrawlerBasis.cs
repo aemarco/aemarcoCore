@@ -18,12 +18,6 @@ internal abstract class WallpaperCrawlerBasis
         _onlyNews = onlyNews;
     }
 
-    internal virtual bool IsAvailable => GetType().IsAvailableCrawler();
-
-
-
-
-
     #region Starting
 
     // ReSharper disable once InconsistentNaming
@@ -68,72 +62,52 @@ internal abstract class WallpaperCrawlerBasis
         if (string.IsNullOrWhiteSpace(categoryName))
             return null;
 
-        switch (categoryName)
+        return categoryName switch
         {
-            case "Erotic Wallpapers":
-            case "Erotic Girls":
-                return new ContentCategory(Category.Girls);
-            case "Celebrities":
-                return new ContentCategory(Category.Girls_Celebrities);
-            case "Celebrity Fakes":
-                return new ContentCategory(Category.Girls_CelebrityFakes);
-            case "Girls & Cars":
-                return new ContentCategory(Category.Girls_Cars);
-            case "Girls & Bikes":
-                return new ContentCategory(Category.Girls_Bikes);
-            case "______Girls_Guns":
-                return new ContentCategory(Category.Girls_Guns);
-            case "Anime":
-            case "Fantasy Girls":
-            case "3D & Vector Girls":
-                return new ContentCategory(Category.Girls_Fantasy);
-            case "Cosplay":
-                return new ContentCategory(Category.Girls_Cosplay);
-            case "Lingerie":
-            case "Lingerie Models":
-            case "Lingerie Girls":
-            case "lingerie":
-            case "underwear":
-            case "stockings":
-            case "Ligerie beauty models":
-                return new ContentCategory(Category.Girls_Lingerie);
-            case "Lesbian":
-            case "Lesbians":
-                return new ContentCategory(Category.Girls_Lesbians);
-            case "Beach":
-            case "Girls & Beaches":
-                return new ContentCategory(Category.Girls_Beaches);
-            case "Asian Girls":
-            case "asian":
-            case "Asian":
-            case "Indian":
-            case "Japanese":
-            case "Thai":
-                return new ContentCategory(Category.Girls_Asian);
-            case "Holidays":
-            case "Christmas":
-                return new ContentCategory(Category.Girls_Holidays);
-            case "Fetish Girls":
-            case "Bondage":
-            case "Blindfold":
-            case "Latex":
-                return new ContentCategory(Category.Girls_Fetish);
-            case "______Girls_Blowjob":
-                return new ContentCategory(Category.Girls_Blowjob);
-            case "Hardcore":
-                return new ContentCategory(Category.Girls_Hardcore);
-            case "Homemade":
-            case "Amateur":
-                return new ContentCategory(Category.Girls_Amateur);
-            case "Gloryhole":
-                return new ContentCategory(Category.Girls_Gloryhole);
-            case "Selfpics":
-            case "Self Shot":
-                return new ContentCategory(Category.Girls_Selfies);
-            case "______Girls_Fun":
-                return new ContentCategory(Category.Girls_Fun);
-        }
-        return DefaultCategory;
+            "Erotic Wallpapers" => new ContentCategory(Category.Girls),
+            "Erotic Girls" => new ContentCategory(Category.Girls),
+            "Celebrities" => new ContentCategory(Category.Girls_Celebrities),
+            "Celebrity Fakes" => new ContentCategory(Category.Girls_CelebrityFakes),
+            "Girls & Cars" => new ContentCategory(Category.Girls_Cars),
+            "Girls & Bikes" => new ContentCategory(Category.Girls_Bikes),
+            "______Girls_Guns" => new ContentCategory(Category.Girls_Guns),
+            "Anime" => new ContentCategory(Category.Girls_Fantasy),
+            "Fantasy Girls" => new ContentCategory(Category.Girls_Fantasy),
+            "3D & Vector Girls" => new ContentCategory(Category.Girls_Fantasy),
+            "Cosplay" => new ContentCategory(Category.Girls_Cosplay),
+            "Lingerie" => new ContentCategory(Category.Girls_Lingerie),
+            "Lingerie Models" => new ContentCategory(Category.Girls_Lingerie),
+            "Lingerie Girls" => new ContentCategory(Category.Girls_Lingerie),
+            "lingerie" => new ContentCategory(Category.Girls_Lingerie),
+            "underwear" => new ContentCategory(Category.Girls_Lingerie),
+            "stockings" => new ContentCategory(Category.Girls_Lingerie),
+            "Ligerie beauty models" => new ContentCategory(Category.Girls_Lingerie),
+            "Lesbian" => new ContentCategory(Category.Girls_Lesbians),
+            "Lesbians" => new ContentCategory(Category.Girls_Lesbians),
+            "Beach" => new ContentCategory(Category.Girls_Beaches),
+            "Girls & Beaches" => new ContentCategory(Category.Girls_Beaches),
+            "Asian Girls" => new ContentCategory(Category.Girls_Asian),
+            "asian" => new ContentCategory(Category.Girls_Asian),
+            "Asian" => new ContentCategory(Category.Girls_Asian),
+            "Indian" => new ContentCategory(Category.Girls_Asian),
+            "Japanese" => new ContentCategory(Category.Girls_Asian),
+            "Thai" => new ContentCategory(Category.Girls_Asian),
+            "Holidays" => new ContentCategory(Category.Girls_Holidays),
+            "Christmas" => new ContentCategory(Category.Girls_Holidays),
+            "Fetish Girls" => new ContentCategory(Category.Girls_Fetish),
+            "Bondage" => new ContentCategory(Category.Girls_Fetish),
+            "Blindfold" => new ContentCategory(Category.Girls_Fetish),
+            "Latex" => new ContentCategory(Category.Girls_Fetish),
+            "______Girls_Blowjob" => new ContentCategory(Category.Girls_Blowjob),
+            "Hardcore" => new ContentCategory(Category.Girls_Hardcore),
+            "Homemade" => new ContentCategory(Category.Girls_Amateur),
+            "Amateur" => new ContentCategory(Category.Girls_Amateur),
+            "Gloryhole" => new ContentCategory(Category.Girls_Gloryhole),
+            "Selfpics" => new ContentCategory(Category.Girls_Selfies),
+            "Self Shot" => new ContentCategory(Category.Girls_Selfies),
+            "______Girls_Fun" => new ContentCategory(Category.Girls_Fun),
+            _ => DefaultCategory
+        };
     }
 
     protected virtual ContentCategory? DefaultCategory => null;
@@ -145,7 +119,7 @@ internal abstract class WallpaperCrawlerBasis
     /// <param name="categoryUri">Uri to navigate to the Category´s page</param>
     /// <param name="category">mapped internal category</param>
     /// <returns>CrawlOffer</returns>
-    protected CrawlOffer CreateCrawlOffer(string siteCategoryName, Uri categoryUri, ContentCategory category)
+    protected CrawlOffer CreateCrawlOffer(string siteCategoryName, PageUri categoryUri, ContentCategory category)
     {
         return new CrawlOffer(
             _startPage,
@@ -159,7 +133,9 @@ internal abstract class WallpaperCrawlerBasis
 
     private List<string> _knownUrls = new();
     protected CancellationToken CancellationToken;
-    internal WallCrawlerResult Result = null!;
+
+
+
 
     /// <summary>
     /// returns on completion, false means aborted
@@ -171,10 +147,6 @@ internal abstract class WallpaperCrawlerBasis
     {
         _knownUrls = knownUrls;
         CancellationToken = cancellationToken;
-        Result = new WallCrawlerResult
-        {
-            NumberOfCrawlersInvolved = 1
-        };
 
         await Task.Run(() =>
         {
@@ -182,12 +154,11 @@ internal abstract class WallpaperCrawlerBasis
             CancellationToken.ThrowIfCancellationRequested();
         }, cancellationToken);
 
-        return Result;
+        return _result;
     }
 
 
     #endregion
-
 
     #region Crawling
 
@@ -230,7 +201,7 @@ internal abstract class WallpaperCrawlerBasis
     protected virtual bool HandlePage(CrawlOffer catJob)
     {
         //site with wallpaper list
-        var pageUri = new PageUri(GetSiteUrlForCategory(catJob));
+        var pageUri = GetSiteUrlForCategory(catJob);
         var pageDoc = pageUri.Navigate();
         var pageNodes = pageDoc.FindNodes(GetSearchStringGorEntryNodes());
 
@@ -272,56 +243,63 @@ internal abstract class WallpaperCrawlerBasis
         return result;
     }
 
+    #endregion
 
+    //to be implemented
 
     /// <summary>
     /// Gets the url for the site containing the category
     /// </summary>
     /// <param name="catJob">current job</param>
     /// <returns>Uri to navigate for category</returns>
-    protected abstract Uri GetSiteUrlForCategory(CrawlOffer catJob);
+    protected abstract PageUri GetSiteUrlForCategory(CrawlOffer catJob);
     /// <summary>
     /// Gets search path for entry nodes
     /// </summary>
     /// <returns>search path</returns>
     protected abstract string GetSearchStringGorEntryNodes();
-
     /// <summary>
-    /// handles 1 entry in a page
+    /// handles entry in a page
     /// </summary>
     /// <param name="pageNode">Html node for entry</param>
     /// <param name="catJob">current job</param>
     /// <returns>true if found a valid entry</returns>
     protected abstract bool AddWallEntry(PageNode pageNode, CrawlOffer catJob);
 
+    //to be implemented END
+
+
+
+
+
+    // ReSharper disable once InconsistentNaming
+    internal WallCrawlerResult _result = new();
+
+
 
     /// <summary>
-    /// adds the wall-entry to the crawlresult, as new or known wall
+    /// adds the wall-entry to the crawl result, as new or known wall
     /// </summary>
     /// <param name="entry">entry to add</param>
     /// <param name="catJob">job leaded to entry</param>
     protected void AddEntry(WallEntry entry, CrawlOffer catJob)
     {
-        if (!entry.IsValid)
-            return;
-
         //new Entry
-        if (!_knownUrls.Contains(entry.Url!))
+        if (!_knownUrls.Contains(entry.Url))
         {
-            Result.NewEntries.Add(entry);
+            _result.NewEntries.Add(entry);
             catJob.ReportEntryDone(false);
-            _knownUrls.Add(entry.Url!);
+            _knownUrls.Add(entry.Url);
         }
         //known Entry
         else
         {
-            Result.KnownEntries.Add(entry);
+            _result.KnownEntries.Add(entry);
             catJob.ReportEntryDone(true);
         }
 
         EntryFound?.Invoke(this, EventArgs.Empty);
     }
-
 
     /// <summary>
     /// adds the album-entry to the crawlresult, as new or known album
@@ -330,31 +308,44 @@ internal abstract class WallpaperCrawlerBasis
     /// <param name="catJob">job leaded to entry</param>
     protected void AddAlbum(AlbumEntry entry, CrawlOffer catJob)
     {
-        entry.Entries.RemoveAll(x => !x.IsValid);
 
-        entry.HasNewEntries = entry.Entries.Any(x => !_knownUrls.Contains(x.Url!));
+        entry.HasNewEntries = entry.Entries.Any(x => !_knownUrls.Contains(x.Url));
 
         //known Album
         if (!entry.HasNewEntries)
         {
-            Result.KnownAlbums.Add(entry);
+            _result.KnownAlbums.Add(entry);
             catJob.ReportEntryDone(true);
         }
         //new Album
         else
         {
-            Result.NewAlbums.Add(entry);
+            _result.NewAlbums.Add(entry);
             catJob.ReportEntryDone(false);
-            _knownUrls.AddRange(entry.Entries.Select(x => x.Url!));
+            _knownUrls.AddRange(entry.Entries.Select(x => x.Url));
         }
         EntryFound?.Invoke(this, EventArgs.Empty);
     }
 
-    protected void AddWarning(string warning)
+    protected void AddWarning(string message)
     {
-        Result.Warnings.Add($"{GetType().ToCrawlerInfo().FriendlyName}: {warning}");
+        _result.Warnings.Add(new Warning(
+            CrawlerInfo.FromCrawlerType(GetType()),
+            "unknown",
+            message));
     }
-
-    #endregion
-
+    protected void AddWarning(PageUri pageUri, string message, string? additionalContext = null)
+    {
+        additionalContext ??= pageUri switch
+        {
+            PageNode pageNode => pageNode.Node.InnerHtml,
+            PageDocument pageDoc => pageDoc.Document.DocumentNode.InnerHtml,
+            _ => null
+        };
+        _result.Warnings.Add(new Warning(
+            CrawlerInfo.FromCrawlerType(GetType()),
+            pageUri.Uri.AbsoluteUri,
+            message,
+            additionalContext));
+    }
 }

@@ -1,4 +1,5 @@
 ﻿// ReSharper disable UnusedType.Global
+
 namespace aemarco.Crawler.Wallpaper.Crawlers;
 
 [WallpaperCrawler("Ftop")]
@@ -6,9 +7,6 @@ internal class Ftop : WallpaperCrawlerBasis
 {
 
     private readonly Uri _uri = new("https://ftopx.com");
-
-
-
     public Ftop(
         int startPage,
         int lastPage,
@@ -22,112 +20,83 @@ internal class Ftop : WallpaperCrawlerBasis
     {
         var result = new List<CrawlOffer>();
 
-        //main page
-        var doc = HtmlHelper.GetHtmlDocument(_uri);
-
-        foreach (var node in doc.DocumentNode.SelectNodes("//ul[@role='menu']/li/a"))
+        var mainPage = new PageUri(_uri).Navigate();
+        var catNodes = mainPage.FindNodes("//ul[@role='menu']/li/a");
+        foreach (var catNode in catNodes)
         {
-
             //z.B. "Celebrities"
-            var text = WebUtility.HtmlDecode(node.InnerText).Trim();
-            if (string.IsNullOrEmpty(text) || text == "Sandbox")
-            {
+            var catName = catNode.GetText();
+            if (string.IsNullOrEmpty(catName) || catName == "Sandbox")
                 continue;
-            }
-            var cat = GetContentCategory(text);
+
+            var cat = GetContentCategory(catName);
             if (cat is null)
-            {
                 continue;
-            }
 
-            //z.B. "celebrities/index.html
-            var href = node.Attributes["href"]?.Value;
-            if (string.IsNullOrEmpty(href))
-            {
+            //z.B. ""https://ftopx.com/celebrities/index.html => "https://ftopx.com/celebrities"
+            if (catNode.GetHref(x => x[..(x.LastIndexOf('/') + 1)]) is not { } uri)
                 continue;
-            }
 
-            //z.B. "https://ftopx.com/celebrities"
-            var uri = new Uri(_uri, href[..href.LastIndexOf('/')]);
-            result.Add(CreateCrawlOffer(text, uri, cat));
+            result.Add(CreateCrawlOffer(catName, uri, cat));
         }
 
         return result;
 
     }
-    protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
-    {
-        //z.B. "http://ftopx.com/celebrities/
-        var res = catJob.CategoryUri.AbsoluteUri;
-        //z.B. "http://ftopx.com/celebrities/
-        res = res.EndsWith('/') ? res : $"{res}/";
-        //z.B. "http://ftopx.com/celebrities/page/1/?sort=p.approvedAt&direction=desc
-        var result = new Uri($"{res}page/{catJob.CurrentPage}/?sort=p.approvedAt&direction=desc");
-        return result;
-    }
-    protected override string GetSearchStringGorEntryNodes()
-    {
-        return "//div[@class='thumbnail']/a";
-    }
-
+    //z.B. "http://ftopx.com/celebrities/page/1/?sort=p.approvedAt&direction=desc
+    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob) =>
+        catJob.CategoryUri.WithHref($"page/{catJob.CurrentPage}/?sort=p.approvedAt&direction=desc");
+    protected override string GetSearchStringGorEntryNodes() =>
+        "//div[@class='thumbnail']/a";
     protected override ContentCategory DefaultCategory => new(Category.Girls);
-
     protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
         pageNode = new PageNode(pageNode, pageNode.Node.ParentNode.ParentNode);
-        var source = new WallEntrySource(_uri, pageNode, catJob.SiteCategoryName);
 
-
-        //docs
-        source.DetailsPageDocument = pageNode
-            .GetChild("./div[@class='thumbnail']/a")?
-            .GetHref()?
-            .Navigate();
-        if (source.DetailsPageDocument is null)
+        //navigate
+        if (pageNode
+                .GetChild("./div[@class='thumbnail']/a")?
+                .GetHref()?
+                .Navigate() is not { } detailsPage)
         {
-            AddWarning($"Could not find DetailsDoc from {pageNode.Node.InnerHtml}");
+            AddWarning(pageNode, "Could not find DetailsDoc");
             return false;
         }
 
-        source.DownloadPageDocument = source.DetailsPageDocument
-            .FindNode("//div[@class='res-origin']/a")?
-            .GetHref()?
-            .Navigate();
-        if (source.DownloadPageDocument is null || source.DownloadDoc is null)
+        if (detailsPage
+                .FindNode("//div[@class='res-origin']/a")?
+                .GetHref()?
+                .Navigate() is not { } downloadPage)
         {
-            AddWarning($"Could not find DownloadDoc from {source.DetailsPageDocument.Uri.AbsoluteUri}");
+            AddWarning(detailsPage, "Could not find DownloadDoc");
+            return false;
+        }
+        if (downloadPage
+                     .FindNode("//a[@type='button']")?
+                     .GetHref() is not { } imageUri)
+        {
+            AddWarning(detailsPage, "Could not get valid DownloadDoc");
             return false;
         }
 
 
         //details
-        source.ImageUri = source.DownloadPageDocument
-            .FindNode("//a[@type='button']")?
-            .GetHref();
-        if (source.ImageUri is null)
+        var source = new WallEntrySource(_uri, pageNode, catJob.Category, catJob.SiteCategoryName)
         {
-            AddWarning($"Could not get ImageUri from node {source.DownloadPageDocument.Uri.AbsoluteUri}");
+            ImageUri = imageUri,
+            ThumbnailUri = detailsPage
+                .FindNode("//img[@class='img-responsive img-rounded']")?
+                .GetSrc()
+        };
+        source.SetFilenamePrefix(catJob.SiteCategoryName);
+        source.AddTagsFromInnerTexts(detailsPage.FindNodes("//div[@class='well well-sm']/a"));
+
+
+        //entry
+        if (source.ToWallEntry() is not { } entry)
             return false;
-        }
-        source.ThumbnailUri = source.DetailsPageDocument
-            .FindNode("//img[@class='img-responsive img-rounded']")?
-            .GetSrc();
 
-
-        //TODO continue refactor
-
-
-        (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
-        source.ContentCategory = catJob.Category;
-        source.Tags = source.GetTagsFromNodes(source.DetailsPageDocument.Document, "//div[@class='well well-sm']/a", x => WebUtility.HtmlDecode(x.InnerText).Trim());
-
-
-        var wallEntry = source.WallEntry;
-        if (wallEntry == null)
-        {
-            return false;
-        }
-        AddEntry(wallEntry, catJob);
+        AddEntry(entry, catJob);
         return true;
     }
 

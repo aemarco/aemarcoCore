@@ -27,16 +27,16 @@ internal class Pornomass : WallpaperCrawlerBasis
         {
             CreateCrawlOffer(
                 "Pornomass",
-                _uri,
+                _uri!,
                 new ContentCategory(Category.Girls, 90, 99))
         };
         return result;
     }
-    protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
+    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob)
     {
         //z.B. "http://pornomass.com/page/1"
         //return $"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}";
-        return new Uri(catJob.CategoryUri, $"/page/{catJob.CurrentPage}");
+        return new Uri(catJob.CategoryUri, $"/page/{catJob.CurrentPage}")!;
     }
     protected override string GetSearchStringGorEntryNodes()
     {
@@ -45,7 +45,7 @@ internal class Pornomass : WallpaperCrawlerBasis
     protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
         var node = pageNode.Node;
-        var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
+        var source = new WallEntrySource(_uri, pageNode, catJob.Category, catJob.SiteCategoryName);
 
         //doc
         source.DetailsDoc = source.GetChildDocumentFromRootNode();
@@ -64,8 +64,7 @@ internal class Pornomass : WallpaperCrawlerBasis
             AddWarning($"Could not get ImageUri from node {source.DetailsDoc.DocumentNode.InnerHtml}");
             return false;
         }
-        (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
-        source.ContentCategory = catJob.Category;
+        source.SetFilenamePrefix(catJob.SiteCategoryName);
         source.Tags = new List<string>();
 
 

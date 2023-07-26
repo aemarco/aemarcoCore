@@ -27,7 +27,8 @@ public class WallpaperCrawler
         foreach (var type in Assembly
                      .GetAssembly(typeof(WallpaperCrawlerBasis))!
                      .GetTypes()
-                     .Where(x => x.IsAvailableCrawler()))
+                     .Where(x => x.IsSubclassOf(typeof(WallpaperCrawlerBasis)))
+                     .Where(x => CrawlerInfo.FromCrawlerType(x).IsAvailable))
         {
             var crawler = (WallpaperCrawlerBasis)(Activator.CreateInstance(type, start, end, news)
                           ?? throw new Exception($"Could not activate {type.FullName}"));
@@ -36,16 +37,14 @@ public class WallpaperCrawler
     }
 
 
+    //configure
     private Func<List<string>>? _knownUrlsFunc;
-    public void Configure(Func<List<string>>? knownUrlsFunc = null, string? abyssApiKey = null)
+    public void Configure(Func<List<string>>? knownUrlsFunc = null)
     {
         _knownUrlsFunc = knownUrlsFunc;
-        //foreach (var c in _wallCrawlers)
-        //{
-        //    if (abyssApiKey is not null && c is Abyss a)
-        //        a.ProvideApiKey(abyssApiKey);
-        //}
     }
+
+
 
 
     //filter sites
@@ -53,8 +52,7 @@ public class WallpaperCrawler
     public IEnumerable<string> GetAvailableSourceSites()
     {
         foreach (var info in _wallCrawlers
-                     .Where(x => x.IsAvailable)
-                     .Select(x => x.GetType().ToCrawlerInfo()))
+                     .Select(x => CrawlerInfo.FromCrawlerType(x.GetType())))
         {
             yield return info.FriendlyName;
         }
@@ -82,7 +80,7 @@ public class WallpaperCrawler
     {
         var categories = new List<string>();
         foreach (var crawler in _wallCrawlers
-                     .Where(x => _filterSourceSites.Count == 0 || _filterSourceSites.Contains(x.GetType().ToCrawlerInfo().FriendlyName)))
+                     .Where(x => _filterSourceSites.Count == 0 || _filterSourceSites.Contains(CrawlerInfo.FromCrawlerType(x.GetType()).FriendlyName)))
         {
             foreach (var offer in crawler.GetOffers())
             {
@@ -108,6 +106,12 @@ public class WallpaperCrawler
             _filterCategories.Add(category);
         }
     }
+
+
+
+
+
+
 
 
     /// <summary>
@@ -156,9 +160,6 @@ public class WallpaperCrawler
 
     internal void HandleFilters()
     {
-        //remove all not available crawlers
-        _wallCrawlers.RemoveAll(c => !c.IsAvailable);
-
         //handle wallpaper site filter
         _wallCrawlers.RemoveAll(c =>
         {
@@ -167,7 +168,7 @@ public class WallpaperCrawler
                 return false;
 
             //we filter on sites, so only those stay, which are contained in the filter
-            var info = c.GetType().ToCrawlerInfo();
+            var info = CrawlerInfo.FromCrawlerType(c.GetType());
             return !_filterSourceSites.Contains(info.FriendlyName);
 
         });

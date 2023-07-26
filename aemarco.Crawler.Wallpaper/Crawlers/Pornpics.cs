@@ -9,10 +9,12 @@ internal class Pornpics : WallpaperCrawlerBasis
 
 
     public Pornpics(
-        // ReSharper disable once UnusedParameter.Local
+#pragma warning disable IDE0060
+        // ReSharper disable UnusedParameter.Local
         int startPage,
-        // ReSharper disable once UnusedParameter.Local
         int lastPage,
+        // ReSharper restore UnusedParameter.Local
+#pragma warning restore IDE0060
         bool onlyNews)
         : base(1, 1, onlyNews)
     {
@@ -183,20 +185,20 @@ internal class Pornpics : WallpaperCrawlerBasis
 
             var newOffer = CreateCrawlOffer(
                 cat,
-                new Uri(_uri, $"/recent/{cat.ToLower().Replace(" ", "-")}/"),
+                new Uri(_uri, $"/recent/{cat.ToLower().Replace(" ", "-")}/")!,
                 cc);
             result.Add(newOffer);
 
             var popularOffer = CreateCrawlOffer(
                 cat,
-                new Uri(_uri, $"/{cat.ToLower().Replace(" ", "-")}/"),
+                new Uri(_uri, $"/{cat.ToLower().Replace(" ", "-")}/")!,
                 cc);
             result.Add(popularOffer);
 
         }
         return result;
     }
-    protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
+    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob)
     {
         //z.B. "https://www.pornpics.com/recent/asian/"
         return catJob.CategoryUri;
@@ -225,16 +227,16 @@ internal class Pornpics : WallpaperCrawlerBasis
         var album = new AlbumEntry(albumName);
         foreach (var entryNode in entryNodes)
         {
-            var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
+            var source = new WallEntrySource(_uri, node, catJob.Category, catJob.SiteCategoryName);
 
             if (tags is null)
             {
-                tags = source.GetTagsFromNodes(
+                tags = WallEntrySource.GetTagsFromNodes(
                     albumDoc,
                     "//div[@class='gallery-info__item tags']/div/a/span",
                     x => WebUtility.HtmlDecode(x.InnerText).Trim());
 
-                tags.AddRange(source.GetTagsFromNodes(
+                tags.AddRange(WallEntrySource.GetTagsFromNodes(
                     albumDoc,
                     "//div[@class='gallery-info__item']/div/a/span",
                     x => WebUtility.HtmlDecode(x.InnerText).Trim()));
@@ -248,8 +250,6 @@ internal class Pornpics : WallpaperCrawlerBasis
                 return false;
             }
             source.ThumbnailUri = source.ImageUri;
-            (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
-            source.ContentCategory = catJob.Category;
             source.Tags = tags;
             source.AlbumName = albumName;
 

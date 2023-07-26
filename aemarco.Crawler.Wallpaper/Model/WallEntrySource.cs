@@ -1,93 +1,145 @@
-﻿// ReSharper disable MemberCanBePrivate.Global
+﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
+
 namespace aemarco.Crawler.Wallpaper.Model;
 
 internal class WallEntrySource
 {
+    private static readonly string[] AllowedExtensions =
+    {
+        ".bmp",
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".gif"
+    };
 
-    #region ctor
 
-    private readonly Uri _baseUri;
-    internal WallEntrySource(Uri baseUri, HtmlNode rootNode, string siteCategory)
+    public WallEntrySource(Uri baseUri, HtmlNode rootNode, ContentCategory contentCategory, string siteCategory)
     {
         _baseUri = baseUri;
         RootNode = rootNode;
-        SiteCategory = siteCategory;
+        _contentCategory = contentCategory;
+        _siteCategory = siteCategory;
     }
-    internal WallEntrySource(Uri baseUri, PageNode pageNode, string siteCategory)
-        : this(baseUri, pageNode.Node, siteCategory)
+    public WallEntrySource(Uri baseUri, PageNode pageNode, ContentCategory contentCategory, string siteCategory)
+        : this(baseUri, pageNode.Node, contentCategory, siteCategory)
     { }
 
-    internal HtmlNode RootNode { get; }
 
-    #endregion
-
-    #region 4Output
-
-    internal PageUri? ImageUri { get; set; }
-    internal PageUri? ThumbnailUri { get; set; }
-    public string? Filename { get; set; }
-    public string? Extension { get; set; }
-    public ContentCategory? ContentCategory { get; set; }
-    public string SiteCategory { get; set; }
-    public List<string>? Tags { get; set; }
+    public PageUri? ImageUri { get; set; }
+    public PageUri? ThumbnailUri { get; set; }
     public string? AlbumName { get; set; }
 
 
-    internal WallEntry? WallEntry
-    {
-        get
-        {
-            var entry = new WallEntry(
-                ImageUri?.Uri.AbsoluteUri,
-                ThumbnailUri?.Uri.AbsoluteUri,
-                Filename,
-                Extension,
-                ContentCategory,
-                SiteCategory,
-                Tags,
-                AlbumName);
 
-            return entry.IsValid
-                ? entry
-                : null;
-        }
+    private string? _filenamePrefix;
+    public void SetFilenamePrefix(string prefix)
+    {
+        _filenamePrefix = WebUtility.HtmlDecode(prefix);
+    }
+    public string? Filename { get; set; }
+    public string? Extension { get; set; }
+
+    private ContentCategory _contentCategory;
+    public void OverrideCategory(ContentCategory category)
+    {
+        _contentCategory = category;
+    }
+    private readonly string _siteCategory;
+
+
+
+    public List<string> Tags { get; set; } = new();
+    public void AddTagsFromText(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return;
+        Tags.AddRange(WebUtility.HtmlDecode(text)
+            .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+    }
+    public void AddTagsFromInnerTexts(IEnumerable<PageNode> nodes)
+    {
+        var tags = nodes
+            .Select(x => WebUtility.HtmlDecode(x.Node.InnerText).Trim())
+            .Where(x => !string.IsNullOrWhiteSpace(x));
+        Tags.AddRange(tags);
     }
 
 
-    #endregion
+
+    public WallEntry? ToWallEntry()
+    {
+        if (ImageUri is null)
+            return null;
+
+        var fileName = Filename ?? FilenameFromUrl(ImageUri);
+
+        var entry = new WallEntry(
+            ImageUri.Uri.AbsoluteUri,
+            ThumbnailUri?.Uri.AbsoluteUri,
+            string.IsNullOrWhiteSpace(_filenamePrefix)
+                ? fileName
+                : $"{_filenamePrefix}_{fileName}",
+            Extension ?? ExtensionFromUrl(ImageUri),
+            _contentCategory,
+            _siteCategory,
+            Tags.Distinct().ToList(),
+            AlbumName);
+
+        //extension must be allowed
+        if (!AllowedExtensions.Contains(entry.Extension.ToLower()))
+            return null;
+
+
+        return entry;
+    }
+    private static string FilenameFromUrl(PageUri uri)
+    {
+        var url = uri.Uri.AbsoluteUri;
+        var main = url[(url.LastIndexOf("/", StringComparison.Ordinal) + 1)..];
+        main = WebUtility.HtmlDecode(main);
+        var result = Path.GetFileNameWithoutExtension(main);
+        return result;
+    }
+    private static string ExtensionFromUrl(PageUri uri)
+    {
+        var url = uri.Uri.AbsoluteUri;
+        var main = url[(url.LastIndexOf("/", StringComparison.Ordinal) + 1)..];
+        main = WebUtility.HtmlDecode(main);
+        var result = Path.GetExtension(main);
+        return result;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    //old stuff
+    private readonly Uri _baseUri;
+
+    public HtmlNode RootNode { get; }
 
     #region Documents
 
-    private PageDocument? _detailsPageDocument;
-    internal PageDocument? DetailsPageDocument
-    {
-        get => _detailsPageDocument;
-        set
-        {
-            _detailsPageDocument = value;
-            DetailsDoc = _detailsPageDocument?.Document;
-        }
-    }
     internal HtmlDocument? DetailsDoc { get; set; }
-
-
-    private PageDocument? _downloadPageDocument;
-    internal PageDocument? DownloadPageDocument
-    {
-        get => _downloadPageDocument;
-        set
-        {
-            _downloadPageDocument = value;
-            DownloadDoc = _downloadPageDocument?.Document;
-        }
-    }
     internal HtmlDocument? DownloadDoc { get; set; }
-
-
-
     internal HtmlDocument? GetChildDocumentFromRootNode(string? nodeToSubNode = null, int? minDelay = null, int? maxDelay = null)
     {
         return GetChildDocumentFromNode(RootNode, nodeToSubNode, minDelay, maxDelay);
+    }
+    internal HtmlDocument? GetChildDocumentFromDocument(HtmlDocument doc, string docToHrefNode, int? minDelay = null, int? maxDelay = null)
+    {
+        var node = doc.DocumentNode.SelectSingleNode(docToHrefNode);
+        return node != null
+            ? GetChildDocumentFromNode(node, null, minDelay, maxDelay)
+            : null;
     }
     internal HtmlDocument? GetChildDocumentFromNode(HtmlNode node, string? nodeToSubNode = null, int? minDelay = null, int? maxDelay = null)
     {
@@ -106,13 +158,6 @@ internal class WallEntrySource
         var uri = new Uri(_baseUri, href);
         return HtmlHelper.GetHtmlDocument(uri, minDelay, maxDelay);
     }
-    internal HtmlDocument? GetChildDocumentFromDocument(HtmlDocument doc, string docToHrefNode, int? minDelay = null, int? maxDelay = null)
-    {
-        var node = doc.DocumentNode.SelectSingleNode(docToHrefNode);
-        return node != null
-            ? GetChildDocumentFromNode(node, null, minDelay, maxDelay)
-            : null;
-    }
 
     #endregion
 
@@ -129,8 +174,7 @@ internal class WallEntrySource
             new Uri(_baseUri, href);
     }
 
-
-    internal string? GetSubNodeAttribute(HtmlNode node, string attribute, string? nodeToTargetNode = null)
+    internal static string? GetSubNodeAttribute(HtmlNode node, string attribute, string? nodeToTargetNode = null)
         => GetSubNodeAttrib(node, attribute, nodeToTargetNode);
 
     internal static string? GetSubNodeAttrib(HtmlNode node, string attribute, string? nodeToTargetNode = null)
@@ -155,30 +199,9 @@ internal class WallEntrySource
 
     #endregion
 
-    #region filedetails
-
-    internal (string filename, string extension) GetFileDetails(PageUri imageUri, string? prefix = null)
-        => GetFileDetails(imageUri.Uri, prefix);
-    internal (string filename, string extension) GetFileDetails(Uri imageUri, string? prefix = null)
-    {
-        var pref = prefix is null
-            ? string.Empty
-            : $"{prefix}_";
-
-        var url = imageUri.AbsoluteUri;
-        var main = url[(url.LastIndexOf("/", StringComparison.Ordinal) + 1)..];
-        main = WebUtility.HtmlDecode(main);
-        var name = $"{pref}{main}";
-
-        return (Path.GetFileNameWithoutExtension(name), Path.GetExtension(name));
-    }
-
-
-    #endregion
-
     #region tags
 
-    internal List<string> GetTagsFromNode(HtmlNode node, string attribute, string? nodeToTargetNode = null)
+    internal static List<string> GetTagsFromNode(HtmlNode node, string attribute, string? nodeToTargetNode = null)
     {
         var subNode = nodeToTargetNode is null
             ? node
@@ -189,7 +212,9 @@ internal class WallEntrySource
             ? new List<string>()
             : GetTagsFromTagString(tagString);
     }
-    internal List<string> GetTagsFromNodes(
+
+
+    internal static List<string> GetTagsFromNodes(
         HtmlDocument doc,
         string docToTargetNodes,
         Func<HtmlNode, string?> selector)
@@ -201,7 +226,9 @@ internal class WallEntrySource
             : GetTagsFromTagString(string.Join(",", tags));
     }
 
-    private List<string> GetTagsFromTagString(string tagString)
+
+
+    private static List<string> GetTagsFromTagString(string tagString)
     {
         //z.B. "flowerdress, nadia p, susi r, suzanna, suzanna a, brunette, boobs, big tits"
         var result = new List<string>();
@@ -215,4 +242,6 @@ internal class WallEntrySource
     }
 
     #endregion
+
+    public WallEntry? WallEntry => ToWallEntry();
 }

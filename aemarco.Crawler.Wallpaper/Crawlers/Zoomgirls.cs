@@ -19,21 +19,21 @@ internal class Zoomgirls : WallpaperCrawlerBasis
         {
             CreateCrawlOffer(
                 "Latest Wallpapers",
-                new Uri(_uri, "latest_wallpapers"),
+                new Uri(_uri, "latest_wallpapers")!,
                 new ContentCategory(Category.Girls)),
             CreateCrawlOffer(
                 "Random Wallpapers",
-                new Uri(_uri, "random_wallpapers"),
+                new Uri(_uri, "random_wallpapers")!,
                 new ContentCategory(Category.Girls))
         };
 
         return result;
     }
-    protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
+    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob)
     {
         //z.B. "https://zoomgirls.net/latest_wallpapers/page/1"
         //return $"{catJob.CategoryUri.AbsoluteUri}/page/{catJob.CurrentPage}";
-        return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}/page/{catJob.CurrentPage}");
+        return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.Uri.AbsolutePath}/page/{catJob.CurrentPage}")!;
     }
     protected override string GetSearchStringGorEntryNodes()
     {
@@ -43,7 +43,7 @@ internal class Zoomgirls : WallpaperCrawlerBasis
     protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
         var node = pageNode.Node;
-        var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
+        var source = new WallEntrySource(_uri, pageNode, catJob.Category, catJob.SiteCategoryName);
 
         //docs
         source.DetailsDoc = source.GetChildDocumentFromRootNode();
@@ -63,9 +63,7 @@ internal class Zoomgirls : WallpaperCrawlerBasis
 
         source.ImageUri = new PageUri(new Uri(imageUri));
         source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='wallpaper-thumb']/img", "src");
-        (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
-        source.ContentCategory = catJob.Category;
-        source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//ul[@class='tagcloud']/span/a", x => WebUtility.HtmlDecode(x.InnerText).Trim());
+        source.Tags = WallEntrySource.GetTagsFromNodes(source.DetailsDoc, "//ul[@class='tagcloud']/span/a", x => WebUtility.HtmlDecode(x.InnerText).Trim());
 
         var wallEntry = source.WallEntry;
         if (wallEntry == null)

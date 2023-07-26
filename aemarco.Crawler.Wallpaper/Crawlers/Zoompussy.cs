@@ -47,15 +47,15 @@ internal class Zoompussy : WallpaperCrawlerBasis
 
             result.Add(CreateCrawlOffer(
                 cat,
-                new Uri(_uri, $"/search/{cat}/"),
+                new Uri(_uri, $"/search/{cat}/")!,
                 cc));
         }
         return result;
     }
-    protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
+    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob)
     {
         //z.B. "http://zoompussy.com/search/asian/page/1/"
-        return new Uri($"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}");
+        return new Uri($"{catJob.CategoryUri.Uri.AbsoluteUri}page/{catJob.CurrentPage}")!;
     }
     protected override string GetSearchStringGorEntryNodes()
     {
@@ -65,7 +65,7 @@ internal class Zoompussy : WallpaperCrawlerBasis
     protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
         var node = pageNode.Node;
-        var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
+        var source = new WallEntrySource(_uri, pageNode, catJob.Category, catJob.SiteCategoryName);
 
         //docs
         source.DetailsDoc = source.GetChildDocumentFromRootNode();
@@ -84,9 +84,8 @@ internal class Zoompussy : WallpaperCrawlerBasis
             return false;
         }
         source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@id='post_content']/blockquote/a/img", "src");
-        (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
-        source.ContentCategory = catJob.Category;
-        source.Tags = source.GetTagsFromNodes(
+        source.SetFilenamePrefix(catJob.SiteCategoryName);
+        source.Tags = WallEntrySource.GetTagsFromNodes(
             source.DetailsDoc,
             "//div[@class='post_z']/a",
             x =>

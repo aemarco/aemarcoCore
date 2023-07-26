@@ -1,6 +1,8 @@
 ﻿namespace aemarco.Crawler.PersonTests.Crawlers;
 
 
+[Ignore("Crawler obsolete")]
+[Obsolete]
 internal class BabepediaWithChloeTempleTests : PersonCrawlerTestsBase<Babepedia>
 {
 

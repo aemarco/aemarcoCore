@@ -3,6 +3,21 @@
 
 internal record PageUri(Uri Uri)
 {
+
+    /// <summary>
+    ///
+    /// - pageXy --> relative to current
+    /// - /pageXy --> relative to root
+    /// - ../ --> relative to parent
+    /// </summary>
+    /// <param name="relativeUri"></param>
+    /// <returns></returns>
+    internal PageUri WithHref(string relativeUri)
+    {
+        var uri = new Uri(Uri, relativeUri);
+        return new PageUri(uri);
+    }
+
     internal PageDocument Navigate()
     {
         var document = HtmlHelper.GetHtmlDocument(Uri);
@@ -50,25 +65,35 @@ internal record PageNode(Uri Uri, HtmlDocument Document, HtmlNode Node)
         : this(pageDocument.Uri, pageDocument.Document, node)
     { }
 
-    internal PageNode? GetChild(string xPath)
-    {
-        var subNode = Node.SelectSingleNode(xPath);
-        if (subNode is null)
-            return null;
-        return new PageNode(this, subNode);
-    }
+    internal PageNode? GetChild(string xPath) =>
+        Node.SelectSingleNode(xPath) is { } subNode
+            ? new PageNode(this, subNode)
+            : null;
 
 
-    internal PageUri? GetHref() => GetRef("href");
-    internal PageUri? GetSrc() => GetRef("src");
-    private PageUri? GetRef(string attr)
-    {
-        var href = Node.Attributes[attr]?.Value;
-        if (href is null)
-            return null;
-        var uri = new Uri(Uri, href);
-        return new PageUri(uri);
-    }
+    //References
+    internal PageUri? GetHref(Func<string, string?>? manipulation = null) =>
+        GetAttribute("href") is not { } href
+            ? null
+            : manipulation is null
+                ? new PageUri(new Uri(Uri, href))
+                : manipulation(href) is { } manipulatedHref
+                    ? new PageUri(new Uri(Uri, manipulatedHref))
+                    : null;
+
+
+    internal PageUri? GetSrc() =>
+        GetAttribute("src") is { } href
+            ? new PageUri(new Uri(Uri, href))
+            : null;
+    internal string? GetAttribute(string attr) =>
+        Node.Attributes[attr]?.Value;
+
+
+    //Info
+    internal string GetText() =>
+        WebUtility.HtmlDecode(Node.InnerText).Trim();
+
 
 }
 

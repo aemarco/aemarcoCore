@@ -1,5 +1,5 @@
 ﻿using aemarco.Crawler.Wallpaper;
-using aemarco.Crawler.Wallpaper.Common;
+using aemarco.Crawler.Wallpaper.Model;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 namespace aemarco.Crawler.WallpaperTests;
 
 [SingleThreaded]
-public class WallpaperCrawlerTests
+public class WallpaperCrawlerTests : TestBase
 {
-    private Random _random = new();
+    private readonly Random _random = new();
 
 
     [Test]
@@ -48,7 +48,7 @@ public class WallpaperCrawlerTests
         var c = GetCrawler();
         c.AddSourceSiteFilter(site);
         c.HandleFilters();
-        c._wallCrawlers.Select(x => x.GetType().ToCrawlerInfo().FriendlyName).Should().BeEquivalentTo(site);
+        c._wallCrawlers.Select(x => CrawlerInfo.FromCrawlerType(x.GetType()).FriendlyName).Should().BeEquivalentTo(site);
 
         OutputOffers(c);
     }
@@ -58,7 +58,7 @@ public class WallpaperCrawlerTests
         //no filter does not filter
         var all = GetCrawler();
         all.HandleFilters();
-        all._wallCrawlers.Select(x => x.GetType().ToCrawlerInfo().FriendlyName).Should()
+        all._wallCrawlers.Select(x => CrawlerInfo.FromCrawlerType(x.GetType()).FriendlyName).Should()
             .BeEquivalentTo(Sites);
 
         OutputOffers(all);
@@ -93,7 +93,6 @@ public class WallpaperCrawlerTests
     [TestCaseSource(nameof(CrawlerCombinations))]
     public async Task Crawler_DoesWork(string site, string cat)
     {
-
         await WaitForSite(site);
 
         var crawler = GetCrawler();
@@ -101,41 +100,25 @@ public class WallpaperCrawlerTests
         crawler.AddCategoryFilter(cat);
         crawler.HandleFilters();
 
-
         var source = new CancellationTokenSource();
         var c = crawler._wallCrawlers.First();
-        c.EntryFound += (_, _) =>
-        {
-            source.Cancel();
-        };
+        c.EntryFound += (_, _) => source.Cancel();
         try
         {
             await crawler.StartAsync(source.Token);
             Assert.Fail($"{site} - {cat} failed.");
         }
-        catch (OperationCanceledException)
-        { }
+        catch (OperationCanceledException) { }
 
-        //c.Result.Warnings.Count.Should().Be(0);
 
-        if (c.Result.NewEntries.FirstOrDefault() is { } wallEntry)
-        {
-            await TestContext.Out.WriteLineAsync(
-                JsonConvert.SerializeObject(
-                    wallEntry,
-                    Formatting.Indented));
-        }
-        else if (c.Result.NewAlbums.FirstOrDefault() is { } albumEntry)
-        {
-            await TestContext.Out.WriteLineAsync(
-                JsonConvert.SerializeObject(
-                    albumEntry,
-                    Formatting.Indented));
-        }
+        if (c._result.Warnings.FirstOrDefault() is { } warning)
+            Assert.Warn(warning.ToString());
+        else if (c._result.NewEntries.FirstOrDefault() is { } wallEntry)
+            PrintJson(wallEntry);
+        else if (c._result.NewAlbums.FirstOrDefault() is { } albumEntry)
+            PrintJson(albumEntry);
         else
             Assert.Fail($"{site} - {cat} found no entry.");
-
-
     }
 
 
@@ -181,8 +164,9 @@ public class WallpaperCrawlerTests
     private static WallpaperCrawler GetCrawler()
     {
         var result = new WallpaperCrawler(1, 1);
-        var apiKey = GetConfig().GetValue<string>("AbyssKey");
-        result.Configure(abyssApiKey: apiKey);
+        _ = GetConfig().GetValue<string>("AbyssKey");
+        //TODO cleanup abyss stuff
+        result.Configure();
         return result;
     }
     private static IConfiguration GetConfig()
@@ -220,4 +204,19 @@ public class WallpaperCrawlerTests
                 offers,
                 Formatting.Indented));
     }
+}
+
+public abstract class TestBase
+{
+    protected static void PrintJson(object? obj)
+    {
+        TestContext.Out.WriteLine(
+            JsonConvert.SerializeObject(
+                obj,
+                Formatting.Indented));
+    }
+
+
+
+
 }

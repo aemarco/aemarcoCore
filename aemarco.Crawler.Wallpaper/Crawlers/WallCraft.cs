@@ -40,24 +40,24 @@ internal class WallCraft : WallpaperCrawlerBasis
             }
             var uri = new Uri(_uri, href);
 
-            result.Add(CreateCrawlOffer(text, uri, cat));
+            result.Add(CreateCrawlOffer(text, uri!, cat));
         }
         return result;
 
     }
-    protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
+    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob)
     {
         if (catJob.CurrentPage == 1)
         {
             //z.B. "https://wallpaperscraft.com/catalog/girls/date"
             //return $"{catJob.CategoryUri.AbsoluteUri}/date";
 
-            return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}/date");
+            return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.Uri.AbsolutePath}/date")!;
         }
 
         //z.B. "https://wallpaperscraft.com/catalog/girls/date/page2"       
         //return $"{catJob.CategoryUri.AbsoluteUri}/date/page{catJob.CurrentPage}";
-        return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.AbsolutePath}/date/page{catJob.CurrentPage}");
+        return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.Uri.AbsolutePath}/date/page{catJob.CurrentPage}")!;
     }
     protected override string GetSearchStringGorEntryNodes()
     {
@@ -68,60 +68,35 @@ internal class WallCraft : WallpaperCrawlerBasis
         if (string.IsNullOrWhiteSpace(categoryName))
             return null;
 
-        switch (categoryName)
+        return categoryName switch
         {
-            case "3D":
-                return new ContentCategory(Category.Fantasy_3D, 0, 0);
-            case "Abstract":
-                return new ContentCategory(Category.Fantasy_Abstract, 0, 0);
-            case "Animals":
-                return new ContentCategory(Category.Hobbies_Animals, 0, 0);
-            case "Anime":
-                return new ContentCategory(Category.Fantasy_Anime, 0, 0);
-            case "Art":
-                return new ContentCategory(Category.Fantasy_Art, 0, 0);
-            case "Cars":
-                return new ContentCategory(Category.Vehicle_Cars, 0, 0);
-            case "City":
-                return new ContentCategory(Category.Environment_City, 0, 0);
-            case "Fantasy":
-                return new ContentCategory(Category.Fantasy, 0, 0);
-            case "Flowers":
-                return new ContentCategory(Category.Environment_Flowers, 0, 0);
-            case "Food":
-                return new ContentCategory(Category.Hobbies_Food, 0, 0);
-            case "Games":
-                return new ContentCategory(Category.Media_Games, 0, 0);
-            case "Technologies":
-                return new ContentCategory(Category.Hobbies_HiTech, 0, 0);
-            case "Holidays":
-                return new ContentCategory(Category.Other_Holidays, 0, 0);
-            case "Macro":
-                return new ContentCategory(Category.Environment_Macro, 0, 0);
-            case "Motorcycles":
-                return new ContentCategory(Category.Vehicle_Bikes, 0, 0);
-            case "Movies":
-                return new ContentCategory(Category.Media_Movies, 0, 0);
-            case "Music":
-                return new ContentCategory(Category.Media_Music, 0, 0);
-            case "Nature":
-                return new ContentCategory(Category.Environment_Landscape, 0, 0);
-            case "Other":
-                return new ContentCategory(Category.Other, 0, 0);
-            case "Space":
-                return new ContentCategory(Category.Environment_Space, 0, 0);
-            case "Sport":
-                return new ContentCategory(Category.Hobbies_Sport, 0, 0);
-            case "Textures":
-                return new ContentCategory(Category.Other_Textures, 0, 0);
-            case "TV Series":
-                return new ContentCategory(Category.Media_TVSeries, 0, 0);
-            case "Vector":
-                return new ContentCategory(Category.Fantasy_Vector, 0, 0);
-            case "Words":
-                return new ContentCategory(Category.Other_Words, 0, 0);
-        }
-        return DefaultCategory;
+            "3D" => new ContentCategory(Category.Fantasy_3D, 0, 0),
+            "Abstract" => new ContentCategory(Category.Fantasy_Abstract, 0, 0),
+            "Animals" => new ContentCategory(Category.Hobbies_Animals, 0, 0),
+            "Anime" => new ContentCategory(Category.Fantasy_Anime, 0, 0),
+            "Art" => new ContentCategory(Category.Fantasy_Art, 0, 0),
+            "Cars" => new ContentCategory(Category.Vehicle_Cars, 0, 0),
+            "City" => new ContentCategory(Category.Environment_City, 0, 0),
+            "Fantasy" => new ContentCategory(Category.Fantasy, 0, 0),
+            "Flowers" => new ContentCategory(Category.Environment_Flowers, 0, 0),
+            "Food" => new ContentCategory(Category.Hobbies_Food, 0, 0),
+            "Games" => new ContentCategory(Category.Media_Games, 0, 0),
+            "Technologies" => new ContentCategory(Category.Hobbies_HiTech, 0, 0),
+            "Holidays" => new ContentCategory(Category.Other_Holidays, 0, 0),
+            "Macro" => new ContentCategory(Category.Environment_Macro, 0, 0),
+            "Motorcycles" => new ContentCategory(Category.Vehicle_Bikes, 0, 0),
+            "Movies" => new ContentCategory(Category.Media_Movies, 0, 0),
+            "Music" => new ContentCategory(Category.Media_Music, 0, 0),
+            "Nature" => new ContentCategory(Category.Environment_Landscape, 0, 0),
+            "Other" => new ContentCategory(Category.Other, 0, 0),
+            "Space" => new ContentCategory(Category.Environment_Space, 0, 0),
+            "Sport" => new ContentCategory(Category.Hobbies_Sport, 0, 0),
+            "Textures" => new ContentCategory(Category.Other_Textures, 0, 0),
+            "TV Series" => new ContentCategory(Category.Media_TVSeries, 0, 0),
+            "Vector" => new ContentCategory(Category.Fantasy_Vector, 0, 0),
+            "Words" => new ContentCategory(Category.Other_Words, 0, 0),
+            _ => DefaultCategory
+        };
     }
 
 
@@ -130,7 +105,7 @@ internal class WallCraft : WallpaperCrawlerBasis
         var node = pageNode.Node;
 
 
-        var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
+        var source = new WallEntrySource(_uri, pageNode, catJob.Category, catJob.SiteCategoryName);
 
         //docs
         source.DetailsDoc = source.GetChildDocumentFromRootNode("./a", 700, 2500);
@@ -155,9 +130,8 @@ internal class WallCraft : WallpaperCrawlerBasis
             return false;
         }
         source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//img[@class='wallpaper__image']", "src");
-        (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri, catJob.SiteCategoryName);
-        source.ContentCategory = catJob.Category;
-        source.Tags = source.GetTagsFromNodes(source.DownloadDoc, "//div[@class='wallpaper__tags']/a", x => WebUtility.HtmlDecode(x.InnerText).Trim());
+        source.SetFilenamePrefix(catJob.SiteCategoryName);
+        source.Tags = WallEntrySource.GetTagsFromNodes(source.DownloadDoc, "//div[@class='wallpaper__tags']/a", x => WebUtility.HtmlDecode(x.InnerText).Trim());
 
 
         var wallEntry = source.WallEntry;

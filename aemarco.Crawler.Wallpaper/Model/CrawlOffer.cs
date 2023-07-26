@@ -9,7 +9,7 @@ internal class CrawlOffer
         int lastPage,
         bool onlyNews,
         string siteCategoryName,
-        Uri categoryUri,
+        PageUri categoryUri,
         ContentCategory category)
     {
         _startPage = startPage;
@@ -32,7 +32,7 @@ internal class CrawlOffer
     //kind of crawl
     public CrawlMethod CrawlMethod { get; set; } = CrawlMethod.Classic;
     public string SiteCategoryName { get; }
-    public Uri CategoryUri { get; }
+    public PageUri CategoryUri { get; }
     public ContentCategory Category { get; }
 
     //paging

@@ -1,5 +1,14 @@
 ﻿namespace aemarco.Crawler.PersonTests;
 
+
+
+
+//[Ignore("Crawler obsolete")]
+//[Obsolete]
+
+
+
+
 internal abstract class PersonCrawlerTestsBase<T> : TestBase
 {
 
@@ -7,17 +16,10 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
     private readonly CrawlerInfo _crawlerInfo;
     protected PersonCrawlerTestsBase(string nameToCrawl)
     {
-
         _nameToCrawl = nameToCrawl;
         ExpectedFirstName = _nameToCrawl.Split(' ')[0];
         ExpectedLastName = _nameToCrawl.Split(' ')[1];
-
-        var type = PersonCrawler
-                       .GetAvailableCrawlerTypes()
-                       .FirstOrDefault(x => x.FullName == typeof(T).FullName)
-                   ?? throw new Exception($"Type {typeof(T).FullName} not available");
-        _crawlerInfo = CrawlerInfo.FromCrawlerType(type)
-            ?? throw new Exception("Could not get CrawlerInfo");
+        _crawlerInfo = CrawlerInfo.FromCrawlerType(typeof(T));
     }
 
 

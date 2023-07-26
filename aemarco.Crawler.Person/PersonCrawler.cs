@@ -11,7 +11,8 @@ public class PersonCrawler
     /// <returns></returns>
     public static IEnumerable<string> GetAvailableCrawlers()
     {
-        return GetAvailableCrawlerTypes().Select(t => CrawlerInfo.FromCrawlerType(t).FriendlyName);
+        return GetAvailableCrawlerTypes()
+            .Select(t => CrawlerInfo.FromCrawlerType(t).FriendlyName);
     }
 
     /// <summary>
@@ -81,7 +82,7 @@ public class PersonCrawler
         return result;
     }
 
-    internal static List<Type> GetAvailableCrawlerTypes()
+    private static List<Type> GetAvailableCrawlerTypes()
     {
         var types = Assembly
             .GetAssembly(typeof(PersonCrawlerBase))!

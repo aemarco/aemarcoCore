@@ -37,16 +37,16 @@ internal class Boombo : WallpaperCrawlerBasis
 
             //z.B. "https://ftopx.com/celebrities"
             var uri = new Uri(_uri, href);
-            result.Add(CreateCrawlOffer(text, uri, new ContentCategory(Category.Girls)));
+            result.Add(CreateCrawlOffer(text, uri!, new ContentCategory(Category.Girls)));
         }
 
         return result;
     }
 
-    protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
+    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob)
     {
         //z.B. "https://boombo.biz/en/nude/page/1/"
-        return new Uri(catJob.CategoryUri, $"page/{catJob.CurrentPage}/");
+        return new Uri(catJob.CategoryUri, $"page/{catJob.CurrentPage}/")!;
     }
 
 
@@ -74,19 +74,19 @@ internal class Boombo : WallpaperCrawlerBasis
         {
             foreach (var entryNode in entryNodes)
             {
-                var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
-
                 //details
-                source.ImageUri = new PageUri(new Uri(entryNode.Attributes["href"].Value));
+                var source = new WallEntrySource(_uri, node, catJob.Category, catJob.SiteCategoryName)
+                {
+                    ImageUri = new PageUri(new Uri(entryNode.Attributes["href"].Value))
+                };
+
                 if (source.ImageUri is null)
                 {
                     AddWarning($"Could not get ImageUri from node {entryNode.InnerHtml}");
                     return false;
                 }
                 source.ThumbnailUri = source.ImageUri;
-                (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
-                source.ContentCategory = catJob.Category;
-                source.Tags = source.GetTagsFromNode(
+                source.Tags = WallEntrySource.GetTagsFromNode(
                     entryNode,
                     "alt", "./img");
                 source.AlbumName = albumName;
@@ -107,19 +107,19 @@ internal class Boombo : WallpaperCrawlerBasis
         {
             foreach (var entryNode in otherEntryNodes)
             {
-                var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
-
                 //details
-                source.ImageUri = new PageUri(new Uri(_uri, entryNode.Attributes["data-src"].Value));
+                var source = new WallEntrySource(_uri, node, catJob.Category, catJob.SiteCategoryName)
+                {
+                    ImageUri = new PageUri(new Uri(_uri, entryNode.Attributes["data-src"].Value))
+                };
+
                 if (source.ImageUri is null)
                 {
                     AddWarning($"Could not get ImageUri from node {entryNode.InnerHtml}");
                     return false;
                 }
                 source.ThumbnailUri = source.ImageUri;
-                (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
-                source.ContentCategory = catJob.Category;
-                source.Tags = source.GetTagsFromNode(
+                source.Tags = WallEntrySource.GetTagsFromNode(
                     entryNode,
                     "alt");
                 source.AlbumName = albumName;
@@ -141,7 +141,7 @@ internal class Boombo : WallpaperCrawlerBasis
         return album.Entries.Any();
     }
 
-    class WallEntryNumberComparer : IComparer<WallEntry>
+    private class WallEntryNumberComparer : IComparer<WallEntry>
     {
         public int Compare(WallEntry? x, WallEntry? y)
         {
@@ -149,12 +149,12 @@ internal class Boombo : WallpaperCrawlerBasis
             return GetNumber(x).CompareTo(GetNumber(y));
         }
 
-        private int GetNumber(WallEntry? x)
+        private static int GetNumber(WallEntry? x)
         {
             if (x == null)
                 return 0;
 
-            var reg = Regex.Match(x.Url!, "(\\d+)(?!.*\\d)");
+            var reg = Regex.Match(x.Url, "(\\d+)(?!.*\\d)");
             if (reg.Success)
             {
                 return int.Parse(reg.Groups[1].Value);

@@ -23,22 +23,22 @@ internal class Wallhaven : WallpaperCrawlerBasis
 
             CreateCrawlOffer(
                 "Anime_SFW",
-                new Uri(_uri, @"search?q=&categories=010&purity=100&sorting=date_added&order=desc"),
+                new Uri(_uri, @"search?q=&categories=010&purity=100&sorting=date_added&order=desc")!,
                 new ContentCategory(Category.Girls_Fantasy, 1, 19)),
 
             CreateCrawlOffer(
                 "Anime_Sketchy",
-                new Uri(_uri, @"search?q=&categories=010&purity=010&sorting=date_added&order=desc"),
+                new Uri(_uri, @"search?q=&categories=010&purity=010&sorting=date_added&order=desc")!,
                 new ContentCategory(Category.Girls_Fantasy)),
 
             CreateCrawlOffer(
                 "People_SFW",
-                new Uri(_uri, @"search?q=&categories=001&purity=100&sorting=date_added&order=desc"),
+                new Uri(_uri, @"search?q=&categories=001&purity=100&sorting=date_added&order=desc")!,
                 new ContentCategory(Category.Girls, 1, 19)),
 
             CreateCrawlOffer(
                 "People_Sketchy",
-                new Uri(_uri, @"search?q=&categories=001&purity=010&sorting=date_added&order=desc"),
+                new Uri(_uri, @"search?q=&categories=001&purity=010&sorting=date_added&order=desc")!,
                 new ContentCategory(Category.Girls))
 
 
@@ -46,11 +46,11 @@ internal class Wallhaven : WallpaperCrawlerBasis
         return result;
     }
 
-    protected override Uri GetSiteUrlForCategory(CrawlOffer catJob)
+    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob)
     {
 
         //z.B. "https://alpha.wallhaven.cc/search?q=&categories=001&purity=010&sorting=date_added&order=desc&page=1"
-        return new Uri($"{catJob.CategoryUri.AbsoluteUri}&page={catJob.CurrentPage}");
+        return new Uri($"{catJob.CategoryUri.Uri.AbsoluteUri}&page={catJob.CurrentPage}")!;
     }
     protected override string GetSearchStringGorEntryNodes()
     {
@@ -62,7 +62,7 @@ internal class Wallhaven : WallpaperCrawlerBasis
     protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
         var node = pageNode.Node;
-        var source = new WallEntrySource(_uri, node, catJob.SiteCategoryName);
+        var source = new WallEntrySource(_uri, pageNode, catJob.Category, catJob.SiteCategoryName);
         //docs
         source.DetailsDoc = source.GetChildDocumentFromRootNode("./a[@class='preview']");
         if (source.DetailsDoc is null)
@@ -79,10 +79,8 @@ internal class Wallhaven : WallpaperCrawlerBasis
             AddWarning($"Could not get ImageUri from node {source.DetailsDoc.DocumentNode.InnerHtml}");
             return false;
         }
-        source.ThumbnailUri = new Uri(_uri, source.GetSubNodeAttribute(node, "data-src", "./img[@alt='loading']"));
-        source.Tags = source.GetTagsFromNodes(source.DetailsDoc, "//ul[@id='tags']/li", x => WebUtility.HtmlDecode(x.InnerText).Trim());
-        (source.Filename, source.Extension) = source.GetFileDetails(source.ImageUri);
-        source.ContentCategory = catJob.Category;
+        source.ThumbnailUri = new Uri(_uri, WallEntrySource.GetSubNodeAttribute(node, "data-src", "./img[@alt='loading']"));
+        source.Tags = WallEntrySource.GetTagsFromNodes(source.DetailsDoc, "//ul[@id='tags']/li", x => WebUtility.HtmlDecode(x.InnerText).Trim());
 
 
         var wallEntry = source.WallEntry;
