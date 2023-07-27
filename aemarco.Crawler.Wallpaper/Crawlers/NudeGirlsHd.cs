@@ -5,9 +5,12 @@ namespace aemarco.Crawler.Wallpaper.Crawlers;
 [WallpaperCrawler("NudeGirlsHd")]
 internal class NudeGirlsHd : WallpaperCrawlerBasis
 {
-    private readonly Uri _uri = new("https://nudegirlshd.com");
 
-    public NudeGirlsHd(int startPage, int lastPage, bool onlyNews)
+    private readonly Uri _uri = new("https://nudegirlshd.com");
+    public NudeGirlsHd(
+        int startPage,
+        int lastPage,
+        bool onlyNews)
         : base(startPage, lastPage, onlyNews)
     { }
 
@@ -17,71 +20,58 @@ internal class NudeGirlsHd : WallpaperCrawlerBasis
         {
             CreateCrawlOffer(
                 "NudePics",
-                _uri!,
+                new PageUri(_uri),
                 new ContentCategory(Category.Girls))
         };
         return result;
     }
-
-    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob)
-    {
-        //z.B. "https://nudegirlshd.com/page/2"
-        //return $"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}";
-        return new Uri(catJob.CategoryUri, $"/page/{catJob.CurrentPage}")!;
-    }
-
-    protected override string GetSearchStringGorEntryNodes()
-    {
-        return "//div/a[@class='b-photobox']";
-    }
-
+    //z.B. "https://nudegirlshd.com/page/2"
+    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob) =>
+        catJob.CategoryUri.WithHref($"page/{catJob.CurrentPage}");
+    protected override string GetSearchStringGorEntryNodes() =>
+        "//div/a[@class='b-photobox']";
     protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
-        var node = pageNode.Node;
-        var source = new WallEntrySource(_uri, pageNode, catJob.Category, catJob.SiteCategoryName);
 
-        //doc
-        source.DetailsDoc = source.GetChildDocumentFromRootNode();
-        if (source.DetailsDoc is null)
+        //navigate
+        if (pageNode
+                .GetHref()?
+                .Navigate() is not { } detailsPage)
         {
-            AddWarning($"Could not read DetailsDoc from node {node.InnerHtml}");
-            return false;
-        }
-        //details
-        var thumb = WallEntrySource.GetSubNodeAttribute(node, "src", "//img");
-        if (!string.IsNullOrWhiteSpace(thumb))
-            source.ThumbnailUri = new Uri(thumb);
-        //details
-        source.ImageUri = source.GetUriFromDocument(source.DetailsDoc, "//div[@class='b-card-content js-fit-box js-responzer-box']/a", "href");
-
-
-        if (source.ImageUri is null)
-        {
-            AddWarning($"Could not get ImageUri from node {source.DetailsDoc.DocumentNode.InnerHtml}");
+            AddWarning(pageNode, "Could not find DetailsDoc");
             return false;
         }
 
+        if (detailsPage
+                .FindNode("//div[@class='b-card-content js-fit-box js-responzer-box']/a")?
+                .GetHref() is not { } imageUri)
+        {
+            AddWarning(detailsPage, "Could not get ImageUri");
+            return false;
+        }
 
-        source.Tags = new List<string>();
-        //add category-tags
-        source.Tags.AddRange(
-            WallEntrySource.GetTagsFromNodes(source.DetailsDoc, "//span[@class='b-photogrid-text']", x => WebUtility.HtmlDecode(x.InnerText).Trim()));
+        //details
+        var source = new WallEntrySource(_uri, pageNode, catJob.Category, catJob.SiteCategoryName)
+        {
+            ImageUri = imageUri,
+            ThumbnailUri = pageNode
+                .FindNode("//img")?
+                .GetSrc()
+        };
 
+        //add cat-tags
+        source.AddTagsFromInnerTexts(detailsPage.FindNodes("//span[@class='b-photogrid-text']"));
         source.OverrideCategory(CheckForRealCategory(catJob.Category, source.Tags));
-
         //add tag-tags
-        source.Tags.AddRange(
-            WallEntrySource.GetTagsFromNodes(source.DetailsDoc, "//a[@class='b-button']/span", x => WebUtility.HtmlDecode(x.InnerText).Trim()));
+        source.AddTagsFromInnerTexts(detailsPage.FindNodes("//a[@class='b-button']/span"));
 
-        var wallEntry = source.WallEntry;
-        if (wallEntry == null)
-        {
+
+        if (source.ToWallEntry() is not { } entry)
             return false;
-        }
-        AddEntry(wallEntry, catJob);
+
+        AddEntry(entry, catJob);
         return true;
     }
-
     private static ContentCategory CheckForRealCategory(
         ContentCategory cat,
         List<string> tags)
@@ -108,15 +98,16 @@ internal class NudeGirlsHd : WallpaperCrawlerBasis
             ("Threesomes", 90, 100, Category.Girls_Hardcore),
             ("Group Sex", 90, 100, Category.Girls_Hardcore),
             ("Hardcore", 90, 100, Category.Girls_Hardcore),
+
+            ("Amateur", -1, -1, Category.Girls_Amateur)
         };
 
-        foreach (var entry in entries)
-        {
-            if (tags.Contains(entry.Cat))
-            {
-                return new ContentCategory(entry.Category, entry.Min, entry.Max);
-            }
-        }
-        return cat;
+        return entries
+                   .Where(x => tags.Contains(x.Cat))
+                   .Select(x => new ContentCategory(x.Category, x.Min, x.Max))
+                   .FirstOrDefault()
+               ?? cat;
+
+
     }
 }

@@ -55,7 +55,7 @@ internal class Ftop : WallpaperCrawlerBasis
 
         //navigate
         if (pageNode
-                .GetChild("./div[@class='thumbnail']/a")?
+                .FindNode("./div[@class='thumbnail']/a")?
                 .GetHref()?
                 .Navigate() is not { } detailsPage)
         {

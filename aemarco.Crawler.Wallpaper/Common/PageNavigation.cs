@@ -38,14 +38,12 @@ internal record PageDocument(Uri Uri, HtmlDocument Document)
     { }
 
 
-    internal PageNode? FindNode(string xPath)
-    {
-        var node = Document.DocumentNode.SelectSingleNode(xPath);
-        if (node is null)
-            return null;
-        return new PageNode(this, node);
-    }
-    internal IReadOnlyList<PageNode> FindNodes(string xPath)
+    internal virtual PageNode? FindNode(string xPath) =>
+        Document.DocumentNode.SelectSingleNode(xPath) is { } subNode
+            ? new PageNode(this, subNode)
+            : null;
+
+    internal virtual IReadOnlyList<PageNode> FindNodes(string xPath)
     {
         var nodes = Document.DocumentNode.SelectNodes(xPath) ?? Enumerable.Empty<HtmlNode>();
         var result = nodes
@@ -65,11 +63,20 @@ internal record PageNode(Uri Uri, HtmlDocument Document, HtmlNode Node)
         : this(pageDocument.Uri, pageDocument.Document, node)
     { }
 
-    internal PageNode? GetChild(string xPath) =>
+    internal override PageNode? FindNode(string xPath) =>
         Node.SelectSingleNode(xPath) is { } subNode
             ? new PageNode(this, subNode)
             : null;
 
+    internal override IReadOnlyList<PageNode> FindNodes(string xPath)
+    {
+        var nodes = Node.SelectNodes(xPath) ?? Enumerable.Empty<HtmlNode>();
+        var result = nodes
+            .ToArray()
+            .Select(x => new PageNode(this, x))
+            .ToList();
+        return result;
+    }
 
     //References
     internal PageUri? GetHref(Func<string, string?>? manipulation = null) =>
@@ -80,7 +87,6 @@ internal record PageNode(Uri Uri, HtmlDocument Document, HtmlNode Node)
                 : manipulation(href) is { } manipulatedHref
                     ? new PageUri(new Uri(Uri, manipulatedHref))
                     : null;
-
 
     internal PageUri? GetSrc() =>
         GetAttribute("src") is { } href
