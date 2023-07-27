@@ -17,7 +17,7 @@ internal class WallEntrySource
     public WallEntrySource(Uri baseUri, HtmlNode rootNode, ContentCategory contentCategory, string siteCategory)
     {
         _baseUri = baseUri;
-        RootNode = rootNode;
+        _rootNode = rootNode;
         _contentCategory = contentCategory;
         _siteCategory = siteCategory;
     }
@@ -126,26 +126,29 @@ internal class WallEntrySource
 
 
     //old stuff
-    private readonly Uri _baseUri;
 
-    public HtmlNode RootNode { get; }
 
-    #region Documents
+
+    #region navigation
 
     internal HtmlDocument? DetailsDoc { get; set; }
-    internal HtmlDocument? DownloadDoc { get; set; }
+
+
+
+
+
+    private readonly HtmlNode _rootNode;
     internal HtmlDocument? GetChildDocumentFromRootNode(string? nodeToSubNode = null, int? minDelay = null, int? maxDelay = null)
     {
-        return GetChildDocumentFromNode(RootNode, nodeToSubNode, minDelay, maxDelay);
-    }
-    internal HtmlDocument? GetChildDocumentFromDocument(HtmlDocument doc, string docToHrefNode, int? minDelay = null, int? maxDelay = null)
-    {
-        var node = doc.DocumentNode.SelectSingleNode(docToHrefNode);
-        return node != null
-            ? GetChildDocumentFromNode(node, null, minDelay, maxDelay)
-            : null;
+        return GetChildDocumentFromNode(_rootNode, nodeToSubNode, minDelay, maxDelay);
     }
 
+
+
+
+
+
+    private readonly Uri _baseUri;
     private HtmlDocument? GetChildDocumentFromNode(HtmlNode node, string? nodeToSubNode = null, int? minDelay = null, int? maxDelay = null)
     {
         var subNode = nodeToSubNode is null
@@ -163,11 +166,6 @@ internal class WallEntrySource
         var uri = new Uri(_baseUri, href);
         return HtmlHelper.GetHtmlDocument(uri, minDelay, maxDelay);
     }
-
-    #endregion
-
-    #region navigation
-
     internal Uri? GetUriFromDocument(HtmlDocument doc, string docToTargetNode, string attribute)
     {
         var node = doc.DocumentNode.SelectSingleNode(docToTargetNode);
@@ -178,6 +176,11 @@ internal class WallEntrySource
             ? null :
             new Uri(_baseUri, href);
     }
+
+
+
+
+
 
     internal static string? GetSubNodeAttribute(HtmlNode node, string attribute, string? nodeToTargetNode = null)
         => GetSubNodeAttrib(node, attribute, nodeToTargetNode);
@@ -218,7 +221,6 @@ internal class WallEntrySource
             : GetTagsFromTagString(tagString);
     }
 
-
     internal static List<string> GetTagsFromNodes(
         HtmlDocument doc,
         string docToTargetNodes,
@@ -230,8 +232,6 @@ internal class WallEntrySource
             ? new List<string>()
             : GetTagsFromTagString(string.Join(",", tags));
     }
-
-
 
     private static List<string> GetTagsFromTagString(string tagString)
     {

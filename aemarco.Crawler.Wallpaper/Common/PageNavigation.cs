@@ -18,9 +18,9 @@ internal record PageUri(Uri Uri)
         return new PageUri(uri);
     }
 
-    internal PageDocument Navigate()
+    internal PageDocument Navigate(int? minDelay = null, int? maxDelay = null)
     {
-        var document = HtmlHelper.GetHtmlDocument(Uri);
+        var document = HtmlHelper.GetHtmlDocument(Uri, minDelay, maxDelay);
         return new PageDocument(this, document);
     }
 
