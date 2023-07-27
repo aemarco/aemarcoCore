@@ -1,5 +1,7 @@
 ﻿namespace aemarco.Crawler.Wallpaper.Crawlers;
 
+
+//TODO modernize
 [WallpaperCrawler("Boombo")]
 internal class Boombo : WallpaperCrawlerBasis
 {

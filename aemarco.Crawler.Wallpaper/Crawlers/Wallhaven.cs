@@ -1,6 +1,7 @@
 ﻿// ReSharper disable UnusedType.Global
 namespace aemarco.Crawler.Wallpaper.Crawlers;
 
+//TODO modernize
 [WallpaperCrawler("Wallhaven")]
 internal class Wallhaven : WallpaperCrawlerBasis
 {
