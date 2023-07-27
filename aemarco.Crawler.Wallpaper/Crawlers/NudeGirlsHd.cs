@@ -1,7 +1,9 @@
 ﻿// ReSharper disable UnusedType.Global
 namespace aemarco.Crawler.Wallpaper.Crawlers;
 
-
+/// <summary>
+/// The site does not add new content since a long time
+/// </summary>
 [WallpaperCrawler("NudeGirlsHd")]
 internal class NudeGirlsHd : WallpaperCrawlerBasis
 {

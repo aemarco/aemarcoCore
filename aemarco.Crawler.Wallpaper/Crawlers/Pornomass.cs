@@ -10,16 +10,14 @@ namespace aemarco.Crawler.Wallpaper.Crawlers;
 [WallpaperCrawler("Pornomass")]
 internal class Pornomass : WallpaperCrawlerBasis
 {
-    private readonly Uri _uri = new("http://pornomass.com");
 
+    private readonly Uri _uri = new("http://pornomass.com");
     public Pornomass(
         int startPage,
         int lastPage,
         bool onlyNews)
         : base(startPage, lastPage, onlyNews)
-    {
-
-    }
+    { }
 
     protected override List<CrawlOffer> GetCrawlsOffers()
     {
@@ -27,54 +25,52 @@ internal class Pornomass : WallpaperCrawlerBasis
         {
             CreateCrawlOffer(
                 "Pornomass",
-                _uri!,
-                new ContentCategory(Category.Girls, 90, 99))
+                new PageUri(_uri),
+                new ContentCategory(Category.Girls_Hardcore, 90, 99))
         };
         return result;
     }
-    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob)
-    {
-        //z.B. "http://pornomass.com/page/1"
-        //return $"{catJob.CategoryUri.AbsoluteUri}page/{catJob.CurrentPage}";
-        return new Uri(catJob.CategoryUri, $"/page/{catJob.CurrentPage}")!;
-    }
-    protected override string GetSearchStringGorEntryNodes()
-    {
-        return "//div[@class='fit-box']/a[@class='fit-wrapper']";
-    }
+    //z.B. "http://pornomass.com/page/1"
+    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob) =>
+        catJob.CategoryUri.WithHref($"page/{catJob.CurrentPage}");
+    protected override string GetSearchStringGorEntryNodes() =>
+        "//div[@class='fit-box']/a[@class='fit-wrapper']";
     protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
-        var node = pageNode.Node;
-        var source = new WallEntrySource(_uri, pageNode, catJob.Category, catJob.SiteCategoryName);
-
-        //doc
-        source.DetailsDoc = source.GetChildDocumentFromRootNode();
-        if (source.DetailsDoc is null)
+        //navigate
+        if (pageNode
+                .GetHref()?
+                .Navigate() is not { } detailsPage)
         {
-            AddWarning($"Could not read DetailsDoc from node {node.InnerHtml}");
+            AddWarning(pageNode, "Could not find DetailsDoc");
             return false;
         }
-        //details
-        source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='photo-blink']/img", "src");
-        //details
-        source.ImageUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='photo-blink']", "href");
-
-        if (source.ImageUri is null)
+        if (detailsPage
+                .FindNode("//a[@class='photo-blink']")?
+                .GetHref() is not { } imageUri)
         {
-            AddWarning($"Could not get ImageUri from node {source.DetailsDoc.DocumentNode.InnerHtml}");
+            AddWarning(detailsPage, "Could not get ImageUri");
             return false;
         }
+
+        //details
+        var source = new WallEntrySource(_uri, pageNode, catJob.Category, catJob.SiteCategoryName)
+        {
+            ImageUri = imageUri,
+            ThumbnailUri = detailsPage
+                .FindNode("//a[@class='photo-blink']/img")?
+                .GetSrc()
+        };
         source.SetFilenamePrefix(catJob.SiteCategoryName);
-        source.Tags = new List<string>();
+        source.AddTagsFromText(detailsPage.FindNode(
+            "//div[@class='photo-desc']")?.GetText(),
+            ',', '.');
 
-
-
-        var wallEntry = source.WallEntry;
-        if (wallEntry == null)
-        {
+        //entry
+        if (source.ToWallEntry() is not { } entry)
             return false;
-        }
-        AddEntry(wallEntry, catJob);
+
+        AddEntry(entry, catJob);
         return true;
     }
 

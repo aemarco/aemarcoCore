@@ -50,12 +50,16 @@ internal class WallEntrySource
 
 
     public List<string> Tags { get; set; } = new();
-    public void AddTagsFromText(string? text)
+    public void AddTagsFromText(string? text, params char[] separators)
     {
         if (string.IsNullOrWhiteSpace(text))
             return;
+
+        separators = separators.Length == 0
+            ? new[] { ',' }
+            : separators;
         Tags.AddRange(WebUtility.HtmlDecode(text)
-            .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+            .Split(separators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
     }
     public void AddTagsFromInnerTexts(IEnumerable<PageNode> nodes)
     {
@@ -141,7 +145,8 @@ internal class WallEntrySource
             ? GetChildDocumentFromNode(node, null, minDelay, maxDelay)
             : null;
     }
-    internal HtmlDocument? GetChildDocumentFromNode(HtmlNode node, string? nodeToSubNode = null, int? minDelay = null, int? maxDelay = null)
+
+    private HtmlDocument? GetChildDocumentFromNode(HtmlNode node, string? nodeToSubNode = null, int? minDelay = null, int? maxDelay = null)
     {
         var subNode = nodeToSubNode is null
             ? node :

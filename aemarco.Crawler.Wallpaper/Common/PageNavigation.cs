@@ -80,18 +80,19 @@ internal record PageNode(Uri Uri, HtmlDocument Document, HtmlNode Node)
 
     //References
     internal PageUri? GetHref(Func<string, string?>? manipulation = null) =>
-        GetAttribute("href") is not { } href
+        GetAttributeRef("href", manipulation);
+    internal PageUri? GetSrc(Func<string, string?>? manipulation = null) =>
+        GetAttributeRef("src", manipulation);
+    internal PageUri? GetAttributeRef(string attr, Func<string, string?>? manipulation = null) =>
+        GetAttribute(attr) is not { } attrHref
             ? null
             : manipulation is null
-                ? new PageUri(new Uri(Uri, href))
-                : manipulation(href) is { } manipulatedHref
-                    ? new PageUri(new Uri(Uri, manipulatedHref))
+                ? new PageUri(new Uri(Uri, attrHref))
+                : manipulation(attrHref) is { } manipulatedAttrHref
+                    ? new PageUri(new Uri(Uri, manipulatedAttrHref))
                     : null;
 
-    internal PageUri? GetSrc() =>
-        GetAttribute("src") is { } href
-            ? new PageUri(new Uri(Uri, href))
-            : null;
+
     internal string? GetAttribute(string attr) =>
         Node.Attributes[attr]?.Value;
 
