@@ -24,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarco.Crawler.PersonTests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarco.Crawler.WallpaperTests", "Tests\aemarco.Crawler.WallpaperTests\aemarco.Crawler.WallpaperTests.csproj", "{6B2DC543-ED30-4F3D-90F7-88DAB54ACB2C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aemarco.Crawler", "aemarco.Crawler\aemarco.Crawler.csproj", "{E6C13DAF-7A4E-4DD8-A5DB-C84568BAAF68}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,10 @@ Global
 		{6B2DC543-ED30-4F3D-90F7-88DAB54ACB2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B2DC543-ED30-4F3D-90F7-88DAB54ACB2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B2DC543-ED30-4F3D-90F7-88DAB54ACB2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6C13DAF-7A4E-4DD8-A5DB-C84568BAAF68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6C13DAF-7A4E-4DD8-A5DB-C84568BAAF68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6C13DAF-7A4E-4DD8-A5DB-C84568BAAF68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6C13DAF-7A4E-4DD8-A5DB-C84568BAAF68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
