@@ -44,11 +44,11 @@ internal class PersonCrawlerTests : TestBase
             new("https://b99.nudevista.com/_/866/158866_370.jpg"),
             new("https://www.babesandstars.com/models/18000/18713/250x330.jpg")
         });
-        result.Birthday.ToString().Should().Be("14.09.1994");
+        result.Birthday.Should().Be(new DateOnly(1994, 9, 14));
         result.Country.Should().Be("Russia");
         result.City.Should().Be("Saint Petersburg");
         result.Profession.Should().Be("Adult Model");
-        result.CareerStart.ToString().Should().Be("01.01.2013");
+        result.CareerStart.Should().Be(new DateOnly(2013, 1, 1));
         result.StillActive.Should().BeNull();
         result.Aliases.Should().BeEquivalentTo(new List<string>
         {

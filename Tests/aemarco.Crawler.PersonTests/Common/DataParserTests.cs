@@ -55,16 +55,18 @@ public class DataParserTests
         result.AbsoluteUri.Should().Be(expected);
     }
 
-    [TestCase(null, null)]
-    [TestCase("nothing to find", null)]
-    [TestCase("Born: Sunday 6Th Of February 2000", "06.02.2000")]
-    [TestCase("14 March 1988", "14.03.1988")]
-    [TestCase("November 4, 1989", "04.11.1989")]
-    [TestCase("Age:14.Dec.1987 (35)", "14.12.1987")]
-    [TestCase("Birthday: 14 Mar 1988", "14.03.1988")]
-    public void FindBirthdayInText_Works(string? text, string? asText)
+    [TestCase(null, null, null, null)]
+    [TestCase("nothing to find", null, null, null)]
+    [TestCase("Born: Sunday 6Th Of February 2000", 2000, 2, 6)]
+    [TestCase("14 March 1988", 1988, 3, 14)]
+    [TestCase("November 4, 1989", 1989, 11, 4)]
+    [TestCase("Age:14.Dec.1987 (35)", 1987, 12, 14)]
+    [TestCase("Birthday: 14 Mar 1988", 1988, 3, 14)]
+    public void FindBirthdayInText_Works(string? text, int? year, int? month, int? day)
     {
-        DateOnly? expected = asText is null ? null : DateOnly.Parse(asText);
+        DateOnly? expected = !year.HasValue || !month.HasValue || !day.HasValue
+            ? null
+            : new DateOnly(year.Value, month.Value, day.Value);
         var result = DataParser.FindBirthdayInText(text);
         result.Should().Be(expected);
     }
