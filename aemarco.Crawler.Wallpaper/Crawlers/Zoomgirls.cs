@@ -1,131 +1,165 @@
 ﻿// ReSharper disable UnusedType.Global
 namespace aemarco.Crawler.Wallpaper.Crawlers;
 
-//TODO modernize
 [WallpaperCrawler("Zoomgirls")]
 internal class Zoomgirls : WallpaperCrawlerBasis
 {
+
     private readonly Uri _uri = new("https://zoomgirls.net");
-
-    public Zoomgirls(int startPage, int lastPage, bool onlyNews)
+    public Zoomgirls(
+        int startPage,
+        int lastPage,
+        bool onlyNews)
         : base(startPage, lastPage, onlyNews)
-    {
-
-    }
+    { }
 
     protected override List<CrawlOffer> GetCrawlsOffers()
     {
         var result = new List<CrawlOffer>
         {
+
+            //specific
             CreateCrawlOffer(
-                "Latest Wallpapers",
-                new Uri(_uri, "latest_wallpapers")!,
+                "Girls and Bikes",
+                new PageUri(new Uri(_uri, "girls-and-bikes-desktop-wallpapers/")),
+                new ContentCategory(Category.Girls_Bikes)),
+            CreateCrawlOffer(
+                "Girls and Cars",
+                new PageUri(new Uri(_uri, "girls-and-cars-desktop-wallpapers/")),
+                new ContentCategory(Category.Girls_Cars)),
+            CreateCrawlOffer(
+                "Hentai",
+                new PageUri(new Uri(_uri, "hentai-desktop-wallpapers/")),
+                new ContentCategory(Category.Girls_Fantasy)),
+            
+            //less specific
+            CreateCrawlOffer(
+                "Dildo Girls",
+                new PageUri(new Uri(_uri, "babes-and-dildos-desktop-wallpapers/")),
+                new ContentCategory(Category.Girls, 70, 79)),
+            CreateCrawlOffer(
+                "Nude Girls",
+                new PageUri(new Uri(_uri, "sexy-nude-girls-desktop-wallpapers/")),
                 new ContentCategory(Category.Girls)),
             CreateCrawlOffer(
-                "Random Wallpapers",
-                new Uri(_uri, "random_wallpapers")!,
-                new ContentCategory(Category.Girls))
+                "Sexy Girls",
+                new PageUri(new Uri(_uri, "sexy-girls-desktop-wallpapers/")),
+                new ContentCategory(Category.Girls, 30, 39)),
+            
+            //category list on site is not comprehensive
+            CreateCrawlOffer(
+                "Latest Wallpapers",
+                new PageUri(new Uri(_uri, "latest_wallpapers/")),
+                new ContentCategory(Category.Girls)),
         };
 
         return result;
     }
-    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob)
-    {
-        //z.B. "https://zoomgirls.net/latest_wallpapers/page/1"
-        //return $"{catJob.CategoryUri.AbsoluteUri}/page/{catJob.CurrentPage}";
-        return new Uri(catJob.CategoryUri, $"{catJob.CategoryUri.Uri.AbsolutePath}/page/{catJob.CurrentPage}")!;
-    }
-    protected override string GetSearchStringGorEntryNodes()
-    {
-        return "//div[@class='thumb']/a";
-    }
-
+    //z.B. "https://zoomgirls.net/latest_wallpapers/page/1"
+    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob) =>
+        catJob.CategoryUri.WithHref($"page/{catJob.CurrentPage}");
+    protected override string GetSearchStringGorEntryNodes() =>
+        "//div[@class='thumb']/a";
     protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
-        var node = pageNode.Node;
-        var source = new WallEntrySource(_uri, pageNode, catJob.Category, catJob.SiteCategoryName);
-
-        //docs
-        source.DetailsDoc = source.GetChildDocumentFromRootNode();
-        if (source.DetailsDoc is null)
+        //navigate
+        if (pageNode
+                .GetHref()?
+                .Navigate() is not { } detailsPage)
         {
-            AddWarning($"Could not read DetailsDoc from node {node.InnerHtml}");
+            AddWarning(pageNode, "Could not find DetailsDoc");
+            return false;
+        }
+        if (GetImageUrl(detailsPage) is not { } imageUri)
+        {
+            AddWarning(detailsPage, "Could not get ImageUri");
             return false;
         }
 
         //details
-        var imageUri = GetImageUrl(source.DetailsDoc);
-        if (string.IsNullOrEmpty(imageUri))
+        var source = new WallEntrySource(_uri, pageNode, catJob.Category, catJob.SiteCategoryName)
         {
-            AddWarning($"Could not get ImageUri from node {source.DetailsDoc.DocumentNode.InnerHtml}");
-            return false;
+            ImageUri = imageUri,
+            ThumbnailUri = detailsPage
+                .FindNode("//a[@class='wallpaper-thumb']/img")?
+                .GetSrc()
+        };
+        source.AddTagsFromInnerTexts(detailsPage.FindNodes("//ul[@class='holder tags']/a"));
+        if (catJob.SiteCategoryName == "Latest Wallpapers")
+        {// on general category, we try to find a more specific category through offers
+            var categories = detailsPage
+                .FindNodes("//itemscope/a")
+                .Select(x => x.GetText())
+                .ToList();
+            if (categories.Count > 0 &&
+                GetCrawlsOffers().FirstOrDefault(o => categories.Contains(o.SiteCategoryName)) is { } match)
+            {
+                source.OverrideCategory(match.Category);
+            }
         }
 
-        source.ImageUri = new PageUri(new Uri(imageUri));
-        source.ThumbnailUri = source.GetUriFromDocument(source.DetailsDoc, "//a[@class='wallpaper-thumb']/img", "src");
-        source.Tags = WallEntrySource.GetTagsFromNodes(source.DetailsDoc, "//ul[@class='tagcloud']/span/a", x => WebUtility.HtmlDecode(x.InnerText).Trim());
-
-        var wallEntry = source.WallEntry;
-        if (wallEntry == null)
-        {
+        //entry
+        if (source.ToWallEntry() is not { } entry)
             return false;
-        }
-        AddEntry(wallEntry, catJob);
+
+        AddEntry(entry, catJob);
         return true;
     }
-    private string? GetImageUrl(HtmlDocument doc)
+    private PageUri? GetImageUrl(PageDocument doc)
     {
-        HtmlNode? targetNode = null;
+
+
 
         //select all resolution nodes
-        var allNodes = doc.DocumentNode.SelectNodes("//div[@class='tagcloud']/span/a");
-        if (allNodes is null)
-        {
-            return null;
-        }
-        //search for node with highest resolution
-        var maxSum = 0;
-        foreach (var node in allNodes)
-        {
-            //get both number values
-            var txt = node.Attributes["title"]?.Value?.Split('x');
-            if (txt is not { Length: 2 })
-                continue;
+        var resNodes = doc.FindNodes("//div[@class='tagcloud']/span/a");
 
-            int sum;
-            try
-            {//do the math
-                sum = int.Parse(txt[0].Trim()) * int.Parse(txt[1].Trim());
-            }
-            catch
+        //search for node with highest resolution
+        var maxPix = 0;
+        PageNode? best = null;
+        foreach (var resNode in resNodes)
+        {
+            if (resNode
+                    .GetAttribute("title")?
+                    .Split('x', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                is not { Length: 2 } pix)
             {
                 continue;
             }
-            if (sum <= maxSum)
-                continue;
 
-            //set to targetNode because sum is highest
-            maxSum = sum;
-            targetNode = node;
+            if (!int.TryParse(pix[0], out var width) ||
+                !int.TryParse(pix[1], out var height))
+            {
+                continue;
+            }
+
+
+            var pixels = width * height;
+            if (pixels <= maxPix)
+            {
+                continue;
+            }
+
+            //set to targetNode because highest resolution
+            maxPix = pixels;
+            best = resNode;
         }
 
+
         //z.B. "/view-jana-jordan--1920x1200.html"
-        var name = targetNode?.Attributes["href"]?.Value;
-        if (name is null)
+        if (best?.GetAttribute("href") is not { } href ||
+            !href.StartsWith("/view-") ||
+            !href.EndsWith(".html"))
             return null;
 
-
         //z.B. "jana-jordan--1920x1200.html"
-        name = name[(name.IndexOf("view", StringComparison.Ordinal) + 5)..];
+        var name = href[(href.IndexOf("view", StringComparison.OrdinalIgnoreCase) + 5)..];
+
         //z.B. "jana-jordan--1920x1200"
-        name = name[..name.IndexOf(".html", StringComparison.Ordinal)];
+        name = name[..name.IndexOf(".html", StringComparison.OrdinalIgnoreCase)];
+
         //z.B. "https://zoomgirls.net/wallpapers/jana-jordan--1920x1200.jpg"
-
-        var url = new Uri(_uri, $"/wallpapers/{name}.jpg").AbsoluteUri;
-
-        return url;
-
+        var result = new PageUri(new Uri(_uri, $"/wallpapers/{name}.jpg"));
+        return result;
     }
-
 
 }
