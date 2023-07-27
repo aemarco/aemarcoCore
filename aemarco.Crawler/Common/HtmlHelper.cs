@@ -1,16 +1,24 @@
-﻿namespace aemarco.Crawler.Person.Common;
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace aemarco.Crawler.Common;
 
 public static class HtmlHelper
 {
+
     private static readonly SemaphoreSlim Gate = new(1);
     private static readonly Random Random = new();
 
-    public static async Task<HtmlDocument> GetHtmlDocument(Uri uri, int? minDelay = null, int? maxDelay = null)
+
+    public static HtmlDocument GetHtmlDocument(Uri uri, int? minDelay = null, int? maxDelay = null) =>
+        GetHtmlDocumentAsync(uri, minDelay, maxDelay, CancellationToken.None).GetAwaiter().GetResult();
+
+    public static async Task<HtmlDocument> GetHtmlDocumentAsync(Uri uri, int? minDelay = null, int? maxDelay = null, CancellationToken token = default)
     {
-        await Gate.WaitAsync();
+        await Gate.WaitAsync(token);
 
         if (minDelay.HasValue && maxDelay.HasValue)
-            await Task.Delay(Random.Next(minDelay.Value, maxDelay.Value));
+            await Task.Delay(Random.Next(minDelay.Value, maxDelay.Value), token);
 
         try
         {
@@ -22,7 +30,6 @@ public static class HtmlHelper
         }
     }
 
-    // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
     private static HtmlDocument TryGetHtmlDocument(Uri uri, int retry = 0)
     {
         try

@@ -1,4 +1,5 @@
 ﻿// ReSharper disable UnusedType.Global
+
 namespace aemarco.Crawler.Wallpaper.Crawlers;
 
 //TODO modernize

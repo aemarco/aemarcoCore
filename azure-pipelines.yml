@@ -29,6 +29,13 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
+  inputs:
+    command: 'test'
+    projects: '**/*Tests.csproj'
+    arguments: '--collect "Code coverage"'
+    testRunTitle: 'dotnet test all'
 
 - task: CopyFiles@2
   inputs:

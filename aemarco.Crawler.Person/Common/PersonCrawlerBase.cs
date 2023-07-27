@@ -1,4 +1,6 @@
-﻿namespace aemarco.Crawler.Person.Common;
+﻿
+
+namespace aemarco.Crawler.Person.Common;
 
 internal abstract class PersonCrawlerBase
 {
@@ -14,8 +16,7 @@ internal abstract class PersonCrawlerBase
     {
         var href = GetSiteHref(nameToCrawl);
         var target = new Uri(_siteUri, href);
-        var document = await HtmlHelper.GetHtmlDocument(target);
-        cancellationToken.ThrowIfCancellationRequested();
+        var document = await HtmlHelper.GetHtmlDocumentAsync(target, token: cancellationToken);
         await HandleDocument(document, cancellationToken);
         return Result;
     }

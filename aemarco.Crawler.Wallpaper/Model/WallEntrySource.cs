@@ -182,8 +182,7 @@ internal class WallEntrySource
 
 
 
-    internal static string? GetSubNodeAttribute(HtmlNode node, string attribute, string? nodeToTargetNode = null)
-        => GetSubNodeAttrib(node, attribute, nodeToTargetNode);
+
 
     internal static string? GetSubNodeAttrib(HtmlNode node, string attribute, string? nodeToTargetNode = null)
     {

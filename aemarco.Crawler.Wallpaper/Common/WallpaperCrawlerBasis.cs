@@ -1,4 +1,6 @@
-﻿namespace aemarco.Crawler.Wallpaper.Common;
+﻿
+
+namespace aemarco.Crawler.Wallpaper.Common;
 
 internal abstract class WallpaperCrawlerBasis
 {
