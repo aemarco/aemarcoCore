@@ -229,7 +229,7 @@ internal class Pornpics : WallpaperCrawlerBasis
         var album = new AlbumEntry(albumName);
         foreach (var entryNode in entryNodes)
         {
-            var source = new WallEntrySource(_uri, node, catJob.Category, catJob.SiteCategoryName);
+            var source = new WallEntrySource(catJob.Category, catJob.SiteCategoryName);
 
             if (tags is null)
             {

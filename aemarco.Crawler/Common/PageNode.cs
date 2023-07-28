@@ -40,7 +40,6 @@ public record PageNode(Uri Uri, HtmlDocument Document, HtmlNode Node)
     public string? GetAttribute(string attr) =>
         Node.Attributes[attr]?.Value;
 
-
     //Info
     public string GetText() =>
         WebUtility.HtmlDecode(Node.InnerText).Trim();

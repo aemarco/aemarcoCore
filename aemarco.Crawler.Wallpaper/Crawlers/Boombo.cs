@@ -1,167 +1,144 @@
-﻿namespace aemarco.Crawler.Wallpaper.Crawlers;
+﻿// ReSharper disable UnusedType.Global
+namespace aemarco.Crawler.Wallpaper.Crawlers;
 
-
-//TODO modernize
 [WallpaperCrawler("Boombo")]
 internal class Boombo : WallpaperCrawlerBasis
 {
 
-    private readonly Uri _uri = new("https://boombo.biz/");
-
-    public Boombo(int startPage, int lastPage, bool onlyNews)
+    private readonly Uri _uri = new("https://boombo.biz");
+    public Boombo(
+        int startPage,
+        int lastPage,
+        bool onlyNews)
         : base(startPage, lastPage, onlyNews)
-    {
-    }
+    { }
 
     protected override List<CrawlOffer> GetCrawlsOffers()
     {
-        var result = new List<CrawlOffer>();
-        var menu = new Uri(_uri, "en/");
-        //main page
-        var doc = HtmlHelper.GetHtmlDocument(menu);
+        var mainPage = new PageUri(new Uri(_uri, "en/")).Navigate();
+        var catNodes = mainPage.FindNodes("//div[@class='menu-popup']/ul/li/a");
 
-        foreach (var node in doc.DocumentNode.SelectNodes("//div[@class='menu-popup']/ul/li/a"))
+        var result = new List<CrawlOffer>();
+        foreach (var catNode in catNodes)
         {
 
             //z.B. "Nude photo"
-            var text = WebUtility.HtmlDecode(node.InnerText).Trim();
-            if (string.IsNullOrEmpty(text))
-            {
+            if (catNode.GetText() is not { Length: > 0 } cat)
                 continue;
-            }
 
             //z.B. "/en/nude/
-            var href = node.Attributes["href"]?.Value;
-            if (string.IsNullOrEmpty(href))
-            {
+            if (catNode.GetHref() is not { } catPage)
                 continue;
-            }
 
-            //z.B. "https://ftopx.com/celebrities"
-            var uri = new Uri(_uri, href);
-            result.Add(CreateCrawlOffer(text, uri!, new ContentCategory(Category.Girls)));
+            result.Add(CreateCrawlOffer(
+                cat,
+                catPage,
+                new ContentCategory(Category.Girls)));
         }
 
         return result;
     }
-
-    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob)
-    {
-        //z.B. "https://boombo.biz/en/nude/page/1/"
-        return new Uri(catJob.CategoryUri, $"page/{catJob.CurrentPage}/")!;
-    }
-
-
-    protected override string GetSearchStringGorEntryNodes()
-    {
-        return "//div[@class='short3']/a";
-    }
-
+    //z.B. "https://boombo.biz/en/nude/page/1/"
+    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob) =>
+        catJob.CategoryUri.WithHref($"page/{catJob.CurrentPage}");
+    protected override string GetSearchStringGorEntryNodes() =>
+        "//div[@class='short3']/a";
     protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
-        var node = pageNode.Node;
-        var linkToAlbum = node.Attributes["href"]?.Value;
-        var albumName = WallEntrySource.GetSubNodeInnerText(node, "./div[@class='reltit']");
-        if (string.IsNullOrWhiteSpace(linkToAlbum) ||
-            string.IsNullOrWhiteSpace(albumName))
-            return false;
 
-        var albumDoc = HtmlHelper.GetHtmlDocument(new Uri(linkToAlbum));
+        //navigate
+        if (pageNode
+                .GetHref()?
+                .Navigate() is not { } albumPage)
+        {
+            AddWarning(pageNode, "Could not find AlbumDoc");
+            return false;
+        }
+        if (pageNode
+                .FindNode("./div[@class='reltit']")?
+                .GetText() is not { Length: > 0 } albumName)
+        {
+            AddWarning(pageNode, "Could not find AlbumName");
+            return false;
+        }
+
 
         var album = new AlbumEntry(albumName);
-
-        var entryNodes = albumDoc.DocumentNode
-            .SelectNodes("//a[@class='highslide']");
-        if (entryNodes is not null && entryNodes.Count > 0)
+        var entryNodes = albumPage.FindNodes("//a[@class='highslide']");
+        foreach (var entryNode in entryNodes)
         {
-            foreach (var entryNode in entryNodes)
+            //details
+            if (entryNode
+                    .GetHref() is not { } imageUri)
             {
-                //details
-                var source = new WallEntrySource(_uri, node, catJob.Category, catJob.SiteCategoryName)
-                {
-                    ImageUri = new PageUri(new Uri(entryNode.Attributes["href"].Value))
-                };
-
-                if (source.ImageUri is null)
-                {
-                    AddWarning($"Could not get ImageUri from node {entryNode.InnerHtml}");
-                    return false;
-                }
-                source.ThumbnailUri = source.ImageUri;
-                source.Tags = WallEntrySource.GetTagsFromNode(
-                    entryNode,
-                    "alt", "./img");
-                source.AlbumName = albumName;
-
-                var wallEntry = source.WallEntry;
-                if (wallEntry != null)
-                {
-                    album.Entries.Add(wallEntry);
-                }
+                AddWarning(entryNode, "Could not get ImageUri");
+                return false;
             }
-        }
-
-
-
-        var otherEntryNodes = albumDoc.DocumentNode
-            .SelectNodes("//div[@class='text']/div/img");
-        if (otherEntryNodes is not null && otherEntryNodes.Count > 0)
-        {
-            foreach (var entryNode in otherEntryNodes)
+            var source = new WallEntrySource(catJob.Category, catJob.SiteCategoryName)
             {
-                //details
-                var source = new WallEntrySource(_uri, node, catJob.Category, catJob.SiteCategoryName)
-                {
-                    ImageUri = new PageUri(new Uri(_uri, entryNode.Attributes["data-src"].Value))
-                };
+                AlbumName = albumName,
+                ImageUri = imageUri
+            };
+            source.AddTagsFromText(entryNode.FindNode("./img")?.GetAttribute("alt"));
 
-                if (source.ImageUri is null)
-                {
-                    AddWarning($"Could not get ImageUri from node {entryNode.InnerHtml}");
-                    return false;
-                }
-                source.ThumbnailUri = source.ImageUri;
-                source.Tags = WallEntrySource.GetTagsFromNode(
-                    entryNode,
-                    "alt");
-                source.AlbumName = albumName;
+            //entry
+            if (source.ToWallEntry() is not { } entry)
+                continue;
 
-                var wallEntry = source.WallEntry;
-                if (wallEntry != null)
-                {
-                    album.Entries.Add(wallEntry);
-                }
-            }
+            album.Entries.Add(entry);
         }
 
-
-        if (album.Entries.Any())
+        var entryNodes2 = albumPage.FindNodes("//div[@class='text']/div/img");
+        foreach (var entryNode in entryNodes2)
         {
-            album.Entries.Sort(new WallEntryNumberComparer());
-            AddAlbum(album, catJob);
+            //details
+            if (entryNode
+                    .GetAttributeRef("data-src") is not { } imageUri)
+            {
+                AddWarning(entryNode, "Could not get ImageUri");
+                return false;
+            }
+            var source = new WallEntrySource(catJob.Category, catJob.SiteCategoryName)
+            {
+                AlbumName = albumName,
+                ImageUri = imageUri
+            };
+            source.AddTagsFromText(entryNode.GetAttribute("alt"));
+
+            //entry
+            if (source.ToWallEntry() is not { } entry)
+                continue;
+
+            album.Entries.Add(entry);
         }
-        return album.Entries.Any();
+
+        if (album.Entries.Count == 0)
+            return false;
+
+        album.Entries.Sort(new WallEntryNumberComparer());
+        AddAlbum(album, catJob);
+        return true;
+
     }
 
-    private class WallEntryNumberComparer : IComparer<WallEntry>
+}
+public partial class WallEntryNumberComparer : IComparer<WallEntry>
+{
+    public int Compare(WallEntry? x, WallEntry? y) =>
+        GetNumber(x).CompareTo(GetNumber(y));
+
+
+    [GeneratedRegex(@"(\d+)(?!.*\d)")]
+    private static partial Regex EndNumberRegex();
+
+    private static int GetNumber(WallEntry? x)
     {
-        public int Compare(WallEntry? x, WallEntry? y)
-        {
-            // Compare the length of the strings
-            return GetNumber(x).CompareTo(GetNumber(y));
-        }
-
-        private static int GetNumber(WallEntry? x)
-        {
-            if (x == null)
-                return 0;
-
-            var reg = Regex.Match(x.Url, "(\\d+)(?!.*\\d)");
-            if (reg.Success)
-            {
-                return int.Parse(reg.Groups[1].Value);
-            }
+        if (x is null)
             return 0;
-        }
+
+        if (EndNumberRegex().Match(x.Url) is not { Success: true } match)
+            return 0;
+
+        return int.Parse(match.Groups[1].Value);
     }
 }

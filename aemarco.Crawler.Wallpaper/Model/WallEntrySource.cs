@@ -4,6 +4,7 @@ namespace aemarco.Crawler.Wallpaper.Model;
 
 internal class WallEntrySource
 {
+
     private static readonly string[] AllowedExtensions =
     {
         ".bmp",
@@ -12,24 +13,16 @@ internal class WallEntrySource
         ".png",
         ".gif"
     };
-
-
-    public WallEntrySource(Uri baseUri, HtmlNode rootNode, ContentCategory contentCategory, string siteCategory)
+    public WallEntrySource(ContentCategory contentCategory, string siteCategory)
     {
-        _baseUri = baseUri;
-        _rootNode = rootNode;
         _contentCategory = contentCategory;
         _siteCategory = siteCategory;
     }
-    public WallEntrySource(Uri baseUri, PageNode pageNode, ContentCategory contentCategory, string siteCategory)
-        : this(baseUri, pageNode.Node, contentCategory, siteCategory)
-    { }
 
 
     public PageUri? ImageUri { get; set; }
     public PageUri? ThumbnailUri { get; set; }
     public string? AlbumName { get; set; }
-
 
 
     private string? _filenamePrefix;
@@ -46,7 +39,6 @@ internal class WallEntrySource
         _contentCategory = category;
     }
     private readonly string _siteCategory;
-
 
 
     public List<string> Tags { get; set; } = new();
@@ -119,70 +111,11 @@ internal class WallEntrySource
 
 
 
-
-
-
-
-
-
     //old stuff
 
 
 
     #region navigation
-
-    internal HtmlDocument? DetailsDoc { get; set; }
-
-
-
-
-
-    private readonly HtmlNode _rootNode;
-    internal HtmlDocument? GetChildDocumentFromRootNode(string? nodeToSubNode = null, int? minDelay = null, int? maxDelay = null)
-    {
-        return GetChildDocumentFromNode(_rootNode, nodeToSubNode, minDelay, maxDelay);
-    }
-
-
-
-
-
-
-    private readonly Uri _baseUri;
-    private HtmlDocument? GetChildDocumentFromNode(HtmlNode node, string? nodeToSubNode = null, int? minDelay = null, int? maxDelay = null)
-    {
-        var subNode = nodeToSubNode is null
-            ? node :
-            node.SelectSingleNode(nodeToSubNode);
-
-        if (subNode is null)
-            return null;
-
-        var href = subNode.Attributes["href"]?.Value;
-
-        //var curr = new Uri("https://ftopx.com/celebrities/page/1/");
-        //var test = new Uri(curr, href);
-
-        var uri = new Uri(_baseUri, href);
-        return HtmlHelper.GetHtmlDocument(uri, minDelay, maxDelay);
-    }
-    internal Uri? GetUriFromDocument(HtmlDocument doc, string docToTargetNode, string attribute)
-    {
-        var node = doc.DocumentNode.SelectSingleNode(docToTargetNode);
-        var href = node?.Attributes[attribute]?.Value;
-
-
-        return href is null
-            ? null :
-            new Uri(_baseUri, href);
-    }
-
-
-
-
-
-
-
 
     internal static string? GetSubNodeAttrib(HtmlNode node, string attribute, string? nodeToTargetNode = null)
     {
@@ -194,31 +127,10 @@ internal class WallEntrySource
         return value;
     }
 
-    internal static string? GetSubNodeInnerText(HtmlNode node, string? nodeToTargetNode = null)
-    {
-        var subNode = nodeToTargetNode is null
-            ? node
-            : node.SelectSingleNode(nodeToTargetNode);
-
-        var value = subNode?.InnerText.Trim();
-        return value;
-    }
 
     #endregion
 
     #region tags
-
-    internal static List<string> GetTagsFromNode(HtmlNode node, string attribute, string? nodeToTargetNode = null)
-    {
-        var subNode = nodeToTargetNode is null
-            ? node
-            : node.SelectSingleNode(nodeToTargetNode);
-        var tagString = subNode?.Attributes[attribute]?.Value;
-
-        return tagString is null
-            ? new List<string>()
-            : GetTagsFromTagString(tagString);
-    }
 
     internal static List<string> GetTagsFromNodes(
         HtmlDocument doc,

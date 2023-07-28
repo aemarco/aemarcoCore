@@ -54,7 +54,7 @@ internal class Pornomass : WallpaperCrawlerBasis
         }
 
         //details
-        var source = new WallEntrySource(_uri, pageNode, catJob.Category, catJob.SiteCategoryName)
+        var source = new WallEntrySource(catJob.Category, catJob.SiteCategoryName)
         {
             ImageUri = imageUri,
             ThumbnailUri = detailsPage
