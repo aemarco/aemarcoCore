@@ -1,15 +1,11 @@
 ﻿// ReSharper disable UnusedType.Global
-
 namespace aemarco.Crawler.Wallpaper.Crawlers;
 
-//TODO modernize
 [WallpaperCrawler("Pornpics")]
 internal class Pornpics : WallpaperCrawlerBasis
 {
+
     private readonly Uri _uri = new("https://www.pornpics.com/");
-
-
-
     public Pornpics(
 #pragma warning disable IDE0060
         // ReSharper disable UnusedParameter.Local
@@ -19,13 +15,10 @@ internal class Pornpics : WallpaperCrawlerBasis
 #pragma warning restore IDE0060
         bool onlyNews)
         : base(1, 1, onlyNews)
-    {
-
-    }
+    { }
 
     protected override List<CrawlOffer> GetCrawlsOffers()
     {
-        var result = new List<CrawlOffer>();
         var cats = new List<string>
         {
             "Amateur",
@@ -177,96 +170,82 @@ internal class Pornpics : WallpaperCrawlerBasis
 
         };
 
-        foreach (var cat in cats)
-        {
-            var cc = GetContentCategory(cat);
-            if (cc is null)
-            {
-                continue;
-            }
-
-            var newOffer = CreateCrawlOffer(
-                cat,
-                new Uri(_uri, $"/recent/{cat.ToLower().Replace(" ", "-")}/")!,
-                cc);
-            result.Add(newOffer);
-
-            var popularOffer = CreateCrawlOffer(
-                cat,
-                new Uri(_uri, $"/{cat.ToLower().Replace(" ", "-")}/")!,
-                cc);
-            result.Add(popularOffer);
-
-        }
+        var result = cats
+            .Select(cat =>
+                GetContentCategory(cat) is { } cc
+                    ? CreateCrawlOffer(cat, new PageUri(new Uri(_uri, $"/{cat.ToLower().Replace(" ", "-")}/recent/")), cc)
+                    : null)
+            .OfType<CrawlOffer>()
+            .ToList();
         return result;
     }
-    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob)
-    {
-        //z.B. "https://www.pornpics.com/recent/asian/"
-        return catJob.CategoryUri;
-    }
-    protected override string GetSearchStringGorEntryNodes()
-    {
-        return "//li[@class='thumbwook']/a";
-    }
-
+    //z.B. "https://www.pornpics.com/asian/recent/" --> only 1 page
+    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob) =>
+        catJob.CategoryUri;
+    protected override string GetSearchStringGorEntryNodes() =>
+        "//li[@class='thumbwook']/a";
     protected override ContentCategory DefaultCategory => new(Category.Girls);
-
     protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
-        var node = pageNode.Node;
-
-        var linkToAlbum = node.Attributes["href"]?.Value;
-        var albumName = WallEntrySource.GetSubNodeAttrib(node, "alt", "./img");
-        if (string.IsNullOrWhiteSpace(albumName)) return false;
-
-        var linkToAlbumUri = new Uri(_uri, linkToAlbum);
-        var albumDoc = HtmlHelper.GetHtmlDocument(linkToAlbumUri);
-
-        var entryNodes = albumDoc.DocumentNode.SelectNodes("//li[@class='thumbwook']/a");
+        //navigate
+        if (pageNode
+                .GetHref()?
+                .Navigate() is not { } albumPage)
+        {
+            AddWarning(pageNode, "Could not find AlbumDoc");
+            return false;
+        }
+        if (pageNode
+                .FindNode("./img")?
+                .GetAttribute("alt") is not { Length: > 0 } albumName)
+        {
+            AddWarning(pageNode, "Could not find AlbumName");
+            return false;
+        }
 
         List<string>? tags = null;
+
         var album = new AlbumEntry(albumName);
+        var entryNodes = albumPage.FindNodes("//li[@class='thumbwook']/a");
         foreach (var entryNode in entryNodes)
         {
-            var source = new WallEntrySource(catJob.Category, catJob.SiteCategoryName);
-
+            //so that we do this work only once
             if (tags is null)
             {
-                tags = WallEntrySource.GetTagsFromNodes(
-                    albumDoc,
-                    "//div[@class='gallery-info__item tags']/div/a/span",
-                    x => WebUtility.HtmlDecode(x.InnerText).Trim());
-
-                tags.AddRange(WallEntrySource.GetTagsFromNodes(
-                    albumDoc,
-                    "//div[@class='gallery-info__item']/div/a/span",
-                    x => WebUtility.HtmlDecode(x.InnerText).Trim()));
+                var tagSource = new WallEntrySource(catJob.Category, catJob.SiteCategoryName);
+                tagSource.AddTagsFromInnerTexts(albumPage
+                    .FindNodes("//div[@class='gallery-info__item tags']/div/a/span"));
+                tagSource.AddTagsFromInnerTexts(albumPage
+                    .FindNodes("//div[@class='gallery-info__item']/div/a/span"));
+                tags = tagSource.Tags;
             }
 
             //details
-            source.ImageUri = new PageUri(new Uri(entryNode.Attributes["href"].Value));
-            if (source.ImageUri is null)
+            if (entryNode
+                    .GetHref() is not { } imageUri)
             {
-                AddWarning($"Could not get ImageUri from node {entryNode.InnerHtml}");
-                return false;
+                AddWarning(entryNode, "Could not get ImageUri");
+                continue;
             }
-            source.ThumbnailUri = source.ImageUri;
-            source.Tags = tags;
-            source.AlbumName = albumName;
+            var source = new WallEntrySource(catJob.Category, catJob.SiteCategoryName)
+            {
+                AlbumName = albumName,
+                ImageUri = imageUri,
+                Tags = tags
+            };
 
-            var wallEntry = source.WallEntry;
-            if (wallEntry != null)
-            {
-                album.Entries.Add(wallEntry);
-            }
+            //entry
+            if (source.ToWallEntry() is not { } entry)
+                continue;
+
+            album.Entries.Add(entry);
         }
 
-        if (album.Entries.Any())
-        {
-            AddAlbum(album, catJob);
-        }
-        return album.Entries.Any();
+        if (album.Entries.Count == 0)
+            return false;
+
+        AddAlbum(album, catJob);
+        return true;
     }
 
 

@@ -72,7 +72,7 @@ internal class Boombo : WallpaperCrawlerBasis
                     .GetHref() is not { } imageUri)
             {
                 AddWarning(entryNode, "Could not get ImageUri");
-                return false;
+                continue;
             }
             var source = new WallEntrySource(catJob.Category, catJob.SiteCategoryName)
             {
