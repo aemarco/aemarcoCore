@@ -1,7 +1,8 @@
-﻿global using aemarco.Crawler.Common;
+﻿// Global using directives
+
+global using aemarco.Crawler.Common;
 global using aemarco.Crawler.Wallpaper.Common;
 global using aemarco.Crawler.Wallpaper.Model;
-global using HtmlAgilityPack;
 global using Newtonsoft.Json;
 global using System;
 global using System.Collections.Generic;

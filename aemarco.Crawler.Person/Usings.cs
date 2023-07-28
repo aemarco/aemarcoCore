@@ -1,4 +1,6 @@
-﻿global using aemarco.Crawler.Common;
+﻿// Global using directives
+
+global using aemarco.Crawler.Common;
 global using aemarco.Crawler.Person.Common;
 global using aemarco.Crawler.Person.Model;
 global using HtmlAgilityPack;

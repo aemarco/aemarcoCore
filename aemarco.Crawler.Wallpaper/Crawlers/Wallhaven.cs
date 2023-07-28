@@ -52,7 +52,7 @@ internal class Wallhaven : WallpaperCrawlerBasis
         if (pageNode
                 .FindNode("./a[@class='preview']")?
                 .GetHref()?
-                .Navigate() is not { } detailsPage)
+                .Navigate(700, 2500) is not { } detailsPage)
         {
             AddWarning(pageNode, "Could not find DetailsDoc");
             return false;

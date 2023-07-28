@@ -28,6 +28,10 @@ public class WallpaperCrawlerTests : TestBase
         var result = await crawler.StartAsync();
         result.Should().NotBeNull();
 
+        PrintJson(new { Albums = result.NewAlbums.Count });
+        PrintJson(new { Entries = result.KnownEntries.Count });
+
+
         if (result.Warnings.FirstOrDefault() is { } warning)
             Assert.Warn(warning.ToString());
         else
@@ -185,7 +189,7 @@ public class WallpaperCrawlerTests : TestBase
     }
     private static WallpaperCrawler GetAutoCrawler()
     {
-        var result = new WallpaperCrawler(1, 1);
+        var result = new WallpaperCrawler();
         return result;
     }
 
@@ -194,7 +198,7 @@ public class WallpaperCrawlerTests : TestBase
     {
         var min = 100;
         var max = 101;
-        if (site == "Wallpaperscraft")
+        if (site is "Wallpaperscraft" or "Wallhaven")
         {
             min = 750;
             max = 2500;
