@@ -5,7 +5,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers;
 internal class Pornpics : WallpaperCrawlerBasis
 {
 
-    private readonly Uri _uri = new("https://www.pornpics.com/");
+    private readonly Uri _uri = new("https://www.pornpics.com");
     public Pornpics(
 #pragma warning disable IDE0060
         // ReSharper disable UnusedParameter.Local
@@ -19,154 +19,136 @@ internal class Pornpics : WallpaperCrawlerBasis
 
     protected override List<CrawlOffer> GetCrawlsOffers()
     {
+        //categories are filled by js :(
         var cats = new List<string>
         {
             "Amateur",
             "Anal", //HC
             "Anal Gape", //HC
+            //"Arab",
             "Asian",
             "Ass",
-            "Ass Fucking", //HC
-            "Ass Licking", //HC
-            "Babe",
-            "Ball Licking", //HC
-            "Bath",
+            "Asshole",
+            "BBC",
             //"BBW",
+            "BDSM",
             "Beach",
+            "Big Clit", //HC
             "Big Cock", //HC
             "Big Tits",
             "Bikini",
-            "Blindfold",
             "Blonde",
-            "Blowbang", //HC
             "Blowjob", //HC
             "Bondage",
             "Boots",
+            "British",
             "Brunette",
             "Bukkake", //HC
-            "Centerfold",
-            //"CFNM",
-            "Cheerleader",
-            "Christmas",
-            "Close Up",
+            "Butt Plug",
+            "Cameltoe",
+
+
+            "Casting",
+            //"Chubby",
             "Clothed",
-            "College",
             "Cosplay",
             //"Cougar",
-            "Cowgirl", //HC
             "Creampie", //HC
+            "Cuckold",
             "Cum In Mouth", //HC
             "Cum In Pussy", //HC
             "Cumshot", //HC
-            "Cum Swapping", //HC
+            "Curvy",
+            "Cute",
+            "Czech",
             "Deepthroat", //HC
             "Dildo",
+            "Doggy Style",
             "Double Penetration", //HC
+            "Dress",
             "Ebony",
-            "European",
             "Face",
             "Facesitting", //HC
             "Facial", //HC
+            "Fake Tits",
+            "Feet",
+
+
             //"Femdom",
-            "Fetish",
-            "Fingering",
             "Fisting", //HC
-            "Flexible",
-            "Foot Fetish",
             "Footjob", //HC
+            "French",
             "Gangbang", //HC
-            "Girlfriend",
-            "Glamour",
+            //"Gay",
+            "German",
             "Glasses",
-            "Gloryhole", //HC
+            "Goth",
             //"Granny",
-            "Groupsex", //HC
-            "Gyno", //HC
+            "Gym",
             "Hairy",
             "Handjob", //HC
-            "Hardcore", //HC
             "High Heels",
-            "Homemade",
-            //"Housewife",
-            "Humping",
             "Indian",
             "Interracial", //HC
+            "Italian",
             "Japanese",
             "Jeans",
-            "Kissing", //HC
             //"Ladyboy",
             "Latex",
             "Latina",
-            "Legs",
+            "Leather",
             "Lesbian", //HC
+
+
             "Lingerie",
-            "Maid",
             "Massage",
-            "Masturbation",
             //"Mature",
             //"MILF",
             //"Mom",
-            "Nipples",
-            "Non Nude",
+            "Natural Tits",
             "Nurse",
             "Office",
-            "Oiled",
-            "Orgy", //HC
+            "Old Young",
             "Outdoor",
             "Panties",
             "Pantyhose",
-            //"Party",
-            //"Pegging",
+            "PAWG",
             "Petite",
-            "Piercing",
             "Pissing",
-            "Police",
-            "Pool",
             "Pornstar",
             "POV", //HC
+            "Pregnant",
             "Public",
             "Pussy",
             "Pussy Licking", //HC
-            "Reality",
             "Redhead",
+            "Russian",
             //"Saggy Tits",
+
+
             "Schoolgirl",
             "Secretary", //HC
-            "Seduction", //HC
-            "Self Shot",
-            "Shaved",
+            "Selfie",
             //"Shemale",
-            "Shorts",
+            "Short Hair",
             "Shower",
             "Skinny",
             "Skirt",
-            "Smoking",
             "Socks",
-            "Spanking",
-            "Sports",
-            "Spreading",
-            "Squirting", //HC
-            //"SSBBW",
             "Stockings",
-            "Strapon", //HC
-            "Stripper",
             "Tall",
             "Tattoo",
             "Teacher",
             "Teen",
             "Thai",
+            "Thong",
             "Threesome", //HC
             "Tiny Tits",
-            "Titjob", //HC
-            "Tribbing", //HC
-            "Undressing",
-            "Uniform",
+            "Twins",
             "Upskirt",
-            "Voyeur",
-            "Wedding", //HC
-            "Wet",
-            //"Wife",
-            "Yoga Pants",
+            "Vintage",
+            "Yoga Pants"
+
 
         };
 
@@ -213,11 +195,13 @@ internal class Pornpics : WallpaperCrawlerBasis
             if (tags is null)
             {
                 var tagSource = new WallEntrySource(catJob.Category, catJob.SiteCategoryName);
+                tagSource.AddTagsFromText(catJob.SiteCategoryName);
                 tagSource.AddTagsFromInnerTexts(albumPage
                     .FindNodes("//div[@class='gallery-info__item tags']/div/a/span"));
                 tagSource.AddTagsFromInnerTexts(albumPage
                     .FindNodes("//div[@class='gallery-info__item']/div/a/span"));
                 tags = tagSource.Tags;
+
             }
 
             //details

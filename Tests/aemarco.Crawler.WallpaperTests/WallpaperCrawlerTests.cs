@@ -1,7 +1,6 @@
 ﻿using aemarco.Crawler.Wallpaper;
 using aemarco.Crawler.Wallpaper.Model;
 using FluentAssertions;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
@@ -15,32 +14,52 @@ namespace aemarco.Crawler.WallpaperTests;
 [SingleThreaded]
 public class WallpaperCrawlerTests : TestBase
 {
-    private readonly Random _random = new();
+
+    [Explicit]
+    [TestCaseSource(nameof(CrawlerCombinations))]
+    public async Task Crawler_DoesWork_WithAuto(string site, string cat)
+    {
+        await WaitForSite(site);
+
+        var crawler = GetAutoCrawler();
+        crawler.AddSourceSiteFilter(site);
+        crawler.AddCategoryFilter(cat);
+
+        var result = await crawler.StartAsync();
+        result.Should().NotBeNull();
+
+        if (result.Warnings.FirstOrDefault() is { } warning)
+            Assert.Warn(warning.ToString());
+        else
+            PrintJson(result);
+    }
+
+
 
 
     [Test]
     public void GetAvailableSites_Delivers()
     {
         Sites.Count.Should().BeGreaterThan(0);
-
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Sites,
-                Formatting.Indented));
+        PrintJson(Sites);
     }
     [Test]
     public void GetAvailableCategories_Delivers()
     {
         Cats.Count.Should().BeGreaterThan(0);
-
-
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                Cats,
-                Formatting.Indented));
+        PrintJson(Cats);
     }
 
-
+    //sites
+    private static List<string> Sites
+    {
+        get
+        {
+            var crawler = GetCrawler();
+            var ss = crawler.GetAvailableSourceSites().ToList();
+            return ss;
+        }
+    }
     [TestCaseSource(nameof(Sites))]
     public void HandleFilter_SiteFilter(string site)
     {
@@ -64,7 +83,16 @@ public class WallpaperCrawlerTests : TestBase
         OutputOffers(all);
     }
 
-
+    //cats
+    private static List<string> Cats
+    {
+        get
+        {
+            var crawler = GetCrawler();
+            var sc = crawler.GetAvailableCategories().ToList();
+            return sc;
+        }
+    }
     [TestCaseSource(nameof(Cats))]
     public void HandleFilter_CatFilter(string cat)
     {
@@ -89,7 +117,26 @@ public class WallpaperCrawlerTests : TestBase
         OutputOffers(all);
     }
 
+    //combinations
+    private static List<object> CrawlerCombinations
+    {
+        get
+        {
+            var result = new List<object>();
+            foreach (var site in Sites)
+            {
+                var crawler = GetCrawler();
+                crawler.AddSourceSiteFilter(site);
+                crawler.HandleFilters();
 
+                foreach (var cat in crawler.GetAvailableCategories())
+                {
+                    result.Add(new object[] { site, cat });
+                }
+            }
+            return result;
+        }
+    }
     [TestCaseSource(nameof(CrawlerCombinations))]
     public async Task Crawler_DoesWork(string site, string cat)
     {
@@ -122,75 +169,41 @@ public class WallpaperCrawlerTests : TestBase
     }
 
 
-    private static List<string> Sites
-    {
-        get
-        {
-            var crawler = GetCrawler();
-            var ss = crawler.GetAvailableSourceSites().ToList();
-            return ss;
-        }
-    }
-    private static List<string> Cats
-    {
-        get
-        {
-            var crawler = GetCrawler();
-            var sc = crawler.GetAvailableCategories().ToList();
-            return sc;
-        }
-    }
-    private static List<object> CrawlerCombinations
-    {
-        get
-        {
-            var result = new List<object>();
-            foreach (var site in Sites)
-            {
-                var crawler = GetCrawler();
-                crawler.AddSourceSiteFilter(site);
-                crawler.HandleFilters();
 
-                foreach (var cat in crawler.GetAvailableCategories())
-                {
-                    result.Add(new object[] { site, cat });
-                }
-            }
-            return result;
-        }
-    }
+
+
+
+
+
+
 
 
     private static WallpaperCrawler GetCrawler()
     {
         var result = new WallpaperCrawler(1, 1);
-        _ = GetConfig().GetValue<string>("AbyssKey");
-        //TODO cleanup abyss stuff
-        result.Configure();
         return result;
     }
-    private static IConfiguration GetConfig()
+    private static WallpaperCrawler GetAutoCrawler()
     {
-        var result = new ConfigurationBuilder()
-            .AddEnvironmentVariables("APIKEY:")
-            .Build();
+        var result = new WallpaperCrawler(1, 1);
         return result;
     }
 
+    private readonly Random _random = new();
     private async Task WaitForSite(string site)
     {
         var min = 100;
         var max = 101;
         if (site == "Wallpaperscraft")
         {
-            min = 700;
+            min = 750;
             max = 2500;
         }
         await Task.Delay(_random.Next(min, max));
     }
     private static void OutputOffers(WallpaperCrawler crawler)
     {
-        var offers = crawler._wallCrawlers
+        PrintJson(crawler._wallCrawlers
             .Where(x => x._crawlOffers is not null)
             .SelectMany(x => x._crawlOffers!)
             .Select(x => new
@@ -198,12 +211,9 @@ public class WallpaperCrawlerTests : TestBase
                 x.CategoryUri,
                 x.SiteCategoryName,
                 x.Category.Category
-            });
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                offers,
-                Formatting.Indented));
+            }));
     }
+
 }
 
 public abstract class TestBase
@@ -215,8 +225,5 @@ public abstract class TestBase
                 obj,
                 Formatting.Indented));
     }
-
-
-
 
 }
