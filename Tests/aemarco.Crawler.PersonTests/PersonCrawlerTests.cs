@@ -1,6 +1,6 @@
-﻿using aemarco.Crawler.Model;
+﻿namespace aemarco.Crawler.PersonTests;
 
-namespace aemarco.Crawler.PersonTests;
+#pragma warning disable CS0612
 
 internal class PersonCrawlerTests : TestBase
 {
@@ -80,12 +80,13 @@ internal class PersonCrawlerTests : TestBase
     }
 
 
-
-
-    [Ignore("needs some work")]
     [Test]
     public async Task StartAsync_MergesResults_WithBabepedia()
     {
+        if (!CrawlerInfo.FromCrawlerType(typeof(Babepedia)).IsAvailable)
+            return;
+
+
         var crawler = new PersonCrawler();
         var result = await crawler.StartAsync("Foxi Di")
                      ?? throw new Exception("Did not get a PersonInfo");

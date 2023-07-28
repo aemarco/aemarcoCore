@@ -1,8 +1,7 @@
 ﻿namespace aemarco.Crawler.PersonTests.Crawlers;
 
+#pragma warning disable CS0612
 
-[Ignore("Crawler obsolete")]
-[Obsolete]
 internal class BabepediaWithChloeTempleTests : PersonCrawlerTestsBase<Babepedia>
 {
 

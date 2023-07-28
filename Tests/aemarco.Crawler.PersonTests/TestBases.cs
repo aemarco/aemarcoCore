@@ -1,33 +1,26 @@
-﻿using aemarco.Crawler.Model;
-
-namespace aemarco.Crawler.PersonTests;
-
-
-
-
-//[Ignore("Crawler obsolete")]
-//[Obsolete]
-
-
-
+﻿namespace aemarco.Crawler.PersonTests;
 
 internal abstract class PersonCrawlerTestsBase<T> : TestBase
 {
 
-    private readonly string _nameToCrawl;
     private readonly CrawlerInfo _crawlerInfo;
+    private readonly string _nameToCrawl;
     protected PersonCrawlerTestsBase(string nameToCrawl)
     {
+        _crawlerInfo = CrawlerInfo.FromCrawlerType(typeof(T));
         _nameToCrawl = nameToCrawl;
         ExpectedFirstName = _nameToCrawl.Split(' ')[0];
         ExpectedLastName = _nameToCrawl.Split(' ')[1];
-        _crawlerInfo = CrawlerInfo.FromCrawlerType(typeof(T));
     }
 
 
     [OneTimeSetUp]
     public async Task Init()
     {
+        if (!_crawlerInfo.IsAvailable)
+            return;
+
+
         var crawler = new PersonCrawler();
         crawler.AddPersonSiteFilter(_crawlerInfo.FriendlyName);
         Entry = await crawler.StartAsync(_nameToCrawl);
@@ -126,6 +119,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
     {
         if (Entry is null)
             return;
+
         if (ExpectedCountry is null)
         {
             NothingExpected(Entry.Country);
@@ -142,6 +136,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
     {
         if (Entry is null)
             return;
+
         if (ExpectedCity is null)
         {
             NothingExpected(Entry.City);
@@ -158,6 +153,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
     {
         if (Entry is null)
             return;
+
         if (ExpectedProfession is null)
         {
             NothingExpected(Entry.Profession);
@@ -174,6 +170,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
     {
         if (Entry is null)
             return;
+
         if (ExpectedEthnicity is null)
         {
             NothingExpected(Entry.Ethnicity);
@@ -190,6 +187,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
     {
         if (Entry is null)
             return;
+
         if (ExpectedHairColor is null)
         {
             NothingExpected(Entry.HairColor);
@@ -207,6 +205,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
     {
         if (Entry is null)
             return;
+
         if (ExpectedEyeColor is null)
         {
             NothingExpected(Entry.EyeColor);
@@ -240,6 +239,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
     {
         if (Entry is null)
             return;
+
         if (!ExpectedWeight.HasValue)
         {
             NothingExpected(Entry.Weight);
@@ -256,6 +256,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
     {
         if (Entry is null)
             return;
+
         if (ExpectedMeasurementDetails is null)
         {
             NothingExpected(Entry.MeasurementDetails);
@@ -334,6 +335,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         Entry.Aliases.Should().BeEquivalentTo(ExpectedAliases);
         PrintJson(Entry.Aliases);
     }
+
 }
 
 internal abstract class TestBase
