@@ -1,78 +1,68 @@
-﻿
-
-namespace aemarco.Crawler.Person.Common;
+﻿namespace aemarco.Crawler.Person.Common;
 
 internal abstract class PersonCrawlerBase
 {
-
-    private readonly Uri _siteUri;
-    internal PersonCrawlerBase(Uri siteUri)
+    internal PersonCrawlerBase()
     {
-        _siteUri = siteUri;
         Result.CrawlerInfos.Add(CrawlerInfo.FromCrawlerType(GetType()));
     }
 
-    internal async Task<PersonInfo> GetPersonEntry(string nameToCrawl, CancellationToken cancellationToken)
+    protected PersonInfo Result { get; } = new();
+
+    internal async Task<PersonInfo> GetPersonEntry(string nameToCrawl, CancellationToken token)
     {
-        var href = GetSiteHref(nameToCrawl);
-        var target = new Uri(_siteUri, href);
-        var document = await HtmlHelper.GetHtmlDocumentAsync(target, token: cancellationToken);
-        await HandleDocument(document, cancellationToken);
+        var girlUri = GetGirlUri(nameToCrawl);
+        var girlPage = await girlUri.NavigateAsync(token: token);
+
+        await HandleGirlPage(girlPage, token);
+
         return Result;
     }
-    protected abstract string GetSiteHref(string nameToCrawl);
-    protected abstract Task HandleDocument(HtmlDocument document, CancellationToken cancellationToken);
 
-    protected PersonInfo Result { get; } = new();
+
+    protected abstract PageUri GetGirlUri(string nameToCrawl);
+    protected abstract Task HandleGirlPage(PageDocument girlPage, CancellationToken token);
+
 
 
     #region Update Result
 
-    protected void UpdateName(HtmlNode? node)
+    protected void UpdateName(PageNode? node)
     {
         if (node is null)
             return;
 
-        var name = node.TextWithout();
-        var (firstName, lastName) = DataParser.FindNameInText(name);
+        var text = node.GetText();
+        var (firstName, lastName) = PersonParser.FindNameInText(text);
+
         Result.FirstName = firstName ?? Result.FirstName;
         Result.LastName = lastName ?? Result.LastName;
     }
 
-    protected void UpdateProfilePictures(HtmlNodeCollection? nodes, string attributeName, int? suggestedMinAdultLevel = null, int? suggestedMaxAdultLevel = null)
+    protected void UpdateProfilePictures(PageUri? uri, int? suggestedMinAdultLevel = null, int? suggestedMaxAdultLevel = null)
     {
-        if (nodes is null)
-            return;
-        foreach (var node in nodes)
-        {
-            UpdateProfilePictures(node, attributeName, suggestedMinAdultLevel, suggestedMaxAdultLevel);
-        }
-    }
-
-    protected void UpdateProfilePictures(HtmlNode? node, string attributeName, int? suggestedMinAdultLevel = null, int? suggestedMaxAdultLevel = null)
-    {
-        if (node?.Attributes[attributeName]?.Value is not { } imageRef)
+        if (uri is null)
             return;
 
-        UpdateProfilePictures(
-            DataParser.FindPictureUri(imageRef, _siteUri),
-            suggestedMinAdultLevel,
-            suggestedMaxAdultLevel);
-    }
-
-    protected void UpdateProfilePictures(Uri uri, int? suggestedMinAdultLevel = null, int? suggestedMaxAdultLevel = null)
-    {
         Result.ProfilePictures.Add(new ProfilePicture(
-            uri.AbsoluteUri,
+            uri.Uri.AbsoluteUri,
             suggestedMinAdultLevel,
             suggestedMaxAdultLevel));
     }
 
     protected void UpdateMeasurements(string? text, bool isInches = false)
     {
-        Result.MeasurementDetails = Result.MeasurementDetails.Combine(DataParser.FindMeasurementDetailsFromText(text, isInches));
-    }
+        if (text is null)
+            return;
 
+        var format = isInches
+            ? new MeasurementFormatProvider(MeasurementSystem.Imperial)
+            : null;
+        if (MeasurementDetails.TryParse(text, format, out var parsed))
+        {
+            Result.MeasurementDetails = Result.MeasurementDetails.Combine(parsed);
+        }
+    }
 
     #endregion
 }

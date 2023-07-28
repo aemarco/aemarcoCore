@@ -1,15 +1,4 @@
-﻿using aemarco.Crawler.Wallpaper;
-using aemarco.Crawler.Wallpaper.Model;
-using FluentAssertions;
-using Newtonsoft.Json;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace aemarco.Crawler.WallpaperTests;
+﻿namespace aemarco.Crawler.WallpaperTests;
 
 [SingleThreaded]
 public class WallpaperCrawlerTests : TestBase
@@ -104,9 +93,12 @@ public class WallpaperCrawlerTests : TestBase
         var c = GetCrawler();
         c.AddCategoryFilter(cat);
         c.HandleFilters();
-        Assert.IsTrue(c._wallCrawlers
-            .All(x => x._crawlOffers is not null && x._crawlOffers.All(o => o.Category.Category == cat)));
 
+        c._wallCrawlers
+            .All(x => x._crawlOffers is not null && x._crawlOffers
+                .All(o => o.Category.Category == cat))
+            .Should()
+            .BeTrue();
         OutputOffers(c);
     }
     [Test]
@@ -115,9 +107,11 @@ public class WallpaperCrawlerTests : TestBase
         //no filter does not filter
         var all = GetCrawler();
         all.HandleFilters();
-        Assert.IsTrue(all._wallCrawlers
-            .All(x => x._crawlOffers is not null && x._crawlOffers.Any()));
 
+        all._wallCrawlers
+            .All(x => x._crawlOffers is not null && x._crawlOffers.Any())
+            .Should()
+            .BeTrue();
         OutputOffers(all);
     }
 

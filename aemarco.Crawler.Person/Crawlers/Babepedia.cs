@@ -11,60 +11,50 @@
 internal class Babepedia : PersonCrawlerBase
 {
 
-    public Babepedia()
-        : base(new Uri("https://www.babepedia.com"))
-    { }
+    private readonly Uri _uri = new("https://www.babepedia.com");
 
-    protected override string GetSiteHref(string nameToCrawl)
-    {
-        // /babe/Chloe_Temple
-        var href = $"/babe/{nameToCrawl.Replace(' ', '_')}";
-        return href;
-    }
 
-    protected override Task HandleDocument(HtmlDocument document, CancellationToken cancellationToken)
+    //z.B. "https://www.babepedia.com/babe/Chloe_Temple/"
+    protected override PageUri GetGirlUri(string nameToCrawl) =>
+        new PageUri(_uri).WithHref($"/babe/{nameToCrawl.Replace(' ', '_')}");
+    protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {
+
         //Name
-        var nameNode = document.DocumentNode.SelectSingleNode("//div[@id='bioarea']/h1");
-        UpdateName(nameNode);
+        UpdateName(girlPage.FindNode("//div[@id='bioarea']/h1"));
 
-        //Pictures
-        var picNode = document.DocumentNode
-            .SelectSingleNode("//div[@id='profimg']/a[@class='img']");
-        UpdateProfilePictures(picNode, "href");
-        var addPicNodes = document.DocumentNode
-            .SelectNodes("//div[@id='profselect']/div[@class='prof']/a[@class='img']");
-        UpdateProfilePictures(addPicNodes, "href");
+        //Pics
+        UpdateProfilePictures(girlPage
+            .FindNode("//div[@id='profimg']/a[@class='img']")?
+            .GetHref());
+        girlPage
+            .FindNodes("//div[@id='profselect']/div[@class='prof']/a[@class='img']")
+            .Select(x => x.GetHref())
+            .ToList()
+            .ForEach(x => UpdateProfilePictures(x));
 
         //Aliases
-        var nodeWithAlias = document.DocumentNode
-            .SelectSingleNode("//div[@id='bioarea']/h2");
-        if (nodeWithAlias is not null)
+        var aliasNode = girlPage.FindNode("//div[@id='bioarea']/h2");
+        if (aliasNode is not null)
         {
-            var cleaned = nodeWithAlias.TextWithout().TextWithoutBeginning("aka");
-            Result.Aliases = DataParser.FindStringsInText(cleaned, '/');
+            var cleaned = aliasNode.GetText().TitleCase();
+            cleaned = cleaned.StartsWith("Aka") ? cleaned[3..] : cleaned;
+            Result.Aliases.AddRange(cleaned.SplitList('/'));
         }
 
         //Data
-        var nodeWithData = document.DocumentNode
-            .SelectSingleNode("//div[@id='bioarea']/ul");
-        if (nodeWithData is null)
-            return Task.CompletedTask;
-
-        foreach (var node in nodeWithData.ChildNodes
-                     .Where(x => x.Name == "li"))
+        var dataNodes = girlPage.FindNodes("//div[@id='bioarea']/ul/li");
+        foreach (var node in dataNodes)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            token.ThrowIfCancellationRequested();
 
-            var nodeText = node.TextWithout();
-
-
-            if (nodeText.StartsWith("Born:"))
-                Result.Birthday = DataParser.FindBirthdayInText(nodeText);
-            else if (nodeText.StartsWith("Birthplace:"))
+            var text = node.GetText().TitleCase();
+            if (text.StartsWith("Born:"))
+                Result.Birthday = text.Except("Born:").ToDateOnly();
+            else if (text.StartsWith("Birthplace:"))
             {
-                var str = node.TextWithout("Birthplace:");
-                var parts = DataParser.FindStringsInText(str);
+                var str = text.Except("Birthplace:");
+                var parts = str.SplitList().ToList();
                 switch (parts.Count)
                 {
                     case 1:
@@ -76,29 +66,29 @@ internal class Babepedia : PersonCrawlerBase
                         break;
                 }
             }
-            else if (nodeText.StartsWith("Profession:"))
-                Result.Profession = node.TextWithout("Profession:");
-            else if (nodeText.StartsWith("Ethnicity:"))
-                Result.Ethnicity = node.TextWithout("Ethnicity:");
-            else if (nodeText.StartsWith("Hair Color:"))
-                Result.HairColor = node.TextWithout("Hair Color:");
-            else if (nodeText.StartsWith("Eye Color:"))
-                Result.EyeColor = node.TextWithout("Eye Color:");
-            else if (nodeText.StartsWith("Measurements:"))
-                UpdateMeasurements(nodeText, true);
-            else if (nodeText.StartsWith("Bra/Cup Size:"))
-                UpdateMeasurements(nodeText, true);
-            else if (nodeText.StartsWith("Height:"))
-                Result.Height = DataParser.FindHeightInText(nodeText);
-            else if (nodeText.StartsWith("Weight:"))
-                Result.Weight = DataParser.FindWeightInText(nodeText);
-            else if (nodeText.StartsWith("Years Active:"))
+            else if (text.StartsWith("Profession:"))
+                Result.Profession = text.Except("Profession:");
+            else if (text.StartsWith("Ethnicity:"))
+                Result.Ethnicity = text.Except("Ethnicity:");
+            else if (text.StartsWith("Hair Color:"))
+                Result.HairColor = text.Except("Hair Color:");
+            else if (text.StartsWith("Eye Color:"))
+                Result.EyeColor = text.Except("Eye Color:");
+            else if (text.StartsWith("Measurements:"))
+                UpdateMeasurements(text.Except("Measurements:"), true);
+            else if (text.StartsWith("Bra/Cup Size:"))
+                UpdateMeasurements(text.Except("Bra/Cup Size:"), true);
+            else if (text.StartsWith("Height:"))
+                Result.Height = PersonParser.FindHeightInText(text);
+            else if (text.StartsWith("Weight:"))
+                Result.Weight = PersonParser.FindWeightInText(text);
+            else if (text.StartsWith("Years Active:"))
             {
-                Result.CareerStart = DataParser.FindCareerStartInText(nodeText);
-                Result.StillActive = DataParser.FindStillActiveInText(nodeText);
+                Result.CareerStart = PersonParser.FindCareerStartInText(text);
+                Result.StillActive = PersonParser.FindStillActiveInText(text);
             }
-            else if (nodeText.StartsWith("Piercings:"))
-                Result.Piercings = node.TextWithout("Piercings:");
+            else if (text.StartsWith("Piercings:"))
+                Result.Piercings = text.Except("Piercings:");
         }
         return Task.CompletedTask;
     }

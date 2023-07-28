@@ -1,5 +1,7 @@
 ﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
 
+using aemarco.Crawler.Extensions;
+
 namespace aemarco.Crawler.Wallpaper.Model;
 
 internal class WallEntrySource
@@ -44,14 +46,7 @@ internal class WallEntrySource
     public List<string> Tags { get; set; } = new();
     public void AddTagsFromText(string? text, params char[] separators)
     {
-        if (string.IsNullOrWhiteSpace(text))
-            return;
-
-        separators = separators.Length == 0
-            ? new[] { ',' }
-            : separators;
-        Tags.AddRange(WebUtility.HtmlDecode(text)
-            .Split(separators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+        Tags.AddRange(WebUtility.HtmlDecode(text).SplitList(separators));
     }
     public void AddTagsFromInnerTexts(IEnumerable<PageNode> nodes)
     {

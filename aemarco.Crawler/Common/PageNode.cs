@@ -7,11 +7,11 @@ public record PageNode(Uri Uri, HtmlDocument Document, HtmlNode Node)
         : this(pageDocument.Uri, pageDocument.Document, node)
     { }
 
+    //Navigation
     public override PageNode? FindNode(string xPath) =>
         Node.SelectSingleNode(xPath) is { } subNode
             ? new PageNode(this, subNode)
             : null;
-
     public override IReadOnlyList<PageNode> FindNodes(string xPath)
     {
         var nodes = Node.SelectNodes(xPath) ?? Enumerable.Empty<HtmlNode>();
@@ -21,6 +21,16 @@ public record PageNode(Uri Uri, HtmlDocument Document, HtmlNode Node)
             .ToList();
         return result;
     }
+
+    public PageNode Parent() => new(this, Node.ParentNode);
+    public PageNode NextSibling() => new(this, Node.NextSibling);
+    public IReadOnlyList<PageNode> Children()
+    {
+        return Node.ChildNodes
+            .Select(x => new PageNode(this, x))
+            .ToList();
+    }
+
 
     //References
     public PageUri? GetHref(Func<string, string?>? manipulation = null) =>
@@ -37,12 +47,10 @@ public record PageNode(Uri Uri, HtmlDocument Document, HtmlNode Node)
                     : null;
 
 
+    //Info
     public string? GetAttribute(string attr) =>
         Node.Attributes[attr]?.Value;
-
-    //Info
     public string GetText() =>
         WebUtility.HtmlDecode(Node.InnerText).Trim();
-
 
 }

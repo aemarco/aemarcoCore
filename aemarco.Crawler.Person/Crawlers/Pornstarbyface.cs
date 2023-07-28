@@ -4,68 +4,59 @@
 internal class Pornstarbyface : PersonCrawlerBase
 {
 
-    public Pornstarbyface()
-        : base(new Uri("https://pornstarbyface.com/"))
-    { }
+    private readonly Uri _uri = new("https://pornstarbyface.com");
 
-    protected override string GetSiteHref(string nameToCrawl)
+
+    //z.B. "https://pornstarbyface.com/girls/Aletta-Ocean"
+    protected override PageUri GetGirlUri(string nameToCrawl) =>
+        new PageUri(_uri).WithHref($"/girls/{nameToCrawl.Replace(' ', '-')}");
+    protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {
-        // /girls/Ariel-Rebel
-        var href = $"/girls/{nameToCrawl.Replace(' ', '-')}";
-        return href;
-    }
-
-    protected override Task HandleDocument(HtmlDocument document, CancellationToken cancellationToken)
-    {
-        //Name
-        var nameNode = document.DocumentNode
-            .SelectSingleNode("//div[@class='star-info']/h5");
-        UpdateName(nameNode);
-
-
-        //Picture
-        var picNode = document.DocumentNode
-            .SelectSingleNode("//div[@class='col-lg-3 profile-image']/img[@class='img-responsive']");
-        UpdateProfilePictures(picNode, "src");
-
-
-        //Data
-        var nodesWithData = document.DocumentNode
-            .SelectNodes("//div[@class='star-info']/div/b");
-        if (nodesWithData is null)
+        var starInfo = girlPage.FindNode("//div[@class='star-info']");
+        if (starInfo is null)
             return Task.CompletedTask;
 
-        Result.Gender = Gender.Female;
+        //Name
+        UpdateName(starInfo.FindNode("./h5"));
 
-        foreach (var node in nodesWithData)
+        //Pic
+        UpdateProfilePictures(girlPage
+            .FindNode("//div[@class='col-lg-3 profile-image']/img[@class='img-responsive']")?
+            .GetSrc());
+
+        //Data
+        var dataNodes = starInfo.FindNodes("./div/b");
+        Result.Gender = Gender.Female; //always female on this site
+        foreach (var node in dataNodes)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            token.ThrowIfCancellationRequested();
 
-            var desc = node.InnerText.Trim();
-            if (string.IsNullOrWhiteSpace(desc))
+            var label = node.GetText();
+            if (string.IsNullOrWhiteSpace(label))
                 continue;
 
-            if (node.ParentNode.NextSibling is not { } valueNode)
+            if (node.Parent().NextSibling() is not { } content)
                 continue;
-            var valueNodeText = valueNode.TextWithout();
 
-            Action act = desc switch
+            var text = content.GetText().TitleCase();
+            Action act = label switch
             {
-                "Aliases" => () => Result.Aliases = DataParser.FindStringsInText(valueNodeText),
-                "Country" => () => Result.Country = valueNodeText,
-                "State" => () => Result.City = valueNodeText,
-                "Birthday" => () => Result.Birthday = DataParser.FindBirthdayInText(valueNodeText),
-                "Ethnicity" => () => Result.Ethnicity = valueNodeText,
-                "Eye" => () => Result.EyeColor = valueNodeText,
-                "Hair" => () => Result.HairColor = valueNodeText,
-                "Height" => () => Result.Height = DataParser.FindHeightInText(valueNodeText),
-                "Weight" => () => Result.Weight = DataParser.FindWeightInText(valueNodeText),
-                "Measurements" => () => UpdateMeasurements(valueNodeText, true),
-                "Cup" => () => UpdateMeasurements(valueNodeText),
+                "Aliases" => () => Result.Aliases.AddRange(text.SplitList()),
+                "Country" => () => Result.Country = text,
+                "State" => () => Result.City = text,
+                "Birthday" => () => Result.Birthday = text.ToDateOnly(),
+                "Ethnicity" => () => Result.Ethnicity = text,
+                "Eye" => () => Result.EyeColor = text,
+                "Hair" => () => Result.HairColor = text,
+                "Height" => () => Result.Height = PersonParser.FindHeightInText(text),
+                "Weight" => () => Result.Weight = PersonParser.FindWeightInText(text),
+                "Measurements" => () => UpdateMeasurements(text, true),
+                "Cup" => () => UpdateMeasurements(text),
                 _ => () => { }
             };
             act();
         }
+
         return Task.CompletedTask;
     }
 

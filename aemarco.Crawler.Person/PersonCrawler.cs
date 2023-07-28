@@ -68,7 +68,7 @@ public class PersonCrawler
             return null;
 
         //merge entries together according to priority
-        var (firstName, lastName) = DataParser.FindNameInText(nameToCrawl);
+        var (firstName, lastName) = PersonParser.FindNameInText(nameToCrawl);
         var result = new PersonInfo
         {
             FirstName = firstName,

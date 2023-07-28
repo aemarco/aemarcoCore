@@ -41,35 +41,33 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         if (Entry is null)
             return;
 
-        Entry.CrawlerInfos.Count.Should().Be(1);
-
-
-
-        Assert.AreEqual(_crawlerInfo, Entry.CrawlerInfos[0]);
-        PrintJson(Entry.CrawlerInfos[0]);
+        Entry.CrawlerInfos.FirstOrDefault().Should().Be(_crawlerInfo);
+        PrintJson(Entry.CrawlerInfos);
     }
 
-    protected string ExpectedFirstName { get; init; }
+    private string ExpectedFirstName { get; init; }
     [Test]
     public void Crawler_Finds_FirstName()
     {
         if (Entry is null)
             return;
-        Assert.AreEqual(ExpectedFirstName, Entry.FirstName);
+
+        Entry.FirstName.Should().Be(ExpectedFirstName);
         PrintJson(Entry.FirstName);
     }
 
-    protected string ExpectedLastName { get; init; }
+    private string ExpectedLastName { get; init; }
     [Test]
     public void Crawler_Finds_LastName()
     {
         if (Entry is null)
             return;
-        Assert.AreEqual(ExpectedLastName, Entry.LastName);
+
+        Entry.LastName.Should().Be(ExpectedLastName);
         PrintJson(Entry.LastName);
     }
 
-    protected Gender? ExpectedGender { get; set; }
+    protected Gender? ExpectedGender { get; init; }
     [Test]
     public void Crawler_Finds_Gender()
     {
@@ -81,11 +79,12 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             NothingExpected(Entry.Gender);
             return;
         }
-        Assert.AreEqual(ExpectedGender, Entry.Gender);
+
+        Entry.Gender.Should().Be(ExpectedGender);
         PrintJson(Entry.Gender?.ToString());
     }
 
-    protected DateOnly? ExpectedBirthday { get; set; }
+    protected DateOnly? ExpectedBirthday { get; init; }
     [Test]
     public void Crawler_Finds_Birthday()
     {
@@ -98,11 +97,11 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             return;
         }
 
-        Assert.AreEqual(ExpectedBirthday!.Value, Entry.Birthday);
+        Entry.Birthday.Should().Be(ExpectedBirthday);
         PrintJson(Entry.Birthday);
     }
 
-    protected DateOnly? ExpectedCareerStart { get; set; }
+    protected DateOnly? ExpectedCareerStart { get; init; }
     [Test]
     public void Crawler_Finds_CareerStart()
     {
@@ -115,12 +114,11 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             return;
         }
 
-        Assert.AreEqual(ExpectedCareerStart.Value, Entry.CareerStart);
+        Entry.CareerStart.Should().Be(ExpectedCareerStart);
         PrintJson(Entry.CareerStart);
-
     }
 
-    protected string? ExpectedCountry { get; set; }
+    protected string? ExpectedCountry { get; init; }
     [Test]
     public void Crawler_Finds_Country()
     {
@@ -131,13 +129,12 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             NothingExpected(Entry.Country);
             return;
         }
-        Assert.AreEqual(ExpectedCountry, Entry.Country);
+
+        Entry.Country.Should().Be(ExpectedCountry);
         PrintJson(Entry.Country);
-
-
     }
 
-    protected string? ExpectedCity { get; set; }
+    protected string? ExpectedCity { get; init; }
     [Test]
     public void Crawler_Finds_Place()
     {
@@ -148,11 +145,12 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             NothingExpected(Entry.City);
             return;
         }
-        Assert.AreEqual(ExpectedCity, Entry.City);
+
+        Entry.City.Should().Be(ExpectedCity);
         PrintJson(Entry.City);
     }
 
-    protected string? ExpectedProfession { get; set; }
+    protected string? ExpectedProfession { get; init; }
     [Test]
     public void Crawler_Finds_Profession()
     {
@@ -163,11 +161,12 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             NothingExpected(Entry.Profession);
             return;
         }
-        Assert.AreEqual(ExpectedProfession, Entry.Profession);
+
+        Entry.Profession.Should().Be(ExpectedProfession);
         PrintJson(Entry.Profession);
     }
 
-    protected string? ExpectedEthnicity { get; set; }
+    protected string? ExpectedEthnicity { get; init; }
     [Test]
     public void Crawler_Finds_Ethnicity()
     {
@@ -178,11 +177,12 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             NothingExpected(Entry.Ethnicity);
             return;
         }
-        Assert.AreEqual(ExpectedEthnicity, Entry.Ethnicity);
+
+        Entry.Ethnicity.Should().Be(ExpectedEthnicity);
         PrintJson(Entry.Ethnicity);
     }
 
-    protected string? ExpectedHairColor { get; set; }
+    protected string? ExpectedHairColor { get; init; }
     [Test]
     public void Crawler_Finds_Hair()
     {
@@ -193,14 +193,13 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             NothingExpected(Entry.HairColor);
             return;
         }
-        Assert.AreEqual(ExpectedHairColor, Entry.HairColor);
 
+        Entry.HairColor.Should().Be(ExpectedHairColor);
         PrintJson(Entry.HairColor);
-
     }
 
 
-    protected string? ExpectedEyeColor { get; set; }
+    protected string? ExpectedEyeColor { get; init; }
     [Test]
     public void Crawler_Finds_Eyes()
     {
@@ -211,12 +210,12 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             NothingExpected(Entry.EyeColor);
             return;
         }
-        Assert.AreEqual(ExpectedEyeColor, Entry.EyeColor);
-        PrintJson(Entry.EyeColor);
 
+        Entry.EyeColor.Should().Be(ExpectedEyeColor);
+        PrintJson(Entry.EyeColor);
     }
 
-    protected int? ExpectedHeight { get; set; }
+    protected int? ExpectedHeight { get; init; }
     [Test]
     public void Crawler_Finds_Height()
     {
@@ -228,13 +227,12 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             NothingExpected(Entry.Height);
             return;
         }
-        Assert.AreEqual(ExpectedHeight!.Value, Entry.Height);
 
+        Entry.Height.Should().Be(ExpectedHeight);
         PrintJson(Entry.Height);
-
     }
 
-    protected int? ExpectedWeight { get; set; }
+    protected int? ExpectedWeight { get; init; }
     [Test]
     public void Crawler_Finds_Weight()
     {
@@ -245,12 +243,12 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             NothingExpected(Entry.Weight);
             return;
         }
-        Assert.AreEqual(ExpectedWeight!.Value, Entry.Weight);
-        PrintJson(Entry.Weight);
 
+        Entry.Weight.Should().Be(ExpectedWeight);
+        PrintJson(Entry.Weight);
     }
 
-    protected string? ExpectedMeasurementDetails { get; set; }
+    protected string? ExpectedMeasurementDetails { get; init; }
     [Test]
     public void Crawler_Finds_Measurements()
     {
@@ -261,12 +259,13 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             NothingExpected(Entry.MeasurementDetails);
             return;
         }
-        Assert.AreEqual(ExpectedMeasurementDetails, Entry.MeasurementDetails.ToString());
+
+        Entry.MeasurementDetails.ToString().Should().Be(ExpectedMeasurementDetails);
         PrintJson(Entry.MeasurementDetails);
     }
 
 
-    protected string? ExpectedPiercings { get; set; }
+    protected string? ExpectedPiercings { get; init; }
     [Test]
     public void Crawler_Finds_Piercings()
     {
@@ -278,22 +277,26 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             NothingExpected(Entry.Piercings);
             return;
         }
-        Assert.AreEqual(ExpectedPiercings, Entry.Piercings);
 
+        Entry.Piercings.Should().Be(ExpectedPiercings);
         PrintJson(Entry.Piercings);
-
     }
 
-    protected bool? ExpectedStillActive { get; set; }
+    protected bool? ExpectedStillActive { get; init; }
     [Test]
     public void Crawler_Finds_StillActive()
     {
         if (Entry is null)
             return;
 
-        Assert.AreEqual(ExpectedStillActive, Entry.StillActive);
-        PrintJson(Entry.StillActive);
+        if (ExpectedStillActive is null)
+        {
+            NothingExpected(Entry.StillActive);
+            return;
+        }
 
+        Entry.StillActive.Should().Be(ExpectedStillActive);
+        PrintJson(Entry.StillActive);
     }
 
     protected List<string> ExpectedProfilePictures { get; set; } = new();
@@ -309,12 +312,8 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             return;
         }
 
-        foreach (var url in ExpectedProfilePictures)
-        {
-            Entry.ProfilePictures.Should().Contain(x => x.Url == url);
-        }
+        Entry.ProfilePictures.Select(x => x.Url).Should().BeEquivalentTo(ExpectedProfilePictures);
         PrintJson(Entry.ProfilePictures);
-
     }
 
     protected List<string> ExpectedAliases { get; set; } = new();
@@ -330,16 +329,14 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             return;
         }
 
-        foreach (var al in ExpectedAliases)
-        {
-            Entry.Aliases.Should().Contain(al);
-        }
+        Entry.Aliases.Should().BeEquivalentTo(ExpectedAliases);
         PrintJson(Entry.Aliases);
-
     }
+}
 
-
-    private static void NothingExpected(object? found)
+internal abstract class TestBase
+{
+    protected static void NothingExpected(object? found)
     {
         PrintJson(new
         {
@@ -347,10 +344,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             Found = found ?? "Nothing"
         });
     }
-}
 
-internal abstract class TestBase
-{
     protected static void PrintJson(object? obj)
     {
         TestContext.Out.WriteLine(
@@ -358,4 +352,5 @@ internal abstract class TestBase
                 obj,
                 Formatting.Indented));
     }
+
 }

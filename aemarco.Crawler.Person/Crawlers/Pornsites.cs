@@ -4,63 +4,51 @@
 internal class Pornsites : PersonCrawlerBase
 {
 
-    public Pornsites()
-        : base(new Uri("https://pornsites.xxx"))
-    { }
+    private readonly Uri _uri = new("https://pornsites.xxx");
 
-    protected override string GetSiteHref(string nameToCrawl)
-    {
-        // pornstars/Aletta-Ocean
-        var href = $"pornstars/{nameToCrawl.Replace(' ', '-')}";
-        return href;
-    }
 
-    protected override Task HandleDocument(HtmlDocument document, CancellationToken cancellationToken)
+    //z.B. "https://pornsites.xxx/pornstars/Aletta-Ocean"
+    protected override PageUri GetGirlUri(string nameToCrawl) =>
+        new PageUri(_uri).WithHref($"/pornstars/{nameToCrawl.Replace(' ', '-')}");
+    protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {
 
         //Name
-        var nameNode = document.DocumentNode.SelectSingleNode("//div[@id='main']/header/h1");
-        UpdateName(nameNode);
+        UpdateName(girlPage.FindNode("//div[@id='main']/header/h1"));
 
-        //Pictures
-        var picNodes = document.DocumentNode
-            .SelectNodes("//div[@class='pornstar-box-con-big']/div[@class='pornstar-box']/picture/img");
-        UpdateProfilePictures(picNodes, "src");
-
+        //Pics
+        UpdateProfilePictures(girlPage
+            .FindNode("//div[@class='pornstar-box-con-big']/div[@class='pornstar-box']/picture/img")?
+            .GetSrc());
 
         //Data
-        var nodeWithData = document.DocumentNode.SelectNodes("//table[@class='styled']/tr");
-        if (nodeWithData is null)
-            return Task.CompletedTask;
-
-
-        foreach (var node in nodeWithData)
+        var dataNodes = girlPage.FindNodes("//table[@class='styled']/tr");
+        foreach (var node in dataNodes)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            var nodeText = node.TextWithout();
+            token.ThrowIfCancellationRequested();
 
-
-            //Geburtstag
-            if (nodeText.StartsWith("Age:"))
-                Result.Birthday = DataParser.FindBirthdayInText(nodeText);
-            else if (nodeText.StartsWith("Gender:"))
-                Result.Gender = DataParser.FindGenderInText(nodeText); //female male trans
-            else if (nodeText.StartsWith("Hair Color:"))
-                Result.HairColor = node.TextWithout("Hair Color:");
-            else if (nodeText.StartsWith("Eye Color:"))
-                Result.EyeColor = node.TextWithout("Eye Color:");
-            else if (nodeText.StartsWith("Cupsize:"))
-                UpdateMeasurements(nodeText, true);
-            else if (nodeText.StartsWith("Weight:"))
-                Result.Weight = DataParser.FindWeightInText(nodeText);
-            else if (nodeText.StartsWith("Height:"))
-                Result.Height = DataParser.FindHeightInText(nodeText);
-            else if (nodeText.StartsWith("Country:"))
-                Result.Country = node.TextWithout("Country:");
-            else if (nodeText.StartsWith("Ethnicity:"))
-                Result.Ethnicity = node.TextWithout("Ethnicity:");
+            var text = node.GetText().TitleCase();
+            if (text.StartsWith("Age:"))
+                Result.Birthday = text.Except("Age:").ToDateOnly();
+            else if (text.StartsWith("Gender:"))
+                Result.Gender = PersonParser.FindGenderInText(text); //female male trans
+            else if (text.StartsWith("Hair Color:"))
+                Result.HairColor = text.Except("Hair Color:");
+            else if (text.StartsWith("Eye Color:"))
+                Result.EyeColor = text.Except("Eye Color:");
+            else if (text.StartsWith("Cupsize:"))
+                UpdateMeasurements(text.Except("Cupsize:"), true);
+            else if (text.StartsWith("Weight:"))
+                Result.Weight = PersonParser.FindWeightInText(text);
+            else if (text.StartsWith("Height:"))
+                Result.Height = PersonParser.FindHeightInText(text);
+            else if (text.StartsWith("Country:"))
+                Result.Country = text.Except("Country:");
+            else if (text.StartsWith("Ethnicity:"))
+                Result.Ethnicity = text.Except("Ethnicity:");
         }
         return Task.CompletedTask;
+
     }
 
 }

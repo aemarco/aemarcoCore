@@ -4,54 +4,45 @@
 internal class Stripper : PersonCrawlerBase
 {
 
-    public Stripper()
-        : base(new Uri("https://www.istripper.com"))
-    { }
+    private readonly Uri _uri = new("https://www.istripper.com");
 
-    protected override string GetSiteHref(string nameToCrawl)
-    {
-        // de/models/Aletta-Ocean
-        var href = $"de/models/{nameToCrawl.Replace(' ', '-')}";
-        return href;
-    }
 
-    protected override Task HandleDocument(HtmlDocument document, CancellationToken cancellationToken)
+    //z.B. "https://www.istripper.com/de/models/Aletta-Ocean"
+    protected override PageUri GetGirlUri(string nameToCrawl) =>
+        new PageUri(_uri).WithHref($"/de/models/{nameToCrawl.Replace(' ', '-')}");
+    protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {
+
         //Name
-        var nameNode = document.DocumentNode.SelectSingleNode("//div[@class='trigger']/div/h1");
-        UpdateName(nameNode);
+        UpdateName(girlPage.FindNode("//div[@class='trigger']/div/h1"));
 
-        //Picture
-        var picNode = document.DocumentNode.SelectSingleNode("//div[@class='container']/img");
-        UpdateProfilePictures(picNode, "src",
-            suggestedMinAdultLevel: 35,
-            suggestedMaxAdultLevel: 39);
+        //Pic
+        var picUri = girlPage
+            .FindNode("//div[@class='container']/img")?
+            .GetSrc();
+        UpdateProfilePictures(picUri, 35, 39);
 
         //Data
-        var nodeWithData = document.DocumentNode.SelectSingleNode("//ul[@class='info2']");
-        if (nodeWithData is null)
-            return Task.CompletedTask;
-
-        Result.Gender = Gender.Female;
-
-        foreach (var node in nodeWithData.ChildNodes
-                     .Where(x => !string.IsNullOrWhiteSpace(x.InnerText)))
+        var dataNodes = girlPage.FindNodes("//ul[@class='info2']/li");
+        Result.Gender = Gender.Female; //always female on this site
+        foreach (var node in dataNodes)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            var nodeText = node.TextWithout();
+            token.ThrowIfCancellationRequested();
+            var text = node.GetText();
 
-            if (node.InnerText.Contains("Land:"))
-                Result.Country = node.TextWithout("Land:");
-            else if (node.InnerText.Contains("Stadt:"))
-                Result.City = node.TextWithout("Stadt:");
-            else if (node.InnerText.Contains("Größe"))
-                Result.Height = DataParser.FindHeightInText(nodeText);
-            else if (node.InnerText.Contains("Gewicht:"))
-                Result.Weight = DataParser.FindWeightInText(nodeText);
-            else if (node.InnerText.Contains("Maße:"))
-                UpdateMeasurements(nodeText);
+            if (text.Contains("Land:"))
+                Result.Country = text.Except("Land:").TitleCase();
+            else if (text.Contains("Stadt:"))
+                Result.City = text.Except("Stadt:").TitleCase();
+            else if (text.Contains("Größe"))
+                Result.Height = PersonParser.FindHeightInText(text.Except("Größe").TitleCase());
+            else if (text.Contains("Gewicht:"))
+                Result.Weight = PersonParser.FindWeightInText(text.Except("Gewicht:").TitleCase());
+            else if (text.Contains("Maße:"))
+                UpdateMeasurements(text.Except("Maße:").TitleCase());
         }
         return Task.CompletedTask;
+
     }
 
 }

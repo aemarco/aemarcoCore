@@ -1,4 +1,6 @@
-﻿namespace aemarco.Crawler.Common;
+﻿using System.Threading.Tasks;
+
+namespace aemarco.Crawler.Common;
 
 public record PageUri(Uri Uri)
 {
@@ -41,6 +43,11 @@ public record PageUri(Uri Uri)
     public PageDocument Navigate(int? minDelay = null, int? maxDelay = null)
     {
         var document = HtmlHelper.GetHtmlDocument(Uri, minDelay, maxDelay);
+        return new PageDocument(this, document);
+    }
+    public async Task<PageDocument> NavigateAsync(int? minDelay = null, int? maxDelay = null, CancellationToken token = default)
+    {
+        var document = await HtmlHelper.GetHtmlDocumentAsync(Uri, minDelay, maxDelay, token);
         return new PageDocument(this, document);
     }
 

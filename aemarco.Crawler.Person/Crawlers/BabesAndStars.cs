@@ -4,70 +4,60 @@
 internal class BabesAndStars : PersonCrawlerBase
 {
 
-    public BabesAndStars()
-        : base(new Uri("https://www.babesandstars.com/"))
-    { }
+    private readonly Uri _uri = new("https://www.babesandstars.com");
 
-    protected override string GetSiteHref(string nameToCrawl)
-    {
-        // /babe/Chloe_Temple
-        var href = $"/{nameToCrawl[0].ToString().ToLower()}/{nameToCrawl.Replace(' ', '-').ToLower()}/";
-        return href;
-    }
 
-    protected override Task HandleDocument(HtmlDocument document, CancellationToken cancellationToken)
+    //z.B. "https://www.babesandstars.com/a/ariel-rebel/"
+    protected override PageUri GetGirlUri(string nameToCrawl) =>
+        new PageUri(_uri).WithHref($"/{nameToCrawl[0]}/{nameToCrawl.Replace(' ', '-')}/".ToLower());
+    protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {
+        var profileNode = girlPage.FindNode("//div[@class='profile']/div");
+
         //Name
-        var nameNode = document.DocumentNode.SelectSingleNode("//div[@class='profile']/div/div/h1");
-        UpdateName(nameNode);
+        UpdateName(profileNode?.FindNode("./div/h1"));
 
-        //Pictures
-        var picNode = document.DocumentNode
-            .SelectSingleNode("//div[@class='profile']/div/div[@class='thumb']/img");
-        UpdateProfilePictures(picNode, "src");
-
-        //Aliases
-        var nodeWithAlias = document.DocumentNode
-            .SelectSingleNode("//div[@class='profile']/div/div[@class='info']/div[@class='middle']/div[@class='aliases']/em");
-        if (nodeWithAlias is not null)
-        {
-            var cleaned = nodeWithAlias.TextWithout();
-            Result.Aliases = DataParser.FindStringsInText(cleaned);
-        }
+        //Pic
+        UpdateProfilePictures(profileNode?
+            .FindNode("./div[@class='thumb']/img")?
+            .GetSrc());
 
         //Data
-        var nodeWithData = document.DocumentNode
-            .SelectSingleNode("//div[@class='profile']/div/div[@class='info']/div[@class='middle']/div[@class='features']");
-        if (nodeWithData is null)
+        var infoNode = profileNode?.FindNode("./div[@class='info']/div[@class='middle']");
+        if (infoNode is null)
             return Task.CompletedTask;
 
-        foreach (var node in nodeWithData.ChildNodes
-                     .Where(x => x.Name == "span"))
+        var aliasNode = infoNode.FindNode("./div[@class='aliases']/em");
+        var aliasText = aliasNode?.GetText().TitleCase();
+        Result.Aliases.AddRange(aliasText.SplitList());
+
+        var dataNodes = infoNode.FindNodes("./div[@class='features']/span");
+        foreach (var node in dataNodes)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            token.ThrowIfCancellationRequested();
 
-            var nodeText = node.TextWithout();
-
-            if (nodeText.StartsWith("Country:"))
-                Result.Country = node.TextWithout("Country:");
-            else if (nodeText.StartsWith("Ethnicity:"))
-                Result.Ethnicity = node.TextWithout("Ethnicity:");
-            else if (nodeText.StartsWith("Measurements:"))
-                UpdateMeasurements(nodeText, true);
-            else if (nodeText.StartsWith("Birthday:"))
-                Result.Birthday = DataParser.FindBirthdayInText(nodeText);
-            else if (nodeText.StartsWith("Eyes:"))
-                Result.EyeColor = node.TextWithout("Eyes:");
-            else if (nodeText.StartsWith("Cup:"))
-                UpdateMeasurements(nodeText, true);
-            else if (nodeText.StartsWith("Weight:"))
-                Result.Weight = DataParser.FindWeightInText(nodeText);
-            else if (nodeText.StartsWith("Height:"))
-                Result.Height = DataParser.FindHeightInText(nodeText);
-            else if (nodeText.StartsWith("Hair:"))
-                Result.HairColor = node.TextWithout("Hair:");
+            var text = node.GetText().TitleCase();
+            if (text.StartsWith("Country:"))
+                Result.Country = text.Except("Country:");
+            else if (text.StartsWith("Ethnicity:"))
+                Result.Ethnicity = text.Except("Ethnicity:");
+            else if (text.StartsWith("Measurements:"))
+                UpdateMeasurements(text.Except("Measurements:"), true);
+            else if (text.StartsWith("Birthday:"))
+                Result.Birthday = text.Except("Birthday:").ToDateOnly();
+            else if (text.StartsWith("Eyes:"))
+                Result.EyeColor = text.Except("Eyes:");
+            else if (text.StartsWith("Cup:"))
+                UpdateMeasurements(text.Except("Cup:"), true);
+            else if (text.StartsWith("Weight:"))
+                Result.Weight = PersonParser.FindWeightInText(text);
+            else if (text.StartsWith("Height:"))
+                Result.Height = PersonParser.FindHeightInText(text);
+            else if (text.StartsWith("Hair:"))
+                Result.HairColor = text.Except("Hair:");
         }
         return Task.CompletedTask;
+
     }
 
 }
