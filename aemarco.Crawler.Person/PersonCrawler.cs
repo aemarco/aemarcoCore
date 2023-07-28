@@ -4,7 +4,6 @@ public class PersonCrawler
 {
 
     private readonly List<string> _filterPersonSites = new();
-
     /// <summary>
     /// returns a list of crawler names, which are currently supported
     /// </summary>
@@ -14,7 +13,6 @@ public class PersonCrawler
         return GetAvailableCrawlerTypes()
             .Select(t => CrawlerInfo.FromCrawlerType(t).FriendlyName);
     }
-
     /// <summary>
     /// Not using means all sites will be crawled
     /// Using means only sites added will be crawled.
@@ -28,6 +26,7 @@ public class PersonCrawler
             _filterPersonSites.Add(crawler);
         }
     }
+
 
     /// <summary>
     /// Do the crawling :)
@@ -82,15 +81,17 @@ public class PersonCrawler
         return result;
     }
 
+
     private static List<Type> GetAvailableCrawlerTypes()
     {
         var types = Assembly
             .GetAssembly(typeof(PersonCrawlerBase))!
             .GetTypes()
             .Where(x => x.IsSubclassOf(typeof(PersonCrawlerBase)))
-            .Where(x => x.GetCustomAttribute<ObsoleteAttribute>() is null)
+            .Where(x => CrawlerInfo.FromCrawlerType(x).IsAvailable)
             .OrderBy(x => CrawlerInfo.FromCrawlerType(x).Priority)
             .ToList();
         return types;
     }
+
 }

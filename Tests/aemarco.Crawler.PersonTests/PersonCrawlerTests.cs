@@ -1,4 +1,6 @@
-﻿namespace aemarco.Crawler.PersonTests;
+﻿using aemarco.Crawler.Model;
+
+namespace aemarco.Crawler.PersonTests;
 
 internal class PersonCrawlerTests : TestBase
 {
@@ -10,8 +12,8 @@ internal class PersonCrawlerTests : TestBase
             .GetAssembly(typeof(PersonCrawlerBase))!
             .GetTypes()
             .Where(x => x.IsSubclassOf(typeof(PersonCrawlerBase)))
-            .Where(x => x.GetCustomAttribute<ObsoleteAttribute>() is null)
             .Select(CrawlerInfo.FromCrawlerType)
+            .Where(x => x.IsAvailable)
             .OrderBy(x => x.Priority)
             .Select(x => x.FriendlyName)
             .ToList();

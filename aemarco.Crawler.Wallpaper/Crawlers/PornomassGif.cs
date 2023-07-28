@@ -6,7 +6,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers;
 /// The site delivers gif´s in the HC+ range
 /// The site does not add new content since a long time
 /// </summary>
-[WallpaperCrawler("GifPornomass")]
+[Crawler("GifPornomass")]
 internal class PornomassGif : WallpaperCrawlerBasis
 {
 

@@ -7,7 +7,7 @@
 //https://www.zenrows.com/blog/bypass-cloudflare#how-cloudflare-detects-bots
 
 [Obsolete]
-[PersonCrawler("Babepedia", 20)]
+[Crawler("Babepedia", 20)]
 internal class Babepedia : PersonCrawlerBase
 {
 
@@ -74,14 +74,16 @@ internal class Babepedia : PersonCrawlerBase
                 Result.HairColor = text.Except("Hair Color:");
             else if (text.StartsWith("Eye Color:"))
                 Result.EyeColor = text.Except("Eye Color:");
-            else if (text.StartsWith("Measurements:"))
-                UpdateMeasurements(text.Except("Measurements:"), true);
-            else if (text.StartsWith("Bra/Cup Size:"))
-                UpdateMeasurements(text.Except("Bra/Cup Size:"), true);
             else if (text.StartsWith("Height:"))
                 Result.Height = PersonParser.FindHeightInText(text);
             else if (text.StartsWith("Weight:"))
                 Result.Weight = PersonParser.FindWeightInText(text);
+            else if (text.StartsWith("Measurements:"))
+                UpdateMeasurements(text.Except("Measurements:"), true);
+            else if (text.StartsWith("Bra/Cup Size:"))
+                UpdateMeasurements(text.Except("Bra/Cup Size:"), true);
+            else if (text.StartsWith("Boobs:"))
+                Result.MeasurementDetails.Combine(new MeasurementDetails(null, null, text.Except("Boobs:").Contains("fake", StringComparison.OrdinalIgnoreCase), null, null));
             else if (text.StartsWith("Years Active:"))
             {
                 Result.CareerStart = PersonParser.FindCareerStartInText(text);

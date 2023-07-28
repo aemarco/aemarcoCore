@@ -31,7 +31,7 @@ internal class NudevistaTestsWithAlettaOcean : PersonCrawlerTestsBase<Nudevista>
         ExpectedEthnicity = "Caucasian";
         ExpectedHairColor = "Black";
         ExpectedEyeColor = "Green";
-        ExpectedMeasurementDetails = "96D-66-93";
+        ExpectedMeasurementDetails = "96D(fake)-66-93";
         ExpectedHeight = 172;
         ExpectedWeight = 59;
         ExpectedPiercings = "Clit, Navel, Tongue";

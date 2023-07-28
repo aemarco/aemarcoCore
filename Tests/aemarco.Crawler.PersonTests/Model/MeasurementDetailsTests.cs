@@ -11,7 +11,7 @@ internal class MeasurementDetailsTests
     [TestCase(30, "c", 31, 32, "30C-31-32")]
     public void ToString_Works(int? bust, string? cup, int? waist, int? hip, string expected)
     {
-        var sut = new MeasurementDetails(bust, cup, waist, hip);
+        var sut = new MeasurementDetails(bust, cup, false, waist, hip);
 
         var result = sut.ToString();
 
@@ -22,7 +22,7 @@ internal class MeasurementDetailsTests
 
     [TestCase("", "")]
     [TestCase("A", "A")]
-    [TestCase("D (Fake)", "D")]
+    [TestCase("D (Fake)", "D(fake)")]
     [TestCase("32A", "A")]
     [TestCase("86 / 66 / 94", "86-66-94")]
     [TestCase("86-60-87", "86-60-87")]
@@ -38,7 +38,7 @@ internal class MeasurementDetailsTests
 
     [TestCase("", "")]
     [TestCase("A", "A")]
-    [TestCase("D (Fake)", "D")]
+    [TestCase("D (Fake)", "D(fake)")]
     [TestCase("32A", "A")]
     [TestCase("86 / 66 / 94", "86-66-94")]
     [TestCase("86-60-87", "86-60-87")]

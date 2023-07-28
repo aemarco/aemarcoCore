@@ -2,7 +2,7 @@
 namespace aemarco.Crawler.Wallpaper.Crawlers;
 
 
-[WallpaperCrawler("Erowall")]
+[Crawler("Erowall")]
 internal partial class Erowall : WallpaperCrawlerBasis
 {
 

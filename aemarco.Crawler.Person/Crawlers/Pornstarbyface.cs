@@ -1,6 +1,6 @@
 ﻿namespace aemarco.Crawler.Person.Crawlers;
 
-[PersonCrawler("Pornstarbyface", 10)]
+[Crawler("Pornstarbyface", 10)]
 internal class Pornstarbyface : PersonCrawlerBase
 {
 

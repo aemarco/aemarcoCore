@@ -7,7 +7,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers;
 /// The site delivers walls in the HC+ range
 /// The site does not add new content since a long time
 /// </summary>
-[WallpaperCrawler("Pornomass")]
+[Crawler("Pornomass")]
 internal class Pornomass : WallpaperCrawlerBasis
 {
 

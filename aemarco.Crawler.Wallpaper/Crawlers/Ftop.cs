@@ -2,7 +2,7 @@
 
 namespace aemarco.Crawler.Wallpaper.Crawlers;
 
-[WallpaperCrawler("Ftop")]
+[Crawler("Ftop")]
 internal class Ftop : WallpaperCrawlerBasis
 {
 

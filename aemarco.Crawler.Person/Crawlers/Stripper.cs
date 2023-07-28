@@ -1,6 +1,6 @@
 ﻿namespace aemarco.Crawler.Person.Crawlers;
 
-[PersonCrawler("IStripper", 50)]
+[Crawler("IStripper", 50)]
 internal class Stripper : PersonCrawlerBase
 {
 

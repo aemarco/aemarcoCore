@@ -24,7 +24,7 @@ internal class NudevistaTestsWithAmberSym : PersonCrawlerTestsBase<Nudevista>
         ExpectedEthnicity = "Caucasian";
         ExpectedHairColor = "Brown";
         ExpectedEyeColor = "Brown";
-        ExpectedMeasurementDetails = "86C-60-86";
+        ExpectedMeasurementDetails = "86C(fake)-60-86";
         ExpectedHeight = 167;
         ExpectedWeight = 48;
         ExpectedPiercings = "Ears, Navel";

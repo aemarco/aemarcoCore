@@ -4,7 +4,7 @@ namespace aemarco.Crawler.Wallpaper.Crawlers;
 /// <summary>
 /// The site does not add new content since a long time
 /// </summary>
-[WallpaperCrawler("NudeGirlsHd")]
+[Crawler("NudeGirlsHd")]
 internal class NudeGirlsHd : WallpaperCrawlerBasis
 {
 

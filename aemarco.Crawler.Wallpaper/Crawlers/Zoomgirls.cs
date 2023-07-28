@@ -1,7 +1,7 @@
 ﻿// ReSharper disable UnusedType.Global
 namespace aemarco.Crawler.Wallpaper.Crawlers;
 
-[WallpaperCrawler("Zoomgirls")]
+[Crawler("Zoomgirls")]
 internal class Zoomgirls : WallpaperCrawlerBasis
 {
 

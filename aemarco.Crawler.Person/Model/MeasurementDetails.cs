@@ -1,12 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace aemarco.Crawler.Person.Model;
-public partial record MeasurementDetails(int? Bust, string? Cup, int? Waist, int? Hip)
+﻿namespace aemarco.Crawler.Person.Model;
+public partial record MeasurementDetails(int? Bust, string? Cup, bool FakeTits, int? Waist, int? Hip)
     : IParsable<MeasurementDetails>
 {
-    public static MeasurementDetails Empty => new(null, null, null, null);
-    public string? Cup { get; init; } = Cup?.ToUpper();
 
+    public static MeasurementDetails Empty => new(null, null, false, null, null);
+    public string? Cup { get; init; } = Cup?.ToUpper();
     public MeasurementDetails Combine(MeasurementDetails? other)
     {
         if (other is null)
@@ -15,6 +13,7 @@ public partial record MeasurementDetails(int? Bust, string? Cup, int? Waist, int
         return new MeasurementDetails(
             Bust ?? other.Bust,
             Cup ?? other.Cup,
+            FakeTits | other.FakeTits,
             Waist ?? other.Waist,
             Hip ?? other.Hip);
     }
@@ -22,14 +21,19 @@ public partial record MeasurementDetails(int? Bust, string? Cup, int? Waist, int
     /// <example>
     /// 86-58-81
     /// 96DDD-66-93
+    /// 96DDD(fake)-66-93
     /// </example>
     public override string ToString()
     {
+        var fakeText = FakeTits
+            ? "(fake)"
+            : null;
+
         return Bust.HasValue && Waist.HasValue && Hip.HasValue
-            ? $"{Bust}{Cup}-{Waist}-{Hip}"
+            ? $"{Bust}{Cup}{fakeText}-{Waist}-{Hip}"
             : string.IsNullOrWhiteSpace(Cup)
                 ? string.Empty
-                : Cup;
+                : $"{Cup}{fakeText}";
     }
 
 
@@ -40,6 +44,8 @@ public partial record MeasurementDetails(int? Bust, string? Cup, int? Waist, int
 
     [GeneratedRegex(@"[A-D]+", RegexOptions.IgnoreCase)]
     private static partial Regex CupRegex();
+
+
 
     public static MeasurementDetails Parse(string text, IFormatProvider? provider = null)
     {
@@ -65,14 +71,13 @@ public partial record MeasurementDetails(int? Bust, string? Cup, int? Waist, int
         text = text.Replace(" -", "-");
         text = text.Replace("- ", "-");
 
-
         if (MeasurementsRegex().Match(text) is { Success: true } measureMatch &&
             int.TryParse(measureMatch.Groups[1].Value, out var bust) &&
             measureMatch.Groups[2].Value is { } cup &&
             int.TryParse(measureMatch.Groups[3].Value, out var waist) &&
             int.TryParse(measureMatch.Groups[4].Value, out var hip))
         {
-
+            //measures
             if (provider is MeasurementFormatProvider { MeasurementSystem: MeasurementSystem.Imperial })
             {
                 bust = (int)(bust * 2.54);
@@ -80,16 +85,22 @@ public partial record MeasurementDetails(int? Bust, string? Cup, int? Waist, int
                 hip = (int)(hip * 2.54);
             }
 
-            cup = string.IsNullOrWhiteSpace(cup)
-                ? null
-                : cup.Trim();
-            result = new MeasurementDetails(bust, cup, waist, hip);
+            //tits
+            cup = string.IsNullOrWhiteSpace(cup) ? null : cup.Trim();
+            var fake = !string.IsNullOrWhiteSpace(cup) &&
+                       text.Contains("fake", StringComparison.OrdinalIgnoreCase);
+            result = new MeasurementDetails(bust, cup?.Trim(), fake, waist, hip);
             return true;
         }
 
         if (CupRegex().Match(text) is { Success: true } cupMatch)
         {
-            result = new MeasurementDetails(null, cupMatch.Value, null, null);
+            result = new MeasurementDetails(
+                null,
+                cupMatch.Value,
+                text.Contains("fake", StringComparison.OrdinalIgnoreCase),
+                null,
+                null);
             return true;
         }
 

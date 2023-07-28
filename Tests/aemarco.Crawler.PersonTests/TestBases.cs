@@ -1,4 +1,6 @@
-﻿namespace aemarco.Crawler.PersonTests;
+﻿using aemarco.Crawler.Model;
+
+namespace aemarco.Crawler.PersonTests;
 
 
 

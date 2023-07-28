@@ -51,7 +51,7 @@ public class WallpaperCrawler
     private readonly List<string> _filterSourceSites = new();
     public IEnumerable<string> GetAvailableSourceSites()
     {
-        foreach (var info in _wallCrawlers
+        foreach (var info in _wallCrawlers //those are all available ;)
                      .Select(x => CrawlerInfo.FromCrawlerType(x.GetType())))
         {
             yield return info.FriendlyName;
