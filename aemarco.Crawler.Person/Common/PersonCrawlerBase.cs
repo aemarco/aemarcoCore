@@ -44,14 +44,8 @@ internal abstract class PersonCrawlerBase
         if (uri is null)
             return;
 
-        var url = uri.Uri.AbsoluteUri;
-        if (!string.IsNullOrWhiteSpace(uri.Uri.Query))
-            url = url.Except(uri.Uri.Query);
-
-
-
         Result.ProfilePictures.Add(new ProfilePicture(
-            url,
+            uri.WithoutQuery().Uri.AbsoluteUri,
             suggestedMinAdultLevel,
             suggestedMaxAdultLevel));
     }

@@ -44,7 +44,7 @@ internal class Freeones : PersonCrawlerBase
             {
                 "Name:" => () => UpdateName(valueNode),
                 "Aliases:" => () => Result.Aliases.AddRange(text.SplitList()),
-                "Official website:" => () => UpdateSocial(valueNode?.FindNode("./a")?.GetHref(), SocialLinkKind.Official),
+                "Official website:" => () => UpdateSocial(valueNode?.FindNode("./a")?.GetHref()?.WithoutQuery(), SocialLinkKind.Official),
                 "Date of birth:" => () => Result.Birthday = text.ToDateOnly(),
                 "Profession:" => () => Result.Profession = string.Join(',', text.SplitList()),
                 "Career status:" => () => Result.StillActive = PersonParser.FindStillActiveInText(text),

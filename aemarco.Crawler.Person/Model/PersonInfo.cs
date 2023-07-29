@@ -11,14 +11,14 @@ public record PersonInfo
 
     public double? Rating { get; internal set; }
     public Gender? Gender { get; internal set; }
-    public List<ProfilePicture> ProfilePictures { get; } = new();
+    public List<ProfilePicture> ProfilePictures { get; private set; } = new();
     public DateOnly? Birthday { get; internal set; }
     public string? Country { get; internal set; }
     public string? City { get; internal set; }
     public string? Profession { get; internal set; }
     public DateOnly? CareerStart { get; internal set; }
     public bool? StillActive { get; internal set; }
-    public List<string> Aliases { get; internal set; } = new();
+    public List<string> Aliases { get; private set; } = new();
     /// <example>
     ///Caucasian
     ///Latin
@@ -50,7 +50,7 @@ public record PersonInfo
     public int? Height { get; internal set; }
     public int? Weight { get; internal set; }
     public string? Piercings { get; internal set; }
-    public List<SocialLink> SocialLinks { get; internal set; } = new();
+    public List<SocialLink> SocialLinks { get; private set; } = new();
 
 
     internal void Merge(PersonInfo info)
@@ -73,7 +73,6 @@ public record PersonInfo
         Rating ??= info.Rating;
         Gender ??= info.Gender;
         ProfilePictures.AddRange(info.ProfilePictures.Where(x => !ProfilePictures.Contains(x)));
-        //ProfilePictures.Sort();
         Birthday ??= info.Birthday;
         Country ??= info.Country;
         City ??= info.City;
@@ -90,8 +89,12 @@ public record PersonInfo
         Height ??= info.Height;
         Weight ??= info.Weight;
         Piercings ??= info.Piercings;
-        SocialLinks.AddRange(info.SocialLinks.Where(x => !SocialLinks.Contains(x)));
-        //SocialLinks.Sort();
+        SocialLinks.AddRange(info.SocialLinks);
+        SocialLinks = SocialLinks
+            .GroupBy(x => x.Kind)
+            .Select(x => x.OrderBy(s => s.Url.Length).First())
+            .ToList();
+        SocialLinks.Sort();
 
         CrawlerInfos.AddRange(info.CrawlerInfos.Where(x => !CrawlerInfos.Contains(x)));
         Errors.AddRange(info.Errors.Where(x => !Errors.Contains(x)));

@@ -39,6 +39,13 @@ public record PageUri(Uri Uri)
         return new PageUri(newUri);
     }
 
+    public PageUri WithoutQuery()
+    {
+        var url = Uri.AbsoluteUri;
+        if (!string.IsNullOrWhiteSpace(Uri.Query))
+            url = url.Except(Uri.Query);
+        return new PageUri(new Uri(url));
+    }
 
     public PageDocument Navigate(int? minDelay = null, int? maxDelay = null)
     {

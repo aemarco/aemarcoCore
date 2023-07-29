@@ -89,7 +89,7 @@ internal class FreeonesTestsWithMollyLittle : PersonCrawlerTestsBase<Freeones>
         });
         ExpectedSocialLinks.AddRange(new List<SocialLink>
         {
-            new(SocialLinkKind.Official, "https://onlyfans.com/maybemollyy?aff=556")
+            new(SocialLinkKind.Official, "https://onlyfans.com/maybemollyy")
         });
         ExpectedBirthday = new DateOnly(2003, 2, 10);
         ExpectedProfession = "Porn Stars";

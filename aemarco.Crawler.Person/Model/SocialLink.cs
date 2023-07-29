@@ -1,5 +1,6 @@
 ﻿namespace aemarco.Crawler.Person.Model;
-public record SocialLink(SocialLinkKind Kind, string Url)
+
+public record SocialLink(SocialLinkKind Kind, string Url) : IComparable<SocialLink>
 {
     public static SocialLink FromUri(Uri uri)
     {
@@ -16,6 +17,13 @@ public record SocialLink(SocialLinkKind Kind, string Url)
         return new SocialLink(kind, uri.AbsoluteUri);
     }
 
+    public int CompareTo(SocialLink? other)
+    {
+        if (other is null)
+            return -1;
+
+        return Kind - other.Kind;
+    }
 }
 
 public enum SocialLinkKind

@@ -77,6 +77,14 @@ internal class PersonCrawlerTests : TestBase
         result.Height.Should().Be(157);
         result.Weight.Should().Be(45);
         result.Piercings.Should().Be("Navel");
+        result.SocialLinks.Should().BeEquivalentTo(new[]
+        {
+            new SocialLink(SocialLinkKind.Twitter, "https://twitter.com/Foxi_Di"),
+            new SocialLink(SocialLinkKind.Instagram, "https://instagram.com/foxy__di/")
+        });
+
+        string.Join(",", result.CrawlerInfos.Select(x => x.FriendlyName))
+            .Should().Be("TheLordOfPorn,Nudevista,BabesAndStars");
         result.Errors.Should().BeEmpty();
     }
 }

@@ -46,7 +46,6 @@ public record PageNode(Uri Uri, HtmlDocument Document, HtmlNode Node)
                     ? new PageUri(new Uri(Uri, manipulatedAttrHref))
                     : null;
 
-
     //Info
     public string? GetAttribute(string attr) =>
         Node.Attributes[attr]?.Value;
