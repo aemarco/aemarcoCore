@@ -182,7 +182,7 @@ public static partial class PersonParser
         return null;
     }
 
-    [GeneratedRegex(@"-[ ]?(active|present)", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"(active|present)", RegexOptions.IgnoreCase)]
     private static partial Regex ActiveRegex();
 
     [GeneratedRegex(@"-[ ]?\d{4,4}", RegexOptions.IgnoreCase)]

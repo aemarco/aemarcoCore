@@ -89,8 +89,8 @@ internal class Babepedia : PersonCrawlerBase
                 Result.MeasurementDetails.Combine(new MeasurementDetails(null, null, text.Except("Boobs:").Contains("fake", StringComparison.OrdinalIgnoreCase), null, null));
             else if (text.StartsWith("Years Active:"))
             {
-                Result.CareerStart = PersonParser.FindCareerStartInText(text);
-                Result.StillActive = PersonParser.FindStillActiveInText(text);
+                Result.CareerStart = PersonParser.FindCareerStartInText(text.Except("Years Active:"));
+                Result.StillActive = PersonParser.FindStillActiveInText(text.Except("Years Active:"));
             }
             else if (text.StartsWith("Piercings:"))
                 Result.Piercings = text.Except("Piercings:");

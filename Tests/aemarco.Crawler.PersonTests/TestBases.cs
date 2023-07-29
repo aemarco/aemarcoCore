@@ -163,7 +163,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
 
     protected string? ExpectedCity { get; init; }
     [Test]
-    public void Crawler_Finds_Place()
+    public void Crawler_Finds_City()
     {
         if (Entry is null)
             return;
@@ -280,7 +280,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         PrintJson(Entry.Weight);
     }
 
-    protected string? ExpectedMeasurementDetails { get; init; }
+    protected string? ExpectedMeasurementDetails { get; init; } = "";
     [Test]
     public void Crawler_Finds_Measurements()
     {

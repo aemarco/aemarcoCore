@@ -89,9 +89,9 @@ public class PersonParserTests
 
     [TestCase(null, null)]
     [TestCase("nothing to find", null)]
-    [TestCase("Years Active: 2018 - Present (Started Around 18 Years Old; 4 Years In The Business)", true)]
-    [TestCase("Years Active: 2013 - 2019 (Started Around 18 Years Old; 6 Years In The Business)", false)]
-    [TestCase("Karrierestatus: Retired", false)]
+    [TestCase("2018 - Present (Started Around 18 Years Old; 4 Years In The Business)", true)]
+    [TestCase("2013 - 2019 (Started Around 18 Years Old; 6 Years In The Business)", false)]
+    [TestCase("Retired", false)]
     public void FindStillActiveInText_Works(string? text, bool? expected)
     {
         var result = PersonParser.FindStillActiveInText(text);

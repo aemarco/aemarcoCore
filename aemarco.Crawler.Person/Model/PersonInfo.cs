@@ -3,6 +3,9 @@
 public record PersonInfo
 {
 
+    //TODO Profession should be a list
+    //TODO Piercings should be a list
+
     public string? FirstName { get; internal set; }
     public string? LastName { get; internal set; }
 
@@ -47,7 +50,6 @@ public record PersonInfo
     public int? Height { get; internal set; }
     public int? Weight { get; internal set; }
     public string? Piercings { get; internal set; }
-
     public List<SocialLink> SocialLinks { get; internal set; } = new();
 
 

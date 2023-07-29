@@ -78,9 +78,9 @@ internal class Nudevista : PersonCrawlerBase
             else if (text.StartsWith("Beruf:"))
                 Result.Profession = text.Except("Beruf:");
             else if (text.StartsWith("Karrierestart:"))
-                Result.CareerStart = PersonParser.FindCareerStartInText(text);
+                Result.CareerStart = PersonParser.FindCareerStartInText(text.Except("Karrierestart:"));
             else if (text.StartsWith("Karrierestatus:"))
-                Result.StillActive = PersonParser.FindStillActiveInText(text);
+                Result.StillActive = PersonParser.FindStillActiveInText(text.Except("Karrierestatus:"));
             else if (text.StartsWith("Rasse:"))
                 Result.Ethnicity = text.Except("Rasse:");
             else if (text.StartsWith("Haare:"))
