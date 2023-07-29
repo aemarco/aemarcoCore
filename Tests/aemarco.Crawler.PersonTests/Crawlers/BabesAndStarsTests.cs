@@ -1,8 +1,9 @@
 ﻿namespace aemarco.Crawler.PersonTests.Crawlers;
-internal class BabesAndStarsWithArielRebelTests : PersonCrawlerTestsBase<BabesAndStars>
+
+internal class BabesAndStarsTestsWithArielRebel : PersonCrawlerTestsBase<BabesAndStars>
 {
     //https://www.babesandstars.com/a/ariel-rebel/
-    public BabesAndStarsWithArielRebelTests()
+    public BabesAndStarsTestsWithArielRebel()
         : base("Ariel Rebel")
     {
         //first and last name expected automatically
@@ -24,7 +25,7 @@ internal class BabesAndStarsWithArielRebelTests : PersonCrawlerTestsBase<BabesAn
         {
             "https://www.babesandstars.com/models/2000/2094/250x330.jpg"
         });
-
+        ExpectedRating = true;
         ExpectedCountry = "Canada";
         ExpectedEthnicity = "Caucasian";
         ExpectedMeasurementDetails = "86A-58-81";

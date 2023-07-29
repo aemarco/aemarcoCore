@@ -22,6 +22,11 @@ internal class Stripper : PersonCrawlerBase
             .GetSrc();
         UpdateProfilePictures(picUri, 35, 39);
 
+        //Rating
+
+        if (PersonParser.FindRatingInText(girlPage.FindNode("//span[@class='star rate']")?.GetText()) is { } rating)
+            Result.Rating = rating * 2;
+
         //Data
         var dataNodes = girlPage.FindNodes("//ul[@class='info2']/li");
         Result.Gender = Gender.Female; //always female on this site

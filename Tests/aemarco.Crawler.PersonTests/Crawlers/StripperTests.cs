@@ -7,6 +7,7 @@ internal class StripperTestsWithAlletaOcean : PersonCrawlerTestsBase<Stripper>
         : base("Aletta Ocean")
     {
         //first and last name expected automatically
+        ExpectedRating = true;
         ExpectedGender = Gender.Female; //gender is assumed
         ExpectedProfilePictures.Add(
             "http://www.istripper.com/free/sets/a0822/illustrations/full.png");

@@ -1,10 +1,10 @@
 ﻿namespace aemarco.Crawler.PersonTests.Crawlers;
 
-internal class PornstarbyfaceWithArielRebel : PersonCrawlerTestsBase<Pornstarbyface>
+internal class PornstarbyfaceTestsWithArielRebel : PersonCrawlerTestsBase<Pornstarbyface>
 {
 
     //https://pornstarbyface.com/girls/Ariel-Rebel
-    public PornstarbyfaceWithArielRebel()
+    public PornstarbyfaceTestsWithArielRebel()
         : base("Ariel Rebel")
     {
         //first and last name expected automatically

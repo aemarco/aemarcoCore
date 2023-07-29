@@ -39,10 +39,10 @@ public partial record MeasurementDetails(int? Bust, string? Cup, bool FakeTits, 
 
     #region IParseable
 
-    [GeneratedRegex(@"(\d+)([a-dA-D]*)-(\d+)-(\d+)", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"(\d+)([a-oA-O]*)-(\d+)-(\d+)", RegexOptions.IgnoreCase)]
     private static partial Regex MeasurementsRegex();
 
-    [GeneratedRegex(@"[A-D]+", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"[A-O]+", RegexOptions.IgnoreCase)]
     private static partial Regex CupRegex();
 
 
@@ -87,9 +87,9 @@ public partial record MeasurementDetails(int? Bust, string? Cup, bool FakeTits, 
 
             //tits
             cup = string.IsNullOrWhiteSpace(cup) ? null : cup.Trim();
-            var fake = !string.IsNullOrWhiteSpace(cup) &&
-                       text.Contains("fake", StringComparison.OrdinalIgnoreCase);
-            result = new MeasurementDetails(bust, cup?.Trim(), fake, waist, hip);
+
+            var fake = !string.IsNullOrWhiteSpace(cup) && text.Contains("fake", StringComparison.OrdinalIgnoreCase);
+            result = new MeasurementDetails(bust, MetricCup(cup), fake, waist, hip);
             return true;
         }
 
@@ -97,7 +97,7 @@ public partial record MeasurementDetails(int? Bust, string? Cup, bool FakeTits, 
         {
             result = new MeasurementDetails(
                 null,
-                cupMatch.Value,
+                MetricCup(cupMatch.Value),
                 text.Contains("fake", StringComparison.OrdinalIgnoreCase),
                 null,
                 null);
@@ -105,6 +105,24 @@ public partial record MeasurementDetails(int? Bust, string? Cup, bool FakeTits, 
         }
 
         return false;
+
+        //https://bradirectory.ca/wp-content/uploads/2021/06/BRA-CUP-SIZE-CONVERSION-CHART-586x1024.jpg
+        string? MetricCup(string? c)
+        {
+            return c?
+                .ToUpper()
+                //us
+                .Replace("DDDDD", "H")
+                .Replace("DDDD", "G")
+                .Replace("DDD", "F")
+                .Replace("DD", "E")
+                //uk
+                .Replace("FF", "H")
+                .Replace("GG", "J")
+                .Replace("JJ", "N");
+        }
+
+
     }
 
     #endregion

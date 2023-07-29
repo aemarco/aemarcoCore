@@ -42,6 +42,9 @@ internal class Babepedia : PersonCrawlerBase
             Result.Aliases.AddRange(cleaned.SplitList('/'));
         }
 
+        //TODO Babepedia add rating
+        //TODO Babepedia add socials
+
         //Data
         var dataNodes = girlPage.FindNodes("//div[@id='bioarea']/ul/li");
         foreach (var node in dataNodes)

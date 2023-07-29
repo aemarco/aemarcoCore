@@ -6,7 +6,7 @@ public record PersonInfo
     public string? FirstName { get; internal set; }
     public string? LastName { get; internal set; }
 
-
+    public double? Rating { get; internal set; }
     public Gender? Gender { get; internal set; }
     public List<ProfilePicture> ProfilePictures { get; } = new();
     public DateOnly? Birthday { get; internal set; }
@@ -48,6 +48,9 @@ public record PersonInfo
     public int? Weight { get; internal set; }
     public string? Piercings { get; internal set; }
 
+    public List<SocialLink> SocialLinks { get; internal set; } = new();
+
+
     internal void Merge(PersonInfo info)
     {
         FirstName ??= info.FirstName;
@@ -65,8 +68,10 @@ public record PersonInfo
             }
         }
 
+        Rating ??= info.Rating;
         Gender ??= info.Gender;
         ProfilePictures.AddRange(info.ProfilePictures.Where(x => !ProfilePictures.Contains(x)));
+        //ProfilePictures.Sort();
         Birthday ??= info.Birthday;
         Country ??= info.Country;
         City ??= info.City;
@@ -74,6 +79,7 @@ public record PersonInfo
         CareerStart ??= info.CareerStart;
         StillActive ??= info.StillActive;
         Aliases.AddRange(info.Aliases.Where(x => !Aliases.Contains(x)));
+        Aliases.RemoveAll(x => x == $"{FirstName} {LastName}");
         Aliases.Sort();
         Ethnicity ??= info.Ethnicity;
         HairColor ??= info.HairColor;
@@ -82,6 +88,8 @@ public record PersonInfo
         Height ??= info.Height;
         Weight ??= info.Weight;
         Piercings ??= info.Piercings;
+        SocialLinks.AddRange(info.SocialLinks.Where(x => !SocialLinks.Contains(x)));
+        //SocialLinks.Sort();
 
         CrawlerInfos.AddRange(info.CrawlerInfos.Where(x => !CrawlerInfos.Contains(x)));
         Errors.AddRange(info.Errors.Where(x => !Errors.Contains(x)));

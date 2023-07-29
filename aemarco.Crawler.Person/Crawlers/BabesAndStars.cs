@@ -22,6 +22,11 @@ internal class BabesAndStars : PersonCrawlerBase
             .FindNode("./div[@class='thumb']/img")?
             .GetSrc());
 
+        //Rating
+        Result.Rating = PersonParser.FindRatingInText(profileNode?
+            .FindNode("./div[@class='info']/form/em")?
+            .GetText());
+
         //Data
         var infoNode = profileNode?.FindNode("./div[@class='info']/div[@class='middle']");
         if (infoNode is null)

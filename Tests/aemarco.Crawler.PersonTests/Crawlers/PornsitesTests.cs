@@ -1,10 +1,10 @@
 ﻿namespace aemarco.Crawler.PersonTests.Crawlers;
 
-internal class PornsitesTestsAlettaOcean : PersonCrawlerTestsBase<Pornsites>
+internal class PornsitesTestsWithAlettaOcean : PersonCrawlerTestsBase<Pornsites>
 {
 
     //https://pornsites.xxx/pornstars/Aletta-Ocean
-    public PornsitesTestsAlettaOcean()
+    public PornsitesTestsWithAlettaOcean()
         : base("Aletta Ocean")
     {
         //first and last name expected automatically
@@ -14,7 +14,7 @@ internal class PornsitesTestsAlettaOcean : PersonCrawlerTestsBase<Pornsites>
         ExpectedGender = Gender.Female;
         ExpectedHairColor = "Black";
         ExpectedEyeColor = "Grey";
-        ExpectedMeasurementDetails = "96DDD-66-93";
+        ExpectedMeasurementDetails = "96F-66-93";
         ExpectedWeight = 58;
         ExpectedHeight = 172;
         ExpectedEthnicity = "Caucasian";

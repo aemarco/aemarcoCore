@@ -24,6 +24,11 @@ internal class Nudevista : PersonCrawlerBase
                     ? x :
                     $"https:{x}"));
 
+        //Social
+        girlPage
+            .FindNodes("//div[@class='msocial']/a")
+            .ForEach(x => UpdateSocial(x.GetHref()));
+
         //Data
         var infoNode = girlPage.FindNode("//div[@id='params_scroll']");
         if (infoNode is null)

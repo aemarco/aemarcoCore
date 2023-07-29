@@ -64,5 +64,22 @@ internal abstract class PersonCrawlerBase
         }
     }
 
+    protected void UpdateSocial(PageUri? socialLink, SocialLinkKind kind = SocialLinkKind.Unknown)
+    {
+        if (socialLink is null)
+            return;
+
+        var link = SocialLink.FromUri(socialLink.Uri);
+
+        //override when specified
+        if (kind != SocialLinkKind.Unknown)
+            link = link with { Kind = kind };
+
+        //add only known kinds
+        if (link.Kind != SocialLinkKind.Unknown)
+            Result.SocialLinks.Add(link);
+    }
+
+
     #endregion
 }

@@ -28,8 +28,8 @@ internal class MeasurementDetailsTests
     [TestCase("86-60-87", "86-60-87")]
     [TestCase("86A / 66 / 94", "86A-66-94")]
     [TestCase("86A-58-81", "86A-58-81")]
-    [TestCase("96DDD/66/93", "96DDD-66-93")]
-    [TestCase("96DDD-66-93", "96DDD-66-93")]
+    [TestCase("96DDD/66/93", "96F-66-93")]
+    [TestCase("96DDD-66-93", "96F-66-93")]
     public void Parse_Works(string text, string expected)
     {
         var result = MeasurementDetails.Parse(text);
@@ -44,8 +44,8 @@ internal class MeasurementDetailsTests
     [TestCase("86-60-87", "86-60-87")]
     [TestCase("86A / 66 / 94", "86A-66-94")]
     [TestCase("86A-58-81", "86A-58-81")]
-    [TestCase("96DDD/66/93", "96DDD-66-93")]
-    [TestCase("96DDD-66-93", "96DDD-66-93")]
+    [TestCase("96DDD/66/93", "96F-66-93")]
+    [TestCase("96DDD-66-93", "96F-66-93")]
     public void TryParse_WorksSuccessfully(string text, string expected)
     {
         var result = MeasurementDetails.TryParse(text, out var parsed);
@@ -56,6 +56,11 @@ internal class MeasurementDetailsTests
 
     [TestCase("", "")]
     [TestCase("A", "A")]
+    [TestCase("D", "D")]
+    [TestCase("DD", "E")]
+    [TestCase("DDD", "F")]
+    [TestCase("DDDD", "G")]
+    [TestCase("DDDDD", "H")]
     [TestCase("32A", "A")]
     [TestCase("34A / 23 / 32", "86A-58-81")]
     [TestCase("34A/23/32", "86A-58-81")]
@@ -63,8 +68,12 @@ internal class MeasurementDetailsTests
     [TestCase("32B-24-35", "81B-60-88")]
     [TestCase("34-24-34", "86-60-86")]
     [TestCase("38-26-37", "96-66-93")]
-    [TestCase("38DDD/26/37", "96DDD-66-93")]
-    [TestCase("38DDD-26-37", "96DDD-66-93")]
+    [TestCase("38DDD/26/37", "96F-66-93")]
+    [TestCase("38D-26-37", "96D-66-93")]
+    [TestCase("38DD-26-37", "96E-66-93")]
+    [TestCase("38DDD-26-37", "96F-66-93")]
+    [TestCase("38DDDD-26-37", "96G-66-93")]
+    [TestCase("38DDDDD-26-37", "96H-66-93")]
     public void Parse_WorksForImperial(string text, string expected)
     {
         var format = new MeasurementFormatProvider(MeasurementSystem.Imperial);

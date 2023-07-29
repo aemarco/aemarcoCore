@@ -13,7 +13,7 @@ public record PageDocument(Uri Uri, HtmlDocument Document)
             ? new PageNode(this, subNode)
             : null;
 
-    public virtual IReadOnlyList<PageNode> FindNodes(string xPath)
+    public virtual List<PageNode> FindNodes(string xPath)
     {
         var nodes = Document.DocumentNode.SelectNodes(xPath) ?? Enumerable.Empty<HtmlNode>();
         var result = nodes

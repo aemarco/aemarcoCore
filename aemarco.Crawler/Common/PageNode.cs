@@ -12,7 +12,7 @@ public record PageNode(Uri Uri, HtmlDocument Document, HtmlNode Node)
         Node.SelectSingleNode(xPath) is { } subNode
             ? new PageNode(this, subNode)
             : null;
-    public override IReadOnlyList<PageNode> FindNodes(string xPath)
+    public override List<PageNode> FindNodes(string xPath)
     {
         var nodes = Node.SelectNodes(xPath) ?? Enumerable.Empty<HtmlNode>();
         var result = nodes

@@ -1,11 +1,14 @@
-﻿namespace aemarco.Crawler.PersonTests;
+﻿using System.Collections;
+
+namespace aemarco.Crawler.PersonTests;
 
 internal abstract class PersonCrawlerTestsBase<T> : TestBase
 {
 
     private readonly CrawlerInfo _crawlerInfo;
     private readonly string _nameToCrawl;
-    protected PersonCrawlerTestsBase(string nameToCrawl)
+    protected PersonCrawlerTestsBase(
+        string nameToCrawl)
     {
         _crawlerInfo = CrawlerInfo.FromCrawlerType(typeof(T));
         _nameToCrawl = nameToCrawl;
@@ -40,6 +43,16 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         PrintJson(Entry.CrawlerInfos);
     }
 
+    [Test]
+    public void Entry_HasNoErrors()
+    {
+        if (Entry is null)
+            return;
+
+        Entry.Errors.Should().BeEmpty();
+        PrintJson(Entry.Errors);
+    }
+
     private string ExpectedFirstName { get; init; }
     [Test]
     public void Crawler_Finds_FirstName()
@@ -60,6 +73,26 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
 
         Entry.LastName.Should().Be(ExpectedLastName);
         PrintJson(Entry.LastName);
+    }
+
+    protected bool? ExpectedRating { get; init; }
+    [Test]
+    public void Crawler_Finds_Rating()
+    {
+        if (Entry is null)
+            return;
+
+        if (ExpectedRating is null)
+        {
+            NothingExpected(Entry.Rating);
+            return;
+        }
+
+        if (ExpectedRating.Value)
+            Entry.Rating.Should().BeInRange(0, 10);
+        else
+            Entry.Rating.Should().BeNull();
+        PrintJson(Entry.Rating?.ToString());
     }
 
     protected Gender? ExpectedGender { get; init; }
@@ -198,7 +231,6 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         PrintJson(Entry.HairColor);
     }
 
-
     protected string? ExpectedEyeColor { get; init; }
     [Test]
     public void Crawler_Finds_Eyes()
@@ -266,7 +298,6 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         Entry.MeasurementDetails.ToString().Should().Be(ExpectedMeasurementDetails);
         PrintJson(Entry.MeasurementDetails);
     }
-
 
     protected string? ExpectedPiercings { get; init; }
     [Test]
@@ -336,25 +367,87 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         PrintJson(Entry.Aliases);
     }
 
+    protected List<SocialLink> ExpectedSocialLinks { get; set; } = new();
+    [Test]
+    public void Crawler_Finds_SocialLinks()
+    {
+        if (Entry is null)
+            return;
+
+        if (ExpectedSocialLinks.Count == 0)
+        {
+            NothingExpected(Entry.SocialLinks.Count == 0 ? null : Entry.SocialLinks);
+            return;
+        }
+
+        Entry.SocialLinks.Should().BeEquivalentTo(ExpectedSocialLinks);
+        PrintJson(Entry.SocialLinks);
+    }
+
 }
 
 internal abstract class TestBase
 {
     protected static void NothingExpected(object? found)
     {
-        PrintJson(new
-        {
-            Expected = "Noting",
-            Found = found ?? "Nothing"
-        });
+        if (found is null)
+            return;
+
+        Assert.Warn($"""
+                Expected Nothing but found: {GetTypeName(found)}
+                {JsonConvert.SerializeObject(found, Formatting.Indented)}
+                """);
     }
 
     protected static void PrintJson(object? obj)
     {
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                obj,
-                Formatting.Indented));
+        if (obj is null)
+        {
+            TestContext.Out.WriteLine("Passed with: null");
+            return;
+        }
+
+        TestContext.Out.WriteLine($"""
+            Passed with: {GetTypeName(obj)}
+             {JsonConvert.SerializeObject(obj, Formatting.Indented)}
+            """);
     }
+
+
+    private static string GetTypeName(object obj)
+    {
+        var type = obj.GetType();
+        if (obj is not IEnumerable or string)
+            return type.Name;
+
+        var elementType = GetCollectionElementType(type);
+        return $"{elementType?.Name ?? "UnknownType"}[]";
+    }
+    private static Type? GetCollectionElementType(Type collectionType)
+    {
+        if (collectionType.IsArray)
+            return collectionType.GetElementType();
+
+
+        // Handle collections implementing IEnumerable<T>
+        var genericArguments = collectionType.GetGenericArguments();
+        if (genericArguments.Length > 0)
+            return genericArguments[0];
+
+
+        // Handle non-generic collections implementing IEnumerable
+        if (typeof(IEnumerable).IsAssignableFrom(collectionType))
+        {
+            foreach (var interfaceType in collectionType.GetInterfaces())
+            {
+                if (interfaceType.IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                {
+                    return interfaceType.GetGenericArguments()[0];
+                }
+            }
+        }
+        return null;
+    }
+
 
 }

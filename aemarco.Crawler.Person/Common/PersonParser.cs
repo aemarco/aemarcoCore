@@ -21,6 +21,35 @@ public static partial class PersonParser
     }
 
     /// <summary>
+    /// Parses a double 0 - 10 rating out of a text. Uses . or , as separator
+    /// </summary>
+    /// <param name="text"></param>
+    /// <returns></returns>
+    public static double? FindRatingInText(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return null;
+
+        //percent values to be / by 10 to get in range
+        if (text.EndsWith("%"))
+        {
+            if (!int.TryParse(text.Except("%"), out var percent))
+                return null;
+            var maybeInRange = 1.0 * percent / 10;
+            return maybeInRange is >= 0 and <= 10
+                ? maybeInRange
+                : null;
+        }
+
+        text = text.Replace(',', '.');
+        return !double.TryParse(text, NumberFormatInfo.InvariantInfo, out var rating)
+            ? null
+            : rating is >= 0 and <= 10
+                ? rating
+                : null;
+    }
+
+    /// <summary>
     /// Tries to find gender from given text
     /// </summary>
     /// <param name="text"></param>

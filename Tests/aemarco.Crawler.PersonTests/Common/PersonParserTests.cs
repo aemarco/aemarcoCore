@@ -15,6 +15,25 @@ public class PersonParserTests
         lastName.Should().Be(expectedLast);
     }
 
+
+    [TestCase(null, null)]
+    [TestCase("", null)]
+    [TestCase("Bob", null)]
+    [TestCase("6.4", 6.4)]
+    [TestCase("6,4", 6.4)]
+    [TestCase("6", 6)]
+    [TestCase("-0.1", null)]
+    [TestCase("-1", null)]
+    [TestCase("10.1", null)]
+    [TestCase("11", null)]
+    [TestCase("97%", 9.7)]
+    public void FindRatingInText_Works(string? text, double? expected)
+    {
+        var result = PersonParser.FindRatingInText(text);
+        result.Should().Be(expected);
+    }
+
+
     [TestCase(null, null)]
     [TestCase("Female", "Female")]
     [TestCase("Male", "Male")]
