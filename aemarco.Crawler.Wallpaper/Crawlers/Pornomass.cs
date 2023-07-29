@@ -26,7 +26,7 @@ internal class Pornomass : WallpaperCrawlerBasis
             CreateCrawlOffer(
                 "Pornomass",
                 new PageUri(_uri),
-                new ContentCategory(Category.Girls_Hardcore, 90, 99))
+                new ContentCategory(Category.Girls_Hardcore, 90, 100))
         };
         return result;
     }
