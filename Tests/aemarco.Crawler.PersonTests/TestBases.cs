@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace aemarco.Crawler.PersonTests;
+﻿namespace aemarco.Crawler.PersonTests;
 
 internal abstract class PersonCrawlerTestsBase<T> : TestBase
 {

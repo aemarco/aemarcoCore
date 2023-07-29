@@ -18,7 +18,7 @@ public class WallpaperCrawlerTests : TestBase
         result.Should().NotBeNull();
 
         PrintJson(new { Albums = result.NewAlbums.Count });
-        PrintJson(new { Entries = result.KnownEntries.Count });
+        PrintJson(new { Entries = result.NewEntries.Count });
 
 
         if (result.Warnings.FirstOrDefault() is { } warning)
@@ -210,18 +210,6 @@ public class WallpaperCrawlerTests : TestBase
                 x.SiteCategoryName,
                 x.Category.Category
             }));
-    }
-
-}
-
-public abstract class TestBase
-{
-    protected static void PrintJson(object? obj)
-    {
-        TestContext.Out.WriteLine(
-            JsonConvert.SerializeObject(
-                obj,
-                Formatting.Indented));
     }
 
 }
