@@ -39,7 +39,7 @@ public partial record MeasurementDetails(int? Bust, string? Cup, bool FakeTits, 
 
     #region IParseable
 
-    [GeneratedRegex(@"(\d+)([a-oA-O]*)-(\d+)-(\d+)", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"(\d+)([A-O]*)(?:\(fake\))?-(\d+)-(\d+)", RegexOptions.IgnoreCase)]
     private static partial Regex MeasurementsRegex();
 
     [GeneratedRegex(@"[A-O]+", RegexOptions.IgnoreCase)]
@@ -56,7 +56,6 @@ public partial record MeasurementDetails(int? Bust, string? Cup, bool FakeTits, 
 
         throw new FormatException();
     }
-
     public static bool TryParse([NotNullWhen(true)] string? text, out MeasurementDetails result) =>
         TryParse(text, null, out result);
     public static bool TryParse([NotNullWhen(true)] string? text, IFormatProvider? provider, out MeasurementDetails result)
@@ -67,9 +66,11 @@ public partial record MeasurementDetails(int? Bust, string? Cup, bool FakeTits, 
         if (string.IsNullOrWhiteSpace(text))
             return true;
 
+
         text = text.Replace("/", "-");
         text = text.Replace(" -", "-");
         text = text.Replace("- ", "-");
+
 
         if (MeasurementsRegex().Match(text) is { Success: true } measureMatch &&
             int.TryParse(measureMatch.Groups[1].Value, out var bust) &&
@@ -77,6 +78,7 @@ public partial record MeasurementDetails(int? Bust, string? Cup, bool FakeTits, 
             int.TryParse(measureMatch.Groups[3].Value, out var waist) &&
             int.TryParse(measureMatch.Groups[4].Value, out var hip))
         {
+
             //measures
             if (provider is MeasurementFormatProvider { MeasurementSystem: MeasurementSystem.Imperial })
             {
@@ -87,8 +89,8 @@ public partial record MeasurementDetails(int? Bust, string? Cup, bool FakeTits, 
 
             //tits
             cup = string.IsNullOrWhiteSpace(cup) ? null : cup.Trim();
-
             var fake = !string.IsNullOrWhiteSpace(cup) && text.Contains("fake", StringComparison.OrdinalIgnoreCase);
+
             result = new MeasurementDetails(bust, MetricCup(cup), fake, waist, hip);
             return true;
         }

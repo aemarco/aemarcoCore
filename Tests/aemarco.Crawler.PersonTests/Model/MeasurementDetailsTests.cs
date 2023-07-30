@@ -30,27 +30,12 @@ internal class MeasurementDetailsTests
     [TestCase("86A-58-81", "86A-58-81")]
     [TestCase("96DDD/66/93", "96F-66-93")]
     [TestCase("96DDD-66-93", "96F-66-93")]
+    [TestCase("86DD(fake)/66/93", "86E(fake)-66-93")]
+    [TestCase("86DD(fake)-66-93", "86E(fake)-66-93")]
     public void Parse_Works(string text, string expected)
     {
         var result = MeasurementDetails.Parse(text);
         result.ToString().Should().Be(expected);
-    }
-
-    [TestCase("", "")]
-    [TestCase("A", "A")]
-    [TestCase("D (Fake)", "D(fake)")]
-    [TestCase("32A", "A")]
-    [TestCase("86 / 66 / 94", "86-66-94")]
-    [TestCase("86-60-87", "86-60-87")]
-    [TestCase("86A / 66 / 94", "86A-66-94")]
-    [TestCase("86A-58-81", "86A-58-81")]
-    [TestCase("96DDD/66/93", "96F-66-93")]
-    [TestCase("96DDD-66-93", "96F-66-93")]
-    public void TryParse_WorksSuccessfully(string text, string expected)
-    {
-        var result = MeasurementDetails.TryParse(text, out var parsed);
-        result.Should().BeTrue();
-        parsed.ToString().Should().Be(expected);
     }
 
 
@@ -81,6 +66,9 @@ internal class MeasurementDetailsTests
 
         result.ToString().Should().Be(expected);
     }
+
+
+
 
     [TestCase(null)]
     [TestCase("ZZZ")]
