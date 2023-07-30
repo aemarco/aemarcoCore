@@ -7,7 +7,7 @@ namespace aemarco.Crawler.Wallpaper.Model;
 
 public class ContentCategory
 {
-    internal ContentCategory(Category category, int minAdult = -1, int maxAdult = -1)
+    internal ContentCategory(Category category, int? minAdult = null, int? maxAdult = null)
     {
         Category = category.ToString();
 
@@ -28,7 +28,7 @@ public class ContentCategory
 
     public string MainCategory { get; }
     public string SubCategory { get; } = string.Empty;
-    public int SuggestedMinAdultLevel { get; set; }
-    public int SuggestedMaxAdultLevel { get; set; }
+    public int? SuggestedMinAdultLevel { get; set; }
+    public int? SuggestedMaxAdultLevel { get; set; }
 
 }

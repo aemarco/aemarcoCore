@@ -1,8 +1,11 @@
-﻿namespace aemarco.Crawler.PersonTests.Crawlers;
+﻿#pragma warning disable CS0612
+namespace aemarco.Crawler.PersonTests.Crawlers;
 
-#pragma warning disable CS0612
+
+
 
 internal class BabepediaTestsWithFoxiDi : PersonCrawlerTestsBase<Babepedia>
+
 {
 
     //https://www.babepedia.com/babe/Foxy_Di

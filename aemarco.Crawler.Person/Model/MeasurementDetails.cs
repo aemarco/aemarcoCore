@@ -107,7 +107,7 @@ public partial record MeasurementDetails(int? Bust, string? Cup, bool FakeTits, 
         return false;
 
         //https://bradirectory.ca/wp-content/uploads/2021/06/BRA-CUP-SIZE-CONVERSION-CHART-586x1024.jpg
-        string? MetricCup(string? c)
+        static string? MetricCup(string? c)
         {
             return c?
                 .ToUpper()

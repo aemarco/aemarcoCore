@@ -1,7 +1,5 @@
 ﻿namespace aemarco.Crawler.PersonTests;
 
-#pragma warning disable CS0612
-
 internal class PersonCrawlerTests : TestBase
 {
 
