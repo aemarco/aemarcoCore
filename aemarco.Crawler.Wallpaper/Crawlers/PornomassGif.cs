@@ -25,7 +25,8 @@ internal class PornomassGif : WallpaperCrawlerBasis
             CreateCrawlOffer(
                 "Gifpornomass",
                 new PageUri(_uri),
-                new ContentCategory(Category.Girls_Hardcore, 90, 99))
+                new ContentCategory(Category.Girls_Hardcore, 95, 99))
+            //ca 80% are >= 95
         };
         return result;
     }
