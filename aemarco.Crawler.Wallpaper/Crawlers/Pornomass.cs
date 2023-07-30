@@ -26,7 +26,8 @@ internal class Pornomass : WallpaperCrawlerBasis
             CreateCrawlOffer(
                 "Pornomass",
                 new PageUri(_uri),
-                new ContentCategory(Category.Girls_Hardcore, 90, 100))
+                new ContentCategory(Category.Girls_Hardcore, 94, 100))
+            //80 - 90% are >= 95, so we suggest 94
         };
         return result;
     }
