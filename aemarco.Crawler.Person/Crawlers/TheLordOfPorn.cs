@@ -8,8 +8,8 @@ internal class TheLordOfPorn : PersonCrawlerBase
 
 
     //z.B. "https://thelordofporn.com/pornstars/dakota-tyler"
-    protected override PageUri GetGirlUri(string nameToCrawl) =>
-        new PageUri(_uri).WithHref($"/pornstars/{nameToCrawl.Replace(' ', '-').ToLower()}");
+    protected override PageUri GetGirlUri(string firstName, string lastName) =>
+        new PageUri(_uri).WithHref($"/pornstars/{firstName.Replace(' ', '-')}-{lastName.Replace(' ', '-')}".ToLower());
 
     protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {

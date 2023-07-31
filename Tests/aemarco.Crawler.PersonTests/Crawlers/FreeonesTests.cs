@@ -3,7 +3,7 @@
 internal class FreeonesTestsWithFoxyDi : PersonCrawlerTestsBase<Freeones>
 {
     public FreeonesTestsWithFoxyDi()
-        : base("Foxy Di")
+        : base("Foxy", "Di")
     {
 
         //first and last name expected automatically
@@ -40,7 +40,7 @@ internal class FreeonesTestsWithFoxyDi : PersonCrawlerTestsBase<Freeones>
 internal class FreeonesTestsWithArielRebel : PersonCrawlerTestsBase<Freeones>
 {
     public FreeonesTestsWithArielRebel()
-        : base("Ariel Rebel")
+        : base("Ariel", "Rebel")
     {
 
         //first and last name expected automatically
@@ -78,7 +78,7 @@ internal class FreeonesTestsWithArielRebel : PersonCrawlerTestsBase<Freeones>
 internal class FreeonesTestsWithMollyLittle : PersonCrawlerTestsBase<Freeones>
 {
     public FreeonesTestsWithMollyLittle()
-        : base("Molly Little")
+        : base("Molly", "Little")
     {
 
         //first and last name expected automatically

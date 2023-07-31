@@ -10,7 +10,7 @@ internal class BabepediaTestsWithFoxiDi : PersonCrawlerTestsBase<Babepedia>
 
     //https://www.babepedia.com/babe/Foxy_Di
     public BabepediaTestsWithFoxiDi()
-        : base("Foxi Di")
+        : base("Foxi", "Di")
     {
         ExpectedAliases.AddRange(new List<string>
         {
@@ -52,7 +52,7 @@ internal class BabepediaTestsWithChloeTemple : PersonCrawlerTestsBase<Babepedia>
 
     //https://www.babepedia.com/babe/Chloe_Temple
     public BabepediaTestsWithChloeTemple()
-        : base("Chloe Temple")
+        : base("Chloe", "Temple")
     {
         //first and last name expected automatically
         ExpectedProfilePictures.AddRange(new List<string>

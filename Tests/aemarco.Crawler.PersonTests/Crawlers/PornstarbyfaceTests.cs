@@ -5,7 +5,7 @@ internal class PornstarbyfaceTestsWithArielRebel : PersonCrawlerTestsBase<Pornst
 
     //https://pornstarbyface.com/girls/Ariel-Rebel
     public PornstarbyfaceTestsWithArielRebel()
-        : base("Ariel Rebel")
+        : base("Ariel", "Rebel")
     {
         //first and last name expected automatically
         ExpectedGender = Gender.Female; //gender is assumed

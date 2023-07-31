@@ -4,7 +4,7 @@ internal class NudevistaTestsWithAlettaOcean : PersonCrawlerTestsBase<Nudevista>
 {
     //https://www.nudevista.at/?q=aletta+ocean&s=s
     public NudevistaTestsWithAlettaOcean()
-        : base("Aletta Ocean")
+        : base("Aletta", "Ocean")
     {
         //first and last name expected automatically
         ExpectedProfilePictures.Add("https://b99.nudevista.com/_/083/137083_370.jpg");
@@ -52,7 +52,7 @@ internal class NudevistaTestsWithAmberSym : PersonCrawlerTestsBase<Nudevista>
 
     //https://www.nudevista.at/?q=Amber+Sym&s=s
     public NudevistaTestsWithAmberSym()
-        : base("Amber Sym")
+        : base("Amber", "Sym")
     {
         //first and last name expected automatically
         ExpectedProfilePictures.Add("https://b99.nudevista.com/_/319/145319_370.jpg");

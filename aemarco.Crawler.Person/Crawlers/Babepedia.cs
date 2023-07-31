@@ -15,8 +15,8 @@ internal class Babepedia : PersonCrawlerBase
 
 
     //z.B. "https://www.babepedia.com/babe/Chloe_Temple/"
-    protected override PageUri GetGirlUri(string nameToCrawl) =>
-        new PageUri(_uri).WithHref($"/babe/{nameToCrawl.Replace(' ', '_')}");
+    protected override PageUri GetGirlUri(string firstName, string lastName) =>
+        new PageUri(_uri).WithHref($"/babe/{firstName.Replace(' ', '_')}_{lastName.Replace(' ', '_')}");
     protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {
 

@@ -9,6 +9,8 @@ public record PersonInfo
     public string? FirstName { get; internal set; }
     public string? LastName { get; internal set; }
 
+
+
     public double? Rating { get; internal set; }
     public Gender? Gender { get; internal set; }
     public List<ProfilePicture> ProfilePictures { get; private set; } = new();

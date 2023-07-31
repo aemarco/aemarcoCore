@@ -8,8 +8,8 @@ internal class Stripper : PersonCrawlerBase
 
 
     //z.B. "https://www.istripper.com/de/models/Aletta-Ocean"
-    protected override PageUri GetGirlUri(string nameToCrawl) =>
-        new PageUri(_uri).WithHref($"/de/models/{nameToCrawl.Replace(' ', '-')}");
+    protected override PageUri GetGirlUri(string firstName, string lastName) =>
+        new PageUri(_uri).WithHref($"/de/models/{firstName.Replace(' ', '-')}-{lastName.Replace(' ', '-')}");
     protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {
 

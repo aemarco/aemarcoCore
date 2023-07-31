@@ -6,8 +6,8 @@ internal class Freeones : PersonCrawlerBase
 
     private readonly Uri _uri = new("https://www.freeones.com");
 
-    protected override PageUri GetGirlUri(string nameToCrawl) =>
-        new PageUri(_uri).WithHref($"/{nameToCrawl.Replace(' ', '-').ToLower()}");
+    protected override PageUri GetGirlUri(string firstName, string lastName) =>
+        new PageUri(_uri).WithHref($"/{firstName.Replace(' ', '-')}-{lastName.Replace(' ', '-')}");
 
     protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {

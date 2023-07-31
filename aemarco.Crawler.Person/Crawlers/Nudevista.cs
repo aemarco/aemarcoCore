@@ -8,8 +8,8 @@ internal class Nudevista : PersonCrawlerBase
 
 
     //z.B. "https://www.nudevista.at?q=Aletta+Ocean&s=s"
-    protected override PageUri GetGirlUri(string nameToCrawl) =>
-        new PageUri(_uri).WithHref($"?q={nameToCrawl.Replace(' ', '+')}&s=s");
+    protected override PageUri GetGirlUri(string firstName, string lastName) =>
+        new PageUri(_uri).WithHref($"?q={firstName.Replace(' ', '+')}+{lastName.Replace(' ', '+')}&s=s");
     protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {
 

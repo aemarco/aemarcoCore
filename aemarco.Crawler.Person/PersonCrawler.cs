@@ -30,12 +30,14 @@ public class PersonCrawler
 
     /// <summary>
     /// Do the crawling :)
+    /// 
     /// </summary>
     /// <returns>composed PersonEntry</returns>
-    public async Task<PersonInfo?> StartAsync(string nameToCrawl, CancellationToken cancellationToken = default)
+    public async Task<PersonInfo> StartAsync(string firstName, string lastName, CancellationToken cancellationToken = default)
     {
+        firstName = firstName.TitleCase();
+        lastName = lastName.TitleCase();
 
-        // todo maybe title case nameToCrawl here ?
 
         //start all crawlers
         var tasks = new List<Task<PersonInfo>>();
@@ -45,10 +47,11 @@ public class PersonCrawler
             if (_filterPersonSites.Count > 0 && !_filterPersonSites.Contains(CrawlerInfo.FromCrawlerType(type).FriendlyName))
                 continue;
 
-            var crawler = (PersonCrawlerBase)Activator.CreateInstance(type)!;
-            tasks.Add(Task.Run(() => crawler.GetPersonEntry(nameToCrawl, cancellationToken), cancellationToken));
-        }
 
+            var crawler = (PersonCrawlerBase)Activator.CreateInstance(type)!;
+            tasks.Add(Task.Run(() =>
+                crawler.GetPersonEntry(firstName, lastName, cancellationToken), cancellationToken));
+        }
         //wait for being done
         var entries = new List<PersonInfo>();
         foreach (var task in tasks)
@@ -65,14 +68,6 @@ public class PersonCrawler
                 entries.Add(personInfo);
             }
         }
-
-        if (entries.Count == 0)
-            return null;
-
-        //merge entries together according to priority
-        var (firstName, lastName) = PersonParser.FindNameInText(nameToCrawl);
-
-        //TODO should return null when no first or last name (but could be taken from crawls as well)
 
         var result = new PersonInfo
         {

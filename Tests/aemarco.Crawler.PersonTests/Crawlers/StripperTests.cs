@@ -4,7 +4,7 @@ internal class StripperTestsWithAlletaOcean : PersonCrawlerTestsBase<Stripper>
 {
     //https://www.istripper.com/de/models/Aletta-Ocean
     public StripperTestsWithAlletaOcean()
-        : base("Aletta Ocean")
+        : base("Aletta", "Ocean")
     {
         //first and last name expected automatically
         ExpectedRating = true;

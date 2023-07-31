@@ -5,7 +5,7 @@ internal class PornsitesTestsWithAlettaOcean : PersonCrawlerTestsBase<Pornsites>
 
     //https://pornsites.xxx/pornstars/Aletta-Ocean
     public PornsitesTestsWithAlettaOcean()
-        : base("Aletta Ocean")
+        : base("Aletta", "Ocean")
     {
         //first and last name expected automatically
         ExpectedProfilePictures.Add(

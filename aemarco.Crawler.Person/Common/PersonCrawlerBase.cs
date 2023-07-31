@@ -9,9 +9,9 @@ internal abstract class PersonCrawlerBase
 
     protected PersonInfo Result { get; } = new();
 
-    internal async Task<PersonInfo> GetPersonEntry(string nameToCrawl, CancellationToken token)
+    internal async Task<PersonInfo> GetPersonEntry(string firstName, string lastName, CancellationToken token)
     {
-        var girlUri = GetGirlUri(nameToCrawl);
+        var girlUri = GetGirlUri(firstName, lastName);
         var girlPage = await girlUri.NavigateAsync(token: token);
 
         await HandleGirlPage(girlPage, token);
@@ -20,7 +20,7 @@ internal abstract class PersonCrawlerBase
     }
 
 
-    protected abstract PageUri GetGirlUri(string nameToCrawl);
+    protected abstract PageUri GetGirlUri(string firstName, string lastName);
     protected abstract Task HandleGirlPage(PageDocument girlPage, CancellationToken token);
 
 

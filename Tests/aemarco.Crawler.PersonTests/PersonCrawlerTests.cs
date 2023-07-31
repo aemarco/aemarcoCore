@@ -27,7 +27,7 @@ internal class PersonCrawlerTests : TestBase
     public async Task StartAsync_MergesResults()
     {
         var crawler = new PersonCrawler();
-        var result = await crawler.StartAsync("Foxi Di")
+        var result = await crawler.StartAsync("Foxi", "Di")
                      ?? throw new Exception("Did not get a PersonInfo");
 
         PrintJson(result);

@@ -5,7 +5,7 @@ internal class TheLordOfPornTestsWithDakotaTyler : PersonCrawlerTestsBase<TheLor
 
     //https://thelordofporn.com/pornstars/dakota-tyler
     public TheLordOfPornTestsWithDakotaTyler()
-        : base("Dakota Tyler")
+        : base("Dakota", "Tyler")
     {
         //first and last name expected automatically
 
@@ -33,7 +33,7 @@ internal class TheLordOfPornTestsWithAngelaWhite : PersonCrawlerTestsBase<TheLor
 
     //https://thelordofporn.com/pornstars/angela-white
     public TheLordOfPornTestsWithAngelaWhite()
-        : base("Angela White")
+        : base("Angela", "White")
     {
         //first and last name expected automatically
 

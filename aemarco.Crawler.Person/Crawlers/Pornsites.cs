@@ -8,8 +8,8 @@ internal class Pornsites : PersonCrawlerBase
 
 
     //z.B. "https://pornsites.xxx/pornstars/Aletta-Ocean"
-    protected override PageUri GetGirlUri(string nameToCrawl) =>
-        new PageUri(_uri).WithHref($"/pornstars/{nameToCrawl.Replace(' ', '-')}");
+    protected override PageUri GetGirlUri(string firstName, string lastName) =>
+        new PageUri(_uri).WithHref($"/pornstars/{firstName.Replace(' ', '-')}-{lastName.Replace(' ', '-')}");
     protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {
 

@@ -8,8 +8,8 @@ internal class BabesAndStars : PersonCrawlerBase
 
 
     //z.B. "https://www.babesandstars.com/a/ariel-rebel/"
-    protected override PageUri GetGirlUri(string nameToCrawl) =>
-        new PageUri(_uri).WithHref($"/{nameToCrawl[0]}/{nameToCrawl.Replace(' ', '-')}/".ToLower());
+    protected override PageUri GetGirlUri(string firstName, string lastName) =>
+        new PageUri(_uri).WithHref($"/{firstName[0]}/{firstName.Replace(' ', '-')}-{lastName.Replace(' ', '-')}/".ToLower());
     protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {
         var profileNode = girlPage.FindNode("//div[@class='profile']/div");

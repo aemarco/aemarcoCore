@@ -3,15 +3,14 @@
 internal abstract class PersonCrawlerTestsBase<T> : TestBase
 {
 
+    private readonly string _firstName;
+    private readonly string _lastName;
     private readonly CrawlerInfo _crawlerInfo;
-    private readonly string _nameToCrawl;
-    protected PersonCrawlerTestsBase(
-        string nameToCrawl)
+    protected PersonCrawlerTestsBase(string firstName, string lastName)
     {
+        _firstName = firstName;
+        _lastName = lastName;
         _crawlerInfo = CrawlerInfo.FromCrawlerType(typeof(T));
-        _nameToCrawl = nameToCrawl;
-        ExpectedFirstName = _nameToCrawl.Split(' ')[0];
-        ExpectedLastName = _nameToCrawl.Split(' ')[1];
     }
 
 
@@ -21,14 +20,12 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         if (!_crawlerInfo.IsAvailable)
             return;
 
-
         var crawler = new PersonCrawler();
         crawler.AddPersonSiteFilter(_crawlerInfo.FriendlyName);
-        Entry = await crawler.StartAsync(_nameToCrawl);
+        Entry = await crawler.StartAsync(_firstName, _lastName);
     }
 
     private PersonInfo? Entry { get; set; }
-
 
 
     [Test]
@@ -49,28 +46,6 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
 
         Entry.Errors.Should().BeEmpty();
         PrintJson(Entry.Errors);
-    }
-
-    private string ExpectedFirstName { get; init; }
-    [Test]
-    public void Crawler_Finds_FirstName()
-    {
-        if (Entry is null)
-            return;
-
-        Entry.FirstName.Should().Be(ExpectedFirstName);
-        PrintJson(Entry.FirstName);
-    }
-
-    private string ExpectedLastName { get; init; }
-    [Test]
-    public void Crawler_Finds_LastName()
-    {
-        if (Entry is null)
-            return;
-
-        Entry.LastName.Should().Be(ExpectedLastName);
-        PrintJson(Entry.LastName);
     }
 
     protected bool? ExpectedRating { get; init; }

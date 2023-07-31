@@ -4,7 +4,7 @@ internal class BabesAndStarsTestsWithArielRebel : PersonCrawlerTestsBase<BabesAn
 {
     //https://www.babesandstars.com/a/ariel-rebel/
     public BabesAndStarsTestsWithArielRebel()
-        : base("Ariel Rebel")
+        : base("Ariel", "Rebel")
     {
         //first and last name expected automatically
         ExpectedAliases.AddRange(new List<string>

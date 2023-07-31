@@ -8,8 +8,8 @@ internal class Pornstarbyface : PersonCrawlerBase
 
 
     //z.B. "https://pornstarbyface.com/girls/Aletta-Ocean"
-    protected override PageUri GetGirlUri(string nameToCrawl) =>
-        new PageUri(_uri).WithHref($"/girls/{nameToCrawl.Replace(' ', '-')}");
+    protected override PageUri GetGirlUri(string firstName, string lastName) =>
+        new PageUri(_uri).WithHref($"/girls/{firstName.Replace(' ', '-')}-{lastName.Replace(' ', '-')}");
     protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {
         var starInfo = girlPage.FindNode("//div[@class='star-info']");
