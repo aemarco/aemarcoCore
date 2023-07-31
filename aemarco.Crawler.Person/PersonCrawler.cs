@@ -34,6 +34,9 @@ public class PersonCrawler
     /// <returns>composed PersonEntry</returns>
     public async Task<PersonInfo?> StartAsync(string nameToCrawl, CancellationToken cancellationToken = default)
     {
+
+        // todo maybe title case nameToCrawl here ?
+
         //start all crawlers
         var tasks = new List<Task<PersonInfo>>();
         foreach (var type in GetAvailableCrawlerTypes())
@@ -68,6 +71,9 @@ public class PersonCrawler
 
         //merge entries together according to priority
         var (firstName, lastName) = PersonParser.FindNameInText(nameToCrawl);
+
+        //TODO should return null when no first or last name (but could be taken from crawls as well)
+
         var result = new PersonInfo
         {
             FirstName = firstName,
