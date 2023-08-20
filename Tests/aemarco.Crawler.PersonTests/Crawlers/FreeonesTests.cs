@@ -2,6 +2,7 @@
 
 internal class FreeonesTestsWithFoxyDi : PersonCrawlerTestsBase<Freeones>
 {
+    //https://www.freeones.at/foxy-di
     public FreeonesTestsWithFoxyDi()
         : base("Foxy", "Di")
     {
@@ -10,7 +11,7 @@ internal class FreeonesTestsWithFoxyDi : PersonCrawlerTestsBase<Freeones>
 
         ExpectedProfilePictures.AddRange(new List<string>
         {
-            "https://media.freeones.com/freeones-photo-generated/c7/ae/VEYrLEcR4PnXXg8FGb/Teen-Nensi-B-Medina-in-Threeway-with-older-Couple_001_teaser.jpg"
+            "https://media.freeones.com/freeones-photo-generated/qW/CS/t4o3rHCGjRCkVTapum/Hottie-Nensi-B-Medina-bending-over-in-the-Shower_005_teaser.jpg"
         });
         ExpectedAliases.AddRange(new[]
         {
@@ -39,6 +40,8 @@ internal class FreeonesTestsWithFoxyDi : PersonCrawlerTestsBase<Freeones>
 
 internal class FreeonesTestsWithArielRebel : PersonCrawlerTestsBase<Freeones>
 {
+
+    //https://www.freeones.at/ariel-rebel
     public FreeonesTestsWithArielRebel()
         : base("Ariel", "Rebel")
     {
@@ -77,6 +80,8 @@ internal class FreeonesTestsWithArielRebel : PersonCrawlerTestsBase<Freeones>
 
 internal class FreeonesTestsWithMollyLittle : PersonCrawlerTestsBase<Freeones>
 {
+
+    //https://www.freeones.at/molly-little
     public FreeonesTestsWithMollyLittle()
         : base("Molly", "Little")
     {
@@ -86,10 +91,6 @@ internal class FreeonesTestsWithMollyLittle : PersonCrawlerTestsBase<Freeones>
         ExpectedProfilePictures.AddRange(new List<string>
         {
             "https://media.freeones.com/freeones-photo-generated/F5/fE/LQ6D7EQRSgmeNRzDv/mollylittle_teaser.jpg"
-        });
-        ExpectedSocialLinks.AddRange(new List<SocialLink>
-        {
-            new(SocialLinkKind.Official, "https://onlyfans.com/maybemollyy")
         });
         ExpectedBirthday = new DateOnly(2003, 2, 10);
         ExpectedProfession = "Porn Stars";

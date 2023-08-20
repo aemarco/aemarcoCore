@@ -9,11 +9,16 @@ public static partial class StringExtensions
     /// <param name="text">The input text from which substrings will be removed.</param>
     /// <param name="except">An array of substrings to be removed from the input text.</param>
     /// <returns>The input text with the specified substrings removed.</returns>
-    public static string Except(this string text, params string[] except) =>
-        except.Aggregate(
-            text,
-            (current, removal) =>
-                current.Replace(removal, string.Empty, StringComparison.OrdinalIgnoreCase).Trim());
+    public static string Except(this string text, params string[] except)
+    {
+
+        foreach (var removal in except)
+        {
+            text = text.Replace(removal, string.Empty, StringComparison.OrdinalIgnoreCase);
+        }
+        return text.Trim();
+    }
+
 
     /// <summary>
     /// Converts the input string to title case (also known as proper case),
