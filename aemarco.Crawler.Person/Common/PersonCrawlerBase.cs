@@ -76,8 +76,7 @@ internal abstract class PersonCrawlerBase
             link = link with { Kind = kind };
 
         //add only known kinds
-        if (link.Kind != SocialLinkKind.Unknown)
-            Result.SocialLinks.Add(link);
+        Result.SocialLinks.Add(link);
     }
 
 
