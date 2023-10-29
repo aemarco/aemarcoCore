@@ -24,8 +24,9 @@ public static partial class PersonParser
     /// Parses a double 0 - 10 rating out of a text. Uses . or , as separator
     /// </summary>
     /// <param name="text"></param>
+    /// <param name="hundredBased"> if its based on 0 - 100</param>
     /// <returns></returns>
-    public static double? FindRatingInText(string? text)
+    public static double? FindRatingInText(string? text, bool hundredBased = false)
     {
         if (string.IsNullOrWhiteSpace(text))
             return null;
@@ -42,11 +43,18 @@ public static partial class PersonParser
         }
 
         text = text.Replace(',', '.');
-        return !double.TryParse(text, NumberFormatInfo.InvariantInfo, out var rating)
-            ? null
-            : rating is >= 0 and <= 10
-                ? rating
-                : null;
+        if (!double.TryParse(text, NumberFormatInfo.InvariantInfo, out var rating))
+        {
+            return null;
+        }
+
+        if (hundredBased) //maybe hundred based
+        {
+            rating = 1.0 * rating / 10;
+        }
+        return rating is >= 0 and <= 10
+            ? rating
+            : null;
     }
 
     /// <summary>

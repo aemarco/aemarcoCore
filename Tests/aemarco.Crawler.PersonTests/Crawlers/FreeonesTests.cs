@@ -11,7 +11,7 @@ internal class FreeonesTestsWithFoxyDi : PersonCrawlerTestsBase<Freeones>
 
         ExpectedProfilePictures.AddRange(new List<string>
         {
-            "https://media.freeones.com/freeones-photo-generated/qW/CS/t4o3rHCGjRCkVTapum/Hottie-Nensi-B-Medina-bending-over-in-the-Shower_005_teaser.jpg"
+            "https://media.freeones.com/freeones-photo-generated/c7/ae/VEYrLEcR4PnXXg8FGb/Teen-Nensi-B-Medina-in-Threeway-with-older-Couple_001_teaser.jpg"
         });
         ExpectedAliases.AddRange(new[]
         {

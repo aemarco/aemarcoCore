@@ -18,32 +18,49 @@ internal class TheLordOfPorn : PersonCrawlerBase
 
         //Pics
         var contentNode = girlPage.FindNode("//div[@class='entry-content']");
-        contentNode?  //click able big once
-            .FindNodes("./a")
+
+        //big once are in a wrong ratio :(
+
+        //contentNode?  //click able big once
+        //    .FindNodes("./a")
+        //    .Select(x => x.GetHref())
+        //    .OfType<PageUri>()
+        //    .ToList()
+        //    .ForEach(x => UpdateProfilePictures(x));
+        //contentNode?  //non click able big once
+        //    .FindNodes("./div/img")
+        //    .Select(x => x.GetAttributeRef("data-lazy-src"))
+        //    .OfType<PageUri>()
+        //    .ToList()
+        //    .ForEach(x => UpdateProfilePictures(x));
+
+        contentNode?  //embedded click able once
+            .FindNodes("./p/a")
             .Select(x => x.GetHref())
             .OfType<PageUri>()
             .ToList()
             .ForEach(x => UpdateProfilePictures(x));
-        contentNode? //embedded small once
+        contentNode? //embedded non click able once
             .FindNodes("./descendant::img")
-            .Where(x => x.Node.ParentNode.Name != "a")
+            .Where(x => x.Parent().Node.Name != "a")
+            .Where(x => x.Parent().Node.Name != "div")
             .Select(x => x.GetAttributeRef("data-lazy-src"))
             .OfType<PageUri>()
             .ToList()
             .ForEach(x => UpdateProfilePictures(x));
 
+
         //Rating
-        Result.Rating = PersonParser.FindRatingInText(girlPage
-            .FindNode("//span[@class='stars-rating']")?
-            .GetAttribute("data-vote"));
+        var ratingNode = girlPage.FindNode("//label[@class='rating__label']");
+        Result.Rating = PersonParser.FindRatingInText(ratingNode?.GetText(), true);
 
         //Data
-        var dataNodes = girlPage.FindNodes("//table[@class='spectable']/tr");
+        var dataNodes = girlPage.FindNodes("//ul[@class='specifications__list lines-list']/li");
         Result.Gender = Gender.Female; //always female on this site
         foreach (var dataNode in dataNodes)
         {
-            var desc = dataNode.FindNode("./td")?.GetText();
-            var textNode = dataNode.FindNode("./td[@class='sval']");
+            var desc = dataNode.FindNode("./b")?.GetText();
+            var textNode = dataNode.FindNode("./span");
             var text = textNode?.GetText();
 
 
@@ -54,14 +71,32 @@ internal class TheLordOfPorn : PersonCrawlerBase
                 "Height" => () => Result.Height = PersonParser.FindHeightInText(text),
                 "Weight" => () => Result.Weight = PersonParser.FindWeightInText(text),
                 "Measurements" => () => UpdateMeasurements(text, true),
-                "Official Website" => () => UpdateSocial(textNode?.FindNode("./a")?.GetHref(), SocialLinkKind.Official),
-                "Twitter" => () => UpdateSocial(textNode?.FindNode("./a")?.GetHref()),
-                "Facebook" => () => UpdateSocial(textNode?.FindNode("./a")?.GetHref()),
-                "Instagram" => () => UpdateSocial(textNode?.FindNode("./a")?.GetHref()),
+                //"Official Website" => () => UpdateSocial(textNode?.FindNode("./a")?.GetHref(), SocialLinkKind.Official),
+                //"Twitter" => () => UpdateSocial(textNode?.FindNode("./a")?.GetHref()),
+                //"Facebook" => () => UpdateSocial(textNode?.FindNode("./a")?.GetHref()),
+                //"Instagram" => () => UpdateSocial(textNode?.FindNode("./a")?.GetHref()),
                 _ => () => { }
             };
             act();
         }
+
+        var socialNodes = girlPage.FindNodes("//ul[@class='social']/li/a");
+        foreach (var socialNode in socialNodes)
+        {
+            var parentClass = socialNode.Parent().GetAttribute("class");
+            var socialKind = parentClass switch
+            {
+                "social__item social__item--main" => SocialLinkKind.Official,
+                _ => SocialLinkKind.Unknown //others detected by url
+            };
+            UpdateSocial(socialNode.GetHref(), socialKind);
+        }
+
+
+
+
+
+
 
         return Task.CompletedTask;
     }

@@ -16,20 +16,22 @@ public class PersonParserTests
     }
 
 
-    [TestCase(null, null)]
-    [TestCase("", null)]
-    [TestCase("Bob", null)]
-    [TestCase("6.4", 6.4)]
-    [TestCase("6,4", 6.4)]
-    [TestCase("6", 6)]
-    [TestCase("-0.1", null)]
-    [TestCase("-1", null)]
-    [TestCase("10.1", null)]
-    [TestCase("11", null)]
-    [TestCase("97%", 9.7)]
-    public void FindRatingInText_Works(string? text, double? expected)
+    [TestCase(null, false, null)]
+    [TestCase("", false, null)]
+    [TestCase("Bob", false, null)]
+    [TestCase("6.4", false, 6.4)]
+    [TestCase("6,4", false, 6.4)]
+    [TestCase("6", false, 6)]
+    [TestCase("-0.1", false, null)]
+    [TestCase("-1", false, null)]
+    [TestCase("10.1", false, null)]
+    [TestCase("11", false, null)]
+    [TestCase("11", true, 1.1)]
+    [TestCase("55", true, 5.5)]
+    [TestCase("97%", false, 9.7)]
+    public void FindRatingInText_Works(string? text, bool hundredBased, double? expected)
     {
-        var result = PersonParser.FindRatingInText(text);
+        var result = PersonParser.FindRatingInText(text, hundredBased);
         result.Should().Be(expected);
     }
 
