@@ -27,8 +27,7 @@ public class WallpaperCrawler
         foreach (var type in Assembly
                      .GetAssembly(typeof(WallpaperCrawlerBasis))!
                      .GetTypes()
-                     .Where(x => x.IsSubclassOf(typeof(WallpaperCrawlerBasis)))
-                     .Where(x => CrawlerInfo.FromCrawlerType(x).IsAvailable))
+                     .Where(x => x.IsSubclassOf(typeof(WallpaperCrawlerBasis))))
         {
             var crawler = (WallpaperCrawlerBasis)(Activator.CreateInstance(type, start, end, news)
                           ?? throw new Exception($"Could not activate {type.FullName}"));

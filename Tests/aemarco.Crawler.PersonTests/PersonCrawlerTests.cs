@@ -11,7 +11,6 @@ internal class PersonCrawlerTests : TestBase
             .GetTypes()
             .Where(x => x.IsSubclassOf(typeof(PersonCrawlerBase)))
             .Select(CrawlerInfo.FromCrawlerType)
-            .Where(x => x.IsAvailable)
             .OrderBy(x => x.Priority)
             .Select(x => x.FriendlyName)
             .ToList();

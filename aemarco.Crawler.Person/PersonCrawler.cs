@@ -75,12 +75,22 @@ public class PersonCrawler
             LastName = lastName
         };
         foreach (var entry in entries
-                     .OrderBy(x => x.CrawlerInfos.First().Priority))
+                     .OrderBy(x => x.CrawlerInfos.FirstOrDefault()?.Priority ?? int.MaxValue))
         {
             result.Merge(entry);
         }
         return result;
     }
+
+
+
+
+
+
+
+
+
+
 
 
     private static List<Type> GetAvailableCrawlerTypes()
@@ -89,7 +99,6 @@ public class PersonCrawler
             .GetAssembly(typeof(PersonCrawlerBase))!
             .GetTypes()
             .Where(x => x.IsSubclassOf(typeof(PersonCrawlerBase)))
-            .Where(x => CrawlerInfo.FromCrawlerType(x).IsAvailable)
             .OrderBy(x => CrawlerInfo.FromCrawlerType(x).Priority)
             .ToList();
         return types;
