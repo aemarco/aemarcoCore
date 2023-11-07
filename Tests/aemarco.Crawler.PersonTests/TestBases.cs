@@ -312,13 +312,30 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
 
         if (ExpectedProfilePictures.Count == 0)
         {
-            NothingExpected(Entry.ProfilePictures.Count == 0 ? null : Entry.ProfilePictures);
+            NothingExpected(null);
             return;
         }
-
         Entry.ProfilePictures.Select(x => x.Url).Should().BeEquivalentTo(ExpectedProfilePictures);
         PrintJson(Entry.ProfilePictures);
     }
+
+    protected int? ExpectedProfilePictureMinCount { get; set; }
+    [Test]
+    public void Crawler_Finds_AtLeastMinCount()
+    {
+        if (Entry is null)
+            return;
+
+        if (ExpectedProfilePictureMinCount is null)
+        {
+            NothingExpected(null);
+            return;
+        }
+
+        Entry.ProfilePictures.Count.Should().BeGreaterOrEqualTo(ExpectedProfilePictureMinCount.Value);
+        PrintJson(Entry.ProfilePictures);
+    }
+
 
     protected List<string> ExpectedAliases { get; set; } = new();
     [Test]

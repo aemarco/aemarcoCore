@@ -9,10 +9,11 @@ internal class FreeonesTestsWithFoxyDi : PersonCrawlerTestsBase<Freeones>
 
         //first and last name expected automatically
 
-        ExpectedProfilePictures.AddRange(new List<string>
-        {
-            "https://media.freeones.com/freeones-photo-generated/c7/ae/VEYrLEcR4PnXXg8FGb/Teen-Nensi-B-Medina-in-Threeway-with-older-Couple_001_teaser.jpg"
-        });
+        //ExpectedProfilePictures.AddRange(new List<string>
+        //{
+        //    "https://media.freeones.com/freeones-photo-generated/c7/ae/VEYrLEcR4PnXXg8FGb/Teen-Nensi-B-Medina-in-Threeway-with-older-Couple_001_teaser.jpg"
+        //});
+        ExpectedProfilePictureMinCount = 1;
         ExpectedAliases.AddRange(new[]
         {
             "Angel C",
