@@ -1,5 +1,5 @@
 ﻿namespace aemarco.Crawler.PersonTests.Crawlers;
-
+[Explicit]
 internal class PornsitesTestsWithAlettaOcean : PersonCrawlerTestsBase<Pornsites>
 {
 

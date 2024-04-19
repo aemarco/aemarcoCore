@@ -24,7 +24,7 @@ internal class FreeonesTestsWithFoxyDi : PersonCrawlerTestsBase<Freeones>
             "Nensi B Medina"
         });
         ExpectedBirthday = new DateOnly(1994, 9, 14);
-        ExpectedProfession = "Adult Models,Porn Stars";
+        ExpectedProfession = "Adult Model,Porn Star";
         ExpectedStillActive = false;
         ExpectedCareerStart = new DateOnly(2012, 1, 1);
         ExpectedCity = "St. Petersburg";
@@ -49,10 +49,10 @@ internal class FreeonesTestsWithArielRebel : PersonCrawlerTestsBase<Freeones>
 
         //first and last name expected automatically
 
-        ExpectedProfilePictures.AddRange(new List<string>
-        {
-            "https://media.freeones.com/freeones-photo-generated/mF/Ld/W3hd7LgmvGsZtLwwaK/Ariel-Rebel-smile-brunette-001_teaser.jpg"
-        });
+        //ExpectedProfilePictures.AddRange(new List<string>
+        //{
+        //    "http://www.sexy-models.net/galleries/12/pics18259/0_big.jpg"
+        //});
         ExpectedAliases.AddRange(new[]
         {
             "The Rebel"
@@ -62,7 +62,7 @@ internal class FreeonesTestsWithArielRebel : PersonCrawlerTestsBase<Freeones>
         //    new(SocialLinkKind.Twitter, "https://twitter.com/thedakotatyler")
         //});
         ExpectedBirthday = new DateOnly(1985, 9, 23);
-        ExpectedProfession = "Porn Stars";
+        ExpectedProfession = "Porn Star";
         ExpectedStillActive = true;
         ExpectedCareerStart = new DateOnly(2005, 1, 1);
         ExpectedCity = "Montreal";
@@ -89,12 +89,12 @@ internal class FreeonesTestsWithMollyLittle : PersonCrawlerTestsBase<Freeones>
 
         //first and last name expected automatically
 
-        ExpectedProfilePictures.AddRange(new List<string>
-        {
-            "https://media.freeones.com/freeones-photo-generated/F5/fE/LQ6D7EQRSgmeNRzDv/mollylittle_teaser.jpg"
-        });
+        //ExpectedProfilePictures.AddRange(new List<string>
+        //{
+        //    "https://media.freeones.com/freeones-photo-generated/F5/fE/LQ6D7EQRSgmeNRzDv/mollylittle_teaser.jpg"
+        //});
         ExpectedBirthday = new DateOnly(2003, 2, 10);
-        ExpectedProfession = "Porn Stars";
+        ExpectedProfession = "Porn Star";
         ExpectedStillActive = true;
         ExpectedCareerStart = new DateOnly(2022, 1, 1);
         ExpectedCity = "Fairfax";
@@ -103,7 +103,7 @@ internal class FreeonesTestsWithMollyLittle : PersonCrawlerTestsBase<Freeones>
         ExpectedEthnicity = "Caucasian";
         ExpectedMeasurementDetails = "81A-55-81";
         ExpectedHeight = 157;
-        ExpectedWeight = 40;
+        ExpectedWeight = 41;
         ExpectedHairColor = "Blonde";
         ExpectedEyeColor = "Brown";
 

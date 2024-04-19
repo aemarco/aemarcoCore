@@ -44,7 +44,8 @@ public class PersonCrawler
         foreach (var type in GetAvailableCrawlerTypes())
         {
             //skip filtered
-            if (_filterPersonSites.Count > 0 && !_filterPersonSites.Contains(CrawlerInfo.FromCrawlerType(type).FriendlyName))
+            if (_filterPersonSites.Count > 0 &&
+                !_filterPersonSites.Contains(CrawlerInfo.FromCrawlerType(type).FriendlyName))
                 continue;
 
 

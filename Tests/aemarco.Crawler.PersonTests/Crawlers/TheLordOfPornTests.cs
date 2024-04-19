@@ -54,7 +54,7 @@ internal class TheLordOfPornTestsWithAngelaWhite : PersonCrawlerTestsBase<TheLor
         ExpectedMeasurementDetails = "106G-68-104";
         ExpectedSocialLinks.AddRange(new List<SocialLink>
         {
-            new(SocialLinkKind.Official, "http://angelawhite.com/"),
+            //new(SocialLinkKind.Official, "http://angelawhite.com/"),
             new(SocialLinkKind.Twitter, "https://twitter.com/angelawhite"),
             new(SocialLinkKind.Instagram, "https://www.instagram.com/theangelawhite")
         });

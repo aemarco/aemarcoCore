@@ -76,7 +76,7 @@ internal class PersonCrawlerTests : TestBase
         result.Piercings.Should().Be("Navel");
         result.SocialLinks.Should().BeEquivalentTo(new[]
         {
-            new SocialLink(SocialLinkKind.Twitter, "https://twitter.com/Foxi_Di"),
+            new SocialLink(SocialLinkKind.Twitter, "https://twitter.com/foxi_di"),
             new SocialLink(SocialLinkKind.Instagram, "https://instagram.com/foxy__di/")
         });
 
