@@ -39,8 +39,8 @@ stages:
             inputs:
               testResultsFormat: 'VSTest'
               testResultsFiles: $(System.DefaultWorkingDirectory)/build/output/trx/*.trx
-          - task: PublishCodeCoverageResults@1
+          - task: PublishCodeCoverageResults@2
             condition: succeededOrFailed()
             inputs:
               codeCoverageTool: 'Cobertura'
-              summaryFileLocation: $(System.DefaultWorkingDirectory)/build/output/cob/Cobertura.xml
+              summaryFileLocation: $(System.DefaultWorkingDirectory)/build/output/cob/*.xml
