@@ -78,7 +78,7 @@
               "Info",
               "Pack",
               "Restore",
-              "UnitTest"
+              "Tests"
             ]
           }
         },
@@ -98,7 +98,7 @@
               "Info",
               "Pack",
               "Restore",
-              "UnitTest"
+              "Tests"
             ]
           }
         },

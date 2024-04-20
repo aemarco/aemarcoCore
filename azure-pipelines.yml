@@ -38,9 +38,9 @@ stages:
               restoreKeys: $(Agent.OS) | nuget-packages
               path: $(USERPROFILE)/.nuget/packages
           - task: CmdLine@2
-            displayName: 'Run: Info, Restore, Compile, UnitTest, Pack, Drop'
+            displayName: 'Run: Info, Restore, Compile, Tests, Pack, Drop'
             inputs:
-              script: './build.cmd Info Restore Compile UnitTest Pack Drop --skip'
+              script: './build.cmd Info Restore Compile Tests Pack Drop --skip'
           - task: PublishBuildArtifacts@1
             displayName: 'Publish: drop'
             inputs:

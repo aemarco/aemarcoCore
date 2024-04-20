@@ -33,7 +33,7 @@ using Serilog;
         nameof(Clean),
         nameof(Restore),
         nameof(Compile),
-        nameof(UnitTest),
+        nameof(Tests),
         nameof(Pack)
     ])]
 class Build : NukeBuild
@@ -56,7 +56,7 @@ class Build : NukeBuild
     AzurePipelines AzurePipelines => AzurePipelines.Instance;
 
     Target Info => _ => _
-        .DependentFor(Clean, Restore, Compile, UnitTest, Pack, Drop)
+        .DependentFor(Clean, Restore, Compile, Tests, Pack, Drop)
         .Before(Clean, Restore)
         .Executes(() =>
         {
@@ -96,13 +96,14 @@ class Build : NukeBuild
         });
 
 
-    readonly AbsolutePath TestResultDirectory = TemporaryDirectory / "tests";
-    Target UnitTest => d => d
+
+    Target Tests => d => d
         .DependsOn(Compile)
         .Executes(() =>
         {
-            Log.Information(TestResultDirectory);
-            TestResultDirectory.CreateOrCleanDirectory();
+            var testDir = TemporaryDirectory / "tests";
+            testDir.CreateOrCleanDirectory();
+
             DotNetTasks.DotNetTest(t => t
                 .SetProjectFile(Solution)
                 .SetConfiguration(Configuration)
@@ -110,11 +111,10 @@ class Build : NukeBuild
                 .EnableNoBuild()
                 .SetDataCollector("XPlat Code Coverage")
                 .AddLoggers("trx")
-                .SetResultsDirectory(TestResultDirectory)
-            );
+                .SetResultsDirectory(testDir));
             ReportGeneratorTasks.ReportGenerator(new ReportGeneratorSettings()
-                .SetTargetDirectory(TestResultDirectory)
-                .SetReports($"{TestResultDirectory}/**/coverage.cobertura.xml")
+                .SetTargetDirectory(testDir)
+                .SetReports($"{testDir}/**/coverage.cobertura.xml")
                 .SetReportTypes(ReportTypes.Cobertura));
 
             //"C:\Program Files\dotnet\dotnet.exe"
@@ -123,14 +123,32 @@ class Build : NukeBuild
             //--results-directory D:\a\_temp
             //--collect "Code coverage"
 
+            //"C:\Program Files\dotnet\dotnet.exe"
+            //test D:\a\1\s\aemarcoCore.sln
+            //--configuration Release
+            //--collect "XPlat Code Coverage"
+            //--logger trx
+            //--no-build
+            //--no-restore
+            //--results-directory D:\a\1\s\.nuke\temp\tests
+
+
+
+            //AzurePipelines?.PublishTestResults(
+            //    "Bob", 
+            //    AzurePipelinesTestResultsType.NUnit,  
+            //    [ testDir / "Cobertura.xml"],
+            //    true, configuration: Configuration);
+
+            Log.Information("{TestResultsDirectory}", AzurePipelines?.TestResultsDirectory);
             AzurePipelines?.PublishCodeCoverage(
                 AzurePipelinesCodeCoverageToolType.Cobertura,
-                TestResultDirectory / "Cobertura.xml",
-                TestResultDirectory);
+                testDir / "Cobertura.xml",
+                AzurePipelines.TestResultsDirectory);
         });
 
     Target Pack => _ => _
-        .DependsOn(UnitTest)
+        .DependsOn(Tests)
         .Executes(() =>
         {
             DotNetTasks.DotNetPack(x => x
