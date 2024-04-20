@@ -1,5 +1,3 @@
-using System;
-
 namespace aemarco.CrawlerTests.Extensions;
 
 public class StringExtensionsTests
