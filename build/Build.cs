@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using Nuke.Common;
 using Nuke.Common.CI.AzurePipelines;
 using Nuke.Common.Git;
@@ -15,17 +14,7 @@ using Serilog;
 [AzurePipelines(
     AzurePipelinesImage.WindowsLatest,
     AutoGenerate = false,
-    InvokedTargets = [
-        nameof(Publish)
-    ],
-    NonEntryTargets = [
-        nameof(Info),
-        nameof(Clean),
-        nameof(Restore),
-        nameof(Compile),
-        nameof(Tests),
-        nameof(Pack)
-    ])]
+    InvokedTargets = [nameof(Info), nameof(Publish)])]
 class Build : NukeBuild
 {
     public static int Main() => Execute<Build>(x => x.Pack);
@@ -38,10 +27,6 @@ class Build : NukeBuild
 
     [Solution]
     readonly Solution Solution;
-
-    [CanBeNull]
-    AzurePipelines AzurePipelines => AzurePipelines.Instance;
-
 
     readonly AbsolutePath TrxDir = RootDirectory / "build" / "output" / "trx";
     readonly AbsolutePath CobDir = RootDirectory / "build" / "output" / "cob";
@@ -91,23 +76,6 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
         {
-            //alt
-            //"C:\Program Files\dotnet\dotnet.exe"
-            //test D:\a\1\s\Tests\aemarco.Crawler.PersonTests\aemarco.Crawler.PersonTests.csproj
-            //--logger trx
-            //--results-directory D:\a\_temp
-            //--collect "Code coverage"
-
-            //actual
-            //"C:\Program Files\dotnet\dotnet.exe"
-            //test D:\a\1\s\aemarcoCore.sln
-            //--configuration Release
-            //--collect "Code Coverage"
-            //--logger trx
-            //--no-build
-            //--no-restore
-            //--results-directory D:\a\1\s\build\output\trx
-
             TrxDir.CreateOrCleanDirectory();
             CobDir.CreateOrCleanDirectory();
             DotNetTasks.DotNetTest(x => x
@@ -139,23 +107,6 @@ class Build : NukeBuild
 
     Target Publish => _ => _
         .DependsOn(Pack)
-        .Produces(DropDir / "*.nupkg")
-        .Executes(() =>
-        {
-
-            //AzurePipelines?.PublishTestResults(
-            //    "dotnet test all",
-            //    AzurePipelinesTestResultsType.NUnit,
-            //    Glob.Files(TrxDir, "*.trx"));
-
-
-
-            //D:\a\1\TestResults
-            //Log.Information("{TestResultsDirectory}", AzurePipelines?.TestResultsDirectory);
-            //AzurePipelines?.PublishCodeCoverage(
-            //    AzurePipelinesCodeCoverageToolType.Cobertura,
-            //    testDir / "Cobertura.xml",
-            //    AzurePipelines.TestResultsDirectory);
-        });
+        .Produces(DropDir / "*.nupkg");
 
 }
