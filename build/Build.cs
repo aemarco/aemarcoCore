@@ -1,7 +1,5 @@
-//using System;
-//using System.Linq;
-
 using GlobExpressions;
+using JetBrains.Annotations;
 using Nuke.Common;
 using Nuke.Common.CI.AzurePipelines;
 using Nuke.Common.Git;
@@ -9,16 +7,7 @@ using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
-using Nuke.Common.Tools.NerdbankGitVersioning;
 using Serilog;
-
-
-//using Nuke.Common.CI;
-//using Nuke.Common.Execution;
-//using Nuke.Common.Tooling;
-//using static Nuke.Common.EnvironmentInfo;
-//using static Nuke.Common.IO.FileSystemTasks;
-//using static Nuke.Common.IO.PathConstruction;
 
 // ReSharper disable AllUnderscoreLocalParameterName
 
@@ -40,6 +29,12 @@ using Serilog;
 class Build : NukeBuild
 {
 
+
+    //using static Nuke.Common.EnvironmentInfo;
+    //using static Nuke.Common.IO.FileSystemTasks;
+    //using static Nuke.Common.IO.PathConstruction;
+
+
     public static int Main() => Execute<Build>(x => x.Pack);
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
@@ -51,10 +46,9 @@ class Build : NukeBuild
     [Solution]
     readonly Solution Solution;
 
-
-
-    //Tools
+    [CanBeNull]
     AzurePipelines AzurePipelines => AzurePipelines.Instance;
+
 
     Target Info => _ => _
         .DependentFor(Clean, Restore, Compile, Tests, Pack, Drop)
@@ -128,7 +122,7 @@ class Build : NukeBuild
                 .When(
                     AzurePipelines != null,
                     c => c
-                        .SetResultsDirectory(AzurePipelines.TestResultsDirectory)));
+                        .SetResultsDirectory(AzurePipelines!.TestResultsDirectory)));
 
             AzurePipelines?.PublishTestResults(
                 "dotnet test all",
@@ -152,63 +146,29 @@ class Build : NukeBuild
 
         });
 
+
+
+    readonly AbsolutePath DropDir = RootDirectory / "build" / "output" / "drop";
     Target Pack => _ => _
         .DependsOn(Tests)
         .Executes(() =>
         {
-            DropDir = IsServerBuild
-                ? AbsolutePath.Create(AzurePipelines.ArtifactStagingDirectory) / "drop"
-                : TemporaryDirectory / "drop";
-            DropDir.CreateOrCleanDirectory();
-
             DotNetTasks.DotNetPack(x => x
                 .SetProject(Solution)
                 .SetConfiguration(Configuration)
                 .EnableNoRestore()
                 .EnableNoBuild()
                 .SetOutputDirectory(DropDir));
+
+            TemporaryDirectory.GlobFiles("*.nupkg").DeleteFiles();
         });
 
-
-    AbsolutePath DropDir;
     Target Drop => _ => _
         .DependsOn(Pack)
-        .Produces(DropDir / "*.nupkg");
+        .Produces(DropDir / "*.nupkg")
+        .Executes(() =>
+        {
 
-
-
-
-
-
-
-
-
-
-    //Target Clean => _ => _cl
-    //    .OnlyWhenDynamic(() => IsLocalBuild)
-    //    .DependsOn(Info)
-    //    .Executes(() =>
-    //    {
-    //        ArtifactsDirectory.DeleteDirectory();
-    //        DotNetTasks.DotNetClean(s => s
-    //            .SetConfiguration(Configuration));
-    //SourceDirectory
-    //    .GlobDirectories("**/bin", "**/obj")
-    //    .ForEach(x =>
-    //        x.DeleteDirectory());
-    //TestsDirectory
-    //    .GlobDirectories("**/bin", "**/obj")
-    //    .ForEach(x =>
-    //        x.DeleteDirectory());
-
-    //OutputDirectory.CreateOrCleanDirectory();
-
-    //    });
-
-
-    //AbsolutePath SourceDirectory => RootDirectory / "src";
-    //AbsolutePath TestsDirectory => RootDirectory / "tests";
-    //AbsolutePath OutputDirectory => RootDirectory / "output";
-
+        });
 
 }

@@ -45,4 +45,4 @@ stages:
             displayName: 'Publish: drop'
             inputs:
               artifactName: drop
-              pathToPublish: '.nuke/temp/drop'
+              pathToPublish: 'build/output/drop'
