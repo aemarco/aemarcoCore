@@ -1,4 +1,3 @@
-using GlobExpressions;
 using JetBrains.Annotations;
 using Nuke.Common;
 using Nuke.Common.CI.AzurePipelines;
@@ -6,6 +5,7 @@ using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
+using Nuke.Common.Tools.ReportGenerator;
 using Serilog;
 
 // ReSharper disable AllUnderscoreLocalParameterName
@@ -14,6 +14,7 @@ using Serilog;
 
 [AzurePipelines(
     AzurePipelinesImage.WindowsLatest,
+    AutoGenerate = false,
     InvokedTargets = [
         nameof(Publish)
     ],
@@ -27,13 +28,6 @@ using Serilog;
     ])]
 class Build : NukeBuild
 {
-
-
-    //using static Nuke.Common.EnvironmentInfo;
-    //using static Nuke.Common.IO.FileSystemTasks;
-    //using static Nuke.Common.IO.PathConstruction;
-
-
     public static int Main() => Execute<Build>(x => x.Pack);
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
@@ -50,7 +44,9 @@ class Build : NukeBuild
 
 
     readonly AbsolutePath TrxDir = RootDirectory / "build" / "output" / "trx";
+    readonly AbsolutePath CobDir = RootDirectory / "build" / "output" / "cob";
     readonly AbsolutePath DropDir = RootDirectory / "build" / "output" / "drop";
+
     Target Info => _ => _
         .DependentFor(Clean, Restore, Compile, Tests, Pack, Publish)
         .Before(Clean, Restore)
@@ -91,8 +87,6 @@ class Build : NukeBuild
                 .SetProjectFile(Solution));
         });
 
-
-
     Target Tests => _ => _
         .DependsOn(Compile)
         .Executes(() =>
@@ -115,18 +109,20 @@ class Build : NukeBuild
             //--results-directory D:\a\1\s\build\output\trx
 
             TrxDir.CreateOrCleanDirectory();
+            CobDir.CreateOrCleanDirectory();
             DotNetTasks.DotNetTest(x => x
                 .SetProjectFile(Solution)
                 .SetConfiguration(Configuration)
                 .EnableNoRestore()
                 .EnableNoBuild()
-                .SetDataCollector("Code Coverage")
+                .SetDataCollector("XPlat Code Coverage")
                 .AddLoggers("trx")
                 .SetResultsDirectory(TrxDir));
+            ReportGeneratorTasks.ReportGenerator(new ReportGeneratorSettings()
+                .SetTargetDirectory(CobDir)
+                .SetReports($"{TrxDir}/**/coverage.cobertura.xml")
+                .SetReportTypes(ReportTypes.Cobertura));
         });
-
-
-
 
     Target Pack => _ => _
         .DependsOn(Tests)
@@ -147,16 +143,12 @@ class Build : NukeBuild
         .Executes(() =>
         {
 
-            AzurePipelines?.PublishTestResults(
-                "dotnet test all",
-                AzurePipelinesTestResultsType.NUnit,
-                Glob.Files(TrxDir, "*.trx"));
+            //AzurePipelines?.PublishTestResults(
+            //    "dotnet test all",
+            //    AzurePipelinesTestResultsType.NUnit,
+            //    Glob.Files(TrxDir, "*.trx"));
 
 
-            //ReportGeneratorTasks.ReportGenerator(new ReportGeneratorSettings()
-            //    .SetTargetDirectory(testDir)
-            //    .SetReports($"{testDir}/**/coverage.cobertura.xml")
-            //    .SetReportTypes(ReportTypes.Cobertura));
 
             //D:\a\1\TestResults
             //Log.Information("{TestResultsDirectory}", AzurePipelines?.TestResultsDirectory);
