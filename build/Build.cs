@@ -4,8 +4,11 @@
 using Nuke.Common;
 using Nuke.Common.CI.AzurePipelines;
 using Nuke.Common.Git;
+using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
+using Nuke.Common.Tools.NerdbankGitVersioning;
+using Nuke.Common.Tools.ReportGenerator;
 using Serilog;
 
 
@@ -35,11 +38,6 @@ using Serilog;
     ])]
 class Build : NukeBuild
 {
-    /// Support plugins are available for:
-    ///   - JetBrains ReSharper        https://nuke.build/resharper
-    ///   - JetBrains Rider            https://nuke.build/rider
-    ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
-    ///   - Microsoft VSCode           https://nuke.build/vscode
 
     public static int Main() => Execute<Build>(x => x.Pack);
 
@@ -49,54 +47,111 @@ class Build : NukeBuild
     [GitRepository]
     readonly GitRepository Repository;
 
-
-
-
     [Solution]
     readonly Solution Solution;
+
+
 
     //Tools
     AzurePipelines AzurePipelines => AzurePipelines.Instance;
 
     Target Info => _ => _
+        .DependentFor(Clean, Restore, Compile, UnitTest, Pack, Drop)
+        .Before(Clean, Restore)
         .Executes(() =>
         {
-            Log.Information("Host {Host}", Host);
-
-            Log.Information("IsLocalBuild {IsLocalBuild}", IsLocalBuild);
-            Log.Information("IsServerBuild {IsServerBuild}", IsServerBuild);
-            Log.Information("RootDirectory {RootDirectory}", RootDirectory);
-            Log.Information("TemporaryDirectory {TemporaryDirectory}", TemporaryDirectory);
-
-            Log.Information("Solution path = {Value}", Solution);
-            Log.Information("Solution directory = {Value}", Solution.Directory);
-            //Log.Information("FullSemVer = {Value}", GitVersion.FullSemVer);
-
-            Log.Information("Commit = {Value}", Repository.Commit);
-            Log.Information("Branch = {Value}", Repository.Branch);
-            Log.Information("Tags = {Value}", Repository.Tags);
-
-            Log.Information("main branch = {Value}", Repository.IsOnMainBranch());
-            Log.Information("main/master branch = {Value}", Repository.IsOnMainOrMasterBranch());
-            Log.Information("release/* branch = {Value}", Repository.IsOnReleaseBranch());
-            Log.Information("hotfix/* branch = {Value}", Repository.IsOnHotfixBranch());
-
-            Log.Information("Https URL = {Value}", Repository.HttpsUrl);
-            Log.Information("SSH URL = {Value}", Repository.SshUrl);
-
-            //Log.Information("ArtifactsDirectory {ArtifactsDirectory}", ArtifactsDirectory);
-            //Log.Information("TestResultsDirectory {TestResultsDirectory}", TestResultsDirectory);
-            //Log.Information("BuildArtifactsDirectory {BuildArtifactsDirectory}", BuildArtifactsDirectory);
+            Log.Information("Configuration = {Configuration}", Configuration);
 
             if (IsLocalBuild)
-            {
-                Log.Information("Running locally - skipping repo info");
                 return;
-            }
-
-            Log.Information("Branch = {Branch}", AzurePipelines.SourceBranch);
-            Log.Information("Commit = {Commit}", AzurePipelines.SourceVersion);
+            Log.Information("RepoUrl = {RepoUrl}", Repository.HttpsUrl);
+            Log.Information("Branch = {Branch}", Repository.Branch);
+            Log.Information("Commit = {Commit}", Repository.Commit);
+            Log.Information("Tags = {Value}", Repository.Tags);
         });
+
+    Target Clean => _ => _
+        .Before(Restore)
+        .Executes(() =>
+        {
+            DotNetTasks.DotNetClean(x => x
+                .SetProject(Solution));
+        });
+
+    Target Restore => _ => _
+        .Executes(() =>
+        {
+            DotNetTasks.DotNetRestore(s => s
+                .SetProjectFile(Solution));
+        });
+
+    Target Compile => _ => _
+        .DependsOn(Restore)
+        .Executes(() =>
+        {
+            DotNetTasks.DotNetBuild(s => s
+                .EnableNoRestore()
+                .SetConfiguration(Configuration)
+                .SetProjectFile(Solution));
+        });
+
+
+    readonly AbsolutePath TestResultDirectory = TemporaryDirectory / "tests";
+    Target UnitTest => d => d
+        .DependsOn(Compile)
+        .Executes(() =>
+        {
+            Log.Information(TestResultDirectory);
+            TestResultDirectory.CreateOrCleanDirectory();
+            DotNetTasks.DotNetTest(t => t
+                .SetProjectFile(Solution)
+                .SetConfiguration(Configuration)
+                .EnableNoRestore()
+                .EnableNoBuild()
+                .SetDataCollector("XPlat Code Coverage")
+                .AddLoggers("trx")
+                .SetResultsDirectory(TestResultDirectory)
+            );
+            ReportGeneratorTasks.ReportGenerator(new ReportGeneratorSettings()
+                .SetTargetDirectory(TestResultDirectory)
+                .SetReports($"{TestResultDirectory}/**/coverage.cobertura.xml")
+                .SetReportTypes(ReportTypes.Cobertura));
+
+            //"C:\Program Files\dotnet\dotnet.exe"
+            //test D:\a\1\s\Tests\aemarco.Crawler.PersonTests\aemarco.Crawler.PersonTests.csproj
+            //--logger trx
+            //--results-directory D:\a\_temp
+            //--collect "Code coverage"
+
+            AzurePipelines?.PublishCodeCoverage(
+                AzurePipelinesCodeCoverageToolType.Cobertura,
+                TestResultDirectory / "Cobertura.xml",
+                TestResultDirectory);
+        });
+
+    Target Pack => _ => _
+        .DependsOn(UnitTest)
+        .Executes(() =>
+        {
+            DotNetTasks.DotNetPack(x => x
+                .SetProject(Solution)
+                .SetConfiguration(Configuration)
+                .EnableNoRestore()
+                .EnableNoBuild()
+                .SetOutputDirectory(TemporaryDirectory / "drop"));
+        });
+
+    Target Drop => _ => _
+        .DependsOn(Pack)
+        .Produces(TemporaryDirectory / "drop" / "*.nupkg");
+
+
+
+
+
+
+
+
 
 
     //Target Clean => _ => _cl
@@ -125,61 +180,5 @@ class Build : NukeBuild
     //AbsolutePath TestsDirectory => RootDirectory / "tests";
     //AbsolutePath OutputDirectory => RootDirectory / "output";
 
-
-    Target Clean => _ => _
-        .Before(Restore)
-        .DependsOn(Info)
-        .Executes(() =>
-        {
-            DotNetTasks.DotNetClean(x => x
-                .SetProject(Solution));
-        });
-
-    Target Restore => _ => _
-        .DependsOn(Clean)
-        .Executes(() =>
-        {
-            DotNetTasks.DotNetRestore(s => s
-                .SetProjectFile(Solution));
-        });
-
-    Target Compile => _ => _
-        .DependsOn(Restore)
-        .Executes(() =>
-        {
-            DotNetTasks.DotNetBuild(s => s
-                .EnableNoRestore()
-                .SetConfiguration(Configuration)
-                .SetProjectFile(Solution));
-        });
-
-    Target UnitTest => d => d
-        .DependsOn(Compile)
-        .Executes(() =>
-        {
-            //DotNetTasks.DotNetTest(t => t
-            //    .SetProjectFile(Solution)
-            //    .SetConfiguration(Configuration));
-
-        });
-
-    Target Pack => _ => _
-        .DependsOn(UnitTest)
-        .Description("Packs nuget packages")
-        .Produces(TemporaryDirectory / "drop" / "*.nupkg")
-        .Executes(() =>
-        {
-            DotNetTasks.DotNetPack(x => x
-                .SetProject(Solution)
-                .SetConfiguration(Configuration)
-                .EnableNoRestore()
-                .EnableNoBuild()
-                .SetOutputDirectory(TemporaryDirectory / "drop"));
-        });
-
-    Target Drop => _ => _
-        .DependsOn(Pack)
-        .Description("Publish nuget packages as build artifacts")
-        .Produces(TemporaryDirectory / "drop" / "*.nupkg");
 
 }
