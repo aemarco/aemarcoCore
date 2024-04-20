@@ -1,14 +1,15 @@
 //using System;
 //using System.Linq;
 
+using GlobExpressions;
 using Nuke.Common;
 using Nuke.Common.CI.AzurePipelines;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.NerdbankGitVersioning;
-using Nuke.Common.Tools.ReportGenerator;
 using Serilog;
 
 
@@ -101,21 +102,6 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
         {
-            var testDir = TemporaryDirectory / "tests";
-            testDir.CreateOrCleanDirectory();
-
-            DotNetTasks.DotNetTest(t => t
-                .SetProjectFile(Solution)
-                .SetConfiguration(Configuration)
-                .EnableNoRestore()
-                .EnableNoBuild()
-                .SetDataCollector("XPlat Code Coverage")
-                .AddLoggers("trx")
-                .SetResultsDirectory(testDir));
-            ReportGeneratorTasks.ReportGenerator(new ReportGeneratorSettings()
-                .SetTargetDirectory(testDir)
-                .SetReports($"{testDir}/**/coverage.cobertura.xml")
-                .SetReportTypes(ReportTypes.Cobertura));
 
             //"C:\Program Files\dotnet\dotnet.exe"
             //test D:\a\1\s\Tests\aemarco.Crawler.PersonTests\aemarco.Crawler.PersonTests.csproj
@@ -132,36 +118,62 @@ class Build : NukeBuild
             //--no-restore
             //--results-directory D:\a\1\s\.nuke\temp\tests
 
+            DotNetTasks.DotNetTest(t => t
+                .SetProjectFile(Solution)
+                .SetConfiguration(Configuration)
+                .EnableNoRestore()
+                .EnableNoBuild()
+                .SetDataCollector("Code Coverage")
+                .AddLoggers("trx")
+                .When(
+                    AzurePipelines != null,
+                    c => c
+                        .SetResultsDirectory(AzurePipelines.TestResultsDirectory)));
+
+            AzurePipelines?.PublishTestResults(
+                "dotnet test all",
+                AzurePipelinesTestResultsType.NUnit,
+                Glob.Files(AzurePipelines.TestResultsDirectory, "*.*"));
 
 
-            //AzurePipelines?.PublishTestResults(
-            //    "Bob", 
-            //    AzurePipelinesTestResultsType.NUnit,  
-            //    [ testDir / "Cobertura.xml"],
-            //    true, configuration: Configuration);
 
-            Log.Information("{TestResultsDirectory}", AzurePipelines?.TestResultsDirectory);
-            AzurePipelines?.PublishCodeCoverage(
-                AzurePipelinesCodeCoverageToolType.Cobertura,
-                testDir / "Cobertura.xml",
-                AzurePipelines.TestResultsDirectory);
+            //ReportGeneratorTasks.ReportGenerator(new ReportGeneratorSettings()
+            //    .SetTargetDirectory(testDir)
+            //    .SetReports($"{testDir}/**/coverage.cobertura.xml")
+            //    .SetReportTypes(ReportTypes.Cobertura));
+
+            //D:\a\1\TestResults
+            //Log.Information("{TestResultsDirectory}", AzurePipelines?.TestResultsDirectory);
+            //AzurePipelines?.PublishCodeCoverage(
+            //    AzurePipelinesCodeCoverageToolType.Cobertura,
+            //    testDir / "Cobertura.xml",
+            //    AzurePipelines.TestResultsDirectory);
+
+
         });
 
     Target Pack => _ => _
         .DependsOn(Tests)
         .Executes(() =>
         {
+            DropDir = IsServerBuild
+                ? AbsolutePath.Create(AzurePipelines.ArtifactStagingDirectory) / "drop"
+                : TemporaryDirectory / "drop";
+            DropDir.CreateOrCleanDirectory();
+
             DotNetTasks.DotNetPack(x => x
                 .SetProject(Solution)
                 .SetConfiguration(Configuration)
                 .EnableNoRestore()
                 .EnableNoBuild()
-                .SetOutputDirectory(TemporaryDirectory / "drop"));
+                .SetOutputDirectory(DropDir));
         });
 
+
+    AbsolutePath DropDir;
     Target Drop => _ => _
         .DependsOn(Pack)
-        .Produces(TemporaryDirectory / "drop" / "*.nupkg");
+        .Produces(DropDir / "*.nupkg");
 
 
 
