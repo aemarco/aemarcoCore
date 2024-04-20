@@ -43,4 +43,4 @@ stages:
             condition: succeededOrFailed()
             inputs:
               codeCoverageTool: 'Cobertura'
-              summaryFileLocation: $(System.DefaultWorkingDirectory)/build/output/cob/**/*.cobertura.xml
+              summaryFileLocation: $(System.DefaultWorkingDirectory)/build/output/cob/Cobertura.xml
