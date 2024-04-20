@@ -1,5 +1,6 @@
 ﻿namespace aemarco.Crawler.PersonTests.Crawlers;
 
+[Explicit]
 internal class FreeonesTestsWithFoxyDi : PersonCrawlerTestsBase<Freeones>
 {
     //https://www.freeones.at/foxy-di

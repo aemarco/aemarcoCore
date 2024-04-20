@@ -21,8 +21,8 @@ stages:
     pool:
       vmImage: 'windows-latest'
     jobs:
-      - job: Drop
-        displayName: 'Drop'
+      - job: Publish
+        displayName: 'Publish'
         dependsOn: [  ]
         steps:
           - task: Cache@2
@@ -38,9 +38,9 @@ stages:
               restoreKeys: $(Agent.OS) | nuget-packages
               path: $(USERPROFILE)/.nuget/packages
           - task: CmdLine@2
-            displayName: 'Run: Info, Restore, Compile, Tests, Pack, Drop'
+            displayName: 'Run: Info, Restore, Compile, Tests, Pack, Publish'
             inputs:
-              script: './build.cmd Info Restore Compile Tests Pack Drop --skip'
+              script: './build.cmd Info Restore Compile Tests Pack Publish --skip'
           - task: PublishBuildArtifacts@1
             displayName: 'Publish: drop'
             inputs:

@@ -1,10 +1,11 @@
 ﻿namespace aemarco.Crawler.WallpaperTests;
 
 [SingleThreaded]
+[Explicit]
 public class WallpaperCrawlerTests : TestBase
 {
 
-    [Explicit]
+
     [TestCaseSource(nameof(CrawlerCombinations))]
     public async Task Crawler_DoesWork_WithAuto(string site, string cat)
     {

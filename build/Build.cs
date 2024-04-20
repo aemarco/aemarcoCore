@@ -15,7 +15,7 @@ using Serilog;
 [AzurePipelines(
     AzurePipelinesImage.WindowsLatest,
     InvokedTargets = [
-        nameof(Drop)
+        nameof(Publish)
     ],
     NonEntryTargets = [
         nameof(Info),
@@ -51,10 +51,8 @@ class Build : NukeBuild
 
     readonly AbsolutePath TrxDir = RootDirectory / "build" / "output" / "trx";
     readonly AbsolutePath DropDir = RootDirectory / "build" / "output" / "drop";
-
-
     Target Info => _ => _
-        .DependentFor(Clean, Restore, Compile, Tests, Pack, Drop)
+        .DependentFor(Clean, Restore, Compile, Tests, Pack, Publish)
         .Before(Clean, Restore)
         .Executes(() =>
         {
@@ -99,22 +97,24 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
         {
-
+            //alt
             //"C:\Program Files\dotnet\dotnet.exe"
             //test D:\a\1\s\Tests\aemarco.Crawler.PersonTests\aemarco.Crawler.PersonTests.csproj
             //--logger trx
             //--results-directory D:\a\_temp
             //--collect "Code coverage"
 
+            //actual
             //"C:\Program Files\dotnet\dotnet.exe"
             //test D:\a\1\s\aemarcoCore.sln
             //--configuration Release
-            //--collect "XPlat Code Coverage"
+            //--collect "Code Coverage"
             //--logger trx
             //--no-build
             //--no-restore
-            //--results-directory D:\a\1\s\.nuke\temp\tests
+            //--results-directory D:\a\1\s\build\output\trx
 
+            TrxDir.CreateOrCleanDirectory();
             DotNetTasks.DotNetTest(x => x
                 .SetProjectFile(Solution)
                 .SetConfiguration(Configuration)
@@ -123,7 +123,29 @@ class Build : NukeBuild
                 .SetDataCollector("Code Coverage")
                 .AddLoggers("trx")
                 .SetResultsDirectory(TrxDir));
+        });
 
+
+
+
+    Target Pack => _ => _
+        .DependsOn(Tests)
+        .Executes(() =>
+        {
+            DropDir.CreateOrCleanDirectory();
+            DotNetTasks.DotNetPack(x => x
+                .SetProject(Solution)
+                .SetConfiguration(Configuration)
+                .EnableNoRestore()
+                .EnableNoBuild()
+                .SetOutputDirectory(DropDir));
+        });
+
+    Target Publish => _ => _
+        .DependsOn(Pack)
+        .Produces(DropDir / "*.nupkg")
+        .Executes(() =>
+        {
 
             AzurePipelines?.PublishTestResults(
                 "dotnet test all",
@@ -142,33 +164,6 @@ class Build : NukeBuild
             //    AzurePipelinesCodeCoverageToolType.Cobertura,
             //    testDir / "Cobertura.xml",
             //    AzurePipelines.TestResultsDirectory);
-
-
-        });
-
-
-
-
-    Target Pack => _ => _
-        .DependsOn(Tests)
-        .Executes(() =>
-        {
-            DotNetTasks.DotNetPack(x => x
-                .SetProject(Solution)
-                .SetConfiguration(Configuration)
-                .EnableNoRestore()
-                .EnableNoBuild()
-                .SetOutputDirectory(DropDir));
-
-            TemporaryDirectory.GlobFiles("*.nupkg").DeleteFiles();
-        });
-
-    Target Drop => _ => _
-        .DependsOn(Pack)
-        .Produces(DropDir / "*.nupkg")
-        .Executes(() =>
-        {
-
         });
 
 }

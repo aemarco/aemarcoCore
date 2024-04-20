@@ -1,5 +1,6 @@
 ﻿namespace aemarco.Crawler.PersonTests.Crawlers;
 
+[Explicit]
 internal class StripperTestsWithAlletaOcean : PersonCrawlerTestsBase<Stripper>
 {
     //https://www.istripper.com/de/models/Aletta-Ocean

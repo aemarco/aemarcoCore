@@ -1,5 +1,6 @@
 ﻿namespace aemarco.Crawler.PersonTests.Crawlers;
 
+[Explicit]
 internal class BabesAndStarsTestsWithArielRebel : PersonCrawlerTestsBase<BabesAndStars>
 {
     //https://www.babesandstars.com/a/ariel-rebel/
