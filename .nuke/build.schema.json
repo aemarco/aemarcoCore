@@ -74,6 +74,7 @@
             "enum": [
               "Clean",
               "Compile",
+              "Drop",
               "Info",
               "Pack",
               "Restore",
@@ -93,6 +94,7 @@
             "enum": [
               "Clean",
               "Compile",
+              "Drop",
               "Info",
               "Pack",
               "Restore",

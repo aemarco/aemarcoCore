@@ -22,13 +22,17 @@ using Serilog;
 
 [AzurePipelines(
     AzurePipelinesImage.WindowsLatest,
-    InvokedTargets = [nameof(Pack)],
+    InvokedTargets = [
+        nameof(Drop)
+    ],
     NonEntryTargets = [
         nameof(Info),
         nameof(Clean),
         nameof(Restore),
         nameof(Compile),
-        nameof(UnitTest)])]
+        nameof(UnitTest),
+        nameof(Pack)
+    ])]
 class Build : NukeBuild
 {
     /// Support plugins are available for:
@@ -147,12 +151,6 @@ class Build : NukeBuild
                 .EnableNoRestore()
                 .SetConfiguration(Configuration)
                 .SetProjectFile(Solution));
-
-            //DotNetTasks.DotNetBuild(s => s
-            //.SetAssemblyVersion(GitVersion.AssemblySemVer)
-            //.SetFileVersion(GitVersion.AssemblySemFileVer)
-            //.SetInformationalVersion(GitVersion.InformationalVersion)
-            //.SetConfiguration(Configuration));
         });
 
     Target UnitTest => d => d
@@ -165,9 +163,9 @@ class Build : NukeBuild
 
         });
 
-
     Target Pack => _ => _
         .DependsOn(UnitTest)
+        .Description("Packs nuget packages")
         .Produces(TemporaryDirectory / "drop" / "*.nupkg")
         .Executes(() =>
         {
@@ -178,5 +176,10 @@ class Build : NukeBuild
                 .EnableNoBuild()
                 .SetOutputDirectory(TemporaryDirectory / "drop"));
         });
+
+    Target Drop => _ => _
+        .DependsOn(Pack)
+        .Description("Publish nuget packages as build artifacts")
+        .Produces(TemporaryDirectory / "drop" / "*.nupkg");
 
 }
