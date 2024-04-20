@@ -175,6 +175,7 @@ class Build : NukeBuild
 
     Target Pack => _ => _
         .DependsOn(UnitTest)
+        .Produces(Solution.Directory / "*.nupkg")
         .Executes(() =>
         {
             DotNetTasks.DotNetPack(x => x
