@@ -33,7 +33,7 @@
 	<!-- nuget build-->
 
 	<PropertyGroup>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<Authors>aemarco</Authors>
 		<Company>aemarco</Company>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>

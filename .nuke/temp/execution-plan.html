@@ -199,12 +199,14 @@ window.addEventListener("load",function(){e.contentLoaded()},!1)}).call(e,n(9))}
     <script>
 $(document).ready(function() {
   $("#Info").addClass('highlight');
+  $("#Clean").addClass('highlight');
   $("#Restore").addClass('highlight');
   $("#Compile").addClass('highlight');
   $("#UnitTest").addClass('highlight');
   $("#Info").hover(
     function() {
         $("#Info").removeClass('highlight');
+        $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
         $("#UnitTest").removeClass('highlight');
@@ -213,6 +215,26 @@ $(document).ready(function() {
     function() {
         $("#Info").removeClass('highlight');
         $("#Info").addClass('highlight');
+        $("#Clean").addClass('highlight');
+        $("#Restore").addClass('highlight');
+        $("#Compile").addClass('highlight');
+        $("#UnitTest").addClass('highlight');
+    });
+  $("#Clean").hover(
+    function() {
+        $("#Info").removeClass('highlight');
+        $("#Clean").removeClass('highlight');
+        $("#Restore").removeClass('highlight');
+        $("#Compile").removeClass('highlight');
+        $("#UnitTest").removeClass('highlight');
+        $("#Info").addClass('highlight');
+        $("#Clean").addClass('highlight');
+    },
+    function() {
+        $("#Info").removeClass('highlight');
+        $("#Clean").removeClass('highlight');
+        $("#Info").addClass('highlight');
+        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
         $("#UnitTest").addClass('highlight');
@@ -220,16 +242,20 @@ $(document).ready(function() {
   $("#Restore").hover(
     function() {
         $("#Info").removeClass('highlight');
+        $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
         $("#UnitTest").removeClass('highlight');
         $("#Info").addClass('highlight');
+        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
     },
     function() {
         $("#Info").removeClass('highlight');
+        $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Info").addClass('highlight');
+        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
         $("#UnitTest").addClass('highlight');
@@ -237,18 +263,22 @@ $(document).ready(function() {
   $("#Compile").hover(
     function() {
         $("#Info").removeClass('highlight');
+        $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
         $("#UnitTest").removeClass('highlight');
         $("#Info").addClass('highlight');
+        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
     },
     function() {
         $("#Info").removeClass('highlight');
+        $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
         $("#Info").addClass('highlight');
+        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
         $("#UnitTest").addClass('highlight');
@@ -256,20 +286,24 @@ $(document).ready(function() {
   $("#UnitTest").hover(
     function() {
         $("#Info").removeClass('highlight');
+        $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
         $("#UnitTest").removeClass('highlight');
         $("#Info").addClass('highlight');
+        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
         $("#UnitTest").addClass('highlight');
     },
     function() {
         $("#Info").removeClass('highlight');
+        $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
         $("#UnitTest").removeClass('highlight');
         $("#Info").addClass('highlight');
+        $("#Clean").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
         $("#UnitTest").addClass('highlight');
@@ -318,7 +352,8 @@ $(document).ready(function() {
     
     <div class="mermaid">
 graph LR
-Info --> Restore
+Info --> Clean
+Clean --> Restore
 Restore --> Compile
 Compile --> UnitTest
 UnitTest

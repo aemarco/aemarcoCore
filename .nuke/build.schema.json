@@ -73,8 +73,12 @@
             "type": "string",
             "enum": [
               "Clean",
+              "Code",
               "Compile",
+              "Hosting",
               "Info",
+              "Pack",
+              "Props",
               "Restore",
               "UnitTest"
             ]
@@ -91,8 +95,12 @@
             "type": "string",
             "enum": [
               "Clean",
+              "Code",
               "Compile",
+              "Hosting",
               "Info",
+              "Pack",
+              "Props",
               "Restore",
               "UnitTest"
             ]

@@ -1,24 +1,27 @@
 //using System;
 //using System.Linq;
 using Nuke.Common;
-using Nuke.Common.IO;
+using Nuke.Common.CI.AzurePipelines;
+using Nuke.Common.Git;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
-using Nuke.Common.Utilities.Collections;
 using Serilog;
+
+
 //using Nuke.Common.CI;
 //using Nuke.Common.Execution;
-//using Nuke.Common.IO;
-//using Nuke.Common.ProjectModel;
 //using Nuke.Common.Tooling;
-//using Nuke.Common.Utilities.Collections;
 //using static Nuke.Common.EnvironmentInfo;
 //using static Nuke.Common.IO.FileSystemTasks;
 //using static Nuke.Common.IO.PathConstruction;
-using static Nuke.Common.Tools.DotNet.DotNetTasks;
+
+// ReSharper disable AllUnderscoreLocalParameterName
 
 //https://nuke.build/
 
+[AzurePipelines(
+    AzurePipelinesImage.WindowsLatest,
+    InvokedTargets = [nameof(Pack)])]
 class Build : NukeBuild
 {
     /// Support plugins are available for:
@@ -27,45 +30,73 @@ class Build : NukeBuild
     ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
     ///   - Microsoft VSCode           https://nuke.build/vscode
 
-    public static int Main() => Execute<Build>(x => x.UnitTest);
+    public static int Main() => Execute<Build>(x => x.Pack);
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-    [Solution]
+    [GitRepository]
+    readonly GitRepository Repository;
+
+
+
+
+    [Solution(GenerateProjects = true)]
     readonly Solution Solution;
+    Project Crawler => Solution.aemarco_Crawler;
+    Project PersonCrawler => Solution.aemarco_Crawler_Person;
+    Project WallpaperCrawler => Solution.aemarco_Crawler_Wallpaper;
+
+
 
     //Tools
-    //[GitVersion]
-    //readonly GitVersion GitVersion;
+    AzurePipelines AzurePipelines => AzurePipelines.Instance;
 
-    //AzurePipelines AzurePipelines => AzurePipelines.Instance;
 
-    Target Info => _ => _
+    Target Hosting => _ => _
         .Executes(() =>
         {
             Log.Information("Host {Host}", Host);
+        });
+
+    Target Props => _ => _
+        .DependsOn(Hosting)
+        .Executes(() =>
+        {
             Log.Information("IsLocalBuild {IsLocalBuild}", IsLocalBuild);
             Log.Information("IsServerBuild {IsServerBuild}", IsServerBuild);
-
             Log.Information("RootDirectory {RootDirectory}", RootDirectory);
             Log.Information("TemporaryDirectory {TemporaryDirectory}", TemporaryDirectory);
+        });
 
-            Log.Information("BuildAssemblyFile {BuildAssemblyFile}", BuildAssemblyFile);
-            Log.Information("BuildAssemblyDirectory {BuildAssemblyDirectory}", BuildAssemblyDirectory);
-            Log.Information("BuildProjectFile {BuildProjectFile}", BuildProjectFile);
-            Log.Information("BuildProjectDirectory {BuildProjectDirectory}", BuildProjectDirectory);
-
-            //Log.Information("ArtifactsDirectory {ArtifactsDirectory}", ArtifactsDirectory);
-            //Log.Information("TestResultsDirectory {TestResultsDirectory}", TestResultsDirectory);
-            //Log.Information("BuildArtifactsDirectory {BuildArtifactsDirectory}", BuildArtifactsDirectory);
-
-
-
+    Target Code => _ => _
+        .DependsOn(Props)
+        .Executes(() =>
+        {
             Log.Information("Solution path = {Value}", Solution);
             Log.Information("Solution directory = {Value}", Solution.Directory);
             //Log.Information("FullSemVer = {Value}", GitVersion.FullSemVer);
 
+            Log.Information("Commit = {Value}", Repository.Commit);
+            Log.Information("Branch = {Value}", Repository.Branch);
+            Log.Information("Tags = {Value}", Repository.Tags);
+
+            Log.Information("main branch = {Value}", Repository.IsOnMainBranch());
+            Log.Information("main/master branch = {Value}", Repository.IsOnMainOrMasterBranch());
+            Log.Information("release/* branch = {Value}", Repository.IsOnReleaseBranch());
+            Log.Information("hotfix/* branch = {Value}", Repository.IsOnHotfixBranch());
+
+            Log.Information("Https URL = {Value}", Repository.HttpsUrl);
+            Log.Information("SSH URL = {Value}", Repository.SshUrl);
+        });
+
+    Target Info => _ => _
+        .DependsOn(Code)
+        .Executes(() =>
+        {
+            //Log.Information("ArtifactsDirectory {ArtifactsDirectory}", ArtifactsDirectory);
+            //Log.Information("TestResultsDirectory {TestResultsDirectory}", TestResultsDirectory);
+            //Log.Information("BuildArtifactsDirectory {BuildArtifactsDirectory}", BuildArtifactsDirectory);
 
             if (IsLocalBuild)
             {
@@ -73,8 +104,8 @@ class Build : NukeBuild
                 return;
             }
 
-            //Log.Information("Branch = {Branch}", AzurePipelines.SourceBranch);
-            //Log.Information("Commit = {Commit}", AzurePipelines.SourceVersion);
+            Log.Information("Branch = {Branch}", AzurePipelines.SourceBranch);
+            Log.Information("Commit = {Commit}", AzurePipelines.SourceVersion);
         });
 
 
@@ -86,35 +117,39 @@ class Build : NukeBuild
     //        ArtifactsDirectory.DeleteDirectory();
     //        DotNetTasks.DotNetClean(s => s
     //            .SetConfiguration(Configuration));
+    //SourceDirectory
+    //    .GlobDirectories("**/bin", "**/obj")
+    //    .ForEach(x =>
+    //        x.DeleteDirectory());
+    //TestsDirectory
+    //    .GlobDirectories("**/bin", "**/obj")
+    //    .ForEach(x =>
+    //        x.DeleteDirectory());
+
+    //OutputDirectory.CreateOrCleanDirectory();
+
     //    });
 
 
-    AbsolutePath SourceDirectory => RootDirectory / "src";
-    AbsolutePath TestsDirectory => RootDirectory / "tests";
-    AbsolutePath OutputDirectory => RootDirectory / "output";
+    //AbsolutePath SourceDirectory => RootDirectory / "src";
+    //AbsolutePath TestsDirectory => RootDirectory / "tests";
+    //AbsolutePath OutputDirectory => RootDirectory / "output";
 
 
     Target Clean => _ => _
         .Before(Restore)
+        .DependsOn(Info)
         .Executes(() =>
         {
-            SourceDirectory
-                .GlobDirectories("**/bin", "**/obj")
-                .ForEach(x =>
-                    x.DeleteDirectory());
-            TestsDirectory
-                .GlobDirectories("**/bin", "**/obj")
-                .ForEach(x =>
-                    x.DeleteDirectory());
-
-            OutputDirectory.CreateOrCleanDirectory();
+            DotNetTasks.DotNetClean(x => x
+                .SetProject(Solution));
         });
 
     Target Restore => _ => _
         .DependsOn(Clean)
         .Executes(() =>
         {
-            DotNetRestore(s => s
+            DotNetTasks.DotNetRestore(s => s
                 .SetProjectFile(Solution));
         });
 
@@ -122,10 +157,10 @@ class Build : NukeBuild
         .DependsOn(Restore)
         .Executes(() =>
         {
-            DotNetBuild(s => s
-                .SetProjectFile(Solution)
+            DotNetTasks.DotNetBuild(s => s
+                .EnableNoRestore()
                 .SetConfiguration(Configuration)
-                .EnableNoRestore());
+                .SetProjectFile(Solution));
 
             //DotNetTasks.DotNetBuild(s => s
             //.SetAssemblyVersion(GitVersion.AssemblySemVer)
@@ -139,10 +174,20 @@ class Build : NukeBuild
         .Executes(() =>
         {
             //DotNetTasks.DotNetTest(t => t
-            //.SetProjectFile(Solution)
-            //.SetConfiguration(Configuration)
-            //.SetResultsDirectory(TestResultsDirectory));
+            //    .SetProjectFile(Solution)
+            //    .SetConfiguration(Configuration));
 
+        });
+
+
+    Target Pack => _ => _
+        .DependsOn(UnitTest)
+        .Executes(() =>
+        {
+            DotNetTasks.DotNetPack(x => x
+                .EnableNoBuild()
+                .SetConfiguration(Configuration)
+                .SetProject(Solution));
         });
 
 }
