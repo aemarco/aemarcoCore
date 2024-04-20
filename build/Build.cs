@@ -23,9 +23,6 @@ using Serilog;
     AzurePipelinesImage.WindowsLatest,
     InvokedTargets = [nameof(Pack)],
     NonEntryTargets = [
-        nameof(Hosting),
-        nameof(Props),
-        nameof(Code),
         nameof(Info),
         nameof(Clean),
         nameof(Restore),
@@ -62,26 +59,18 @@ class Build : NukeBuild
     AzurePipelines AzurePipelines => AzurePipelines.Instance;
 
 
-    Target Hosting => _ => _
+
+
+    Target Info => _ => _
         .Executes(() =>
         {
             Log.Information("Host {Host}", Host);
-        });
 
-    Target Props => _ => _
-        .DependsOn(Hosting)
-        .Executes(() =>
-        {
             Log.Information("IsLocalBuild {IsLocalBuild}", IsLocalBuild);
             Log.Information("IsServerBuild {IsServerBuild}", IsServerBuild);
             Log.Information("RootDirectory {RootDirectory}", RootDirectory);
             Log.Information("TemporaryDirectory {TemporaryDirectory}", TemporaryDirectory);
-        });
 
-    Target Code => _ => _
-        .DependsOn(Props)
-        .Executes(() =>
-        {
             Log.Information("Solution path = {Value}", Solution);
             Log.Information("Solution directory = {Value}", Solution.Directory);
             //Log.Information("FullSemVer = {Value}", GitVersion.FullSemVer);
@@ -97,12 +86,7 @@ class Build : NukeBuild
 
             Log.Information("Https URL = {Value}", Repository.HttpsUrl);
             Log.Information("SSH URL = {Value}", Repository.SshUrl);
-        });
 
-    Target Info => _ => _
-        .DependsOn(Code)
-        .Executes(() =>
-        {
             //Log.Information("ArtifactsDirectory {ArtifactsDirectory}", ArtifactsDirectory);
             //Log.Information("TestResultsDirectory {TestResultsDirectory}", TestResultsDirectory);
             //Log.Information("BuildArtifactsDirectory {BuildArtifactsDirectory}", BuildArtifactsDirectory);

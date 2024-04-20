@@ -38,6 +38,6 @@ stages:
               restoreKeys: $(Agent.OS) | nuget-packages
               path: $(USERPROFILE)/.nuget/packages
           - task: CmdLine@2
-            displayName: 'Run: Hosting, Props, Code, Info, Clean, Restore, Compile, UnitTest, Pack'
+            displayName: 'Run: Info, Clean, Restore, Compile, UnitTest, Pack'
             inputs:
-              script: './build.cmd Hosting Props Code Info Clean Restore Compile UnitTest Pack --skip'
+              script: './build.cmd Info Clean Restore Compile UnitTest Pack --skip'
