@@ -4,7 +4,6 @@
 using Nuke.Common;
 using Nuke.Common.CI.AzurePipelines;
 using Nuke.Common.Git;
-using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
 using Serilog;
@@ -52,17 +51,8 @@ class Build : NukeBuild
     [Solution]
     readonly Solution Solution;
 
-
-
-
     //Tools
     AzurePipelines AzurePipelines => AzurePipelines.Instance;
-
-
-    AbsolutePath OutputDirectory => RootDirectory / "output";
-
-
-
 
     Target Info => _ => _
         .Executes(() =>
@@ -178,7 +168,7 @@ class Build : NukeBuild
 
     Target Pack => _ => _
         .DependsOn(UnitTest)
-        .Produces(OutputDirectory / "nuget" / "*.nupkg")
+        .Produces(TemporaryDirectory / "drop" / "*.nupkg")
         .Executes(() =>
         {
             DotNetTasks.DotNetPack(x => x
@@ -186,8 +176,7 @@ class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .EnableNoRestore()
                 .EnableNoBuild()
-                .SetOutputDirectory(OutputDirectory / "nuget")
-               );
+                .SetOutputDirectory(TemporaryDirectory / "drop"));
         });
 
 }
