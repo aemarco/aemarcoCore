@@ -5,7 +5,6 @@ using Nuke.Common.CI.AzurePipelines;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
-using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Serilog;
 
@@ -50,6 +49,10 @@ class Build : NukeBuild
     AzurePipelines AzurePipelines => AzurePipelines.Instance;
 
 
+    readonly AbsolutePath TrxDir = RootDirectory / "build" / "output" / "trx";
+    readonly AbsolutePath DropDir = RootDirectory / "build" / "output" / "drop";
+
+
     Target Info => _ => _
         .DependentFor(Clean, Restore, Compile, Tests, Pack, Drop)
         .Before(Clean, Restore)
@@ -92,7 +95,7 @@ class Build : NukeBuild
 
 
 
-    Target Tests => d => d
+    Target Tests => _ => _
         .DependsOn(Compile)
         .Executes(() =>
         {
@@ -112,23 +115,20 @@ class Build : NukeBuild
             //--no-restore
             //--results-directory D:\a\1\s\.nuke\temp\tests
 
-            DotNetTasks.DotNetTest(t => t
+            DotNetTasks.DotNetTest(x => x
                 .SetProjectFile(Solution)
                 .SetConfiguration(Configuration)
                 .EnableNoRestore()
                 .EnableNoBuild()
                 .SetDataCollector("Code Coverage")
                 .AddLoggers("trx")
-                .When(
-                    AzurePipelines != null,
-                    c => c
-                        .SetResultsDirectory(AzurePipelines!.TestResultsDirectory)));
+                .SetResultsDirectory(TrxDir));
+
 
             AzurePipelines?.PublishTestResults(
                 "dotnet test all",
                 AzurePipelinesTestResultsType.NUnit,
-                Glob.Files(AzurePipelines.TestResultsDirectory, "*.*"));
-
+                Glob.Files(TrxDir, "*.trx"));
 
 
             //ReportGeneratorTasks.ReportGenerator(new ReportGeneratorSettings()
@@ -148,7 +148,7 @@ class Build : NukeBuild
 
 
 
-    readonly AbsolutePath DropDir = RootDirectory / "build" / "output" / "drop";
+
     Target Pack => _ => _
         .DependsOn(Tests)
         .Executes(() =>
