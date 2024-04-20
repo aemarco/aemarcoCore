@@ -1,8 +1,10 @@
 //using System;
 //using System.Linq;
+
 using Nuke.Common;
 using Nuke.Common.CI.AzurePipelines;
 using Nuke.Common.Git;
+using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
 using Serilog;
@@ -47,16 +49,17 @@ class Build : NukeBuild
 
 
 
-    [Solution(GenerateProjects = true)]
+    [Solution]
     readonly Solution Solution;
-    Project Crawler => Solution.aemarco_Crawler;
-    Project PersonCrawler => Solution.aemarco_Crawler_Person;
-    Project WallpaperCrawler => Solution.aemarco_Crawler_Wallpaper;
+
 
 
 
     //Tools
     AzurePipelines AzurePipelines => AzurePipelines.Instance;
+
+
+    AbsolutePath OutputDirectory => RootDirectory / "output";
 
 
 
@@ -175,13 +178,16 @@ class Build : NukeBuild
 
     Target Pack => _ => _
         .DependsOn(UnitTest)
-        .Produces(Solution.Directory / "*.nupkg")
+        .Produces(OutputDirectory / "nuget" / "*.nupkg")
         .Executes(() =>
         {
             DotNetTasks.DotNetPack(x => x
-                .EnableNoBuild()
+                .SetProject(Solution)
                 .SetConfiguration(Configuration)
-                .SetProject(Solution));
+                .EnableNoRestore()
+                .EnableNoBuild()
+                .SetOutputDirectory(OutputDirectory / "nuget")
+               );
         });
 
 }

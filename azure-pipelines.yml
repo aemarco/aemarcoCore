@@ -41,3 +41,8 @@ stages:
             displayName: 'Run: Info, Clean, Restore, Compile, UnitTest, Pack'
             inputs:
               script: './build.cmd Info Clean Restore Compile UnitTest Pack --skip'
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish: nuget'
+            inputs:
+              artifactName: nuget
+              pathToPublish: 'output/nuget'
