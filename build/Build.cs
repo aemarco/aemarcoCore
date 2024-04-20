@@ -21,7 +21,16 @@ using Serilog;
 
 [AzurePipelines(
     AzurePipelinesImage.WindowsLatest,
-    InvokedTargets = [nameof(Pack)])]
+    InvokedTargets = [nameof(Pack)],
+    NonEntryTargets = [
+        nameof(Hosting),
+        nameof(Props),
+        nameof(Code),
+        nameof(Info),
+        nameof(Clean),
+        nameof(Restore),
+        nameof(Compile),
+        nameof(UnitTest)])]
 class Build : NukeBuild
 {
     /// Support plugins are available for:
