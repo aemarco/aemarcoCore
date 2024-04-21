@@ -2,7 +2,6 @@
 
 public record PersonInfo
 {
-
     //TODO Profession should be a list
     //TODO Piercings should be a list
 

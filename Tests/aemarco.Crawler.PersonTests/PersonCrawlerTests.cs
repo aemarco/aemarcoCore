@@ -15,7 +15,7 @@ internal class PersonCrawlerTests : TestBase
             .Select(x => x.FriendlyName)
             .ToList();
 
-        var result = PersonCrawler.GetAvailableCrawlers().ToList();
+        var result = new PersonCrawler().AvailableCrawlers.ToList();
         result.Should().Equal(expected);
 
         PrintJson(result);
