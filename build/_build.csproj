@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <PackageReference Include="Nuke.Common" Version="8.0.0" />
-    <PackageReference Include="coverlet.msbuild" Version="2.5.0" />
   </ItemGroup>
 
   <ItemGroup>
