@@ -8,7 +8,7 @@ public class PersonParserTests
     [TestCase("Ariel Rebel", "Ariel", "Rebel")]
     [TestCase("Aletta Ocean", "Aletta", "Ocean")]
     [TestCase("Amber Sym", "Amber", "Sym")]
-    public void FindNameInText_Works(string? text, string? expectedFirst, string expectedLast)
+    public void FindNameInText_Works(string? text, string? expectedFirst, string? expectedLast)
     {
         var (firstName, lastName) = PersonParser.FindNameInText(text);
         firstName.Should().Be(expectedFirst);
