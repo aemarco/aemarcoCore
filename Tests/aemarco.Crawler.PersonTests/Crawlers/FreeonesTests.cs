@@ -15,15 +15,15 @@ internal class FreeonesTestsWithFoxyDi : PersonCrawlerTestsBase<Freeones>
         //    "https://media.freeones.com/freeones-photo-generated/c7/ae/VEYrLEcR4PnXXg8FGb/Teen-Nensi-B-Medina-in-Threeway-with-older-Couple_001_teaser.jpg"
         //});
         ExpectedProfilePictureMinCount = 1;
-        ExpectedAliases.AddRange(new[]
-        {
+        ExpectedAliases.AddRange([
+
             "Angel C",
             "Foxi Di",
             "Foxy Dolce",
             "Foxy R",
             "Kleine Punci",
             "Nensi B Medina"
-        });
+        ]);
         ExpectedBirthday = new DateOnly(1994, 9, 14);
         ExpectedProfession = "Adult Model,Porn Star";
         ExpectedStillActive = false;
@@ -54,10 +54,10 @@ internal class FreeonesTestsWithArielRebel : PersonCrawlerTestsBase<Freeones>
         //{
         //    "http://www.sexy-models.net/galleries/12/pics18259/0_big.jpg"
         //});
-        ExpectedAliases.AddRange(new[]
-        {
+        ExpectedAliases.AddRange([
+
             "The Rebel"
-        });
+        ]);
         //ExpectedSocialLinks.AddRange(new List<SocialLink>
         //{
         //    new(SocialLinkKind.Twitter, "https://twitter.com/thedakotatyler")

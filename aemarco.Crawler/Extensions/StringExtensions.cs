@@ -39,9 +39,9 @@ public static partial class StringExtensions
     public static IEnumerable<string> SplitList(this string? text, params char[] separators)
     {
         if (text is null)
-            return new List<string>();
+            return [];
         separators = separators.Length == 0
-            ? new[] { ',' }
+            ? [',']
             : separators;
 
         var result = text

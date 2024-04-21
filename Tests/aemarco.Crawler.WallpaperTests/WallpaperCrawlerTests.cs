@@ -83,7 +83,7 @@ public class WallpaperCrawlerTests : TestBase
         all.HandleFilters();
 
         all._wallCrawlers
-            .All(x => x._crawlOffers is not null && x._crawlOffers.Any())
+            .All(x => x._crawlOffers is not null && x._crawlOffers.Count > 0)
             .Should()
             .BeTrue();
         OutputOffers(all);

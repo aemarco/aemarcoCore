@@ -34,7 +34,7 @@ internal abstract class WallpaperCrawlerBasis
         _crawlOffers ??= GetCrawlsOffers();
         _crawlOffers = _crawlOffers
             .Where(o =>
-                !searchedCategories.Any() || // no filtering = allOffers
+                searchedCategories.Count == 0 || // no filtering = allOffers
                 searchedCategories.Contains(o.Category.Category)) //filtering means offers category must be contained
             .ToList();
     }
@@ -50,7 +50,7 @@ internal abstract class WallpaperCrawlerBasis
         {
             // ignored
         }
-        return Array.Empty<CrawlOffer>();
+        return [];
     }
 
 
@@ -156,7 +156,7 @@ internal abstract class WallpaperCrawlerBasis
     }
 
 
-    private List<string> _knownUrls = new();
+    private List<string> _knownUrls = [];
     protected CancellationToken CancellationToken;
 
 

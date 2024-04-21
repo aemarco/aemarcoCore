@@ -5,7 +5,7 @@ public class AlbumEntry
     public AlbumEntry(string name)
     {
         Name = name;
-        Entries = new List<WallEntry>();
+        Entries = [];
     }
 
     public string Name { get; }

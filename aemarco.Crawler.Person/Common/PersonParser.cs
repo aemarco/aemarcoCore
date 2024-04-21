@@ -32,7 +32,7 @@ public static partial class PersonParser
             return null;
 
         //percent values to be / by 10 to get in range
-        if (text.EndsWith("%"))
+        if (text.EndsWith('%'))
         {
             if (!int.TryParse(text.Except("%"), out var percent))
                 return null;
@@ -67,12 +67,12 @@ public static partial class PersonParser
             return null;
 
         KeyValuePair<string, Gender>[] genderMatches =
-        {
+        [
             new("Female", Gender.Female),
             new("Male", Gender.Male),
             new("Trans", Gender.Other),
             new("tranny", Gender.Other)
-        };
+        ];
         var result = genderMatches
             .Where(pair => Regex.IsMatch(text, pair.Key, RegexOptions.Compiled | RegexOptions.IgnoreCase))
             .Select(pair => (Gender?)pair.Value)

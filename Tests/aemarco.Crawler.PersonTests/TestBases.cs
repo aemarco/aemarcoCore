@@ -303,7 +303,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         PrintJson(Entry.StillActive);
     }
 
-    protected List<string> ExpectedProfilePictures { get; set; } = new();
+    protected List<string> ExpectedProfilePictures { get; set; } = [];
     [Test]
     public void Crawler_Finds_Pictures()
     {
@@ -337,7 +337,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
     }
 
 
-    protected List<string> ExpectedAliases { get; set; } = new();
+    protected List<string> ExpectedAliases { get; set; } = [];
     [Test]
     public void Crawler_Finds_Aliases()
     {
@@ -354,7 +354,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         PrintJson(Entry.Aliases);
     }
 
-    protected List<SocialLink> ExpectedSocialLinks { get; set; } = new();
+    protected List<SocialLink> ExpectedSocialLinks { get; set; } = [];
     [Test]
     public void Crawler_Finds_SocialLinks()
     {

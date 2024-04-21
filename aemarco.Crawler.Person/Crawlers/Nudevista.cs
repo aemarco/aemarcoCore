@@ -44,14 +44,14 @@ internal class Nudevista : PersonCrawlerBase
                 .TitleCase();
 
             //z.B. "Jessica Kline,   Nikita Charm"
-            if (aliasString.EndsWith("."))
+            if (aliasString.EndsWith('.'))
                 aliasString = aliasString[..^1];
 
             //z.B. as list "Jessica Kline, Nikita Charm"
             foreach (var aliasItem in aliasString.Split(','))
             {
                 var al = aliasItem.Trim();
-                if (al.StartsWith(".")) al = al.Remove(0, 1);
+                if (al.StartsWith('.')) al = al.Remove(0, 1);
                 al = al.Trim();
 
                 if (al.Length > 3 && al.Contains(' '))

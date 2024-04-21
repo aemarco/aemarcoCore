@@ -27,7 +27,7 @@ public class CrawlerInfoTests
 
 
 [Crawler("Test", 0)]
-class TestClass
+internal class TestClass
 {
 
 }

@@ -3,7 +3,7 @@
 public class PersonCrawler
 {
 
-    private readonly List<string> _filterPersonSites = new();
+    private readonly List<string> _filterPersonSites = [];
     /// <summary>
     /// returns a list of crawler names, which are currently supported
     /// </summary>

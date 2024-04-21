@@ -9,17 +9,15 @@ internal class PornstarbyfaceTestsWithArielRebel : PersonCrawlerTestsBase<Pornst
     {
         //first and last name expected automatically
         ExpectedGender = Gender.Female; //gender is assumed
-        ExpectedProfilePictures.AddRange(new List<string>
-        {
+        ExpectedProfilePictures.AddRange([
             "https://pornstarbyface.com/ImgFiles/Ariel%20Rebel/1.jpg"
-        });
-        ExpectedAliases.AddRange(new List<string>
-        {
+        ]);
+        ExpectedAliases.AddRange([
             "Ariel Rebel Unplugged",
             "Miss Rebel",
             "Ariel Nubiles",
             "Ariel"
-        });
+        ]);
         ExpectedCountry = "Canada";
         ExpectedCity = "Quebec";
         ExpectedBirthday = new DateOnly(1988, 3, 14);

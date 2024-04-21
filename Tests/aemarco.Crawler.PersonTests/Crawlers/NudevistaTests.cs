@@ -8,8 +8,8 @@ internal class NudevistaTestsWithAlettaOcean : PersonCrawlerTestsBase<Nudevista>
     {
         //first and last name expected automatically
         ExpectedProfilePictures.Add("https://b99.nudevista.com/_/083/137083_370.jpg");
-        ExpectedAliases.AddRange(new List<string>
-        {
+        ExpectedAliases.AddRange([
+
             "Aletta Alien",
             "Aletta Atk",
             "Aletta Florancia",
@@ -22,7 +22,7 @@ internal class NudevistaTestsWithAlettaOcean : PersonCrawlerTestsBase<Nudevista>
             "Doris Alien",
             "Jessica Kline",
             "Nikita Charm"
-        });
+        ]);
         ExpectedGender = Gender.Female;
         ExpectedBirthday = new DateOnly(1987, 12, 14);
         ExpectedCountry = "Hungary";
@@ -37,10 +37,9 @@ internal class NudevistaTestsWithAlettaOcean : PersonCrawlerTestsBase<Nudevista>
         ExpectedPiercings = "Clit, Navel, Tongue";
         ExpectedCareerStart = new DateOnly(2007, 1, 1);
         ExpectedStillActive = null;
-        ExpectedSocialLinks.AddRange(new[]
-        {
+        ExpectedSocialLinks.AddRange([
             new SocialLink(SocialLinkKind.Twitter, "https://twitter.com/alettaoceanxxxx")
-        });
+        ]);
 
     }
 
@@ -56,14 +55,13 @@ internal class NudevistaTestsWithAmberSym : PersonCrawlerTestsBase<Nudevista>
     {
         //first and last name expected automatically
         ExpectedProfilePictures.Add("https://b99.nudevista.com/_/319/145319_370.jpg");
-        ExpectedAliases.AddRange(new List<string>
-        {
+        ExpectedAliases.AddRange([
             "Amber Symm",
             "Ohc Destiny",
             "Tara Marie",
             "Tara Marie Price",
             "Tara P."
-        });
+        ]);
         ExpectedGender = Gender.Female;
         ExpectedBirthday = new DateOnly(1989, 11, 4);
         ExpectedCountry = "USA";
@@ -77,11 +75,10 @@ internal class NudevistaTestsWithAmberSym : PersonCrawlerTestsBase<Nudevista>
         ExpectedPiercings = "Ears, Navel";
         ExpectedCareerStart = new DateOnly(2013, 1, 1);
         ExpectedStillActive = false;
-        ExpectedSocialLinks.AddRange(new[]
-        {
+        ExpectedSocialLinks.AddRange([
             new SocialLink(SocialLinkKind.Twitter, "https://twitter.com/amber2sym"),
             new SocialLink(SocialLinkKind.YouTube, "https://www.youtube.com/user/AmberSym")
-        });
+        ]);
 
     }
 }

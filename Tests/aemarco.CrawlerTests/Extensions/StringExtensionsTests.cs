@@ -2,13 +2,14 @@ namespace aemarco.CrawlerTests.Extensions;
 
 public class StringExtensionsTests
 {
-
+#pragma warning disable CA1861
     [TestCase("Hello World", "Hello", new[] { "World" })]
     [TestCase("This is a test", "is", new[] { "this", "a", "test" })]
     [TestCase("TestTestTest", "", new[] { "test" })]
     [TestCase("abcABC123", "", new[] { "abc", "ABC", "123" })]
     [TestCase("", "", new[] { "Hello", "World" })]
-    public void Except_RemovesGivenStrings(string input, string expected, params string[] except)
+#pragma warning restore CA1861
+    public void Except_RemovesGivenStrings(string input, string expected, string[] except)
     {
         var result = input.Except(except);
         result.Should().Be(expected);

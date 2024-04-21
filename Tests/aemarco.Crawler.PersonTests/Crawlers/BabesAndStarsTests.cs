@@ -7,8 +7,7 @@ internal class BabesAndStarsTestsWithArielRebel : PersonCrawlerTestsBase<BabesAn
         : base("Ariel", "Rebel")
     {
         //first and last name expected automatically
-        ExpectedAliases.AddRange(new List<string>
-        {
+        ExpectedAliases.AddRange([
             "Ariel",
             "Ariel Nubile",
             "Ariel Nubiles",
@@ -20,11 +19,10 @@ internal class BabesAndStarsTestsWithArielRebel : PersonCrawlerTestsBase<BabesAn
             "Rebels",
             "Rebelsownthenet",
             "The Rebel"
-        });
-        ExpectedProfilePictures.AddRange(new List<string>
-        {
+        ]);
+        ExpectedProfilePictures.AddRange([
             "https://www.babesandstars.com/models/2000/2094/250x330.jpg"
-        });
+        ]);
         ExpectedRating = true;
         ExpectedCountry = "Canada";
         ExpectedEthnicity = "Caucasian";

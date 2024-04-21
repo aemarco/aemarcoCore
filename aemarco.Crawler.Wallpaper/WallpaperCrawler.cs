@@ -23,7 +23,7 @@ public class WallpaperCrawler
 
 
 
-        _wallCrawlers = new List<WallpaperCrawlerBasis>();
+        _wallCrawlers = [];
         foreach (var type in Assembly
                      .GetAssembly(typeof(WallpaperCrawlerBasis))!
                      .GetTypes()
@@ -47,7 +47,7 @@ public class WallpaperCrawler
 
 
     //filter sites
-    private readonly List<string> _filterSourceSites = new();
+    private readonly List<string> _filterSourceSites = [];
     public IEnumerable<string> GetAvailableSourceSites()
     {
         foreach (var info in _wallCrawlers //those are all available ;)
@@ -74,7 +74,7 @@ public class WallpaperCrawler
 
 
     //filter categories
-    private readonly List<string> _filterCategories = new();
+    private readonly List<string> _filterCategories = [];
     public IEnumerable<string> GetAvailableCategories()
     {
         var categories = new List<string>();
@@ -122,7 +122,7 @@ public class WallpaperCrawler
         HandleFilters();
 
         //start all crawlers
-        var known = _knownUrlsFunc?.Invoke() ?? new List<string>();
+        var known = _knownUrlsFunc?.Invoke() ?? [];
         var tasks = new List<Task<WallCrawlerResult>>();
         //creates all available crawlers and adds them if applicable
         foreach (var crawler in _wallCrawlers)

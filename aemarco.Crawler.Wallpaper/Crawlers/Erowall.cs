@@ -26,7 +26,7 @@ internal partial class Erowall : WallpaperCrawlerBasis
         {
             //z.B. "#brunette"
             var catName = catNode.GetText();
-            if (string.IsNullOrEmpty(catName) || !catName.StartsWith("#"))
+            if (string.IsNullOrEmpty(catName) || !catName.StartsWith('#'))
                 continue;
 
             //z.B. "brunette"

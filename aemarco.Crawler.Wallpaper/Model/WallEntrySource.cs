@@ -8,13 +8,13 @@ internal class WallEntrySource
 {
 
     private static readonly string[] AllowedExtensions =
-    {
+    [
         ".bmp",
         ".jpg",
         ".jpeg",
         ".png",
         ".gif"
-    };
+    ];
     public WallEntrySource(ContentCategory contentCategory, string siteCategory)
     {
         _contentCategory = contentCategory;
@@ -43,7 +43,7 @@ internal class WallEntrySource
     private readonly string _siteCategory;
 
 
-    public List<string> Tags { get; set; } = new();
+    public List<string> Tags { get; set; } = [];
     public void AddTagsFromText(string? text, params char[] separators)
     {
         Tags.AddRange(WebUtility.HtmlDecode(text).SplitList(separators));
@@ -87,7 +87,7 @@ internal class WallEntrySource
     private static string FilenameFromUrl(PageUri uri)
     {
         var url = uri.Uri.AbsoluteUri;
-        var main = url[(url.LastIndexOf("/", StringComparison.Ordinal) + 1)..];
+        var main = url[(url.LastIndexOf('/') + 1)..];
         main = WebUtility.HtmlDecode(main);
         var result = Path.GetFileNameWithoutExtension(main);
         return result;
@@ -95,7 +95,7 @@ internal class WallEntrySource
     private static string ExtensionFromUrl(PageUri uri)
     {
         var url = uri.Uri.AbsoluteUri;
-        var main = url[(url.LastIndexOf("/", StringComparison.Ordinal) + 1)..];
+        var main = url[(url.LastIndexOf('/') + 1)..];
         main = WebUtility.HtmlDecode(main);
         var result = Path.GetExtension(main);
         return result;
