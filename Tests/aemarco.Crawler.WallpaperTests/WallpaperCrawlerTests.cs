@@ -1,35 +1,8 @@
 ﻿namespace aemarco.Crawler.WallpaperTests;
 
 [SingleThreaded]
-[Explicit]
 public class WallpaperCrawlerTests : TestBase
 {
-
-
-    [TestCaseSource(nameof(CrawlerCombinations))]
-    public async Task Crawler_DoesWork_WithAuto(string site, string cat)
-    {
-        await WaitForSite(site);
-
-        var crawler = GetAutoCrawler();
-        crawler.AddSourceSiteFilter(site);
-        crawler.AddCategoryFilter(cat);
-
-        var result = await crawler.StartAsync();
-        result.Should().NotBeNull();
-
-        PrintJson(new { Albums = result.NewAlbums.Count });
-        PrintJson(new { Entries = result.NewEntries.Count });
-
-
-        if (result.Warnings.FirstOrDefault() is { } warning)
-            Assert.Warn(warning.ToString());
-        else
-            PrintJson(result);
-    }
-
-
-
 
     [Test]
     public void GetAvailableSites_Delivers()
@@ -182,23 +155,16 @@ public class WallpaperCrawlerTests : TestBase
         var result = new WallpaperCrawler(1, 1);
         return result;
     }
-    private static WallpaperCrawler GetAutoCrawler()
-    {
-        var result = new WallpaperCrawler();
-        return result;
-    }
 
     private readonly Random _random = new();
     private async Task WaitForSite(string site)
     {
-        var min = 100;
-        var max = 101;
+        var delay = 100;
         if (site is "Wallpaperscraft" or "Wallhaven")
         {
-            min = 750;
-            max = 2500;
+            delay = _random.Next(750, 2500);
         }
-        await Task.Delay(_random.Next(min, max));
+        await Task.Delay(delay);
     }
     private static void OutputOffers(WallpaperCrawler crawler)
     {

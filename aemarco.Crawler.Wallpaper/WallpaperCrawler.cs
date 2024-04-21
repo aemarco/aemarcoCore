@@ -127,10 +127,8 @@ public class WallpaperCrawler
         //creates all available crawlers and adds them if applicable
         foreach (var crawler in _wallCrawlers)
         {
-            tasks.Add(Task.Run(() => crawler.Start(
-                    known,
-                    cancellationToken),
-                cancellationToken));
+            var newTask = crawler.Start(known, cancellationToken);
+            tasks.Add(newTask);
         }
 
 
