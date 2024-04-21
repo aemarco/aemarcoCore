@@ -11,5 +11,4 @@ public record CrawlerInfo(string FriendlyName, int Priority)
     }
 
     public override string ToString() => FriendlyName;
-
 }

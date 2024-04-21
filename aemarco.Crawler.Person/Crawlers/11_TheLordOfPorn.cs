@@ -6,10 +6,17 @@ internal class TheLordOfPorn : PersonCrawlerBase
 
     private readonly Uri _uri = new("https://thelordofporn.com");
 
+    protected override PageUri GetGirlUri(string firstName, string lastName)
+    {
+        var name = $"{firstName}-{lastName}"
+            .Replace(' ', '-')
+            .ToLower();
+        var result = new PageUri(_uri)
+            .WithHref($"/pornstars/{name}");
 
-    //z.B. "https://thelordofporn.com/pornstars/dakota-tyler"
-    protected override PageUri GetGirlUri(string firstName, string lastName) =>
-        new PageUri(_uri).WithHref($"/pornstars/{firstName.Replace(' ', '-')}-{lastName.Replace(' ', '-')}".ToLower());
+        //https://thelordofporn.com/pornstars/dakota-tyler
+        return result;
+    }
 
     protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {

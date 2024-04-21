@@ -6,10 +6,12 @@ public class PersonCrawler
     private readonly Type[] _crawlerTypes;
     public PersonCrawler()
     {
-        _crawlerTypes = [.. Assembly
-            .GetAssembly(typeof(PersonCrawlerBase))!
+        _crawlerTypes = [.. typeof(IPersonCrawler).Assembly
             .GetTypes()
-            .Where(x => x.IsSubclassOf(typeof(PersonCrawlerBase)))
+            .Where(x =>
+                x.IsAssignableTo(typeof(IPersonCrawler)) &&
+                x is { IsAbstract: false, IsClass: true} &&
+                x.GetCustomAttribute<CrawlerAttribute>() != null)
             .OrderBy(x => CrawlerInfo.FromCrawlerType(x).Priority)];
     }
 
@@ -48,7 +50,7 @@ public class PersonCrawler
             .Where(x =>
                 _filterPersonSites.Count == 0 ||
                 _filterPersonSites.Contains(CrawlerInfo.FromCrawlerType(x).FriendlyName))
-            .Select(x => (PersonCrawlerBase)Activator.CreateInstance(x)!)
+            .Select(x => (IPersonCrawler)Activator.CreateInstance(x)!)
             .Select(x => x.GetPersonEntry(firstName, lastName, cancellationToken))
             .ToArray();
 

@@ -13,7 +13,6 @@ public record ProfilePicture(string Url)
     }
 
     public string Url { get; } = Url;
-
     public int? SuggestedMinAdultLevel { get; }
     public int? SuggestedMaxAdultLevel { get; }
 }

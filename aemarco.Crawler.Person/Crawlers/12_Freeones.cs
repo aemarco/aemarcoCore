@@ -6,8 +6,16 @@ internal class Freeones : PersonCrawlerBase
 
     private readonly Uri _uri = new("https://www.freeones.com");
 
-    protected override PageUri GetGirlUri(string firstName, string lastName) =>
-        new PageUri(_uri).WithHref($"/{firstName.Replace(' ', '-')}-{lastName.Replace(' ', '-')}");
+    protected override PageUri GetGirlUri(string firstName, string lastName)
+    {
+        var name = $"{firstName}-{lastName}"
+            .Replace(' ', '-');
+        var result = new PageUri(_uri)
+            .WithHref($"/{name}");
+
+        //https://www.freeones.com/Ariel-Rebel
+        return result;
+    }
 
     protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {

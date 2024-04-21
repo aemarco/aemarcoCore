@@ -6,10 +6,17 @@ internal class BabesAndStars : PersonCrawlerBase
 
     private readonly Uri _uri = new("https://www.babesandstars.com");
 
+    protected override PageUri GetGirlUri(string firstName, string lastName)
+    {
+        var name = $"{firstName}-{lastName}"
+            .Replace(' ', '-')
+            .ToLower();
+        var result = new PageUri(_uri).WithHref($"/{name[0]}/{name}/");
 
-    //z.B. "https://www.babesandstars.com/a/ariel-rebel/"
-    protected override PageUri GetGirlUri(string firstName, string lastName) =>
-        new PageUri(_uri).WithHref($"/{firstName[0]}/{firstName.Replace(' ', '-')}-{lastName.Replace(' ', '-')}/".ToLower());
+        //https://www.babesandstars.com/a/ariel-rebel/
+        return result;
+    }
+
     protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {
         var profileNode = girlPage.FindNode("//div[@class='profile']/div");

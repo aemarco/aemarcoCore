@@ -6,23 +6,32 @@ internal class Nudevista : PersonCrawlerBase
 
     private readonly Uri _uri = new("https://www.nudevista.at");
 
+    protected override PageUri GetGirlUri(string firstName, string lastName)
+    {
+        var name = $"{firstName}+{lastName}"
+            .Replace(' ', '+');
+        var result = new PageUri(_uri)
+            .WithHref($"?q={name}&s=s");
 
-    //z.B. "https://www.nudevista.at?q=Aletta+Ocean&s=s"
-    protected override PageUri GetGirlUri(string firstName, string lastName) =>
-        new PageUri(_uri).WithHref($"?q={firstName.Replace(' ', '+')}+{lastName.Replace(' ', '+')}&s=s");
+        //https://www.nudevista.at?q=Aletta+Ocean&s=s
+        return result;
+    }
+
     protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {
 
         //Name
-        UpdateName(girlPage.FindNode("//td[contains(@valign, 'top') and contains(@colspan ,'2')]"));
+        var nameNode = girlPage.FindNode("//td[contains(@valign, 'top') and contains(@colspan ,'2')]");
+        UpdateName(nameNode);
 
         //Pic
-        UpdateProfilePictures(girlPage
+        var picNode = girlPage
             .FindNode("//img[@class='mthumb']")?
             .GetSrc(x =>
                 x.StartsWith("http")
-                    ? x :
-                    $"https:{x}"));
+                    ? x
+                    : $"https:{x}");
+        UpdateProfilePictures(picNode);
 
         //Social
         girlPage

@@ -196,7 +196,6 @@ public static partial class PersonParser
     [GeneratedRegex(@"-[ ]?\d{4,4}", RegexOptions.IgnoreCase)]
     private static partial Regex UntilYearRegex(); //z.B. "- 2015"
 
-
     /// <summary>
     /// Tries to extract the info, if the person is still active
     /// - Years Active: 2018 - Present (Started Around 18 Years Old; 4 Years In The Business)

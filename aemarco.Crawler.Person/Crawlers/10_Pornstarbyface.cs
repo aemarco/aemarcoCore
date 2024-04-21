@@ -6,10 +6,17 @@ internal class Pornstarbyface : PersonCrawlerBase
 
     private readonly Uri _uri = new("https://pornstarbyface.com");
 
+    protected override PageUri GetGirlUri(string firstName, string lastName)
+    {
+        var name = $"{firstName}-{lastName}"
+            .Replace(' ', '-');
+        var result = new PageUri(_uri)
+            .WithHref($"/girls/{name}");
 
-    //z.B. "https://pornstarbyface.com/girls/Aletta-Ocean"
-    protected override PageUri GetGirlUri(string firstName, string lastName) =>
-        new PageUri(_uri).WithHref($"/girls/{firstName.Replace(' ', '-')}-{lastName.Replace(' ', '-')}");
+        //https://pornstarbyface.com/girls/Ariel-Rebel
+        return result;
+    }
+
     protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {
         var starInfo = girlPage.FindNode("//div[@class='star-info']");

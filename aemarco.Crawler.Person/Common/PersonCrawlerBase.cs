@@ -1,29 +1,24 @@
 ﻿namespace aemarco.Crawler.Person.Common;
 
-internal abstract class PersonCrawlerBase
+internal abstract class PersonCrawlerBase : IPersonCrawler
 {
     internal PersonCrawlerBase()
     {
+        Result = new PersonInfo();
         Result.CrawlerInfos.Add(CrawlerInfo.FromCrawlerType(GetType()));
     }
 
-    protected PersonInfo Result { get; } = new();
-
-    internal async Task<PersonInfo> GetPersonEntry(string firstName, string lastName, CancellationToken token)
+    public async Task<PersonInfo> GetPersonEntry(string firstName, string lastName, CancellationToken token)
     {
         var girlUri = GetGirlUri(firstName, lastName);
         var girlPage = await girlUri.NavigateAsync(token: token);
-
         await HandleGirlPage(girlPage, token);
-
         return Result;
     }
 
-
+    protected PersonInfo Result { get; }
     protected abstract PageUri GetGirlUri(string firstName, string lastName);
     protected abstract Task HandleGirlPage(PageDocument girlPage, CancellationToken token);
-
-
 
     #region Update Result
 
@@ -35,8 +30,8 @@ internal abstract class PersonCrawlerBase
         var text = node.GetText();
         var (firstName, lastName) = PersonParser.FindNameInText(text);
 
-        Result.FirstName = firstName ?? Result.FirstName;
-        Result.LastName = lastName ?? Result.LastName;
+        Result.FirstName = firstName;
+        Result.LastName = lastName;
     }
 
     protected void UpdateProfilePictures(PageUri? uri, int? suggestedMinAdultLevel = null, int? suggestedMaxAdultLevel = null)
@@ -44,10 +39,13 @@ internal abstract class PersonCrawlerBase
         if (uri is null)
             return;
 
-        Result.ProfilePictures.Add(new ProfilePicture(
-            uri.WithoutQuery().Uri.AbsoluteUri,
+        var url = uri.WithoutQuery().Uri.AbsoluteUri;
+        var profilePicture = new ProfilePicture(
+            url,
             suggestedMinAdultLevel,
-            suggestedMaxAdultLevel));
+            suggestedMaxAdultLevel);
+
+        Result.ProfilePictures.Add(profilePicture);
     }
 
     protected void UpdateMeasurements(string? text, bool isInches = false)
@@ -81,4 +79,5 @@ internal abstract class PersonCrawlerBase
 
 
     #endregion
+
 }
