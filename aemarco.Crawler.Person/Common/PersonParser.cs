@@ -108,7 +108,7 @@ public static partial class PersonParser
     [GeneratedRegex(@"(\d+)[ ]?cm", RegexOptions.IgnoreCase)]
     private static partial Regex CmRegex();
 
-    [GeneratedRegex(@"(\d+)(?:'|′)[ ]?(\d+)(?:""|''|″)", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"(\d+)(?:'|′|’)[ ]?(\d+)(?:""|''|″)?", RegexOptions.IgnoreCase)]
     private static partial Regex FeetInchRegex();
 
     [GeneratedRegex(@"(\d+)'", RegexOptions.IgnoreCase)]

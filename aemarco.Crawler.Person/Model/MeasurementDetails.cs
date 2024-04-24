@@ -66,11 +66,10 @@ public partial record MeasurementDetails(int? Bust, string? Cup, bool FakeTits, 
         if (string.IsNullOrWhiteSpace(text))
             return true;
 
-
         text = text.Replace("/", "-");
+        text = text.Replace('\u2013', '-');
         text = text.Replace(" -", "-");
         text = text.Replace("- ", "-");
-
 
         if (MeasurementsRegex().Match(text) is { Success: true } measureMatch &&
             int.TryParse(measureMatch.Groups[1].Value, out var bust) &&

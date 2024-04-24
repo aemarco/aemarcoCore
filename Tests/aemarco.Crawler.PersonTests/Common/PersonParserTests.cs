@@ -68,6 +68,7 @@ public class PersonParserTests
     [TestCase("Height: 5'2\" (Or 157 Cm)", 157)]
     [TestCase("Größe 178 Cm", 178)]
     [TestCase("Größe: 5′8″ (172 Cm)", 172)]
+    [TestCase("5′8", 173)]
     public void FindHeightInText_Works(string? text, int? expected)
     {
         var result = PersonParser.FindHeightInText(text);

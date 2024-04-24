@@ -24,6 +24,7 @@ public record PageNode(Uri Uri, HtmlDocument Document, HtmlNode Node)
 
     public PageNode Parent() => new(this, Node.ParentNode);
     public PageNode NextSibling() => new(this, Node.NextSibling);
+    public PageNode SelectNode(Func<HtmlNode, HtmlNode> act) => new(this, act(Node));
     public IReadOnlyList<PageNode> Children()
     {
         return Node.ChildNodes

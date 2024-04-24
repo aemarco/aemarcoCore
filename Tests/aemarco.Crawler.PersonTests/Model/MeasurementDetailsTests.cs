@@ -1,4 +1,6 @@
-﻿namespace aemarco.Crawler.PersonTests.Model;
+﻿using System.Text.RegularExpressions;
+
+namespace aemarco.Crawler.PersonTests.Model;
 internal class MeasurementDetailsTests
 {
 
@@ -32,9 +34,11 @@ internal class MeasurementDetailsTests
     [TestCase("96DDD-66-93", "96F-66-93")]
     [TestCase("86DD(fake)/66/93", "86E(fake)-66-93")]
     [TestCase("86DD(fake)-66-93", "86E(fake)-66-93")]
+    [TestCase(@"90B\u201360\u201390", "90B-60-90")]
+    [TestCase(@"90B \u2013 60 \u2013 90", "90B-60-90")]
     public void Parse_Works(string text, string expected)
     {
-        var result = MeasurementDetails.Parse(text);
+        var result = MeasurementDetails.Parse(Regex.Unescape(text));
         result.ToString().Should().Be(expected);
     }
 
