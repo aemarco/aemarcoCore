@@ -20,11 +20,20 @@ internal class XxxBios : PersonCrawlerBase
     protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {
         var dataNodes = girlPage.FindNodes("//div[@class='clearfix entry-content']/p");
+
         foreach (var node in dataNodes)
         {
             token.ThrowIfCancellationRequested();
 
 
+            if (node.FindNode("./a/img") is { } picNode)
+            {
+                UpdateProfilePictures(picNode.GetAttributeRef("data-src"));
+            }
+            else if (node.FindNode("./a") is { } linkNode)
+            {
+                UpdateWellKnownSocial(linkNode.GetHref());
+            }
 
             if (node.FindNode("./strong") is { } labelNode)
             {
@@ -33,7 +42,12 @@ internal class XxxBios : PersonCrawlerBase
                 Action act = label switch
                 {
                     "Name :" => () => UpdateName(node.SelectNode(x => x.LastChild)),
-                    "Hometown :" => () => Result.City = text,
+                    "Hometown :" => () =>
+                    {
+                        Result.City = text;
+                        UpdateCountry(text.TextInParentheses());
+                    }
+                    ,
                     "Measurements :" => () => UpdateMeasurements(text, true),
                     "Height :" => () => Result.Height = PersonParser.FindHeightInText(text),
                     "Hair Colour :" => () => Result.HairColor = text,
@@ -49,10 +63,7 @@ internal class XxxBios : PersonCrawlerBase
                 };
                 act();
             }
-            else if (node.FindNode("./a/img") is { } picNode)
-            {
-                UpdateProfilePictures(picNode.GetAttributeRef("data-src"));
-            }
+
         }
 
 

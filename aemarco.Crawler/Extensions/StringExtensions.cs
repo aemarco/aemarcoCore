@@ -111,4 +111,21 @@ public static partial class StringExtensions
         return null;
     }
 
+
+
+    [GeneratedRegex(@"\((.*?)\)")]
+    private static partial Regex TextInParenthesesRegex();
+
+    public static string? TextInParentheses(this string? text)
+    {
+        if (text is null)
+            return null;
+
+        var match = TextInParenthesesRegex().Match(text);
+
+        return match.Success
+            ? match.Groups[1].Value
+            : null;
+    }
+
 }

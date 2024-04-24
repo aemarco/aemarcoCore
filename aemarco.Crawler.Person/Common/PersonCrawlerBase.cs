@@ -34,6 +34,18 @@ internal abstract class PersonCrawlerBase : IPersonCrawler
         Result.LastName = lastName;
     }
 
+    protected void UpdateCountry(string? text)
+    {
+        if (text is null)
+            return;
+
+        if (CountryList.FindCountry(text) is not { } country)
+            return;
+
+        Result.Country = country;
+    }
+
+
     protected void UpdateProfilePictures(PageUri? uri, int? suggestedMinAdultLevel = null, int? suggestedMaxAdultLevel = null)
     {
         if (uri is null)
@@ -75,6 +87,18 @@ internal abstract class PersonCrawlerBase : IPersonCrawler
 
         //add only known kinds
         Result.SocialLinks.Add(link);
+    }
+
+    protected void UpdateWellKnownSocial(PageUri? link)
+    {
+        if (link is null)
+            return;
+
+        var social = SocialLink.FromUri(link.Uri);
+        if (social.Kind == SocialLinkKind.Unknown)
+            return;
+
+        Result.SocialLinks.Add(social);
     }
 
 

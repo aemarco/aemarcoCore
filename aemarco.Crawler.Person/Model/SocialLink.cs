@@ -12,6 +12,7 @@ public record SocialLink(SocialLinkKind Kind, string Url) : IComparable<SocialLi
             "facebook.com" => SocialLinkKind.Facebook,
             "youtube.com" => SocialLinkKind.YouTube,
             "www.youtube.com" => SocialLinkKind.YouTube,
+            "onlyfans.com" => SocialLinkKind.OnlyFans,
             _ => SocialLinkKind.Unknown
         };
         return new SocialLink(kind, uri.AbsoluteUri);
@@ -33,5 +34,6 @@ public enum SocialLinkKind
     Twitter,
     Instagram,
     Facebook,
-    YouTube
+    YouTube,
+    OnlyFans
 }
