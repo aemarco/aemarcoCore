@@ -61,11 +61,11 @@ internal class Babepedia : PersonCrawlerBase
                 switch (parts.Count)
                 {
                     case 1:
-                        Result.Country = parts[0];
+                        UpdateCountry(parts[0]);
                         break;
                     case 2:
                         Result.City = parts[0];
-                        Result.Country = parts[1];
+                        UpdateCountry(parts[1]);
                         break;
                 }
             }

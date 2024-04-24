@@ -29,7 +29,7 @@ internal class FreeonesTestsWithFoxyDi : PersonCrawlerTestsBase<Freeones>
         ExpectedStillActive = false;
         ExpectedCareerStart = new DateOnly(2012, 1, 1);
         ExpectedCity = "St. Petersburg";
-        ExpectedCountry = "Russian";
+        ExpectedCountry = "Russia";
 
         ExpectedEthnicity = "Caucasian";
         ExpectedMeasurementDetails = "86B-60-86";

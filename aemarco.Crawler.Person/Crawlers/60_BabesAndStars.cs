@@ -50,7 +50,7 @@ internal class BabesAndStars : PersonCrawlerBase
 
             var text = node.GetText().TitleCase();
             if (text.StartsWith("Country:"))
-                Result.Country = text.Except("Country:");
+                UpdateCountry(text.Except("Country:"));
             else if (text.StartsWith("Ethnicity:"))
                 Result.Ethnicity = text.Except("Ethnicity:");
             else if (text.StartsWith("Measurements:"))

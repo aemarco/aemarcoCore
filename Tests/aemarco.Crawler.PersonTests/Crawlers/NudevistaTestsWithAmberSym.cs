@@ -18,7 +18,7 @@ internal class NudevistaTestsWithAmberSym : PersonCrawlerTestsBase<Nudevista>
         ]);
         ExpectedGender = Gender.Female;
         ExpectedBirthday = new DateOnly(1989, 11, 4);
-        ExpectedCountry = "USA";
+        ExpectedCountry = "United States";
         ExpectedProfession = "Fashion Model";
         ExpectedEthnicity = "Caucasian";
         ExpectedHairColor = "Brown";

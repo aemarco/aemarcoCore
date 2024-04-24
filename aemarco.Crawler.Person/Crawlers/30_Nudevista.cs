@@ -81,7 +81,7 @@ internal class Nudevista : PersonCrawlerBase
             else if (text.StartsWith("Geburtstag:"))
                 Result.Birthday = text.Except("Geburtstag:").ToDateOnly();
             else if (text.StartsWith("Land:"))
-                Result.Country = text.Except("Land:");
+                UpdateCountry(text.Except("Land:"));
             else if (text.StartsWith("Geburtsort:"))
                 Result.City = text.Except("Geburtsort:");
             else if (text.StartsWith("Beruf:"))

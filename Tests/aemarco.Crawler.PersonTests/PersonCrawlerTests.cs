@@ -53,7 +53,7 @@ internal class PersonCrawlerTests : TestBase
             new("https://www.babesandstars.com/models/18000/18713/250x330.jpg")
         });
         result.Birthday.Should().Be(new DateOnly(1994, 9, 14));
-        result.Country.Should().Be("Russian Federation");
+        result.Country.Should().Be("Russia");
         result.City.Should().Be("St. Petersburg");
         result.Profession.Should().Be("Adult Model (Former), Porn Star (Former)");
         result.CareerStart.Should().Be(new DateOnly(2013, 1, 1));

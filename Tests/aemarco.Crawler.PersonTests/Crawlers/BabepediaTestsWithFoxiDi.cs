@@ -31,7 +31,7 @@ internal class BabepediaTestsWithFoxiDi : PersonCrawlerTestsBase<Babepedia>
             "https://www.babepedia.com/pics/Foxy%20Di4.jpg"
         });
         ExpectedBirthday = new DateOnly(1994, 9, 14);
-        ExpectedCountry = "Russian Federation";
+        ExpectedCountry = "Russia";
         ExpectedCity = "St. Petersburg";
         ExpectedEthnicity = "Caucasian";
         ExpectedProfession = "Adult Model (Former), Porn Star (Former)";

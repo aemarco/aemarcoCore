@@ -164,7 +164,7 @@ public class CountryList
         { "Portugal", ["Portugal", "Portugal"] },
         { "Qatar", ["Qatar", "Katar"] },
         { "Romania", ["Romania", "Rumänien"] },
-        { "Russia", ["Russia", "Russland", "Russian Federation"] },
+        { "Russia", ["Russia", "Russland", "Russian Federation", "Russian"] },
         { "Rwanda", ["Rwanda", "Ruanda"] },
         { "Saint Kitts and Nevis", ["Saint Kitts and Nevis", "St. Kitts und Nevis"] },
         { "Saint Lucia", ["Saint Lucia", "St. Lucia"] },

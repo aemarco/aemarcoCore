@@ -49,7 +49,7 @@ internal class Pornstarbyface : PersonCrawlerBase
             Action act = label switch
             {
                 "Aliases" => () => Result.Aliases.AddRange(text.SplitList()),
-                "Country" => () => Result.Country = text,
+                "Country" => () => UpdateCountry(text),
                 "State" => () => Result.City = text,
                 "Birthday" => () => Result.Birthday = text.ToDateOnly(),
                 "Ethnicity" => () => Result.Ethnicity = text,

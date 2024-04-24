@@ -58,7 +58,7 @@ internal class Freeones : PersonCrawlerBase
                 "Career status:" => () => Result.StillActive = PersonParser.FindStillActiveInText(text),
                 "Career start:" => () => Result.CareerStart = PersonParser.FindCareerStartInText(text),
                 "Place of birth:" => () => Result.City = text.SplitList().FirstOrDefault(),
-                "Nationality:" => () => Result.Country = text,
+                "Nationality:" => () => UpdateCountry(text),
 
                 "Ethnicity:" => () => Result.Ethnicity = text,
                 "Boobs:" => () => boobs = text,

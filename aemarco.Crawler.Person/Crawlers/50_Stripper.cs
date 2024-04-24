@@ -43,7 +43,7 @@ internal class Stripper : PersonCrawlerBase
             var text = node.GetText();
 
             if (text.Contains("Land:"))
-                Result.Country = text.Except("Land:").TitleCase();
+                UpdateCountry(text.Except("Land:").TitleCase());
             else if (text.Contains("Stadt:"))
                 Result.City = text.Except("Stadt:").TitleCase();
             else if (text.Contains("Größe"))
