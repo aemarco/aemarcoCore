@@ -23,13 +23,13 @@ internal class BabepediaTestsWithFoxiDi : PersonCrawlerTestsBase<Babepedia>
             "Medina U",
             "Nensi B"
         });
-        ExpectedProfilePictures.AddRange(new List<string>
-        {
-            "https://www.babepedia.com/pics/Foxy%20Di.jpg",
-            "https://www.babepedia.com/pics/Foxy%20Di2.jpg",
-            "https://www.babepedia.com/pics/Foxy%20Di3.jpg",
-            "https://www.babepedia.com/pics/Foxy%20Di4.jpg"
-        });
+        //ExpectedProfilePictures.AddRange(new List<string>
+        //{
+        //    "https://www.babepedia.com/pics/Foxy%20Di.jpg",
+        //    "https://www.babepedia.com/pics/Foxy%20Di2.jpg",
+        //    "https://www.babepedia.com/pics/Foxy%20Di3.jpg",
+        //    "https://www.babepedia.com/pics/Foxy%20Di4.jpg"
+        //});
         ExpectedBirthday = new DateOnly(1994, 9, 14);
         ExpectedCountry = "Russia";
         ExpectedCity = "St. Petersburg";

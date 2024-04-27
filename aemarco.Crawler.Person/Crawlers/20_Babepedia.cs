@@ -24,14 +24,16 @@ internal class Babepedia : PersonCrawlerBase
         UpdateName(girlPage.FindNode("//div[@id='bioarea']/h1"));
 
         //Pics
-        UpdateProfilePictures(girlPage
-            .FindNode("//div[@id='profimg']/a[@class='img']")?
-            .GetHref());
-        girlPage
-            .FindNodes("//div[@id='profselect']/div[@class='prof']/a[@class='img']")
-            .Select(x => x.GetHref())
-            .ToList()
-            .ForEach(x => UpdateProfilePictures(x));
+        //no pics, because they are not accessible later on
+
+        //UpdateProfilePictures(girlPage
+        //    .FindNode("//div[@id='profimg']/a[@class='img']")?
+        //    .GetHref());
+        //girlPage
+        //    .FindNodes("//div[@id='profselect']/div[@class='prof']/a[@class='img']")
+        //    .Select(x => x.GetHref())
+        //    .ToList()
+        //    .ForEach(x => UpdateProfilePictures(x));
 
         //Aliases
         var aliasNode = girlPage.FindNode("//div[@id='bioarea']/h2");

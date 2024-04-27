@@ -45,10 +45,10 @@ internal class PersonCrawlerTests : TestBase
         result.ProfilePictures.Should().BeEquivalentTo(new List<ProfilePicture>
         {
             new("https://thelordofporn.com/wp-content/uploads/2016/12/Foxi-Di-2.jpg"),
-            new("https://www.babepedia.com/pics/Foxy%20Di.jpg"),
-            new("https://www.babepedia.com/pics/Foxy%20Di2.jpg"),
-            new("https://www.babepedia.com/pics/Foxy%20Di3.jpg"),
-            new("https://www.babepedia.com/pics/Foxy%20Di4.jpg"),
+            //new("https://www.babepedia.com/pics/Foxy%20Di.jpg"),
+            //new("https://www.babepedia.com/pics/Foxy%20Di2.jpg"),
+            //new("https://www.babepedia.com/pics/Foxy%20Di3.jpg"),
+            //new("https://www.babepedia.com/pics/Foxy%20Di4.jpg"),
             new("https://b99.nudevista.com/_/866/158866_370.jpg"),
             new("https://www.babesandstars.com/models/18000/18713/250x330.jpg")
         });
