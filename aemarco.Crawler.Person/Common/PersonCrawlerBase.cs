@@ -1,7 +1,10 @@
-﻿namespace aemarco.Crawler.Person.Common;
+﻿using aemarco.Crawler.Services;
+
+namespace aemarco.Crawler.Person.Common;
 
 internal abstract class PersonCrawlerBase : IPersonCrawler
 {
+    private static readonly CountryService CountryService = new();
     internal PersonCrawlerBase()
     {
         Result = new PersonInfo();
@@ -39,7 +42,7 @@ internal abstract class PersonCrawlerBase : IPersonCrawler
         if (text is null)
             return;
 
-        if (CountryList.FindCountry(text) is not { } country)
+        if (CountryService.FindCountry(text) is not { } country)
             return;
 
         Result.Country = country;

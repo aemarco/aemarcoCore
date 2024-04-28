@@ -1,35 +1,10 @@
-﻿using aemarco.Crawler.Model;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace aemarco.CrawlerTests.Model;
-internal class CountryListTests : TestBase
-{
+namespace aemarco.CrawlerTests;
 
-    [TestCase(null, null)]
-    [TestCase("Canada", "Canada")]
-    [TestCase("Hungary", "Hungary")]
-    [TestCase("United States", "United States")]
-    [TestCase("American", "United States")]
-    [TestCase("USA", "United States")]
-    [TestCase("US", "United States")]
-    [TestCase("Russian Federation", "Russia")]
-    [TestCase("Russia", "Russia")]
-    [TestCase("Russian", "Russia")]
-    public void FindCountry(string? text, string? expected)
-    {
-        var result = CountryList.FindCountry(text);
-
-        result.Should().Be(expected);
-
-        PrintJson(result);
-    }
-
-}
-
-
-internal abstract class TestBase
+public abstract class TestBase
 {
     protected static void NothingExpected(object? found)
     {
@@ -37,9 +12,9 @@ internal abstract class TestBase
             return;
 
         Assert.Warn($"""
-                     Expected Nothing but found: {GetTypeName(found)}
-                     {JsonConvert.SerializeObject(found, Formatting.Indented)}
-                     """);
+                Expected Nothing but found: {GetTypeName(found)}
+                {JsonConvert.SerializeObject(found, Formatting.Indented)}
+                """);
     }
 
     protected static void PrintJson(object? obj)
@@ -51,9 +26,9 @@ internal abstract class TestBase
         }
 
         TestContext.Out.WriteLine($"""
-                                   Passed with: {GetTypeName(obj)}
-                                    {JsonConvert.SerializeObject(obj, Formatting.Indented)}
-                                   """);
+            Passed with: {GetTypeName(obj)}
+             {JsonConvert.SerializeObject(obj, Formatting.Indented)}
+            """);
     }
 
 

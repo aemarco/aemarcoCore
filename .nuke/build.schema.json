@@ -74,6 +74,7 @@
             "enum": [
               "Clean",
               "Compile",
+              "CountryUpdate",
               "Info",
               "Pack",
               "Publish",
@@ -94,6 +95,7 @@
             "enum": [
               "Clean",
               "Compile",
+              "CountryUpdate",
               "Info",
               "Pack",
               "Publish",

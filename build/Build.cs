@@ -1,12 +1,3 @@
-using Nuke.Common;
-using Nuke.Common.CI.AzurePipelines;
-using Nuke.Common.Git;
-using Nuke.Common.IO;
-using Nuke.Common.ProjectModel;
-using Nuke.Common.Tools.DotNet;
-using Nuke.Common.Tools.ReportGenerator;
-using Serilog;
-
 // ReSharper disable AllUnderscoreLocalParameterName
 
 //https://nuke.build/
@@ -18,7 +9,6 @@ using Serilog;
 class Build : NukeBuild
 {
     public static int Main() => Execute<Build>(x => x.Pack);
-
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
@@ -36,7 +26,7 @@ class Build : NukeBuild
     readonly AbsolutePath DropDir = RootDirectory / "build" / "output" / "drop";
 
     Target Info => _ => _
-        .DependentFor(Clean, Restore, Compile, Tests, Pack, Publish)
+        .DependentFor(Clean, CountryUpdate, Restore, Compile, Tests, Pack, Publish)
         .Before(Clean, Restore)
         .Executes(() =>
         {
@@ -51,14 +41,23 @@ class Build : NukeBuild
         });
 
     Target Clean => _ => _
-        .Before(Restore)
+        .Before(CountryUpdate)
         .Executes(() =>
         {
             DotNetTasks.DotNetClean(x => x
                 .SetProject(Solution));
         });
 
+    Target CountryUpdate => _ => _
+        .Executes(() =>
+        {
+
+            var updater = new CountryRegionDataUpdater(Solution);
+            updater.UpdateCountryRegionData();
+        });
+
     Target Restore => _ => _
+        .DependsOn(CountryUpdate)
         .Executes(() =>
         {
             DotNetTasks.DotNetRestore(s => s

@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+	<!-- proj definition -->
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
@@ -9,6 +10,13 @@
 	<ItemGroup>
 		<PackageReference Include="HtmlAgilityPack" Version="1.11.60" />
 	</ItemGroup>
+
+	<!-- proj build -->
+	<ItemGroup>
+		<None Remove="Resources\CountryRegionData.json" />
+		<EmbeddedResource Include="Resources\CountryRegionData.json" />
+	</ItemGroup>	
+
 
 	<!-- nuget build-->
 	<PropertyGroup>
@@ -22,6 +30,6 @@
 	<ItemGroup>
 		<None Include="README.md" Pack="true" PackagePath="\" />
 		<None Include="spider.png" Pack="true" PackagePath="\" />
-	</ItemGroup>	
-
+	</ItemGroup>
+	
 </Project>
