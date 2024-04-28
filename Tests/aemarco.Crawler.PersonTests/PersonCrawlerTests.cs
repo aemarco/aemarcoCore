@@ -60,7 +60,7 @@ internal class PersonCrawlerTests : TestBase
         result.StillActive.Should().Be(false);
         result.Aliases.Should().BeEquivalentTo(new List<string>
         {
-            "Angel C", "Angel C. Metart", "Ekaterina D", "Ekaterina Ivanova", "Foxy Di", "Foxy Dolce", "Inga", "Inna", "Kate", "Katoa", "Katya Ivanova", "Kleine Punci", "Marisha", "Medina U", "Medina U Femjoy", "Medina U. Femjoy", "Nensi B", "Nensi B Medina", "Nensi B Met Art", "Nensi B. Medina", "Nensi B. Met Art"
+            "Angel", "Angel C", "Angel C. Metart", "Ekaterina D", "Ekaterina Ivanova", "Foxy B", "Foxy Di", "Foxy Dolce", "Inga", "Inna", "Kat", "Kate", "Katoa", "Katya Ivanova", "Kleine Punci", "Marisha", "Medina U", "Medina U Femjoy", "Medina U. Femjoy", "Nensi", "Nensi B", "Nensi B Medina", "Nensi B Met Art", "Nensi B. Medina", "Nensi B. Met Art"
         });
         result.Ethnicity.Should().Be("Caucasian");
         result.HairColor.Should().Be("Brown");

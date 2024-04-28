@@ -9,17 +9,21 @@ internal class BabepediaTestsWithFoxiDi : PersonCrawlerTestsBase<Babepedia>
         : base("Foxi", "Di")
     {
         ExpectedAliases.AddRange([
+            "Angel",
             "Angel C",
             "Ekaterina D",
             "Ekaterina Ivanova",
+            "Foxy B",
             "Inga",
             "Inna",
+            "Kat",
             "Kate",
             "Katoa",
             "Katya Ivanova",
             "Kleine Punci",
             "Marisha",
             "Medina U",
+            "Nensi",
             "Nensi B"
         ]);
         //ExpectedProfilePictures.AddRange([
