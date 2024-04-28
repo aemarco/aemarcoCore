@@ -8,8 +8,7 @@ internal class BabepediaTestsWithFoxiDi : PersonCrawlerTestsBase<Babepedia>
     public BabepediaTestsWithFoxiDi()
         : base("Foxi", "Di")
     {
-        ExpectedAliases.AddRange(new List<string>
-        {
+        ExpectedAliases.AddRange([
             "Angel C",
             "Ekaterina D",
             "Ekaterina Ivanova",
@@ -22,14 +21,13 @@ internal class BabepediaTestsWithFoxiDi : PersonCrawlerTestsBase<Babepedia>
             "Marisha",
             "Medina U",
             "Nensi B"
-        });
-        //ExpectedProfilePictures.AddRange(new List<string>
-        //{
+        ]);
+        //ExpectedProfilePictures.AddRange([
         //    "https://www.babepedia.com/pics/Foxy%20Di.jpg",
         //    "https://www.babepedia.com/pics/Foxy%20Di2.jpg",
         //    "https://www.babepedia.com/pics/Foxy%20Di3.jpg",
         //    "https://www.babepedia.com/pics/Foxy%20Di4.jpg"
-        //});
+        //]);
         ExpectedBirthday = new DateOnly(1994, 9, 14);
         ExpectedCountry = "Russia";
         ExpectedCity = "St. Petersburg";

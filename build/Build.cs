@@ -28,6 +28,9 @@ class Build : NukeBuild
     [Solution]
     readonly Solution Solution;
 
+    //[NerdbankGitVersioning]
+    //readonly NerdbankGitVersioning NerdbankVersioning;
+
     readonly AbsolutePath TrxDir = RootDirectory / "build" / "output" / "trx";
     readonly AbsolutePath CobDir = RootDirectory / "build" / "output" / "cob";
     readonly AbsolutePath DropDir = RootDirectory / "build" / "output" / "drop";

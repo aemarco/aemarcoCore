@@ -8,19 +8,17 @@ internal class BabepediaTestsWithChloeTemple : PersonCrawlerTestsBase<Babepedia>
         : base("Chloe", "Temple")
     {
         //first and last name expected automatically
-        //ExpectedProfilePictures.AddRange(new List<string>
-        //{
+        //ExpectedProfilePictures.AddRange([
         //    "https://www.babepedia.com/pics/Chloe%20Temple.jpg",
         //    "https://www.babepedia.com/pics/Chloe%20Temple2.jpg",
         //    "https://www.babepedia.com/pics/Chloe%20Temple3.jpg",
         //    "https://www.babepedia.com/pics/Chloe%20Temple4.jpg"
-        //});
-        ExpectedAliases.AddRange(new List<string>
-        {
+        //]);
+        ExpectedAliases.AddRange([
             "Clara Fargo",
             "Larissa",
             "Senorita Satan"
-        });
+        ]);
         ExpectedBirthday = new DateOnly(1998, 2, 6);
         ExpectedCountry = "United States";
         ExpectedCity = "Arizona";

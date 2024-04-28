@@ -1,11 +1,15 @@
 ﻿// ReSharper disable StringLiteralTypo
+
 namespace aemarco.Crawler.Model;
 
 public class CountryList
 {
 
-    public static string? FindCountry(string text)
+    public static string? FindCountry(string? text)
     {
+        if (text is null)
+            return null;
+
         foreach (var entry in Countries)
         {
             var pattern = string.Join('|', entry.Value);
@@ -16,6 +20,8 @@ public class CountryList
         }
         return null;
     }
+
+
 
 
 
