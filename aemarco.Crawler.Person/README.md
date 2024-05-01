@@ -6,7 +6,8 @@
 
 Create a PersonCrawler for usage
 
-	await new PersonCrawler().StartAsync("FirstName", "LastName")
+	await new PersonCrawler().StartAsync("firstName", "lastName")
+	await new PersonCrawler().StartAsync("name")
 
 
 
