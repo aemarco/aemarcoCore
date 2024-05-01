@@ -6,12 +6,12 @@ internal class Stripper : PersonCrawlerBase
 
     private readonly Uri _uri = new("https://www.istripper.com");
 
-    protected override PageUri GetGirlUri(string firstName, string lastName)
+    protected override PageUri GetGirlUri(string name)
     {
-        var name = $"{firstName}-{lastName}"
+        var href = $"/de/models/{name}"
             .Replace(' ', '-');
         var result = new PageUri(_uri)
-            .WithHref($"/de/models/{name}");
+            .WithHref(href);
 
         //https://www.istripper.com/de/models/Aletta-Ocean
         return result;

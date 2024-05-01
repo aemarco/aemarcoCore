@@ -11,16 +11,25 @@ internal abstract class PersonCrawlerBase : IPersonCrawler
         Result.CrawlerInfos.Add(CrawlerInfo.FromCrawlerType(GetType()));
     }
 
-    public async Task<PersonInfo> GetPersonEntry(string firstName, string lastName, CancellationToken token)
+    public async Task<PersonInfo> GetPersonEntry(string name, CancellationToken token)
     {
-        var girlUri = GetGirlUri(firstName, lastName);
+        var girlUri = GetGirlUri(name);
         var girlPage = await girlUri.NavigateAsync(token: token);
         await HandleGirlPage(girlPage, token);
         return Result;
     }
 
+    public async Task<PersonInfo> GetPersonEntry(string firstName, string lastName, CancellationToken token)
+    {
+        var name = $"{firstName} {lastName}";
+        return await GetPersonEntry(name, token);
+    }
+
+
+
+
     protected PersonInfo Result { get; }
-    protected abstract PageUri GetGirlUri(string firstName, string lastName);
+    protected abstract PageUri GetGirlUri(string name);
     protected abstract Task HandleGirlPage(PageDocument girlPage, CancellationToken token);
 
     #region Update Result

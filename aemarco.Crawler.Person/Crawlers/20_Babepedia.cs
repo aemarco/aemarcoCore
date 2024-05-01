@@ -13,10 +13,17 @@ internal class Babepedia : PersonCrawlerBase
 
     private readonly Uri _uri = new("https://www.babepedia.com");
 
+    protected override PageUri GetGirlUri(string name)
+    {
+        var href = $"/babe/{name}"
+            .Replace(' ', '_');
+        var result = new PageUri(_uri)
+            .WithHref(href);
 
-    //z.B. "https://www.babepedia.com/babe/Chloe_Temple/"
-    protected override PageUri GetGirlUri(string firstName, string lastName) =>
-        new PageUri(_uri).WithHref($"/babe/{firstName.Replace(' ', '_')}_{lastName.Replace(' ', '_')}");
+        //https://www.babepedia.com/babe/Chloe_Temple
+        return result;
+    }
+
     protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {
 

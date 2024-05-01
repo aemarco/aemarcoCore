@@ -6,9 +6,9 @@ internal class Pornstarbyface : PersonCrawlerBase
 
     private readonly Uri _uri = new("https://pornstarbyface.com");
 
-    protected override PageUri GetGirlUri(string firstName, string lastName)
+    protected override PageUri GetGirlUri(string name)
     {
-        var name = $"{firstName}-{lastName}"
+        name = name
             .Replace(' ', '-');
         var result = new PageUri(_uri)
             .WithHref($"/girls/{name}");

@@ -6,9 +6,9 @@ internal class TheLordOfPorn : PersonCrawlerBase
 
     private readonly Uri _uri = new("https://thelordofporn.com");
 
-    protected override PageUri GetGirlUri(string firstName, string lastName)
+    protected override PageUri GetGirlUri(string name)
     {
-        var name = $"{firstName}-{lastName}"
+        name = name
             .Replace(' ', '-')
             .ToLower();
         var result = new PageUri(_uri)

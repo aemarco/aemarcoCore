@@ -6,9 +6,9 @@ internal class XxxBios : PersonCrawlerBase
 
     private readonly Uri _uri = new("https://xxxbios.com");
 
-    protected override PageUri GetGirlUri(string firstName, string lastName)
+    protected override PageUri GetGirlUri(string name)
     {
-        var href = $"/{firstName}-{lastName}-biography"
+        var href = $"/{name}-biography"
             .Replace(' ', '-');
         var result = new PageUri(_uri)
             .WithHref(href);
