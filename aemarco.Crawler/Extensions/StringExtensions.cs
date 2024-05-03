@@ -128,4 +128,25 @@ public static partial class StringExtensions
             : null;
     }
 
+
+    [GeneratedRegex(@"(\d+)", RegexOptions.IgnoreCase)]
+    private static partial Regex NumberRegex();
+
+    public static int? NumberInText(this string? text)
+    {
+        if (text is null)
+            return null;
+
+        if (NumberRegex().Match(text) is { Success: true } match &&
+            int.TryParse(match.Groups[1].Value, out var number))
+        {
+            return number;
+        }
+
+        return null;
+    }
+
+
+
+
 }
