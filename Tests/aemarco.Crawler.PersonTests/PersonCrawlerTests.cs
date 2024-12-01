@@ -44,12 +44,14 @@ internal class PersonCrawlerTests : TestBase
         result.Gender.Should().Be(Gender.Female);
         result.ProfilePictures.Should().BeEquivalentTo(new List<ProfilePicture>
         {
+
             new("https://thelordofporn.com/wp-content/uploads/2016/12/Foxi-Di-2.jpg"),
             //new("https://www.babepedia.com/pics/Foxy%20Di.jpg"),
             //new("https://www.babepedia.com/pics/Foxy%20Di2.jpg"),
             //new("https://www.babepedia.com/pics/Foxy%20Di3.jpg"),
             //new("https://www.babepedia.com/pics/Foxy%20Di4.jpg"),
             new("https://m99.nudevista.com/_/866/158866_370.jpg"),
+            new("https://i.analdin.com/contents/models/6590/s2_Foxi%20Di%201.jpg"),
             new("https://www.babesandstars.com/models/18000/18713/250x330.jpg")
         });
         result.Birthday.Should().Be(new DateOnly(1994, 9, 14));
@@ -72,11 +74,11 @@ internal class PersonCrawlerTests : TestBase
         result.SocialLinks.Should().BeEquivalentTo(new[]
         {
             new SocialLink(SocialLinkKind.Twitter, "https://twitter.com/foxi_di"),
-            new SocialLink(SocialLinkKind.Instagram, "https://instagram.com/foxy__di/")
+            new SocialLink(SocialLinkKind.Instagram, "https://instagram.com/foxy__di")
         });
 
         string.Join(",", result.CrawlerInfos.Select(x => x.FriendlyName))
-            .Should().Be("TheLordOfPorn,Babepedia,Nudevista,BabesAndStars");
+            .Should().Be("TheLordOfPorn,Babepedia,Nudevista,Analdin,BabesAndStars");
         result.Errors.Should().BeEmpty();
     }
 
