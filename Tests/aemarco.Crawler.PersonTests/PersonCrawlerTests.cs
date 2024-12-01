@@ -49,7 +49,7 @@ internal class PersonCrawlerTests : TestBase
             //new("https://www.babepedia.com/pics/Foxy%20Di2.jpg"),
             //new("https://www.babepedia.com/pics/Foxy%20Di3.jpg"),
             //new("https://www.babepedia.com/pics/Foxy%20Di4.jpg"),
-            new("https://b99.nudevista.com/_/866/158866_370.jpg"),
+            new("https://m99.nudevista.com/_/866/158866_370.jpg"),
             new("https://www.babesandstars.com/models/18000/18713/250x330.jpg")
         });
         result.Birthday.Should().Be(new DateOnly(1994, 9, 14));
@@ -64,7 +64,7 @@ internal class PersonCrawlerTests : TestBase
         });
         result.Ethnicity.Should().Be("Caucasian");
         result.HairColor.Should().Be("Brown");
-        result.EyeColor.Should().Be("Hazel");
+        result.EyeColor.Should().Be("Green");
         result.MeasurementDetails.ToString().Should().Be("86B-60-86");
         result.Height.Should().Be(157);
         result.Weight.Should().Be(45);

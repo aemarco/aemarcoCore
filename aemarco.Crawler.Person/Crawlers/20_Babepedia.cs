@@ -76,6 +76,10 @@ internal class Babepedia : PersonCrawlerBase
                         Result.City = parts[0];
                         UpdateCountry(parts[1]);
                         break;
+                    case 3:
+                        Result.City = parts[0];
+                        UpdateCountry(parts[2]);
+                        break;
                 }
             }
             else if (text.StartsWith("Profession:"))

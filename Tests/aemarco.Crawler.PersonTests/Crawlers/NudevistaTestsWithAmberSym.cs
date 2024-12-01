@@ -8,7 +8,7 @@ internal class NudevistaTestsWithAmberSym : PersonCrawlerTestsBase<Nudevista>
         : base("Amber", "Sym")
     {
         //first and last name expected automatically
-        ExpectedProfilePictures.Add("https://b99.nudevista.com/_/319/145319_370.jpg");
+        ExpectedProfilePictures.Add("https://m99.nudevista.com/_/319/145319_370.jpg");
         ExpectedAliases.AddRange([
             "Amber Symm",
             "Ohc Destiny",

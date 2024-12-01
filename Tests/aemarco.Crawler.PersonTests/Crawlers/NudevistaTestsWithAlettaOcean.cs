@@ -7,7 +7,7 @@ internal class NudevistaTestsWithAlettaOcean : PersonCrawlerTestsBase<Nudevista>
         : base("Aletta", "Ocean")
     {
         //first and last name expected automatically
-        ExpectedProfilePictures.Add("https://b99.nudevista.com/_/083/137083_370.jpg");
+        ExpectedProfilePictures.Add("https://m99.nudevista.com/_/083/137083_370.jpg");
         ExpectedAliases.AddRange([
 
             "Aletta Alien",

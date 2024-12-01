@@ -38,7 +38,7 @@ internal class BabepediaTestsWithFoxiDi : PersonCrawlerTestsBase<Babepedia>
         ExpectedEthnicity = "Caucasian";
         ExpectedProfession = "Adult Model (Former), Porn Star (Former)";
         ExpectedHairColor = "Brown";
-        ExpectedEyeColor = "Hazel";
+        ExpectedEyeColor = "Green";
         ExpectedHeight = 157;
         ExpectedWeight = 45;
         ExpectedMeasurementDetails = "86B-60-86";

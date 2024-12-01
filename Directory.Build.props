@@ -20,14 +20,15 @@
 		<!-- auto versioning tool -->
 		<PackageReference Include="Nerdbank.GitVersioning" Condition="!Exists('packages.config')">
 			<PrivateAssets>all</PrivateAssets>
-			<Version>3.6.133</Version>
+			<Version>3.6.146</Version>
 		</PackageReference>
 
 		<!-- auto github link etc -->
-		<PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1">
+		<PackageReference Update="DotNet.ReproducibleBuilds" Version="1.2.25">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+
 	</ItemGroup>
 
 	<!-- nuget build-->

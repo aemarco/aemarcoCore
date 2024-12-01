@@ -64,6 +64,7 @@ internal abstract class WallpaperCrawlerBasis
 
         return categoryName switch
         {
+            "Blowjob" => new ContentCategory(Category.Girls_Blowjob, 90, 94),
             "Erotic Wallpapers" => new ContentCategory(Category.Girls),
             "Erotic Girls" => new ContentCategory(Category.Girls),
             "Celebrities" => new ContentCategory(Category.Girls_Celebrities),

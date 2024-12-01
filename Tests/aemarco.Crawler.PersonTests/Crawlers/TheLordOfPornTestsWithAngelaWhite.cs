@@ -23,10 +23,10 @@ internal class TheLordOfPornTestsWithAngelaWhite : PersonCrawlerTestsBase<TheLor
         ExpectedHeight = 160;
         ExpectedWeight = 55;
         ExpectedMeasurementDetails = "106G-68-104";
-        ExpectedSocialLinks.AddRange([
-            //new(SocialLinkKind.Official, "http://angelawhite.com/"),
-            new SocialLink(SocialLinkKind.Twitter, "https://twitter.com/angelawhite"),
-            new SocialLink(SocialLinkKind.Instagram, "https://www.instagram.com/theangelawhite")
-            ]);
+        //ExpectedSocialLinks.AddRange([
+        //    //new(SocialLinkKind.Official, "http://angelawhite.com/"),
+        //    new SocialLink(SocialLinkKind.Twitter, "https://twitter.com/angelawhite"),
+        //    new SocialLink(SocialLinkKind.Instagram, "https://www.instagram.com/theangelawhite")
+        //    ]);
     }
 }

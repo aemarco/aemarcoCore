@@ -17,11 +17,12 @@ internal class BabepediaTestsWithChloeTemple : PersonCrawlerTestsBase<Babepedia>
         ExpectedAliases.AddRange([
             "Clara Fargo",
             "Larissa",
-            "Senorita Satan"
+            "Senorita Satan",
+            "Sharon Purcell"
         ]);
         ExpectedBirthday = new DateOnly(1998, 2, 6);
         ExpectedCountry = "United States";
-        ExpectedCity = "Arizona";
+        ExpectedCity = "Cincinnati";
         ExpectedEthnicity = "Caucasian";
         ExpectedProfession = "Adult Model, Escort, Internet Personality, Porn Star";
         ExpectedHairColor = "Blonde";

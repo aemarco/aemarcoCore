@@ -58,10 +58,10 @@ internal abstract class PersonCrawlerBase : IPersonCrawler
     }
 
 
-    protected void UpdateProfilePictures(PageUri? uri, int? suggestedMinAdultLevel = null, int? suggestedMaxAdultLevel = null)
+    protected bool UpdateProfilePictures(PageUri? uri, int? suggestedMinAdultLevel = null, int? suggestedMaxAdultLevel = null)
     {
         if (uri is null)
-            return;
+            return false;
 
         var url = uri.WithoutQuery().Uri.AbsoluteUri;
         var profilePicture = new ProfilePicture(
@@ -70,6 +70,7 @@ internal abstract class PersonCrawlerBase : IPersonCrawler
             suggestedMaxAdultLevel);
 
         Result.ProfilePictures.Add(profilePicture);
+        return true;
     }
 
     protected void UpdateMeasurements(string? text, bool isInches = false)

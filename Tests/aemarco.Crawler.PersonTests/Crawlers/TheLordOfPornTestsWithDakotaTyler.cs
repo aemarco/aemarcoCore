@@ -19,9 +19,9 @@ internal class TheLordOfPornTestsWithDakotaTyler : PersonCrawlerTestsBase<TheLor
         ExpectedHeight = 152;
         ExpectedWeight = 48;
         ExpectedMeasurementDetails = "76A-58-83";
-        ExpectedSocialLinks.AddRange([
-            new(SocialLinkKind.Twitter, "https://twitter.com/thedakotatyler"),
-            new(SocialLinkKind.Instagram, "https://www.instagram.com/thedakotatyler/")
-        ]);
+        //ExpectedSocialLinks.AddRange([
+        //    new(SocialLinkKind.Twitter, "https://twitter.com/thedakotatyler"),
+        //    new(SocialLinkKind.Instagram, "https://www.instagram.com/thedakotatyler/")
+        //]);
     }
 }

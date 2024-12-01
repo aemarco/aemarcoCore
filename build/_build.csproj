@@ -12,9 +12,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-	  <PackageReference Include="CountryData.Standard" Version="1.3.0" />
-	  <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.133" />
-	  <PackageReference Include="Nuke.Common" Version="8.0.0" />
+	  <PackageReference Include="CountryData.Standard" Version="1.5.0" />
+	  <PackageReference Include="Nerdbank.GitVersioning">
+		  <PrivateAssets>all</PrivateAssets>
+		  <Version>3.6.146</Version>
+	  </PackageReference>
+	  <PackageReference Include="Nuke.Common" Version="9.0.1" />
   </ItemGroup>
 
   <ItemGroup>

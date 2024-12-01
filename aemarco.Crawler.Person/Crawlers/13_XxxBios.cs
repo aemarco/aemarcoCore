@@ -28,8 +28,10 @@ internal class XxxBios : PersonCrawlerBase
 
             if (node.FindNode("./a/img") is { } picNode)
             {
-                UpdateProfilePictures(picNode.GetAttributeRef("data-src"));
+                if (!UpdateProfilePictures(picNode.GetAttributeRef("data-src")))
+                    UpdateProfilePictures(picNode.GetAttributeRef("src"));
             }
+
             else if (node.FindNode("./a") is { } linkNode)
             {
                 UpdateWellKnownSocial(linkNode.GetHref());

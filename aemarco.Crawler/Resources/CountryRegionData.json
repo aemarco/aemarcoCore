@@ -4051,7 +4051,7 @@
         "Name": "Pays de la Loire"
       },
       {
-        "Name": "Provence-Alpes-Cote d\u0027Azur"
+        "Name": "Provence-Alpes-C\u00F4te d\u0027Azur"
       },
       {
         "Name": "Clipperton"
@@ -4069,7 +4069,7 @@
         "Name": "Mayotte"
       },
       {
-        "Name": "Novelle-Cal\u00E9donie"
+        "Name": "Nouvelle Cal\u00E9donie"
       },
       {
         "Name": "Polyn\u00E9sie"
@@ -8685,46 +8685,25 @@
     "ThreeLetterIsoName": "NPL",
     "Regions": [
       {
+        "Name": "Koshi"
+      },
+      {
+        "Name": "Madhesh"
+      },
+      {
         "Name": "Bagmati"
-      },
-      {
-        "Name": "Bheri"
-      },
-      {
-        "Name": "Dhawalagiri"
       },
       {
         "Name": "Gandaki"
       },
       {
-        "Name": "Janakpur"
+        "Name": "Lumbini"
       },
       {
         "Name": "Karnali"
       },
       {
-        "Name": "Kosi"
-      },
-      {
-        "Name": "Lumbini"
-      },
-      {
-        "Name": "Mahakali"
-      },
-      {
-        "Name": "Mechi"
-      },
-      {
-        "Name": "Narayani"
-      },
-      {
-        "Name": "Rapti"
-      },
-      {
-        "Name": "Sagarmatha"
-      },
-      {
-        "Name": "Seti"
+        "Name": "Sudurpashchim"
       }
     ]
   },
@@ -12615,31 +12594,31 @@
     "ThreeLetterIsoName": "LKA",
     "Regions": [
       {
-        "Name": "Basnahira"
+        "Name": "Western Province"
       },
       {
-        "Name": "Dakunu"
+        "Name": "Southern Province"
       },
       {
-        "Name": "Madhyama"
+        "Name": "Central Province"
       },
       {
-        "Name": "Naegenahira"
+        "Name": "Eastern Province"
       },
       {
-        "Name": "Sabaragamuwa"
+        "Name": "Sabaragamuwa Province"
       },
       {
-        "Name": "Uturu"
+        "Name": "Northern Province"
       },
       {
-        "Name": "Uturumaeda"
+        "Name": "North Central Province"
       },
       {
-        "Name": "Vayamba"
+        "Name": "North Western Province"
       },
       {
-        "Name": "Uva"
+        "Name": "Uva Province"
       }
     ]
   },
