@@ -40,11 +40,19 @@ internal abstract class PersonCrawlerBase : IPersonCrawler
             return;
 
         var text = node.GetText();
+        UpdateName(text);
+    }
+
+    protected void UpdateName(string text)
+    {
         var (firstName, lastName) = PersonParser.FindNameInText(text);
 
         Result.FirstName = firstName;
         Result.LastName = lastName;
     }
+
+
+
 
     protected void UpdateCountry(string? text)
     {

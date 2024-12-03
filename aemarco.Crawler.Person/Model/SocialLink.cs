@@ -9,6 +9,7 @@ public record SocialLink(SocialLinkKind Kind, string Url) : IComparable<SocialLi
             "twitter.com" => SocialLinkKind.Twitter,
             "instagram.com" => SocialLinkKind.Instagram,
             "www.instagram.com" => SocialLinkKind.Instagram,
+            "www.facebook.com" => SocialLinkKind.Facebook,
             "facebook.com" => SocialLinkKind.Facebook,
             "youtube.com" => SocialLinkKind.YouTube,
             "www.youtube.com" => SocialLinkKind.YouTube,

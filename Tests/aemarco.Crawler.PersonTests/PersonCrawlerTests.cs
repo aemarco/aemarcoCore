@@ -51,6 +51,7 @@ internal class PersonCrawlerTests : TestBase
             //new("https://www.babepedia.com/pics/Foxy%20Di3.jpg"),
             //new("https://www.babepedia.com/pics/Foxy%20Di4.jpg"),
             new("https://m99.nudevista.com/_/866/158866_370.jpg"),
+            new("https://a.milffox.com/images/ps_image.jpg"),
             new("https://i.analdin.com/contents/models/6590/s2_Foxi%20Di%201.jpg"),
             new("https://www.babesandstars.com/models/18000/18713/250x330.jpg")
         });
@@ -78,7 +79,7 @@ internal class PersonCrawlerTests : TestBase
         });
 
         string.Join(",", result.CrawlerInfos.Select(x => x.FriendlyName))
-            .Should().Be("TheLordOfPorn,Babepedia,Nudevista,Analdin,BabesAndStars");
+            .Should().Be("TheLordOfPorn,Babepedia,Nudevista,Milffox,Analdin,BabesAndStars");
         result.Errors.Should().BeEmpty();
     }
 

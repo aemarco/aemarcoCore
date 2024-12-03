@@ -41,7 +41,7 @@ internal class BabepediaTestsWithFoxiDi : PersonCrawlerTestsBase<Babepedia>
         ExpectedEyeColor = "Green";
         ExpectedHeight = 157;
         ExpectedWeight = 45;
-        ExpectedMeasurementDetails = "86B-60-86";
+        ExpectedMeasurementDetails = "91B-60-86";
         ExpectedCareerStart = new DateOnly(2013, 1, 1);
         ExpectedStillActive = false;
         ExpectedPiercings = "Navel";
