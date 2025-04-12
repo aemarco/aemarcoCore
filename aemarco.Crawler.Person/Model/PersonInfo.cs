@@ -9,41 +9,19 @@ public record PersonInfo
     public string? LastName { get; internal set; }
 
 
-
+    /// <summary>
+    /// rating in range 0 - 10 or null
+    /// </summary>
     public double? Rating { get; internal set; }
     public Gender? Gender { get; internal set; }
-    public List<ProfilePicture> ProfilePictures { get; private set; } = [];
+    public List<ProfilePicture> ProfilePictures { get; } = [];
     public DateOnly? Birthday { get; internal set; }
     public string? Country { get; internal set; }
     public string? City { get; internal set; }
     public string? Profession { get; internal set; }
     public DateOnly? CareerStart { get; internal set; }
     public bool? StillActive { get; internal set; }
-    public List<string> Aliases { get; private set; } = [];
-    /// <example>
-    ///Caucasian
-    ///Latin
-    ///Asian
-    ///Black
-    ///Mixed-race (primarily Latin)
-    ///Mixed-race (primarily Asian)
-    ///Ebony
-    ///Mixed-race (primarily Caucasian)
-    ///United States
-    ///Middle Eastern
-    ///Mixed-race (primarily Black)
-    ///Indian
-    ///Japanese
-    ///Mixed-race
-    ///Exotic
-    ///American
-    ///Euro
-    ///Other
-    ///Thai
-    ///United Kingdom
-    ///Russian Federation
-    ///Czech Republic
-    /// </example>
+    public List<string> Aliases { get; } = [];
     public string? Ethnicity { get; internal set; }
     public string? HairColor { get; internal set; }
     public string? EyeColor { get; internal set; }
@@ -54,11 +32,16 @@ public record PersonInfo
     public List<SocialLink> SocialLinks { get; private set; } = [];
 
 
-    internal void Merge(PersonInfo info)
+    internal void Merge(IEnumerable<PersonInfo> items)
     {
-        FirstName ??= info.FirstName;
-        LastName ??= info.LastName;
-
+        foreach (var entry in items
+                     .OrderBy(x => x.CrawlerInfos.First().Priority))
+        {
+            Merge(entry);
+        }
+    }
+    private void Merge(PersonInfo info)
+    {
         if (info.FirstName != FirstName || info.LastName != LastName)
         {//not a first degree match
 
@@ -71,7 +54,10 @@ public record PersonInfo
             }
         }
 
-        Rating ??= info.Rating;
+        CrawlerInfos.AddRange(info.CrawlerInfos.Where(x => !CrawlerInfos.Contains(x)));
+
+        if (Rating is null && info.Rating is { } rating and >= 0 and <= 10)
+            Rating = rating;
         Gender ??= info.Gender;
         ProfilePictures.AddRange(info.ProfilePictures.Where(x => !ProfilePictures.Contains(x)));
         Birthday ??= info.Birthday;
@@ -96,10 +82,9 @@ public record PersonInfo
             .Select(x => x.OrderBy(s => s.Url.Length).First())
             .ToList();
         SocialLinks.Sort();
-
-        CrawlerInfos.AddRange(info.CrawlerInfos.Where(x => !CrawlerInfos.Contains(x)));
-        Errors.AddRange(info.Errors.Where(x => !Errors.Contains(x)));
     }
+
+
 
     public List<CrawlerInfo> CrawlerInfos { get; } = [];
     public List<Exception> Errors { get; } = [];

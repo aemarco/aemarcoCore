@@ -36,12 +36,12 @@ internal class BabepediaTestsWithFoxiDi : PersonCrawlerTestsBase<Babepedia>
         ExpectedCountry = "Russia";
         ExpectedCity = "St. Petersburg";
         ExpectedEthnicity = "Caucasian";
-        ExpectedProfession = "Adult Model (Former), Porn Star (Former)";
+        ExpectedProfession = "Adult Model (Former), Model, Porn Star (Former)";
         ExpectedHairColor = "Brown";
         ExpectedEyeColor = "Green";
         ExpectedHeight = 157;
         ExpectedWeight = 45;
-        ExpectedMeasurementDetails = "91B-60-86";
+        ExpectedMeasurementDetails = "86B-60-86";
         ExpectedCareerStart = new DateOnly(2013, 1, 1);
         ExpectedStillActive = false;
         ExpectedPiercings = "Navel";

@@ -3,23 +3,19 @@
 public class PersonCrawler
 {
 
-    private readonly Type[] _crawlerTypes;
-    public PersonCrawler()
+    private readonly IPersonCrawlerProvider _personCrawlerProvider;
+    internal PersonCrawler(IPersonCrawlerProvider personCrawlerProvider)
     {
-        _crawlerTypes = [.. typeof(IPersonCrawler).Assembly
-            .GetTypes()
-            .Where(x =>
-                x.IsAssignableTo(typeof(IPersonCrawler)) &&
-                x is { IsAbstract: false, IsClass: true} &&
-                x.GetCustomAttribute<CrawlerAttribute>() != null)
-            .OrderBy(x => CrawlerInfo.FromCrawlerType(x).Priority)];
+        _personCrawlerProvider = personCrawlerProvider;
     }
+    public PersonCrawler() : this(
+            new PersonCrawlerProvider())
+    { }
 
     /// <summary>
     /// list of crawler names, which are currently supported
     /// </summary>
-    public IEnumerable<string> AvailableCrawlers => _crawlerTypes
-        .Select(x => CrawlerInfo.FromCrawlerType(x).FriendlyName);
+    public IEnumerable<string> AvailableCrawlers => _personCrawlerProvider.GetAvailableCrawlerNames();
 
     private readonly List<string> _filterPersonSites = [];
     /// <summary>
@@ -43,14 +39,18 @@ public class PersonCrawler
     {
         firstName = firstName.TitleCase();
         lastName = lastName.TitleCase();
+        var result = new PersonInfo
+        {
+            FirstName = firstName,
+            LastName = lastName
+        };
 
+
+        var crawlers = _personCrawlerProvider
+            .GetFilteredCrawlerInstances([.. _filterPersonSites]);
 
         //start all crawlers
-        var tasks = _crawlerTypes
-            .Where(x =>
-                _filterPersonSites.Count == 0 ||
-                _filterPersonSites.Contains(CrawlerInfo.FromCrawlerType(x).FriendlyName))
-            .Select(x => (IPersonCrawler)Activator.CreateInstance(x)!)
+        var tasks = crawlers
             .Select(x => x.GetPersonEntry(firstName, lastName, cancellationToken))
             .ToArray();
 
@@ -65,22 +65,10 @@ public class PersonCrawler
             }
             catch (Exception ex)
             {
-                var personInfo = new PersonInfo();
-                personInfo.Errors.Add(ex);
-                entries.Add(personInfo);
+                result.Errors.Add(ex);
             }
         }
-
-        var result = new PersonInfo
-        {
-            FirstName = firstName,
-            LastName = lastName
-        };
-        foreach (var entry in entries
-                     .OrderBy(x => x.CrawlerInfos.FirstOrDefault()?.Priority ?? int.MaxValue))
-        {
-            result.Merge(entry);
-        }
+        result.Merge(entries);
         return result;
     }
 

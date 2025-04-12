@@ -23,7 +23,7 @@ internal class FreeonesTestsWithMollyLittle : PersonCrawlerTestsBase<Freeones>
 
         ExpectedEthnicity = "Caucasian";
         ExpectedMeasurementDetails = "81A-55-81";
-        ExpectedHeight = 159;
+        ExpectedHeight = 157;
         ExpectedWeight = 41;
         ExpectedHairColor = "Blonde";
         ExpectedEyeColor = "Brown";

@@ -1,4 +1,5 @@
-﻿using aemarco.Crawler.Common;
+﻿using NSubstitute;
+using System.Threading;
 
 namespace aemarco.Crawler.PersonTests;
 
@@ -6,84 +7,149 @@ internal class PersonCrawlerTests : TestBase
 {
 
     [Test]
-    public void GetAvailableCrawlers_DeliversCorrectly()
+    public void AvailableCrawlers_ProvidesNames()
     {
-        var expected = typeof(IPersonCrawler).Assembly
-            .GetTypes()
-            .Where(x =>
-                x.IsAssignableTo(typeof(IPersonCrawler)) &&
-                x is { IsAbstract: false, IsClass: true } &&
-                x.GetCustomAttribute<CrawlerAttribute>() != null)
-            .Select(CrawlerInfo.FromCrawlerType)
-            .OrderBy(x => x.Priority)
-            .Select(x => x.FriendlyName)
-            .ToList();
-        var crawler = GetCrawler();
+        var sut = GetPersonCrawler();
 
-        var result = crawler.AvailableCrawlers
-            .ToList();
+        var result = sut.AvailableCrawlers
+            .ToArray();
 
-        result.Should().Equal(expected);
+        result.Should().Equal("Crawler1", "Crawler2");
 
         PrintJson(result);
+    }
+
+    [Test]
+    public async Task AddPersonSiteFilter_Filters()
+    {
+        var sut = GetPersonCrawler();
+
+        sut.AddPersonSiteFilter("Crawler1");
+
+        //we check indirectly if StartAsync uses the filter
+        var result = await sut.StartAsync("foxi", "di");
+        result.CrawlerInfos.Should().HaveCount(1);
+        result.CrawlerInfos[0].FriendlyName.Should().Be("Crawler1");
+
+        PrintJson(result.CrawlerInfos);
+    }
+
+    [Test]
+    public async Task StartAsync_ShouldTitleName()
+    {
+        var sut = GetPersonCrawler();
+        sut.AddPersonSiteFilter("Nope");
+
+        var result = await sut.StartAsync("foxi", "di");
+
+        result.CrawlerInfos.Should().HaveCount(0);
+        result.FirstName.Should().Be("Foxi");
+        result.LastName.Should().Be("Di");
+
+        PrintJson(result);
+    }
+
+    [Test]
+    public async Task StartAsync_ShouldUseCrawlers()
+    {
+        var sut = GetPersonCrawler();
+
+        var result = await sut.StartAsync("foxi", "di");
+
+        result.CrawlerInfos.Should().HaveCount(2);
+        result.CrawlerInfos.Select(x => x.FriendlyName).Should().BeEquivalentTo("Crawler1", "Crawler2");
+
+        PrintJson(result.CrawlerInfos);
+    }
+
+    [Test]
+    public async Task StartAsync_ShouldHandleErrors()
+    {
+        var sut = GetPersonCrawler(true);
+
+        var result = await sut.StartAsync("foxi", "di");
+
+        result.CrawlerInfos.Should().HaveCount(2);
+        result.Errors.Should().HaveCount(1);
+        result.Errors[0].Message.Should().Be("Error");
+
+        PrintJson(result.Errors);
     }
 
 
     [Test]
-    public async Task StartAsync_MergesResults()
+    public async Task StartAsync_ShouldMergeResult()
     {
-        var crawler = GetCrawler();
-        var result = await crawler.StartAsync("Foxi", "Di")
-                     ?? throw new Exception("Did not get a PersonInfo");
+        var sut = GetPersonCrawler();
 
-        PrintJson(result);
+        var result = await sut.StartAsync("foxi", "di");
 
-        result.FirstName.Should().Be("Foxi");
-        result.LastName.Should().Be("Di");
-        result.Rating.Should().BeInRange(0, 10);
-        result.Gender.Should().Be(Gender.Female);
-        result.ProfilePictures.Should().BeEquivalentTo(new List<ProfilePicture>
-        {
+        result.CrawlerInfos.Should().HaveCount(2);
+        //order check as well
+        result.CrawlerInfos[0].FriendlyName.Should().Be("Crawler2");
+        result.CrawlerInfos[1].FriendlyName.Should().Be("Crawler1");
 
-            new("https://thelordofporn.com/wp-content/uploads/2016/12/Foxi-Di-2.jpg"),
-            //new("https://www.babepedia.com/pics/Foxy%20Di.jpg"),
-            //new("https://www.babepedia.com/pics/Foxy%20Di2.jpg"),
-            //new("https://www.babepedia.com/pics/Foxy%20Di3.jpg"),
-            //new("https://www.babepedia.com/pics/Foxy%20Di4.jpg"),
-            new("https://m99.nudevista.com/_/866/158866_370.jpg"),
-            new("https://a.milffox.com/images/ps_image.jpg"),
-            new("https://i.analdin.com/contents/models/6590/s2_Foxi%20Di%201.jpg"),
-            new("https://www.babesandstars.com/models/18000/18713/250x330.jpg")
-        });
-        result.Birthday.Should().Be(new DateOnly(1994, 9, 14));
-        result.Country.Should().Be("Russia");
-        result.City.Should().Be("St. Petersburg");
-        result.Profession.Should().Be("Adult Model (Former), Porn Star (Former)");
-        result.CareerStart.Should().Be(new DateOnly(2013, 1, 1));
-        result.StillActive.Should().Be(false);
-        result.Aliases.Should().BeEquivalentTo(new List<string>
-        {
-            "Angel", "Angel C", "Angel C. Metart", "Ekaterina D", "Ekaterina Ivanova", "Foxy B", "Foxy Di", "Foxy Dolce", "Inga", "Inna", "Kat", "Kate", "Katoa", "Katya Ivanova", "Kleine Punci", "Marisha", "Medina U", "Medina U Femjoy", "Medina U. Femjoy", "Nensi", "Nensi B", "Nensi B Medina", "Nensi B Met Art", "Nensi B. Medina", "Nensi B. Met Art"
-        });
-        result.Ethnicity.Should().Be("Caucasian");
-        result.HairColor.Should().Be("Brown");
-        result.EyeColor.Should().Be("Green");
-        result.MeasurementDetails.ToString().Should().Be("86B-60-86");
-        result.Height.Should().Be(157);
-        result.Weight.Should().Be(45);
-        result.Piercings.Should().Be("Navel");
-        result.SocialLinks.Should().BeEquivalentTo(new[]
-        {
-            new SocialLink(SocialLinkKind.Twitter, "https://twitter.com/foxi_di"),
-            new SocialLink(SocialLinkKind.Instagram, "https://instagram.com/foxy__di")
-        });
-
-        string.Join(",", result.CrawlerInfos.Select(x => x.FriendlyName))
-            .Should().Be("TheLordOfPorn,Babepedia,Nudevista,Milffox,Analdin,BabesAndStars");
-        result.Errors.Should().BeEmpty();
+        PrintJson(result.CrawlerInfos);
     }
 
 
-    private static PersonCrawler GetCrawler() => new();
+    //mock
+    private static PersonCrawler GetPersonCrawler(bool withError = false)
+    {
+        var crawler1 = Substitute.For<IPersonCrawler>();
+        crawler1.GetPersonEntry(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new PersonInfo
+            {
+                FirstName = "Foxi",
+                LastName = "Di",
+                CrawlerInfos = { new CrawlerInfo("Crawler1", 2) }
+            });
+        var crawler2 = Substitute.For<IPersonCrawler>();
+        crawler2.GetPersonEntry(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new PersonInfo
+            {
+                FirstName = "Foxi",
+                LastName = "Di",
+                CrawlerInfos = { new CrawlerInfo("Crawler2", 1) }
+            });
+        var crawler3 = Substitute.For<IPersonCrawler>();
+        crawler3.GetPersonEntry(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.Run(async () =>
+            {
+                await Task.Delay(100);
+                throw new Exception("Error");
+#pragma warning disable CS0162 // Unreachable code detected
+                return new PersonInfo();
+#pragma warning restore CS0162 // Unreachable code detected
+            }));
+
+
+
+        var provider = Substitute.For<IPersonCrawlerProvider>();
+        provider.GetAvailableCrawlerNames()
+            .Returns(["Crawler1", "Crawler2"]);
+        provider.GetFilteredCrawlerInstances(
+                Arg.Any<string[]>())
+            .Returns(call =>
+            {
+                var names = call.Arg<string[]>();
+                List<IPersonCrawler> result = [crawler1, crawler2];
+                if (withError)
+                    result.Add(crawler3);
+
+                return names.Length == 0
+                    ? result
+                        .ToArray()
+                    : result
+                        .Where(x => names
+                            .Contains(x.GetPersonEntry("", "", CancellationToken.None).Result.CrawlerInfos[0].FriendlyName))
+                        .ToArray();
+            });
+
+
+        var result = new PersonCrawler(provider);
+        return result;
+    }
 
 }
+
