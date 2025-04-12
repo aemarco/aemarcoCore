@@ -5061,6 +5061,7 @@
       "\u0AAD\u0ABE\u0AB0\u0AA4",
       "\u092D\u093E\u0930\u0924",
       "\u0CAD\u0CBE\u0CB0\u0CA4",
+      "\u0939\u093F\u0902\u0926\u094B\u0938\u094D\u0924\u093E\u0928",
       "\u0D07\u0D28\u0D4D\u0D24\u0D4D\u0D2F",
       "\u0B2D\u0B3E\u0B30\u0B24",
       "\u092D\u093E\u0930\u0924\u0903",
@@ -8424,7 +8425,7 @@
     "Aliases": [
       "\u0627\u0644\u0645\u063A\u0631\u0628",
       "Maroc",
-      "Me\u1E5B\u1E5Buk",
+      "Morocco",
       "\u2D4D\u2D4E\u2D56\u2D54\u2D49\u2D31",
       "Marokko"
     ],
@@ -12306,7 +12307,7 @@
       "South Africa",
       "Afrika Borwa",
       "Aforika Borwa",
-      "eMzantsi Afrika",
+      "EMzantsi Afrika",
       "iNingizimu Afrika",
       "S\u00FCdafrika"
     ],
@@ -12913,7 +12914,7 @@
     "Name": "Syria",
     "Aliases": [
       "\u0633\u0648\u0631\u064A\u0627",
-      "Syria",
+      "\u0723\u0718\u072A\u071D\u0710",
       "Syrian Arab Republic",
       "Syrien"
     ],
@@ -13632,10 +13633,10 @@
     ]
   },
   {
-    "Name": "Turkey",
+    "Name": "T\u00FCrkiye",
     "Aliases": [
       "T\u00FCrkiye",
-      "T\u00FCrkei"
+      "Turkey"
     ],
     "TwoLetterIsoName": "TR",
     "ThreeLetterIsoName": "TUR",
@@ -15701,7 +15702,7 @@
     ]
   },
   {
-    "Name": "World",
+    "Name": "world",
     "Aliases": [
       "\u05D5\u05D5\u05E2\u05DC\u05D8"
     ],
