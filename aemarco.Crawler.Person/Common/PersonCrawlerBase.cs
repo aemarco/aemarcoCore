@@ -94,6 +94,15 @@ internal abstract class PersonCrawlerBase : IPersonCrawler
             Result.MeasurementDetails = Result.MeasurementDetails.Combine(parsed);
         }
     }
+    protected void UpdateMeasurements(MeasurementDetails? details)
+    {
+        if (details is null)
+            return;
+
+        Result.MeasurementDetails = Result.MeasurementDetails.Combine(details);
+    }
+
+
 
     protected void UpdateSocial(PageUri? socialLink, SocialLinkKind kind = SocialLinkKind.Unknown)
     {

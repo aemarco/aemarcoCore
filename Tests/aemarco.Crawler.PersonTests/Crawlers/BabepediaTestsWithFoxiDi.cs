@@ -13,6 +13,7 @@ internal class BabepediaTestsWithFoxiDi : PersonCrawlerTestsBase<Babepedia>
             "Angel C",
             "Ekaterina D",
             "Ekaterina Ivanova",
+            "Foxy Di",
             "Foxy B",
             "Inga",
             "Inna",

@@ -200,6 +200,7 @@ public static partial class PersonParser
     /// Tries to extract the info, if the person is still active
     /// - Years Active: 2018 - Present (Started Around 18 Years Old; 4 Years In The Business)
     /// - Years Active: 2013 - 2019 (Started Around 18 Years Old; 6 Years In The Business)
+    /// - 2013-2022 (Started Around 18 Years Old; 9 Years Active)
     /// - Karrierestatus: Retired
     /// </summary>
     /// <param name="text"></param>
@@ -209,12 +210,13 @@ public static partial class PersonParser
         if (string.IsNullOrWhiteSpace(text))
             return null;
 
-        if (ActiveRegex().IsMatch(text))
-            return true;
-
         if (text.Contains("retired", StringComparison.OrdinalIgnoreCase) ||
             UntilYearRegex().IsMatch(text)) // - 2015
             return false;
+
+
+        if (ActiveRegex().IsMatch(text))
+            return true;
 
         return null;
     }
