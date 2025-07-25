@@ -27,6 +27,7 @@ internal class BabepediaTestsWithFoxiDi : PersonCrawlerTestsBase<Babepedia>
             "Nensi",
             "Nensi B"
         ]);
+        ExpectedRating = true;
         //ExpectedProfilePictures.AddRange([
         //    "https://www.babepedia.com/pics/Foxy%20Di.jpg",
         //    "https://www.babepedia.com/pics/Foxy%20Di2.jpg",

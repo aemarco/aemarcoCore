@@ -20,6 +20,7 @@ internal class BabepediaTestsWithChloeTemple : PersonCrawlerTestsBase<Babepedia>
             "Senorita Satan",
             "Sharon Purcell"
         ]);
+        ExpectedRating = true;
         ExpectedBirthday = new DateOnly(1998, 2, 6);
         ExpectedCountry = "United States";
         ExpectedCity = "Cincinnati";

@@ -30,8 +30,8 @@ internal class Stripper : PersonCrawlerBase
         UpdateProfilePictures(picUri, 35, 39);
 
         //Rating
-
-        if (PersonParser.FindRatingInText(girlPage.FindNode("//span[@class='star rate']")?.GetText()) is { } rating)
+        if (girlPage.FindNode("//span[@class='star rate']")?.GetText() is { } ratingText &&
+            PersonParser.FindRatingInText(ratingText) is { } rating)
             Result.Rating = rating * 2;
 
         //Data

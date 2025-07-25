@@ -3,7 +3,6 @@
 
 //https://www.babepedia.com/babe/Chloe_Temple
 //https://web.archive.org/web/20230528093234/https://www.babepedia.com/babe/Chloe_Temple
-
 //https://www.zenrows.com/blog/bypass-cloudflare#how-cloudflare-detects-bots
 
 
@@ -20,7 +19,7 @@ internal class Babepedia : PersonCrawlerBase
         var result = new PageUri(_uri)
             .WithHref(href);
 
-        //https://www.babepedia.com/babe/Chloe_Temple
+        //https://www.babepedia.com/babe/Foxy_Di
         return result;
     }
 
@@ -39,8 +38,10 @@ internal class Babepedia : PersonCrawlerBase
         //    .ForEach(x => UpdateProfilePictures(x));
 
 
-        //TODO Babepedia add rating
+
         //TODO Babepedia add socials
+
+
 
 
 
@@ -58,6 +59,13 @@ internal class Babepedia : PersonCrawlerBase
 
             Result.Aliases.Add(alias);
         }
+
+        //Rating
+        if (girlPage.FindNode("//div[@id='rating-boxes']/div[@class='rating-box rating-global']/strong")?.GetText() is { } ratingText &&
+            //⭐ 8.98/10
+            PersonParser.FindRatingInText(ratingText) is { } rating)
+            //8.98
+            Result.Rating = rating;
 
         var data = girlPage.FindNodes("//div[@class='info-grid']/div[@class='info-item']");
         foreach (var dataNode in data)

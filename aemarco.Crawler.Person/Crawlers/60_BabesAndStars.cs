@@ -30,9 +30,9 @@ internal class BabesAndStars : PersonCrawlerBase
             .GetSrc());
 
         //Rating
-        Result.Rating = PersonParser.FindRatingInText(profileNode?
-            .FindNode("./div[@class='info']/form/em")?
-            .GetText());
+        if (profileNode?.FindNode("./div[@class='info']/form/em")?.GetText() is { } ratingText &&
+            PersonParser.FindRatingInText(ratingText) is { } rating)
+            Result.Rating = rating;
 
         //Data
         var infoNode = profileNode?.FindNode("./div[@class='info']/div[@class='middle']");

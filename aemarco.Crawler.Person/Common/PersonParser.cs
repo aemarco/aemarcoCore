@@ -20,6 +20,10 @@ public static partial class PersonParser
                 : (null, null);
     }
 
+    [GeneratedRegex(@"-?\d+(?:[.,]\d+)?", RegexOptions.IgnoreCase)]
+    private static partial Regex DoubleRegex();
+
+
     /// <summary>
     /// Parses a double 0 - 10 rating out of a text. Uses . or , as separator
     /// </summary>
@@ -42,11 +46,13 @@ public static partial class PersonParser
                 : null;
         }
 
-        text = text.Replace(',', '.');
-        if (!double.TryParse(text, NumberFormatInfo.InvariantInfo, out var rating))
+
+        if (DoubleRegex().Match(text) is not { Success: true } match ||
+            !double.TryParse(match.Value.Replace(',', '.'), NumberFormatInfo.InvariantInfo, out var rating))
         {
             return null;
         }
+
 
         if (hundredBased) //maybe hundred based
         {

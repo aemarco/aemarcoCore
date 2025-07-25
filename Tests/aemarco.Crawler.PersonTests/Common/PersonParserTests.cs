@@ -29,6 +29,7 @@ public class PersonParserTests
     [TestCase("11", true, 1.1)]
     [TestCase("55", true, 5.5)]
     [TestCase("97%", false, 9.7)]
+    [TestCase("⭐ 8.98/10", false, 8.98)]
     public void FindRatingInText_Works(string? text, bool hundredBased, double? expected)
     {
         var result = PersonParser.FindRatingInText(text, hundredBased);
