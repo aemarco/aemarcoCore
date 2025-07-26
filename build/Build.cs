@@ -89,8 +89,7 @@ class Build : NukeBuild
                 .EnableNoBuild()
                 .SetDataCollector("XPlat Code Coverage")
                 .AddLoggers("trx")
-                .SetResultsDirectory(TrxDir)
-                //.SetFilter("Category!=Babe"));
+                .SetResultsDirectory(TrxDir));
             ReportGeneratorTasks.ReportGenerator(new ReportGeneratorSettings()
                 .SetTargetDirectory(CobDir)
                 .SetReports($"{TrxDir}/**/coverage.cobertura.xml")
