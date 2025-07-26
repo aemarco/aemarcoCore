@@ -19,6 +19,12 @@ internal abstract class PersonCrawlerTestsBase<T>
     [OneTimeSetUp]
     public async Task Init()
     {
+
+        if (_crawlerInfo.SkipTesting)
+            return;
+
+
+
         var crawler = new PersonCrawler();
         crawler.AddPersonSiteFilter(_crawlerInfo.FriendlyName);
         Entry = await crawler.CrawlPerson(_firstName, _lastName);

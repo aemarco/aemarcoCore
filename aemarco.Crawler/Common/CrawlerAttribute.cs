@@ -9,13 +9,15 @@ public class CrawlerAttribute : Attribute
     /// </summary>
     /// <param name="friendlyName">friendly name for the crawler</param>
     /// <param name="priority">lower values have priority</param>
-    public CrawlerAttribute(string friendlyName, int priority = int.MaxValue)
+    /// <param name="skipTesting"></param>
+    public CrawlerAttribute(string friendlyName, int priority = int.MaxValue, bool skipTesting = false)
     {
         FriendlyName = friendlyName;
         Priority = priority;
+        SkipTesting = skipTesting;
     }
 
     public string FriendlyName { get; }
     public int Priority { get; }
-
+    public bool SkipTesting { get; }
 }

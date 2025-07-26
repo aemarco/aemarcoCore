@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using aemarco.TestBasics;
+using System.Threading;
 
 namespace aemarco.Crawler.PersonTests._TestStuff;
 
@@ -11,6 +12,13 @@ internal abstract class PersonListCrawlerBase<T>
     [Test]
     public async Task HandleGirlList_HasEntries()
     {
+        if (_crawlerInfo.SkipTesting)
+        {
+            TestHelper.NothingExpected(null);
+            return;
+        }
+
+
         var crawler = new PersonCrawler();
         crawler.AddPersonSiteFilter(_crawlerInfo.FriendlyName);
         var result = await crawler.CrawlPersonList(CancellationToken.None);

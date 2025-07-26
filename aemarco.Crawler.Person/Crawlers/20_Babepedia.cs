@@ -6,7 +6,12 @@
 //https://www.zenrows.com/blog/bypass-cloudflare#how-cloudflare-detects-bots
 
 
-[Crawler("Babepedia", 20)]
+[Crawler("Babepedia", 20
+#if !DEBUG
+    ,true
+#endif
+    )]
+
 internal class Babepedia : PersonCrawlerBase
 {
 
