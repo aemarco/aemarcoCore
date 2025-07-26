@@ -28,7 +28,7 @@ internal class PersonCrawlerTests
         sut.AddPersonSiteFilter("Crawler1");
 
         //we check indirectly if StartAsync uses the filter
-        var result = await sut.StartAsync("foxi", "di");
+        var result = await sut.CrawlPerson("foxi", "di");
         result.CrawlerInfos.Should().HaveCount(1);
         result.CrawlerInfos[0].FriendlyName.Should().Be("Crawler1");
 
@@ -41,7 +41,7 @@ internal class PersonCrawlerTests
         var sut = GetPersonCrawler();
         sut.AddPersonSiteFilter("Nope");
 
-        var result = await sut.StartAsync("foxi", "di");
+        var result = await sut.CrawlPerson("foxi", "di");
 
         result.CrawlerInfos.Should().HaveCount(0);
         result.FirstName.Should().Be("Foxi");
@@ -55,7 +55,7 @@ internal class PersonCrawlerTests
     {
         var sut = GetPersonCrawler();
 
-        var result = await sut.StartAsync("foxi", "di");
+        var result = await sut.CrawlPerson("foxi", "di");
 
         result.CrawlerInfos.Should().HaveCount(2);
         result.CrawlerInfos.Select(x => x.FriendlyName).Should().BeEquivalentTo("Crawler1", "Crawler2");
@@ -68,7 +68,7 @@ internal class PersonCrawlerTests
     {
         var sut = GetPersonCrawler(true);
 
-        var result = await sut.StartAsync("foxi", "di");
+        var result = await sut.CrawlPerson("foxi", "di");
 
         result.CrawlerInfos.Should().HaveCount(2);
         result.Errors.Should().HaveCount(1);
@@ -83,7 +83,7 @@ internal class PersonCrawlerTests
     {
         var sut = GetPersonCrawler();
 
-        var result = await sut.StartAsync("foxi", "di");
+        var result = await sut.CrawlPerson("foxi", "di");
 
         result.CrawlerInfos.Should().HaveCount(2);
         //order check as well
@@ -92,7 +92,6 @@ internal class PersonCrawlerTests
 
         TestHelper.PrintPassed(result.CrawlerInfos);
     }
-
 
     //mock
     private static PersonCrawler GetPersonCrawler(bool withError = false)
@@ -122,6 +121,7 @@ internal class PersonCrawlerTests
 #pragma warning disable CS0162 // Unreachable code detected
                 return new PersonInfo();
 #pragma warning restore CS0162 // Unreachable code detected
+
             }));
 
 

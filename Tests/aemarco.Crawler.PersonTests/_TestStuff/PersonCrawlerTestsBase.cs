@@ -21,7 +21,7 @@ internal abstract class PersonCrawlerTestsBase<T>
     {
         var crawler = new PersonCrawler();
         crawler.AddPersonSiteFilter(_crawlerInfo.FriendlyName);
-        Entry = await crawler.StartAsync(_firstName, _lastName);
+        Entry = await crawler.CrawlPerson(_firstName, _lastName);
     }
 
     private PersonInfo? Entry { get; set; }
@@ -360,16 +360,6 @@ internal abstract class PersonCrawlerTestsBase<T>
     [Test]
     public void Crawler_SocialLinks()
     {
-        //ExpectedSocialLinks = [];
-
-        //Assume.That(ExpectedSocialLinks.Count > 0);
-
-
-
-
-        //Assert.Ignore();
-        //return;
-
 
         if (Entry is null)
             return;
@@ -383,5 +373,6 @@ internal abstract class PersonCrawlerTestsBase<T>
         Entry.SocialLinks.Should().BeSubsetOf(ExpectedSocialLinks);
         TestHelper.PrintPassed(Entry.SocialLinks);
     }
+
 
 }

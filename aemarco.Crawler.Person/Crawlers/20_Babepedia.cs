@@ -55,6 +55,7 @@ internal class Babepedia : PersonCrawlerBase
                 UpdateWellKnownSocial(new PageUri(uri));
                 continue;
             }
+
             if (social.Uri.AbsoluteUri.Contains("https://link.me/"))
             {
                 //remove babepedia part
@@ -85,7 +86,8 @@ internal class Babepedia : PersonCrawlerBase
         }
 
         //Rating
-        if (girlPage.FindNode("//div[@id='rating-boxes']/div[@class='rating-box rating-global']/strong")?.GetText() is { } ratingText &&
+        if (girlPage.FindNode("//div[@id='rating-boxes']/div[@class='rating-box rating-global']/strong")?.GetText() is
+            { } ratingText &&
             //⭐ 8.98/10
             PersonParser.FindRatingInText(ratingText) is { } rating)
             //8.98
@@ -138,7 +140,8 @@ internal class Babepedia : PersonCrawlerBase
                 "Weight:" => () => Result.Weight = PersonParser.FindWeightInText(value),
                 "Measurements:" => () => UpdateMeasurements(value, true),
                 "Bra/Cup Size:" => () => UpdateMeasurements(value, true),
-                "Boobs:" => () => UpdateMeasurements(new MeasurementDetails(null, null, value.Contains("fake", StringComparison.OrdinalIgnoreCase), null, null)),
+                "Boobs:" => () => UpdateMeasurements(new MeasurementDetails(null, null,
+                    value.Contains("fake", StringComparison.OrdinalIgnoreCase), null, null)),
                 "Piercings:" => () => Result.Piercings = value,
                 _ => () => { }
             };
@@ -147,5 +150,29 @@ internal class Babepedia : PersonCrawlerBase
 
         return Task.CompletedTask;
     }
+
+
+
+    protected override async Task<PersonInfo[]> HandleGirlList(CancellationToken token)
+    {
+        var page = await new PageUri(_uri).NavigateAsync(token: token);
+
+        List<PersonInfo> result = [];
+        foreach (var node in page.FindNodes("//div[@id='top25']/ol/li/a"))
+        {
+            var text = node.GetText().TitleCase();
+            var (fn, ln) = PersonParser.FindNameInText(text);
+            if (fn is null || ln is null)
+                continue;
+
+            result.Add(new PersonInfo
+            {
+                FirstName = fn,
+                LastName = ln
+            });
+        }
+        return [.. result];
+    }
+
 
 }
