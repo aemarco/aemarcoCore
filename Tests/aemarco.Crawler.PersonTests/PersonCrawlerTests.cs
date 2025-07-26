@@ -1,9 +1,10 @@
-﻿using NSubstitute;
+﻿using aemarco.TestBasics;
+using NSubstitute;
 using System.Threading;
 
 namespace aemarco.Crawler.PersonTests;
 
-internal class PersonCrawlerTests : TestBase
+internal class PersonCrawlerTests
 {
 
     [Test]
@@ -16,7 +17,7 @@ internal class PersonCrawlerTests : TestBase
 
         result.Should().Equal("Crawler1", "Crawler2");
 
-        PrintPassed(result);
+        TestHelper.PrintPassed(result);
     }
 
     [Test]
@@ -31,7 +32,7 @@ internal class PersonCrawlerTests : TestBase
         result.CrawlerInfos.Should().HaveCount(1);
         result.CrawlerInfos[0].FriendlyName.Should().Be("Crawler1");
 
-        PrintPassed(result.CrawlerInfos);
+        TestHelper.PrintPassed(result.CrawlerInfos);
     }
 
     [Test]
@@ -46,7 +47,7 @@ internal class PersonCrawlerTests : TestBase
         result.FirstName.Should().Be("Foxi");
         result.LastName.Should().Be("Di");
 
-        PrintPassed(result);
+        TestHelper.PrintPassed(result);
     }
 
     [Test]
@@ -59,7 +60,7 @@ internal class PersonCrawlerTests : TestBase
         result.CrawlerInfos.Should().HaveCount(2);
         result.CrawlerInfos.Select(x => x.FriendlyName).Should().BeEquivalentTo("Crawler1", "Crawler2");
 
-        PrintPassed(result.CrawlerInfos);
+        TestHelper.PrintPassed(result.CrawlerInfos);
     }
 
     [Test]
@@ -73,7 +74,7 @@ internal class PersonCrawlerTests : TestBase
         result.Errors.Should().HaveCount(1);
         result.Errors[0].Message.Should().Be("Error");
 
-        PrintPassed(result.Errors);
+        TestHelper.PrintPassed(result.Errors);
     }
 
 
@@ -89,7 +90,7 @@ internal class PersonCrawlerTests : TestBase
         result.CrawlerInfos[0].FriendlyName.Should().Be("Crawler2");
         result.CrawlerInfos[1].FriendlyName.Should().Be("Crawler1");
 
-        PrintPassed(result.CrawlerInfos);
+        TestHelper.PrintPassed(result.CrawlerInfos);
     }
 
 

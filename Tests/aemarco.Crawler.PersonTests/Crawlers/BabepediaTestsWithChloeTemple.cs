@@ -9,12 +9,12 @@ internal class BabepediaTestsWithChloeTemple : PersonCrawlerTestsBase<Babepedia>
     {
 
         //first and last name expected automatically
-        //ExpectedProfilePictures.AddRange([
-        //    "https://www.babepedia.com/pics/Chloe%20Temple.jpg",
-        //    "https://www.babepedia.com/pics/Chloe%20Temple2.jpg",
-        //    "https://www.babepedia.com/pics/Chloe%20Temple3.jpg",
-        //    "https://www.babepedia.com/pics/Chloe%20Temple4.jpg"
-        //]);
+        ExpectedProfilePictures.AddRange([
+            "https://www.babepedia.com/pics/Chloe%20Temple.jpg",
+            "https://www.babepedia.com/pics/Chloe%20Temple2.jpg",
+            "https://www.babepedia.com/pics/Chloe%20Temple3.jpg",
+            "https://www.babepedia.com/pics/Chloe%20Temple4.jpg"
+        ]);
 
 
         ExpectedSocialLinks =

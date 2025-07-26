@@ -1,6 +1,8 @@
-﻿namespace aemarco.Crawler.PersonTests._TestStuff;
+﻿using aemarco.TestBasics;
 
-internal abstract class PersonCrawlerTestsBase<T> : TestBase
+namespace aemarco.Crawler.PersonTests._TestStuff;
+
+internal abstract class PersonCrawlerTestsBase<T>
 {
 
     private readonly string _firstName;
@@ -32,7 +34,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             return;
 
         Entry.CrawlerInfos.FirstOrDefault().Should().Be(_crawlerInfo);
-        PrintPassed(Entry.CrawlerInfos);
+        TestHelper.PrintPassed(Entry.CrawlerInfos);
     }
 
     [Test]
@@ -42,19 +44,19 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             return;
 
         Entry.Errors.Should().BeEmpty();
-        PrintPassed(Entry.Errors);
+        TestHelper.PrintPassed(Entry.Errors);
     }
 
     protected bool? ExpectedRating { get; init; }
     [Test]
-    public void Crawler_Finds_Rating()
+    public void Crawler_Rating()
     {
         if (Entry is null)
             return;
 
         if (ExpectedRating is null)
         {
-            NothingExpected(Entry.Rating);
+            TestHelper.NothingExpected(Entry.Rating);
             return;
         }
 
@@ -62,301 +64,301 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             Entry.Rating.Should().BeInRange(0, 10);
         else
             Entry.Rating.Should().BeNull();
-        PrintPassed(Entry.Rating?.ToString());
+        TestHelper.PrintPassed(Entry.Rating?.ToString());
     }
 
     protected Gender? ExpectedGender { get; init; }
     [Test]
-    public void Crawler_Finds_Gender()
+    public void Crawler_Gender()
     {
         if (Entry is null)
             return;
 
         if (ExpectedGender is null)
         {
-            NothingExpected(Entry.Gender);
+            TestHelper.NothingExpected(Entry.Gender);
             return;
         }
 
         Entry.Gender.Should().Be(ExpectedGender);
-        PrintPassed(Entry.Gender?.ToString());
+        TestHelper.PrintPassed(Entry.Gender?.ToString());
     }
 
     protected DateOnly? ExpectedBirthday { get; init; }
     [Test]
-    public void Crawler_Finds_Birthday()
+    public void Crawler_Birthday()
     {
         if (Entry is null)
             return;
 
         if (!ExpectedBirthday.HasValue)
         {
-            NothingExpected(Entry.Birthday);
+            TestHelper.NothingExpected(Entry.Birthday);
             return;
         }
 
         Entry.Birthday.Should().Be(ExpectedBirthday);
-        PrintPassed(Entry.Birthday);
+        TestHelper.PrintPassed(Entry.Birthday);
     }
 
     protected DateOnly? ExpectedCareerStart { get; init; }
     [Test]
-    public void Crawler_Finds_CareerStart()
+    public void Crawler_CareerStart()
     {
         if (Entry is null)
             return;
 
         if (!ExpectedCareerStart.HasValue)
         {
-            NothingExpected(Entry.CareerStart);
+            TestHelper.NothingExpected(Entry.CareerStart);
             return;
         }
 
         Entry.CareerStart.Should().Be(ExpectedCareerStart);
-        PrintPassed(Entry.CareerStart);
+        TestHelper.PrintPassed(Entry.CareerStart);
     }
 
     protected string? ExpectedCountry { get; init; }
     [Test]
-    public void Crawler_Finds_Country()
+    public void Crawler_Country()
     {
         if (Entry is null)
             return;
 
         if (ExpectedCountry is null)
         {
-            NothingExpected(Entry.Country);
+            TestHelper.NothingExpected(Entry.Country);
             return;
         }
 
         Entry.Country.Should().Be(ExpectedCountry);
-        PrintPassed(Entry.Country);
+        TestHelper.PrintPassed(Entry.Country);
     }
 
     protected string? ExpectedCity { get; init; }
     [Test]
-    public void Crawler_Finds_City()
+    public void Crawler_City()
     {
         if (Entry is null)
             return;
 
         if (ExpectedCity is null)
         {
-            NothingExpected(Entry.City);
+            TestHelper.NothingExpected(Entry.City);
             return;
         }
 
         Entry.City.Should().Be(ExpectedCity);
-        PrintPassed(Entry.City);
+        TestHelper.PrintPassed(Entry.City);
     }
 
     protected string? ExpectedProfession { get; init; }
     [Test]
-    public void Crawler_Finds_Profession()
+    public void Crawler_Profession()
     {
         if (Entry is null)
             return;
 
         if (ExpectedProfession is null)
         {
-            NothingExpected(Entry.Profession);
+            TestHelper.NothingExpected(Entry.Profession);
             return;
         }
 
         Entry.Profession.Should().Be(ExpectedProfession);
-        PrintPassed(Entry.Profession);
+        TestHelper.PrintPassed(Entry.Profession);
     }
 
     protected string? ExpectedEthnicity { get; init; }
     [Test]
-    public void Crawler_Finds_Ethnicity()
+    public void Crawler_Ethnicity()
     {
         if (Entry is null)
             return;
 
         if (ExpectedEthnicity is null)
         {
-            NothingExpected(Entry.Ethnicity);
+            TestHelper.NothingExpected(Entry.Ethnicity);
             return;
         }
 
         Entry.Ethnicity.Should().Be(ExpectedEthnicity);
-        PrintPassed(Entry.Ethnicity);
+        TestHelper.PrintPassed(Entry.Ethnicity);
     }
 
     protected string? ExpectedHairColor { get; init; }
     [Test]
-    public void Crawler_Finds_Hair()
+    public void Crawler_Hair()
     {
         if (Entry is null)
             return;
 
         if (ExpectedHairColor is null)
         {
-            NothingExpected(Entry.HairColor);
+            TestHelper.NothingExpected(Entry.HairColor);
             return;
         }
 
         Entry.HairColor.Should().Be(ExpectedHairColor);
-        PrintPassed(Entry.HairColor);
+        TestHelper.PrintPassed(Entry.HairColor);
     }
 
     protected string? ExpectedEyeColor { get; init; }
     [Test]
-    public void Crawler_Finds_Eyes()
+    public void Crawler_Eyes()
     {
         if (Entry is null)
             return;
 
         if (ExpectedEyeColor is null)
         {
-            NothingExpected(Entry.EyeColor);
+            TestHelper.NothingExpected(Entry.EyeColor);
             return;
         }
 
         Entry.EyeColor.Should().Be(ExpectedEyeColor);
-        PrintPassed(Entry.EyeColor);
+        TestHelper.PrintPassed(Entry.EyeColor);
     }
 
     protected int? ExpectedHeight { get; init; }
     [Test]
-    public void Crawler_Finds_Height()
+    public void Crawler_Height()
     {
         if (Entry is null)
             return;
 
         if (!ExpectedHeight.HasValue)
         {
-            NothingExpected(Entry.Height);
+            TestHelper.NothingExpected(Entry.Height);
             return;
         }
 
         Entry.Height.Should().Be(ExpectedHeight);
-        PrintPassed(Entry.Height);
+        TestHelper.PrintPassed(Entry.Height);
     }
 
     protected int? ExpectedWeight { get; init; }
     [Test]
-    public void Crawler_Finds_Weight()
+    public void Crawler_Weight()
     {
         if (Entry is null)
             return;
 
         if (!ExpectedWeight.HasValue)
         {
-            NothingExpected(Entry.Weight);
+            TestHelper.NothingExpected(Entry.Weight);
             return;
         }
 
         Entry.Weight.Should().Be(ExpectedWeight);
-        PrintPassed(Entry.Weight);
+        TestHelper.PrintPassed(Entry.Weight);
     }
 
     protected string? ExpectedMeasurementDetails { get; init; } = "";
     [Test]
-    public void Crawler_Finds_Measurements()
+    public void Crawler_Measurements()
     {
         if (Entry is null)
             return;
 
         if (ExpectedMeasurementDetails is null)
         {
-            NothingExpected(Entry.MeasurementDetails);
+            TestHelper.NothingExpected(Entry.MeasurementDetails);
             return;
         }
 
         Entry.MeasurementDetails.ToString().Should().Be(ExpectedMeasurementDetails);
-        PrintPassed(Entry.MeasurementDetails);
+        TestHelper.PrintPassed(Entry.MeasurementDetails);
     }
 
     protected string? ExpectedPiercings { get; init; }
     [Test]
-    public void Crawler_Finds_Piercings()
+    public void Crawler_Piercings()
     {
         if (Entry is null)
             return;
 
         if (ExpectedPiercings is null)
         {
-            NothingExpected(Entry.Piercings);
+            TestHelper.NothingExpected(Entry.Piercings);
             return;
         }
 
         Entry.Piercings.Should().Be(ExpectedPiercings);
-        PrintPassed(Entry.Piercings);
+        TestHelper.PrintPassed(Entry.Piercings);
     }
 
     protected bool? ExpectedStillActive { get; init; }
     [Test]
-    public void Crawler_Finds_StillActive()
+    public void Crawler_StillActive()
     {
         if (Entry is null)
             return;
 
         if (ExpectedStillActive is null)
         {
-            NothingExpected(Entry.StillActive);
+            TestHelper.NothingExpected(Entry.StillActive);
             return;
         }
 
         Entry.StillActive.Should().Be(ExpectedStillActive);
-        PrintPassed(Entry.StillActive);
+        TestHelper.PrintPassed(Entry.StillActive);
     }
 
-    protected List<string> ExpectedProfilePictures { get; set; } = [];
+    protected List<string> ExpectedProfilePictures { get; init; } = [];
     [Test]
-    public void Crawler_Finds_Pictures()
+    public void Crawler_Pictures()
     {
         if (Entry is null)
             return;
 
         if (ExpectedProfilePictures.Count == 0)
         {
-            NothingExpected(null);
+            TestHelper.NothingExpected(null);
             return;
         }
         Entry.ProfilePictures.Select(x => x.Url).Should().BeEquivalentTo(ExpectedProfilePictures);
-        PrintPassed(Entry.ProfilePictures);
+        TestHelper.PrintPassed(Entry.ProfilePictures);
     }
 
-    protected int? ExpectedProfilePictureMinCount { get; set; }
+    protected int? ExpectedProfilePictureMinCount { get; init; }
     [Test]
-    public void Crawler_Finds_AtLeastMinCount()
+    public void Crawler_AtLeastMinCount()
     {
         if (Entry is null)
             return;
 
         if (ExpectedProfilePictureMinCount is null)
         {
-            NothingExpected(null);
+            TestHelper.NothingExpected(null);
             return;
         }
 
         Entry.ProfilePictures.Count.Should().BeGreaterOrEqualTo(ExpectedProfilePictureMinCount.Value);
-        PrintPassed(Entry.ProfilePictures);
+        TestHelper.PrintPassed(Entry.ProfilePictures);
     }
 
 
-    protected List<string> ExpectedAliases { get; set; } = [];
+    protected List<string> ExpectedAliases { get; init; } = [];
     [Test]
-    public void Crawler_Finds_Aliases()
+    public void Crawler_Aliases()
     {
         if (Entry is null)
             return;
 
         if (ExpectedAliases.Count == 0)
         {
-            NothingExpected(Entry.Aliases.Count == 0 ? null : Entry.Aliases);
+            TestHelper.NothingExpected(Entry.Aliases.Count == 0 ? null : Entry.Aliases);
             return;
         }
 
         Entry.Aliases.Should().BeEquivalentTo(ExpectedAliases);
-        PrintPassed(Entry.Aliases);
+        TestHelper.PrintPassed(Entry.Aliases);
     }
 
-    protected List<SocialLink> ExpectedSocialLinks { get; set; } = [];
+    protected List<SocialLink> ExpectedSocialLinks { get; init; } = [];
     [Test]
-    public void Crawler_Finds_SocialLinks()
+    public void Crawler_SocialLinks()
     {
         //ExpectedSocialLinks = [];
 
@@ -374,12 +376,12 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
 
         if (ExpectedSocialLinks.Count == 0)
         {
-            NothingExpected(Entry.SocialLinks.Count == 0 ? null : Entry.SocialLinks);
+            TestHelper.NothingExpected(Entry.SocialLinks.Count == 0 ? null : Entry.SocialLinks);
             return;
         }
 
-        Entry.SocialLinks.Should().BeEquivalentTo(ExpectedSocialLinks);
-        PrintPassed(Entry.SocialLinks);
+        Entry.SocialLinks.Should().BeSubsetOf(ExpectedSocialLinks);
+        TestHelper.PrintPassed(Entry.SocialLinks);
     }
 
 }

@@ -28,14 +28,14 @@ internal class Babepedia : PersonCrawlerBase
         //Pics
         //no pics, because they are not accessible later on
 
-        //UpdateProfilePictures(girlPage
-        //    .FindNode("//div[@id='profimg']/a[@class='img']")?
-        //    .GetHref());
-        //girlPage
-        //    .FindNodes("//div[@id='profselect']/div[@class='prof']/a[@class='img']")
-        //    .Select(x => x.GetHref())
-        //    .ToList()
-        //    .ForEach(x => UpdateProfilePictures(x));
+        UpdateProfilePictures(girlPage
+            .FindNode("//div[@id='profimg']/a[@class='img']")?
+            .GetHref());
+        girlPage
+            .FindNodes("//div[@id='profselect']/a[@class='img']")
+            .Select(x => x.GetHref())
+            .ToList()
+            .ForEach(x => UpdateProfilePictures(x));
 
 
 
@@ -50,7 +50,7 @@ internal class Babepedia : PersonCrawlerBase
             if (social.Uri.AbsoluteUri.Contains("babepedia.com/onlyfans"))
             {
                 var uri = new Uri("https://onlyfans.com/");
-                uri = new Uri(uri, social.Uri.PathAndQuery.Remove(0, 9));
+                uri = new Uri(uri, social.Uri.PathAndQuery[9..]);
 
                 UpdateWellKnownSocial(new PageUri(uri));
                 continue;

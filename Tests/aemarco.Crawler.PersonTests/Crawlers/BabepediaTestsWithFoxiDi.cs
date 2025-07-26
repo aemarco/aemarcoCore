@@ -8,12 +8,12 @@ internal class BabepediaTestsWithFoxiDi : PersonCrawlerTestsBase<Babepedia>
     public BabepediaTestsWithFoxiDi()
         : base("Foxi", "Di")
     {
-        //ExpectedProfilePictures.AddRange([
-        //    "https://www.babepedia.com/pics/Foxy%20Di.jpg",
-        //    "https://www.babepedia.com/pics/Foxy%20Di2.jpg",
-        //    "https://www.babepedia.com/pics/Foxy%20Di3.jpg",
-        //    "https://www.babepedia.com/pics/Foxy%20Di4.jpg"
-        //]);
+        ExpectedProfilePictures.AddRange([
+            "https://www.babepedia.com/pics/Foxy%20Di.jpg",
+            "https://www.babepedia.com/pics/Foxy%20Di2.jpg",
+            "https://www.babepedia.com/pics/Foxy%20Di3.jpg",
+            "https://www.babepedia.com/pics/Foxy%20Di4.jpg"
+        ]);
 
         ExpectedSocialLinks =
         [
