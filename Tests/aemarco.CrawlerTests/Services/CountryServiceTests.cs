@@ -1,7 +1,8 @@
 ﻿using aemarco.Crawler.Services;
+using aemarco.TestBasics;
 
 namespace aemarco.CrawlerTests.Services;
-internal class CountryServiceTests : TestBase
+internal class CountryServiceTests
 {
 
     [TestCase(null, null)]
@@ -18,7 +19,7 @@ internal class CountryServiceTests : TestBase
     {
         var result = new CountryService().FindCountry(text);
         result.Should().Be(expected);
-        PrintJson(result);
+        TestHelper.PrintPassed(result);
     }
 
 
@@ -27,7 +28,7 @@ internal class CountryServiceTests : TestBase
     {
         Country[] result = [.. new CountryService().GetData()];
         result.Length.Should().BeGreaterThan(0);
-        PrintJson(result);
+        TestHelper.PrintPassed(result);
     }
 
 }

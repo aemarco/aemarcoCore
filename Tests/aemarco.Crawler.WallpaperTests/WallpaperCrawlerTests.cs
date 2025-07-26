@@ -1,20 +1,22 @@
-﻿namespace aemarco.Crawler.WallpaperTests;
+﻿using aemarco.TestBasics;
+
+namespace aemarco.Crawler.WallpaperTests;
 
 [SingleThreaded]
-public class WallpaperCrawlerTests : TestBase
+public class WallpaperCrawlerTests
 {
 
     [Test]
     public void GetAvailableSites_Delivers()
     {
         Sites.Count.Should().BeGreaterThan(0);
-        PrintJson(Sites);
+        TestHelper.PrintPassed(Sites);
     }
     [Test]
     public void GetAvailableCategories_Delivers()
     {
         Cats.Count.Should().BeGreaterThan(0);
-        PrintJson(Cats);
+        TestHelper.PrintPassed(Cats);
     }
 
     //sites
@@ -133,9 +135,9 @@ public class WallpaperCrawlerTests : TestBase
         if (c._result.Warnings.FirstOrDefault() is { } warning)
             Assert.Warn(warning.ToString());
         else if (c._result.NewEntries.FirstOrDefault() is { } wallEntry)
-            PrintJson(wallEntry);
+            TestHelper.PrintPassed(wallEntry);
         else if (c._result.NewAlbums.FirstOrDefault() is { } albumEntry)
-            PrintJson(albumEntry);
+            TestHelper.PrintPassed(albumEntry);
         else
             Assert.Fail($"{site} - {cat} found no entry.");
     }
@@ -168,7 +170,7 @@ public class WallpaperCrawlerTests : TestBase
     }
     private static void OutputOffers(WallpaperCrawler crawler)
     {
-        PrintJson(crawler._wallCrawlers
+        TestHelper.PrintPassed(crawler._wallCrawlers
             .Where(x => x._crawlOffers is not null)
             .SelectMany(x => x._crawlOffers!)
             .Select(x => new
