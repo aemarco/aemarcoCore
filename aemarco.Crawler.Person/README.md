@@ -1,7 +1,5 @@
 
-# `aemarcoPersonCrawler`
-
-<a href=https://www.nuget.org/packages/aemarcoPersonCrawler><img src="https://buildstats.info/nuget/aemarcoPersonCrawler"> </a><br/>
+# aemarcoPersonCrawler [![NuGet Version](https://img.shields.io/nuget/v/aemarcoPersonCrawler.svg?style=flat-square)](https://www.nuget.org/packages/aemarcoPersonCrawler)
 
 
 Create a PersonCrawler for usage

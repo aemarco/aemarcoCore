@@ -33,7 +33,6 @@
 	</ItemGroup>
 
 	<!-- nuget build-->
-
 	<PropertyGroup>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<Authors>aemarco</Authors>

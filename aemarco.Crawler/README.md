@@ -1,4 +1,1 @@
-
-# `aemarcoCrawler`
-
-<a href=https://www.nuget.org/packages/aemarcoCrawler><img src="https://buildstats.info/nuget/aemarcoCrawler"> </a><br/>
+# aemarcoCrawler [![NuGet Version](https://img.shields.io/nuget/v/aemarcoCrawler.svg?style=flat-square)](https://www.nuget.org/packages/aemarcoCrawler)

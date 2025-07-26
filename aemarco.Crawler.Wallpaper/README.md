@@ -1,7 +1,5 @@
 
-# `aemarcoWallpaperCrawler`
-
-<a href=https://www.nuget.org/packages/aemarcoWallpaperCrawler><img src="https://buildstats.info/nuget/aemarcoWallpaperCrawler"> </a><br/>
+# aemarcoWallpaperCrawler [![NuGet Version](https://img.shields.io/nuget/v/aemarcoWallpaperCrawler.svg?style=flat-square)](https://www.nuget.org/packages/aemarcoWallpaperCrawler)
 
 
 Create a WallpaperCrawler for usage.
