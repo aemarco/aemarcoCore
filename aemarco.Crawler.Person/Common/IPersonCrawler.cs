@@ -4,4 +4,9 @@ internal interface IPersonCrawler
 {
     Task<PersonInfo> GetPersonEntry(string name, CancellationToken token);
     Task<PersonInfo> GetPersonEntry(string firstName, string lastName, CancellationToken token);
+
+
+
+    Task<PersonInfo[]> GetPersonEntries(CancellationToken token);
+
 }

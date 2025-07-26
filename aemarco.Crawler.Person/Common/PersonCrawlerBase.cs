@@ -25,12 +25,34 @@ internal abstract class PersonCrawlerBase : IPersonCrawler
         return await GetPersonEntry(name, token);
     }
 
+    public async Task<PersonInfo[]> GetPersonEntries(CancellationToken token)
+    {
+        var result = await HandleGirlList(token);
+        return result;
+    }
+
+
+
 
 
 
     protected PersonInfo Result { get; }
     protected abstract PageUri GetGirlUri(string name);
     protected abstract Task HandleGirlPage(PageDocument girlPage, CancellationToken token);
+
+
+
+    protected virtual Task<PersonInfo[]> HandleGirlList(CancellationToken token)
+    {
+        PersonInfo[] result = [];
+        return Task.FromResult(result);
+    }
+
+
+
+
+
+
 
     #region Update Result
 

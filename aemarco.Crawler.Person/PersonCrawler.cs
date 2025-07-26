@@ -31,11 +31,23 @@ public class PersonCrawler
         }
     }
 
+
+
+
+
+    [Obsolete("Use CrawlPerson instead")]
+    public async Task<PersonInfo> StartAsync(string firstName, string lastName,
+        CancellationToken cancellationToken = default)
+    {
+        return await CrawlPerson(firstName, lastName, cancellationToken);
+    }
+
+
     /// <summary>
     /// Do the crawling :)
     /// </summary>
     /// <returns>composed PersonEntry</returns>
-    public async Task<PersonInfo> StartAsync(string firstName, string lastName, CancellationToken cancellationToken = default)
+    public async Task<PersonInfo> CrawlPerson(string firstName, string lastName, CancellationToken cancellationToken = default)
     {
         firstName = firstName.TitleCase();
         lastName = lastName.TitleCase();
@@ -71,5 +83,44 @@ public class PersonCrawler
         result.Merge(entries);
         return result;
     }
+
+    public async Task<PersonInfo[]> CrawlPersonList(CancellationToken cancellationToken = default)
+    {
+
+        var crawlers = _personCrawlerProvider
+            .GetFilteredCrawlerInstances([.. _filterPersonSites]);
+
+        List<PersonInfo> names = [];
+        //start all crawlers
+        var tasks = crawlers
+            .Select(x => x.GetPersonEntries(cancellationToken))
+            .ToArray();
+        foreach (var task in tasks)
+        {
+            try
+            {
+                var personInfo = await task;
+                names.AddRange(personInfo);
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+
+        //details
+        List<PersonInfo> result = [];
+        foreach (var name in names)
+        {
+            if (name.FirstName is null ||
+                name.LastName is null)
+                continue;
+
+            var entry = await CrawlPerson(name.FirstName, name.LastName, cancellationToken);
+            result.Add(entry);
+        }
+        return [.. result];
+    }
+
 
 }
