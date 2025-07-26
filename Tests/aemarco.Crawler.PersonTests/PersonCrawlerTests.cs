@@ -118,6 +118,10 @@ internal class PersonCrawlerTests
             {
                 await Task.Delay(100);
                 throw new Exception("Error");
+#pragma warning disable CS0162 // Unreachable code detected
+                return new PersonInfo();
+#pragma warning restore CS0162 // Unreachable code detected
+
             }));
 
 
