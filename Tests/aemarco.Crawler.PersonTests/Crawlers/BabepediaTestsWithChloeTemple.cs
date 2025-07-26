@@ -7,6 +7,7 @@ internal class BabepediaTestsWithChloeTemple : PersonCrawlerTestsBase<Babepedia>
     public BabepediaTestsWithChloeTemple()
         : base("Chloe", "Temple")
     {
+
         //first and last name expected automatically
         //ExpectedProfilePictures.AddRange([
         //    "https://www.babepedia.com/pics/Chloe%20Temple.jpg",
@@ -14,6 +15,15 @@ internal class BabepediaTestsWithChloeTemple : PersonCrawlerTestsBase<Babepedia>
         //    "https://www.babepedia.com/pics/Chloe%20Temple3.jpg",
         //    "https://www.babepedia.com/pics/Chloe%20Temple4.jpg"
         //]);
+
+
+        ExpectedSocialLinks =
+        [
+            new SocialLink(SocialLinkKind.Official, "https://link.me/senorita_satan"),
+            new SocialLink(SocialLinkKind.Twitter, "https://x.com/demonspawnn"),
+            new SocialLink(SocialLinkKind.Instagram, "https://instagram.com/Senorita_Satan"),
+            new SocialLink(SocialLinkKind.OnlyFans, "https://onlyfans.com/chloe_temple")
+        ];
         ExpectedAliases.AddRange([
             "Clara Fargo",
             "Larissa",

@@ -1,22 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+	<!-- project definition -->
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
 	</PropertyGroup>
 
+	<!-- proj references -->
 	<ItemGroup>
 		<ProjectReference Include="..\..\aemarco.Crawler.Person\aemarco.Crawler.Person.csproj" />
 	</ItemGroup>
 
+	<!-- nuget references-->
 	<ItemGroup>
+		<PackageReference Include="coverlet.collector" Version="6.0.2" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-		<PackageReference Include="NSubstitute" Version="5.3.0" />
 		<PackageReference Include="NUnit" Version="4.2.2" />
+		<PackageReference Include="NUnit.Analyzers" Version="4.4.0" />
 		<PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
-		<PackageReference Include="coverlet.collector" Version="6.0.2">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
+		<PackageReference Include="NSubstitute" Version="5.3.0" />
 		<PackageReference Include="FluentAssertions" Version="6.12.2" />
 	</ItemGroup>
 

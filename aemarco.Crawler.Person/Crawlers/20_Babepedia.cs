@@ -41,8 +41,32 @@ internal class Babepedia : PersonCrawlerBase
 
         //TODO Babepedia add socials
 
+        //Socials
+        foreach (var social in girlPage
+                     .FindNodes("//div[@id='socialicons']/a")
+                     .Select(x => x.GetHref())
+                     .OfType<PageUri>())
+        {
+            if (social.Uri.AbsoluteUri.Contains("babepedia.com/onlyfans"))
+            {
+                var uri = new Uri("https://onlyfans.com/");
+                uri = new Uri(uri, social.Uri.PathAndQuery.Remove(0, 9));
+
+                UpdateWellKnownSocial(new PageUri(uri));
+                continue;
+            }
+            if (social.Uri.AbsoluteUri.Contains("https://link.me/"))
+            {
+                //remove babepedia part
+                UpdateSocial(social, SocialLinkKind.Official);
+                continue;
+            }
 
 
+
+
+            UpdateWellKnownSocial(social);
+        }
 
 
         //Name

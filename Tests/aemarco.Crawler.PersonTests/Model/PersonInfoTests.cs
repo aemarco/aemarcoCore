@@ -14,7 +14,7 @@ internal class PersonInfoTests : TestBase
         sut.CrawlerInfos.Should().HaveCount(2);
         sut.CrawlerInfos.Select(x => x.Priority).Should().BeInAscendingOrder();
 
-        PrintJson(sut.CrawlerInfos);
+        PrintPassed(sut.CrawlerInfos);
     }
     [Test]
     public void Merge_CorrectInfos()
@@ -27,7 +27,7 @@ internal class PersonInfoTests : TestBase
         sut.CrawlerInfos.Should().HaveCount(2);
         sut.CrawlerInfos.Select(x => x.FriendlyName).Should().Equal("First", "Middle");
 
-        PrintJson(sut.CrawlerInfos);
+        PrintPassed(sut.CrawlerInfos);
     }
 
     [Test]
@@ -41,7 +41,7 @@ internal class PersonInfoTests : TestBase
         sut.FirstName.Should().Be("Foxi");
         sut.LastName.Should().Be("Di");
 
-        PrintJson(sut);
+        PrintPassed(sut);
     }
 
     [Test]
@@ -56,7 +56,7 @@ internal class PersonInfoTests : TestBase
         sut.CrawlerInfos.Should().HaveCount(3);
         //because last "Foxy Di" is an alias match on earlier info
         sut.CrawlerInfos.Select(x => x.FriendlyName).Should().Contain("Last");
-        PrintJson(sut.CrawlerInfos);
+        PrintPassed(sut.CrawlerInfos);
     }
 
     [Test]
@@ -70,7 +70,7 @@ internal class PersonInfoTests : TestBase
         sut.CrawlerInfos.Should().HaveCount(2);
         sut.CrawlerInfos.Select(x => x.FriendlyName).Should().NotContain("Last");
 
-        PrintJson(sut.CrawlerInfos);
+        PrintPassed(sut.CrawlerInfos);
     }
 
 
@@ -95,7 +95,7 @@ internal class PersonInfoTests : TestBase
 
         sut.Merge(infos);
         sut.Rating.Should().Be(expected);
-        PrintJson(sut.Rating);
+        PrintPassed(sut.Rating);
     }
 
 
@@ -154,7 +154,7 @@ internal class PersonInfoTests : TestBase
             .Select(x => x.Url)
             .Should().Equal("https://example.com/unknown", "https://example.com/official");
 
-        PrintJson(sut);
+        PrintPassed(sut);
     }
 
     private static PersonInfo GetSut()

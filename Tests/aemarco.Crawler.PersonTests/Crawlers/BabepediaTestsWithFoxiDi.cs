@@ -8,6 +8,21 @@ internal class BabepediaTestsWithFoxiDi : PersonCrawlerTestsBase<Babepedia>
     public BabepediaTestsWithFoxiDi()
         : base("Foxi", "Di")
     {
+        //ExpectedProfilePictures.AddRange([
+        //    "https://www.babepedia.com/pics/Foxy%20Di.jpg",
+        //    "https://www.babepedia.com/pics/Foxy%20Di2.jpg",
+        //    "https://www.babepedia.com/pics/Foxy%20Di3.jpg",
+        //    "https://www.babepedia.com/pics/Foxy%20Di4.jpg"
+        //]);
+
+        ExpectedSocialLinks =
+        [
+            new SocialLink(SocialLinkKind.Vk, "https://vk.com/katerinochka111"),
+            new SocialLink(SocialLinkKind.Twitter, "https://x.com/foxydi_"),
+            new SocialLink(SocialLinkKind.Instagram, "https://instagram.com/foxy__di"),
+            new SocialLink(SocialLinkKind.Facebook, "https://www.facebook.com/FoxyDiModelOFFICIAL"),
+            new SocialLink(SocialLinkKind.TikTok, "https://www.tiktok.com/@foxydibabe")
+        ];
         ExpectedAliases.AddRange([
             "Angel",
             "Angel C",
@@ -28,12 +43,6 @@ internal class BabepediaTestsWithFoxiDi : PersonCrawlerTestsBase<Babepedia>
             "Nensi B"
         ]);
         ExpectedRating = true;
-        //ExpectedProfilePictures.AddRange([
-        //    "https://www.babepedia.com/pics/Foxy%20Di.jpg",
-        //    "https://www.babepedia.com/pics/Foxy%20Di2.jpg",
-        //    "https://www.babepedia.com/pics/Foxy%20Di3.jpg",
-        //    "https://www.babepedia.com/pics/Foxy%20Di4.jpg"
-        //]);
         ExpectedBirthday = new DateOnly(1994, 9, 14);
         ExpectedCountry = "Russia";
         ExpectedCity = "St. Petersburg";

@@ -1,4 +1,4 @@
-﻿namespace aemarco.Crawler.PersonTests;
+﻿namespace aemarco.Crawler.PersonTests._TestStuff;
 
 internal abstract class PersonCrawlerTestsBase<T> : TestBase
 {
@@ -32,7 +32,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             return;
 
         Entry.CrawlerInfos.FirstOrDefault().Should().Be(_crawlerInfo);
-        PrintJson(Entry.CrawlerInfos);
+        PrintPassed(Entry.CrawlerInfos);
     }
 
     [Test]
@@ -42,7 +42,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             return;
 
         Entry.Errors.Should().BeEmpty();
-        PrintJson(Entry.Errors);
+        PrintPassed(Entry.Errors);
     }
 
     protected bool? ExpectedRating { get; init; }
@@ -62,7 +62,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             Entry.Rating.Should().BeInRange(0, 10);
         else
             Entry.Rating.Should().BeNull();
-        PrintJson(Entry.Rating?.ToString());
+        PrintPassed(Entry.Rating?.ToString());
     }
 
     protected Gender? ExpectedGender { get; init; }
@@ -79,7 +79,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         }
 
         Entry.Gender.Should().Be(ExpectedGender);
-        PrintJson(Entry.Gender?.ToString());
+        PrintPassed(Entry.Gender?.ToString());
     }
 
     protected DateOnly? ExpectedBirthday { get; init; }
@@ -96,7 +96,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         }
 
         Entry.Birthday.Should().Be(ExpectedBirthday);
-        PrintJson(Entry.Birthday);
+        PrintPassed(Entry.Birthday);
     }
 
     protected DateOnly? ExpectedCareerStart { get; init; }
@@ -113,7 +113,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         }
 
         Entry.CareerStart.Should().Be(ExpectedCareerStart);
-        PrintJson(Entry.CareerStart);
+        PrintPassed(Entry.CareerStart);
     }
 
     protected string? ExpectedCountry { get; init; }
@@ -130,7 +130,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         }
 
         Entry.Country.Should().Be(ExpectedCountry);
-        PrintJson(Entry.Country);
+        PrintPassed(Entry.Country);
     }
 
     protected string? ExpectedCity { get; init; }
@@ -147,7 +147,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         }
 
         Entry.City.Should().Be(ExpectedCity);
-        PrintJson(Entry.City);
+        PrintPassed(Entry.City);
     }
 
     protected string? ExpectedProfession { get; init; }
@@ -164,7 +164,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         }
 
         Entry.Profession.Should().Be(ExpectedProfession);
-        PrintJson(Entry.Profession);
+        PrintPassed(Entry.Profession);
     }
 
     protected string? ExpectedEthnicity { get; init; }
@@ -181,7 +181,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         }
 
         Entry.Ethnicity.Should().Be(ExpectedEthnicity);
-        PrintJson(Entry.Ethnicity);
+        PrintPassed(Entry.Ethnicity);
     }
 
     protected string? ExpectedHairColor { get; init; }
@@ -198,7 +198,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         }
 
         Entry.HairColor.Should().Be(ExpectedHairColor);
-        PrintJson(Entry.HairColor);
+        PrintPassed(Entry.HairColor);
     }
 
     protected string? ExpectedEyeColor { get; init; }
@@ -215,7 +215,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         }
 
         Entry.EyeColor.Should().Be(ExpectedEyeColor);
-        PrintJson(Entry.EyeColor);
+        PrintPassed(Entry.EyeColor);
     }
 
     protected int? ExpectedHeight { get; init; }
@@ -232,7 +232,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         }
 
         Entry.Height.Should().Be(ExpectedHeight);
-        PrintJson(Entry.Height);
+        PrintPassed(Entry.Height);
     }
 
     protected int? ExpectedWeight { get; init; }
@@ -249,7 +249,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         }
 
         Entry.Weight.Should().Be(ExpectedWeight);
-        PrintJson(Entry.Weight);
+        PrintPassed(Entry.Weight);
     }
 
     protected string? ExpectedMeasurementDetails { get; init; } = "";
@@ -266,7 +266,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         }
 
         Entry.MeasurementDetails.ToString().Should().Be(ExpectedMeasurementDetails);
-        PrintJson(Entry.MeasurementDetails);
+        PrintPassed(Entry.MeasurementDetails);
     }
 
     protected string? ExpectedPiercings { get; init; }
@@ -283,7 +283,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         }
 
         Entry.Piercings.Should().Be(ExpectedPiercings);
-        PrintJson(Entry.Piercings);
+        PrintPassed(Entry.Piercings);
     }
 
     protected bool? ExpectedStillActive { get; init; }
@@ -300,7 +300,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         }
 
         Entry.StillActive.Should().Be(ExpectedStillActive);
-        PrintJson(Entry.StillActive);
+        PrintPassed(Entry.StillActive);
     }
 
     protected List<string> ExpectedProfilePictures { get; set; } = [];
@@ -316,7 +316,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
             return;
         }
         Entry.ProfilePictures.Select(x => x.Url).Should().BeEquivalentTo(ExpectedProfilePictures);
-        PrintJson(Entry.ProfilePictures);
+        PrintPassed(Entry.ProfilePictures);
     }
 
     protected int? ExpectedProfilePictureMinCount { get; set; }
@@ -333,7 +333,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         }
 
         Entry.ProfilePictures.Count.Should().BeGreaterOrEqualTo(ExpectedProfilePictureMinCount.Value);
-        PrintJson(Entry.ProfilePictures);
+        PrintPassed(Entry.ProfilePictures);
     }
 
 
@@ -351,13 +351,24 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         }
 
         Entry.Aliases.Should().BeEquivalentTo(ExpectedAliases);
-        PrintJson(Entry.Aliases);
+        PrintPassed(Entry.Aliases);
     }
 
     protected List<SocialLink> ExpectedSocialLinks { get; set; } = [];
     [Test]
     public void Crawler_Finds_SocialLinks()
     {
+        //ExpectedSocialLinks = [];
+
+        //Assume.That(ExpectedSocialLinks.Count > 0);
+
+
+
+
+        //Assert.Ignore();
+        //return;
+
+
         if (Entry is null)
             return;
 
@@ -368,73 +379,7 @@ internal abstract class PersonCrawlerTestsBase<T> : TestBase
         }
 
         Entry.SocialLinks.Should().BeEquivalentTo(ExpectedSocialLinks);
-        PrintJson(Entry.SocialLinks);
+        PrintPassed(Entry.SocialLinks);
     }
-
-}
-
-internal abstract class TestBase
-{
-    protected static void NothingExpected(object? found)
-    {
-        if (found is null)
-            return;
-
-        Assert.Warn($"""
-                Expected Nothing but found: {GetTypeName(found)}
-                {JsonConvert.SerializeObject(found, Formatting.Indented)}
-                """);
-    }
-
-    protected static void PrintJson(object? obj)
-    {
-        if (obj is null)
-        {
-            TestContext.Out.WriteLine("Passed with: null");
-            return;
-        }
-
-        TestContext.Out.WriteLine($"""
-            Passed with: {GetTypeName(obj)}
-             {JsonConvert.SerializeObject(obj, Formatting.Indented)}
-            """);
-    }
-
-
-    private static string GetTypeName(object obj)
-    {
-        var type = obj.GetType();
-        if (obj is not IEnumerable or string)
-            return type.Name;
-
-        var elementType = GetCollectionElementType(type);
-        return $"{elementType?.Name ?? "UnknownType"}[]";
-    }
-    private static Type? GetCollectionElementType(Type collectionType)
-    {
-        if (collectionType.IsArray)
-            return collectionType.GetElementType();
-
-
-        // Handle collections implementing IEnumerable<T>
-        var genericArguments = collectionType.GetGenericArguments();
-        if (genericArguments.Length > 0)
-            return genericArguments[0];
-
-
-        // Handle non-generic collections implementing IEnumerable
-        if (typeof(IEnumerable).IsAssignableFrom(collectionType))
-        {
-            foreach (var interfaceType in collectionType.GetInterfaces())
-            {
-                if (interfaceType.IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                {
-                    return interfaceType.GetGenericArguments()[0];
-                }
-            }
-        }
-        return null;
-    }
-
 
 }

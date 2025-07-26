@@ -19,7 +19,7 @@ internal class FreeonesTestsWithMollyLittle : PersonCrawlerTestsBase<Freeones>
         ExpectedStillActive = true;
         ExpectedCareerStart = new DateOnly(2022, 1, 1);
         ExpectedCity = "Fairfax";
-        ExpectedCountry = null;
+        ExpectedCountry = "United States";
 
         ExpectedEthnicity = "Caucasian";
         ExpectedMeasurementDetails = "81A-55-81";

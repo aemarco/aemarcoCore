@@ -16,7 +16,7 @@ internal class PersonCrawlerTests : TestBase
 
         result.Should().Equal("Crawler1", "Crawler2");
 
-        PrintJson(result);
+        PrintPassed(result);
     }
 
     [Test]
@@ -31,7 +31,7 @@ internal class PersonCrawlerTests : TestBase
         result.CrawlerInfos.Should().HaveCount(1);
         result.CrawlerInfos[0].FriendlyName.Should().Be("Crawler1");
 
-        PrintJson(result.CrawlerInfos);
+        PrintPassed(result.CrawlerInfos);
     }
 
     [Test]
@@ -46,7 +46,7 @@ internal class PersonCrawlerTests : TestBase
         result.FirstName.Should().Be("Foxi");
         result.LastName.Should().Be("Di");
 
-        PrintJson(result);
+        PrintPassed(result);
     }
 
     [Test]
@@ -59,7 +59,7 @@ internal class PersonCrawlerTests : TestBase
         result.CrawlerInfos.Should().HaveCount(2);
         result.CrawlerInfos.Select(x => x.FriendlyName).Should().BeEquivalentTo("Crawler1", "Crawler2");
 
-        PrintJson(result.CrawlerInfos);
+        PrintPassed(result.CrawlerInfos);
     }
 
     [Test]
@@ -73,7 +73,7 @@ internal class PersonCrawlerTests : TestBase
         result.Errors.Should().HaveCount(1);
         result.Errors[0].Message.Should().Be("Error");
 
-        PrintJson(result.Errors);
+        PrintPassed(result.Errors);
     }
 
 
@@ -89,7 +89,7 @@ internal class PersonCrawlerTests : TestBase
         result.CrawlerInfos[0].FriendlyName.Should().Be("Crawler2");
         result.CrawlerInfos[1].FriendlyName.Should().Be("Crawler1");
 
-        PrintJson(result.CrawlerInfos);
+        PrintPassed(result.CrawlerInfos);
     }
 
 

@@ -19,11 +19,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarco.CrawlerTests", "Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{C1234775-0F83-4A7C-965D-F5B973EC9CB3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{81B3D5C8-5A46-461C-A810-59F6943F5825}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_sol", "_sol", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		azure-pipelines.yml = azure-pipelines.yml
 		README.md = README.md
+		version.json = version.json
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_cicd", "_cicd", "{643334E1-D7D7-4197-AC1A-4099B8E73AE4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +69,7 @@ Global
 		{A1F51F78-D052-4838-8257-24D1B8683054} = {2F6DBB96-EC43-4C4B-A5A4-689A2225D367}
 		{6B2DC543-ED30-4F3D-90F7-88DAB54ACB2C} = {2F6DBB96-EC43-4C4B-A5A4-689A2225D367}
 		{AA038B44-7003-4F5D-94D2-E667C613E5C2} = {2F6DBB96-EC43-4C4B-A5A4-689A2225D367}
+		{C1234775-0F83-4A7C-965D-F5B973EC9CB3} = {643334E1-D7D7-4197-AC1A-4099B8E73AE4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0EC96D17-031A-4821-AF90-49577D41E2CF}

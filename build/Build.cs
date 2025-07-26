@@ -21,9 +21,7 @@ class Build : NukeBuild
     //[NerdbankGitVersioning]
     //readonly NerdbankGitVersioning NerdbankVersioning;
 
-    readonly AbsolutePath TrxDir = RootDirectory / "build" / "output" / "trx";
-    readonly AbsolutePath CobDir = RootDirectory / "build" / "output" / "cob";
-    readonly AbsolutePath DropDir = RootDirectory / "build" / "output" / "drop";
+
 
     Target Info => _ => _
         .DependentFor(Clean, CountryUpdate, Restore, Compile, Tests, Pack, Publish)
@@ -74,6 +72,10 @@ class Build : NukeBuild
                 .SetProjectFile(Solution));
         });
 
+
+    readonly AbsolutePath TrxDir = RootDirectory / "build" / "output" / "trx";
+    readonly AbsolutePath CobDir = RootDirectory / "build" / "output" / "cob";
+    readonly AbsolutePath DropDir = RootDirectory / "build" / "output" / "drop";
     Target Tests => _ => _
         .DependsOn(Compile)
         .Executes(() =>

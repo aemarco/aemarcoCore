@@ -7,13 +7,16 @@ public record SocialLink(SocialLinkKind Kind, string Url) : IComparable<SocialLi
         var kind = uri.Host switch
         {
             "twitter.com" => SocialLinkKind.Twitter,
+            "x.com" => SocialLinkKind.Twitter,
             "instagram.com" => SocialLinkKind.Instagram,
             "www.instagram.com" => SocialLinkKind.Instagram,
             "www.facebook.com" => SocialLinkKind.Facebook,
             "facebook.com" => SocialLinkKind.Facebook,
+            "vk.com" => SocialLinkKind.Vk,
             "youtube.com" => SocialLinkKind.YouTube,
             "www.youtube.com" => SocialLinkKind.YouTube,
             "onlyfans.com" => SocialLinkKind.OnlyFans,
+            "www.tiktok.com" => SocialLinkKind.TikTok,
             _ => SocialLinkKind.Unknown
         };
         return new SocialLink(kind, uri.AbsoluteUri);
@@ -36,5 +39,7 @@ public enum SocialLinkKind
     Instagram,
     Facebook,
     YouTube,
-    OnlyFans
+    OnlyFans,
+    Vk,
+    TikTok
 }
