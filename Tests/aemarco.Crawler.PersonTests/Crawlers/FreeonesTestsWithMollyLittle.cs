@@ -15,7 +15,7 @@ internal class FreeonesTestsWithMollyLittle : PersonCrawlerTestsBase<Freeones>
         //    "https://media.freeones.com/freeones-photo-generated/F5/fE/LQ6D7EQRSgmeNRzDv/mollylittle_teaser.jpg"
         //});
         ExpectedBirthday = new DateOnly(2003, 2, 10);
-        ExpectedProfession = "Porn Star";
+        ExpectedProfession = "Influencer,Adult Model,Porn Star";
         ExpectedStillActive = true;
         ExpectedCareerStart = new DateOnly(2022, 1, 1);
         ExpectedCity = "Fairfax";
