@@ -4,8 +4,9 @@
 
 Create a PersonCrawler for usage
 
-	await new PersonCrawler().StartAsync("firstName", "lastName")
-	await new PersonCrawler().StartAsync("name")
+    await new PersonCrawler().CrawlPersonNames();
+	await new PersonCrawler().CrawlPerson("firstName", "lastName");
+	await new PersonCrawler().CrawlPerson("name");
 
 
 

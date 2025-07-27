@@ -1,4 +1,5 @@
 ﻿namespace aemarco.Crawler.Person.Common;
+
 internal interface IPersonCrawlerProvider
 {
     string[] GetAvailableCrawlerNames();
@@ -20,10 +21,10 @@ internal class PersonCrawlerProvider : IPersonCrawlerProvider
         var types = GetOrderedCrawlerTypes();
 
         var result = types
+            .Select(x => (IPersonCrawler)Activator.CreateInstance(x)!)
             .Where(x =>
                 filter.Length == 0 ||
-                filter.Contains(CrawlerInfo.FromCrawlerType(x).FriendlyName))
-            .Select(x => (IPersonCrawler)Activator.CreateInstance(x)!)
+                filter.Contains(x.GetCrawlerInfo().FriendlyName))
             .ToArray();
         return result;
     }

@@ -1,6 +1,5 @@
-﻿using aemarco.Crawler.Common;
+﻿namespace aemarco.Crawler.PersonTests.Common;
 
-namespace aemarco.Crawler.PersonTests.Common;
 public class PersonCrawlerProviderTests
 {
 
@@ -26,7 +25,7 @@ public class PersonCrawlerProviderTests
         var result = sut.GetFilteredCrawlerInstances(["Nudevista"]);
 
         result.Should().HaveCount(1);
-        result.Should().OnlyContain(x => x is Nudevista);
+        result.Should().OnlyContain(x => x.GetCrawlerInfo().FriendlyName == "Nudevista");
     }
 
     [Test]

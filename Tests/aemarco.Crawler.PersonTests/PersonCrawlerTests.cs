@@ -36,7 +36,25 @@ internal class PersonCrawlerTests
     }
 
     [Test]
-    public async Task StartAsync_ShouldTitleName()
+    public async Task CrawlPersonNames_Works()
+    {
+        //we ignore logging and errors here
+        //we focus on deduplication and ordering
+
+        var sut = GetPersonCrawler(true);
+
+        var result = await sut.CrawlPersonNames(CancellationToken.None);
+
+        result.Should().Equal(
+            new PersonNameInfo("Ariel", "Rebel"),
+            new PersonNameInfo("Foxi", "Di"),
+            new PersonNameInfo("Piper", "Perri"));
+
+        TestHelper.PrintPassed(result);
+    }
+
+    [Test]
+    public async Task CrawlPerson_ShouldTitleName()
     {
         var sut = GetPersonCrawler();
         sut.AddPersonSiteFilter("Nope");
@@ -51,7 +69,7 @@ internal class PersonCrawlerTests
     }
 
     [Test]
-    public async Task StartAsync_ShouldUseCrawlers()
+    public async Task CrawlPerson_ShouldUseCrawlers()
     {
         var sut = GetPersonCrawler();
 
@@ -64,7 +82,7 @@ internal class PersonCrawlerTests
     }
 
     [Test]
-    public async Task StartAsync_ShouldHandleErrors()
+    public async Task CrawlPerson_ShouldHandleErrors()
     {
         var sut = GetPersonCrawler(true);
 
@@ -77,9 +95,8 @@ internal class PersonCrawlerTests
         TestHelper.PrintPassed(result.Errors);
     }
 
-
     [Test]
-    public async Task StartAsync_ShouldMergeResult()
+    public async Task CrawlPerson_ShouldMergeResult()
     {
         var sut = GetPersonCrawler();
 
@@ -97,6 +114,8 @@ internal class PersonCrawlerTests
     private static PersonCrawler GetPersonCrawler(bool withError = false)
     {
         var crawler1 = Substitute.For<IPersonCrawler>();
+        crawler1.GetCrawlerInfo()
+            .Returns(new CrawlerInfo("Crawler1", 2));
         crawler1.GetPersonEntry(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new PersonInfo
             {
@@ -104,7 +123,17 @@ internal class PersonCrawlerTests
                 LastName = "Di",
                 CrawlerInfos = { new CrawlerInfo("Crawler1", 2) }
             });
+        crawler1.GetPersonNameEntries(Arg.Any<CancellationToken>())
+            .Returns(
+            [
+                new PersonNameInfo("Foxi", "Di"),
+                new PersonNameInfo("Ariel", "Rebel")
+            ]);
+
+
         var crawler2 = Substitute.For<IPersonCrawler>();
+        crawler2.GetCrawlerInfo()
+            .Returns(new CrawlerInfo("Crawler2", 1));
         crawler2.GetPersonEntry(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new PersonInfo
             {
@@ -112,7 +141,16 @@ internal class PersonCrawlerTests
                 LastName = "Di",
                 CrawlerInfos = { new CrawlerInfo("Crawler2", 1) }
             });
+        crawler2.GetPersonNameEntries(Arg.Any<CancellationToken>())
+            .Returns(
+            [
+                new PersonNameInfo("Piper", "Perri"),
+                new PersonNameInfo("Ariel", "Rebel")
+            ]);
+
         var crawler3 = Substitute.For<IPersonCrawler>();
+        crawler2.GetCrawlerInfo()
+            .Returns(new CrawlerInfo("Crawler3", 99));
         crawler3.GetPersonEntry(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(Task.Run(async () =>
             {
@@ -123,7 +161,15 @@ internal class PersonCrawlerTests
 #pragma warning restore CS0162 // Unreachable code detected
 
             }));
-
+        crawler3.GetPersonNameEntries(Arg.Any<CancellationToken>())
+            .Returns(Task.Run(async () =>
+            {
+                await Task.Delay(100);
+                throw new Exception("Error");
+#pragma warning disable CS0162 // Unreachable code detected
+                return Array.Empty<PersonNameInfo>();
+#pragma warning restore CS0162 // Unreachable code detected
+            }));
 
 
         var provider = Substitute.For<IPersonCrawlerProvider>();
