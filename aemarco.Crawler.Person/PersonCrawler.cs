@@ -72,16 +72,16 @@ public class PersonCrawler
             .ToArray();
 
         //wait for being done
-        List<PersonNameInfo> result = [];
+        List<PersonNameInfo> list = [];
         foreach (var (task, cr) in tasks)
         {
             var crawlerInfo = cr.GetCrawlerInfo();
             try
             {
-                var personInfos = await task;
-                result.AddRange(personInfos);
+                var names = await task;
+                list.AddRange(names);
 
-                _logger.LogInformation("Crawler {crawlerInfo} found names {@personInfos}", crawlerInfo, personInfos);
+                _logger.LogDebug("Crawler {crawlerInfo} found {count} names {@names}", crawlerInfo, names.Length, names);
             }
             catch (Exception ex)
             {
@@ -90,14 +90,14 @@ public class PersonCrawler
         }
 
         //remove duplicates and order
-        return
-            [
-                .. result
+        PersonNameInfo[] result = [
+                .. list
                     .Distinct()
                     .OrderBy(x => x.FirstName)
                     .ThenBy(x => x.LastName)
             ];
-
+        _logger.LogInformation("CrawlPersonNames found {count} names {@names}", result.Length, result);
+        return result;
     }
 
     /// <summary>
@@ -132,7 +132,7 @@ public class PersonCrawler
                 var personInfo = await task;
                 entries.Add(personInfo);
 
-                _logger.LogInformation("Crawler {crawlerInfo} found info {@personInfo}", crawlerInfo, personInfo);
+                _logger.LogDebug("Crawler {crawlerInfo} found info {@personInfo}", crawlerInfo, personInfo);
             }
             catch (Exception ex)
             {
@@ -142,6 +142,8 @@ public class PersonCrawler
         }
 
         result.Merge(entries);
+        _logger.LogInformation("CrawlPerson found info {@personInfo}", result);
+
         return result;
     }
 
