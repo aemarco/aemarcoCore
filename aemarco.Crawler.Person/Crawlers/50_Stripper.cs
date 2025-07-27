@@ -6,6 +6,31 @@ internal class Stripper : PersonCrawlerBase
 
     private readonly Uri _uri = new("https://www.istripper.com");
 
+
+    protected override async Task<PersonNameInfo[]> HandlePersonNameEntries(CancellationToken token)
+    {
+        var uri = new PageUri(_uri).WithHref("/models?sort=rating&search=");
+        var page = await uri.NavigateAsync(token: token);
+        List<PersonNameInfo> result = [];
+
+        //first page of performers
+        // order: rating desc
+
+        foreach (var node in page.FindNodes("//div[@class='inner']/h2[@class='b']"))
+        {
+            var text = node.GetText().TitleCase();
+            var (fn, ln) = PersonParser.FindNameInText(text);
+            if (fn is null || ln is null)
+                continue;
+
+            result.Add(new PersonNameInfo(fn, ln));
+        }
+
+
+        return [.. result.Distinct()];
+    }
+
+
     protected override PageUri GetGirlUri(string name)
     {
         var href = $"/de/models/{name}"

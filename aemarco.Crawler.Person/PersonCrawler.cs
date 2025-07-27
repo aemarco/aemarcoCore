@@ -35,16 +35,40 @@ public class PersonCrawler
 
 
 
-    [Obsolete("Use CrawlPerson instead")]
-    public async Task<PersonInfo> StartAsync(string firstName, string lastName,
-        CancellationToken cancellationToken = default)
+
+
+
+    public async Task<PersonNameInfo[]> CrawlPersonNames(CancellationToken cancellationToken = default)
     {
-        return await CrawlPerson(firstName, lastName, cancellationToken);
+        var crawlers = _personCrawlerProvider
+            .GetFilteredCrawlerInstances([.. _filterPersonSites]);
+
+        List<PersonNameInfo> result = [];
+        //start all crawlers
+        var tasks = crawlers
+            .Select(x => x.GetPersonNameEntries(cancellationToken))
+            .ToArray();
+        foreach (var task in tasks)
+        {
+            try
+            {
+                var personInfos = await task;
+                result.AddRange(personInfos);
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+
+        return [.. result.Distinct()];
     }
 
 
+
+
     /// <summary>
-    /// Do the crawling :)
+    /// Do the details crawling :)
     /// </summary>
     /// <returns>composed PersonEntry</returns>
     public async Task<PersonInfo> CrawlPerson(string firstName, string lastName, CancellationToken cancellationToken = default)
@@ -84,6 +108,18 @@ public class PersonCrawler
         return result;
     }
 
+
+
+
+
+
+
+
+
+
+
+
+    [Obsolete("Use CrawlPersonNames instead")]
     public async Task<PersonInfo[]> CrawlPersonList(CancellationToken cancellationToken = default)
     {
 
@@ -93,14 +129,17 @@ public class PersonCrawler
         List<PersonInfo> names = [];
         //start all crawlers
         var tasks = crawlers
-            .Select(x => x.GetPersonEntries(cancellationToken))
+            .Select(x => x.GetPersonNameEntries(cancellationToken))
             .ToArray();
         foreach (var task in tasks)
         {
             try
             {
                 var personInfo = await task;
-                names.AddRange(personInfo);
+                foreach (var info in personInfo)
+                {
+                    names.Add(new PersonInfo { FirstName = info.FirstName, LastName = info.LastName });
+                }
             }
             catch
             {
@@ -122,5 +161,12 @@ public class PersonCrawler
         return [.. result];
     }
 
+
+    [Obsolete("Use CrawlPerson instead")]
+    public async Task<PersonInfo> StartAsync(string firstName, string lastName,
+        CancellationToken cancellationToken = default)
+    {
+        return await CrawlPerson(firstName, lastName, cancellationToken);
+    }
 
 }

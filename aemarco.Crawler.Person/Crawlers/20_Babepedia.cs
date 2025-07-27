@@ -17,6 +17,45 @@ internal class Babepedia : PersonCrawlerBase
 
     private readonly Uri _uri = new("https://www.babepedia.com");
 
+    protected override async Task<PersonNameInfo[]> HandlePersonNameEntries(CancellationToken token)
+    {
+        var page = await new PageUri(_uri).NavigateAsync(token: token);
+        List<PersonNameInfo> result = [];
+
+        //sidebar right
+
+        //Top 25
+        foreach (var node in page.FindNodes("//div[@id='top25']/ol/li/a"))
+        {
+            var text = node.GetText().TitleCase();
+            var (fn, ln) = PersonParser.FindNameInText(text);
+            if (fn is null || ln is null)
+                continue;
+
+            result.Add(new PersonNameInfo(fn, ln));
+        }
+        //Most Viewed
+        foreach (var node in page.FindNodes("//div[@id='mostviewed']/ol/li/a"))
+        {
+            var text = node.GetText().TitleCase();
+            var (fn, ln) = PersonParser.FindNameInText(text);
+            if (fn is null || ln is null)
+                continue;
+
+            result.Add(new PersonNameInfo(fn, ln));
+        }
+
+        return [.. result.Distinct()];
+    }
+
+
+
+
+
+
+
+
+
     protected override PageUri GetGirlUri(string name)
     {
         var href = $"/babe/{name}"
@@ -27,7 +66,6 @@ internal class Babepedia : PersonCrawlerBase
         //https://www.babepedia.com/babe/Foxy_Di
         return result;
     }
-
     protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
     {
         //Pics
@@ -156,28 +194,6 @@ internal class Babepedia : PersonCrawlerBase
         return Task.CompletedTask;
     }
 
-
-
-    protected override async Task<PersonInfo[]> HandleGirlList(CancellationToken token)
-    {
-        var page = await new PageUri(_uri).NavigateAsync(token: token);
-
-        List<PersonInfo> result = [];
-        foreach (var node in page.FindNodes("//div[@id='top25']/ol/li/a"))
-        {
-            var text = node.GetText().TitleCase();
-            var (fn, ln) = PersonParser.FindNameInText(text);
-            if (fn is null || ln is null)
-                continue;
-
-            result.Add(new PersonInfo
-            {
-                FirstName = fn,
-                LastName = ln
-            });
-        }
-        return [.. result];
-    }
 
 
 }

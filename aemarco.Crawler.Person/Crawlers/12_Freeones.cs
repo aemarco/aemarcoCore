@@ -6,6 +6,33 @@ internal class Freeones : PersonCrawlerBase
 
     private readonly Uri _uri = new("https://www.freeones.com");
 
+    protected override async Task<PersonNameInfo[]> HandlePersonNameEntries(CancellationToken token)
+    {
+        var uri = new PageUri(_uri).WithHref("/de/performers??s=rank.currentRank&l=96&q=&f[performerType]=babe&r[age]=18,25&filter_mode[performerType]=and&filter_mode[global]=and");
+        var page = await uri.NavigateAsync(token: token);
+        List<PersonNameInfo> result = [];
+
+        //first page of performers
+        // order: currentRank desc
+        // amount = 96
+        // filter performerType = babe (no trans, no male)
+        // filter age = 18-25
+
+        foreach (var node in page.FindNodes("//p[@data-test='subject-name']"))
+        {
+            var text = node.GetText().TitleCase();
+            var (fn, ln) = PersonParser.FindNameInText(text);
+            if (fn is null || ln is null)
+                continue;
+
+            result.Add(new PersonNameInfo(fn, ln));
+        }
+
+
+        return [.. result.Distinct()];
+    }
+
+
     protected override PageUri GetGirlUri(string name)
     {
         name = name
