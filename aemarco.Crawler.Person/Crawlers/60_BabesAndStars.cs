@@ -1,11 +1,17 @@
 ﻿namespace aemarco.Crawler.Person.Crawlers;
 
 [Crawler("BabesAndStars", 60)]
-internal class BabesAndStars : PersonCrawlerBase
+internal class BabesAndStars : SiteCrawlerBase
 {
 
     private readonly Uri _uri = new("https://www.babesandstars.com");
+    public BabesAndStars(
+        ICountryService countryService,
+        ILogger<BabesAndStars> logger)
+        : base(countryService, logger)
+    {
 
+    }
 
     protected override async Task<PersonNameInfo[]> HandlePersonNameEntries(CancellationToken token)
     {
@@ -41,12 +47,13 @@ internal class BabesAndStars : PersonCrawlerBase
         return result;
     }
 
-    protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
+    protected override Task HandlePersonEntry(PageDocument girlPage, CancellationToken token)
     {
         var profileNode = girlPage.FindNode("//div[@class='profile']/div");
 
         //Name
-        UpdateName(profileNode?.FindNode("./div/h1"));
+        var nameNode = profileNode?.FindNode("./div/h1");
+        UpdateName(nameNode);
 
         //Pic
         UpdateProfilePictures(profileNode?

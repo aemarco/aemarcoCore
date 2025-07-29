@@ -1,6 +1,6 @@
-﻿namespace aemarco.Crawler.PersonTests.Crawlers;
+﻿namespace aemarco.Crawler.PersonTests.Crawlers_PersonInfo;
 
-internal class MilffoxTestsWithJuliaAnn : PersonCrawlerTestsBase<Milffox>
+internal class MilffoxTestsWithJuliaAnn : PersonInfoTestsBase<Milffox>
 {
 
     //https://www.milffox.com/milf-pornstars/Carolina-Sweets/
@@ -24,7 +24,8 @@ internal class MilffoxTestsWithJuliaAnn : PersonCrawlerTestsBase<Milffox>
         [
             "Julie Ann",
             "Julia Ann Tavella",
-            "Julia Tavella"
+            "Julia Tavella",
+            "Julia Ann"
         ];
         ExpectedSocialLinks =
         [

@@ -1,6 +1,6 @@
-﻿namespace aemarco.Crawler.PersonTests.Crawlers;
+﻿namespace aemarco.Crawler.PersonTests.Crawlers_PersonInfo;
 
-internal class XxxBiosWithHannahHays : PersonCrawlerTestsBase<XxxBios>
+internal class XxxBiosWithHannahHays : PersonInfoTestsBase<XxxBios>
 {
 
     //https://xxxbios.com/hannah-hays-biography

@@ -1,6 +1,6 @@
-﻿namespace aemarco.Crawler.PersonTests.Crawlers;
+﻿namespace aemarco.Crawler.PersonTests.Crawlers_PersonInfo;
 
-internal class NudevistaTestsWithAlettaOcean : PersonCrawlerTestsBase<Nudevista>
+internal class NudevistaTestsWithAlettaOcean : PersonInfoTestsBase<Nudevista>
 {
     //https://www.nudevista.at/?q=aletta+ocean&s=s
     public NudevistaTestsWithAlettaOcean()

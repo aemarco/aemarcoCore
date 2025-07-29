@@ -1,6 +1,6 @@
-﻿namespace aemarco.Crawler.PersonTests.Crawlers;
+﻿namespace aemarco.Crawler.PersonTests.Crawlers_PersonInfo;
 
-internal class PornstarbyfaceTestsWithArielRebel : PersonCrawlerTestsBase<Pornstarbyface>
+internal class PornstarbyfaceTestsWithArielRebel : PersonInfoTestsBase<Pornstarbyface>
 {
 
     //https://pornstarbyface.com/girls/Ariel-Rebel

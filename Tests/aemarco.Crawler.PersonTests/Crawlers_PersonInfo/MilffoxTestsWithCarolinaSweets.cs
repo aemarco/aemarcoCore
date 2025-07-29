@@ -1,5 +1,5 @@
-﻿namespace aemarco.Crawler.PersonTests.Crawlers;
-internal class MilffoxTestsWithCarolinaSweets : PersonCrawlerTestsBase<Milffox>
+﻿namespace aemarco.Crawler.PersonTests.Crawlers_PersonInfo;
+internal class MilffoxTestsWithCarolinaSweets : PersonInfoTestsBase<Milffox>
 {
 
     //https://www.milffox.com/milf-pornstars/Carolina-Sweets/

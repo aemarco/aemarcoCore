@@ -1,49 +1,46 @@
-﻿using aemarco.Crawler.Services;
+﻿namespace aemarco.Crawler.Person.Common;
 
-namespace aemarco.Crawler.Person.Common;
-
-internal interface IPersonCrawler
+internal interface ISiteCrawler
 {
-    CrawlerInfo GetCrawlerInfo();
     Task<PersonNameInfo[]> GetPersonNameEntries(CancellationToken token);
-    Task<PersonInfo> GetPersonEntry(string name, CancellationToken token);
     Task<PersonInfo> GetPersonEntry(string firstName, string lastName, CancellationToken token);
-
 }
 
-internal abstract class PersonCrawlerBase : IPersonCrawler
+internal abstract class SiteCrawlerBase : ISiteCrawler
 {
-    private static readonly CountryService CountryService = new();
-    internal PersonCrawlerBase()
+
+    private readonly ICountryService _countryService;
+    private readonly ILogger _logger;
+    internal SiteCrawlerBase(
+        ICountryService countryService,
+        ILogger logger)
     {
+        _countryService = countryService;
+        _logger = logger;
+
+
         Result = new PersonInfo();
-        Result.CrawlerInfos.Add(GetCrawlerInfo());
+        Result.CrawlerInfos.Add(CrawlerInfo.FromCrawlerType(GetType()));
     }
+    protected PersonInfo Result { get; }
 
 
     //IPersonCrawler
-    public CrawlerInfo GetCrawlerInfo()
-    {
-        return CrawlerInfo.FromCrawlerType(GetType());
-    }
-
     public async Task<PersonNameInfo[]> GetPersonNameEntries(CancellationToken token)
     {
         var result = await HandlePersonNameEntries(token);
         return result;
     }
-    public async Task<PersonInfo> GetPersonEntry(string name, CancellationToken token)
-    {
-        var girlUri = GetGirlUri(name);
-        var girlPage = await girlUri.NavigateAsync(token: token);
-        await HandleGirlPage(girlPage, token);
-        return Result;
-    }
     public async Task<PersonInfo> GetPersonEntry(string firstName, string lastName, CancellationToken token)
     {
         var name = $"{firstName} {lastName}";
-        return await GetPersonEntry(name, token);
+        var girlUri = GetGirlUri(name);
+        _logger.LogDebug("GetGirlUri resolved {uri} for {name}", girlUri.Uri.AbsoluteUri, name);
+        var girlPage = await girlUri.NavigateAsync(token: token);
+        await HandlePersonEntry(girlPage, token);
+        return Result;
     }
+
 
 
     protected virtual Task<PersonNameInfo[]> HandlePersonNameEntries(CancellationToken token)
@@ -52,39 +49,34 @@ internal abstract class PersonCrawlerBase : IPersonCrawler
         return Task.FromResult(result);
     }
 
-    protected PersonInfo Result { get; }
+
     protected abstract PageUri GetGirlUri(string name);
-    protected abstract Task HandleGirlPage(PageDocument girlPage, CancellationToken token);
+    protected abstract Task HandlePersonEntry(PageDocument girlPage, CancellationToken token);
+
+
 
 
     #region Update Result
 
-    protected void UpdateName(PageNode? node)
+    protected void UpdateName(PageNode? node, params string[] removals)
     {
         if (node is null)
             return;
 
-        var text = node.GetText();
-        UpdateName(text);
-    }
+        var text = node.GetText().Except(removals);
 
-    protected void UpdateName(string text)
-    {
         var (firstName, lastName) = PersonParser.FindNameInText(text);
 
         Result.FirstName = firstName;
         Result.LastName = lastName;
     }
 
-
-
-
     protected void UpdateCountry(string? text)
     {
         if (text is null)
             return;
 
-        if (CountryService.FindCountry(text) is not { } country)
+        if (_countryService.FindCountry(text) is not { } country)
             return;
 
         Result.Country = country;

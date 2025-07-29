@@ -1,10 +1,18 @@
 ﻿namespace aemarco.Crawler.Person.Crawlers;
 
+
 [Crawler("IStripper", 50)]
-internal class Stripper : PersonCrawlerBase
+internal class Stripper : SiteCrawlerBase
 {
 
     private readonly Uri _uri = new("https://www.istripper.com");
+    public Stripper(
+        ICountryService countryService,
+        ILogger<Stripper> logger)
+        : base(countryService, logger)
+    {
+
+    }
 
 
     protected override async Task<PersonNameInfo[]> HandlePersonNameEntries(CancellationToken token)
@@ -30,7 +38,6 @@ internal class Stripper : PersonCrawlerBase
         return [.. result.Distinct()];
     }
 
-
     protected override PageUri GetGirlUri(string name)
     {
         var href = $"/de/models/{name}"
@@ -42,11 +49,13 @@ internal class Stripper : PersonCrawlerBase
         return result;
     }
 
-    protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
+    protected override Task HandlePersonEntry(PageDocument girlPage, CancellationToken token)
     {
 
         //Name
-        UpdateName(girlPage.FindNode("//div[@class='trigger']/div/h1"));
+        var nameNode = girlPage.FindNode("//div[@class='trigger']/div/h1");
+        UpdateName(nameNode);
+
 
         //Pic
         var picUri = girlPage

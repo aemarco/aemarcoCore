@@ -1,10 +1,18 @@
 ﻿namespace aemarco.Crawler.Person.Crawlers;
 
 [Crawler("Pornstarbyface", 10)]
-internal class Pornstarbyface : PersonCrawlerBase
+internal class Pornstarbyface : SiteCrawlerBase
 {
 
     private readonly Uri _uri = new("https://pornstarbyface.com");
+    public Pornstarbyface(
+        ICountryService countryService,
+        ILogger<Pornstarbyface> logger)
+        : base(countryService, logger)
+    {
+
+    }
+
 
     protected override PageUri GetGirlUri(string name)
     {
@@ -17,14 +25,15 @@ internal class Pornstarbyface : PersonCrawlerBase
         return result;
     }
 
-    protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
+    protected override Task HandlePersonEntry(PageDocument girlPage, CancellationToken token)
     {
         var starInfo = girlPage.FindNode("//div[@class='star-info']");
         if (starInfo is null)
             return Task.CompletedTask;
 
         //Name
-        UpdateName(starInfo.FindNode("./h5"));
+        var nameNode = starInfo.FindNode("./h5");
+        UpdateName(nameNode);
 
         //Pic
         UpdateProfilePictures(girlPage

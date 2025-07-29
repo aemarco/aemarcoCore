@@ -1,6 +1,6 @@
-﻿namespace aemarco.Crawler.PersonTests.Crawlers;
+﻿namespace aemarco.Crawler.PersonTests.Crawlers_PersonInfo;
 
-internal class BabepediaTestsWithFoxiDi : PersonCrawlerTestsBase<Babepedia>
+internal class BabepediaTestsWithFoxiDi : PersonInfoTestsBase<Babepedia>
 
 {
 
@@ -28,8 +28,9 @@ internal class BabepediaTestsWithFoxiDi : PersonCrawlerTestsBase<Babepedia>
             "Angel C",
             "Ekaterina D",
             "Ekaterina Ivanova",
-            "Foxy Di",
+            "Foxi Di",
             "Foxy B",
+            "Foxy Di",
             "Inga",
             "Inna",
             "Kat",

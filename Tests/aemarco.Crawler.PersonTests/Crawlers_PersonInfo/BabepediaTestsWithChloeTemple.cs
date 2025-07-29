@@ -1,6 +1,6 @@
-﻿namespace aemarco.Crawler.PersonTests.Crawlers;
+﻿namespace aemarco.Crawler.PersonTests.Crawlers_PersonInfo;
 
-internal class BabepediaTestsWithChloeTemple : PersonCrawlerTestsBase<Babepedia>
+internal class BabepediaTestsWithChloeTemple : PersonInfoTestsBase<Babepedia>
 {
 
     //https://www.babepedia.com/babe/Chloe_Temple
@@ -25,6 +25,7 @@ internal class BabepediaTestsWithChloeTemple : PersonCrawlerTestsBase<Babepedia>
             new SocialLink(SocialLinkKind.OnlyFans, "https://onlyfans.com/chloe_temple")
         ];
         ExpectedAliases.AddRange([
+            "Chloe Temple",
             "Clara Fargo",
             "Larissa",
             "Senorita Satan",

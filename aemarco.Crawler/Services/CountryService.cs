@@ -3,7 +3,12 @@ using System.Text.Json;
 
 namespace aemarco.Crawler.Services;
 
-public class CountryService
+public interface ICountryService
+{
+    string? FindCountry(string? text);
+}
+
+internal class CountryService : ICountryService
 {
 
     public string? FindCountry(string? text)

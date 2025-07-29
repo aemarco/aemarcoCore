@@ -1,10 +1,17 @@
 ﻿namespace aemarco.Crawler.Person.Crawlers;
 
 [Crawler("Milffox", 35)]
-internal class Milffox : PersonCrawlerBase
+internal class Milffox : SiteCrawlerBase
 {
 
     private readonly Uri _uri = new("https://www.milffox.com");
+    public Milffox(
+        ICountryService countryService,
+        ILogger<Milffox> logger)
+        : base(countryService, logger)
+    {
+
+    }
 
     protected override PageUri GetGirlUri(string name)
     {
@@ -17,15 +24,11 @@ internal class Milffox : PersonCrawlerBase
         return result;
     }
 
-    protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
+    protected override Task HandlePersonEntry(PageDocument girlPage, CancellationToken token)
     {
+        var nameNode = girlPage.FindNode("//div[@class='main_wrapper']/div/div[@class='header']/span");
+        UpdateName(nameNode, "Pornstar Profile:");
 
-        if (girlPage.FindNode("//div[@class='main_wrapper']/div/div[@class='header']/span") is not { } header ||
-            header.GetText() is not { } headerText ||
-            !headerText.StartsWith("Pornstar Profile: "))
-            return Task.CompletedTask;
-
-        UpdateName(headerText[18..]);
 
         UpdateProfilePictures(
             girlPage.FindNode("//div[@id='review']/div/div[@class='ps-img']/a/img")?

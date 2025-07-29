@@ -1,10 +1,17 @@
 ﻿namespace aemarco.Crawler.Person.Crawlers;
 
 [Crawler("XxxBios", 13)]
-internal class XxxBios : PersonCrawlerBase
+internal class XxxBios : SiteCrawlerBase
 {
 
     private readonly Uri _uri = new("https://xxxbios.com");
+    public XxxBios(
+        ICountryService countryService,
+        ILogger<XxxBios> logger)
+        : base(countryService, logger)
+    {
+
+    }
 
     protected override PageUri GetGirlUri(string name)
     {
@@ -17,7 +24,7 @@ internal class XxxBios : PersonCrawlerBase
         return result;
     }
 
-    protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
+    protected override Task HandlePersonEntry(PageDocument girlPage, CancellationToken token)
     {
         var dataNodes = girlPage.FindNodes("//div[@class='clearfix entry-content']/p");
 

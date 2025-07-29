@@ -1,14 +1,13 @@
-﻿using aemarco.TestBasics;
+﻿namespace aemarco.Crawler.PersonTests._TestStuff;
 
-namespace aemarco.Crawler.PersonTests._TestStuff;
-
-internal abstract class PersonCrawlerTestsBase<T>
+internal abstract class PersonInfoTestsBase<T>
+    where T : ISiteCrawler
 {
 
     private readonly string _firstName;
     private readonly string _lastName;
     private readonly CrawlerInfo _crawlerInfo;
-    protected PersonCrawlerTestsBase(string firstName, string lastName)
+    protected PersonInfoTestsBase(string firstName, string lastName)
     {
         _firstName = firstName;
         _lastName = lastName;
@@ -19,16 +18,13 @@ internal abstract class PersonCrawlerTestsBase<T>
     [OneTimeSetUp]
     public async Task Init()
     {
-
         if (_crawlerInfo.SkipTesting)
             return;
 
-
-
-        var crawler = new PersonCrawler();
-        crawler.AddPersonSiteFilter(_crawlerInfo.FriendlyName);
-        Entry = await crawler.CrawlPerson(_firstName, _lastName);
+        var crawler = IocHelper.ResolveKeyed<ISiteCrawler>(typeof(T).Name);
+        Entry = await crawler.GetPersonEntry(_firstName, _lastName, CancellationToken.None);
     }
+
 
     private PersonInfo? Entry { get; set; }
 

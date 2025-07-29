@@ -15,8 +15,8 @@ public static partial class PersonParser
 
         text = text.ToLower().TitleCase();
         var split = text.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        return split.Length == 2
-                ? (split[0], split[1])
+        return split.Length >= 2
+                ? (split[0], string.Join(' ', split.Skip(1)))
                 : (null, null);
     }
 

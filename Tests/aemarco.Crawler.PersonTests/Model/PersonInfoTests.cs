@@ -1,6 +1,4 @@
-﻿using aemarco.TestBasics;
-
-namespace aemarco.Crawler.PersonTests.Model;
+﻿namespace aemarco.Crawler.PersonTests.Model;
 
 internal class PersonInfoTests
 {

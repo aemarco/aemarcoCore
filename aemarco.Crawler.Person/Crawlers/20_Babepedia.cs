@@ -12,10 +12,17 @@
 #endif
     )]
 
-internal class Babepedia : PersonCrawlerBase
+internal class Babepedia : SiteCrawlerBase
 {
 
     private readonly Uri _uri = new("https://www.babepedia.com");
+    public Babepedia(
+        ICountryService countryService,
+        ILogger<Babepedia> logger)
+        : base(countryService, logger)
+    {
+
+    }
 
     protected override async Task<PersonNameInfo[]> HandlePersonNameEntries(CancellationToken token)
     {
@@ -66,7 +73,7 @@ internal class Babepedia : PersonCrawlerBase
         //https://www.babepedia.com/babe/Foxy_Di
         return result;
     }
-    protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
+    protected override Task HandlePersonEntry(PageDocument girlPage, CancellationToken token)
     {
         //Pics
         //no pics, because they are not accessible later on
@@ -114,8 +121,8 @@ internal class Babepedia : PersonCrawlerBase
 
 
         //Name
-        if (girlPage.FindNode("//div[@id='name-block']/h1[@id='babename']") is { } nameNode)
-            UpdateName(nameNode.GetText());
+        var nameNode = girlPage.FindNode("//div[@id='name-block']/h1[@id='babename']");
+        UpdateName(nameNode);
 
         //Aliases
         foreach (var alias in girlPage

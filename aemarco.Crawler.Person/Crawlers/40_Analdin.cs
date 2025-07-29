@@ -1,10 +1,17 @@
 ﻿namespace aemarco.Crawler.Person.Crawlers;
 
 [Crawler("Analdin", 40)]
-internal class Analdin : PersonCrawlerBase
+internal class Analdin : SiteCrawlerBase
 {
 
     private readonly Uri _uri = new("https://www.analdin.xxx/");
+    public Analdin(
+        ICountryService countryService,
+        ILogger<Analdin> logger)
+        : base(countryService, logger)
+    {
+
+    }
 
     protected override PageUri GetGirlUri(string name)
     {
@@ -17,7 +24,7 @@ internal class Analdin : PersonCrawlerBase
         return result;
     }
 
-    protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
+    protected override Task HandlePersonEntry(PageDocument girlPage, CancellationToken token)
     {
         //Picture
         UpdateProfilePictures(girlPage
@@ -27,7 +34,8 @@ internal class Analdin : PersonCrawlerBase
         if (girlPage.FindNode("//div[@class='bm-right']") is { } bmRight)
         {
             //Name
-            UpdateName(bmRight.FindNode("./div[@class='headline']"));
+            var nameNode = bmRight.FindNode("./div[@class='headline']");
+            UpdateName(nameNode);
 
             //alias
             foreach (var desc in bmRight.FindNodes("./div[@class='desc']"))

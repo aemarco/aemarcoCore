@@ -1,10 +1,18 @@
 ﻿namespace aemarco.Crawler.Person.Crawlers;
 
 [Crawler("Freeones", 12)]
-internal class Freeones : PersonCrawlerBase
+internal class Freeones : SiteCrawlerBase
 {
 
     private readonly Uri _uri = new("https://www.freeones.com");
+    public Freeones(
+        ICountryService countryService,
+        ILogger<Freeones> logger)
+        : base(countryService, logger)
+    {
+
+    }
+
 
     protected override async Task<PersonNameInfo[]> HandlePersonNameEntries(CancellationToken token)
     {
@@ -44,7 +52,7 @@ internal class Freeones : PersonCrawlerBase
         return result;
     }
 
-    protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
+    protected override Task HandlePersonEntry(PageDocument girlPage, CancellationToken token)
     {
         //Pic
         girlPage
@@ -97,7 +105,7 @@ internal class Freeones : PersonCrawlerBase
                 "Weight:" => () => Result.Weight = PersonParser.FindWeightInText(text),
                 "Hair Color:" => () => Result.HairColor = text,
                 "Eye Color:" => () => Result.EyeColor = text,
-                "Piercing locations:" => () => Result.Piercings = text,
+                "Piercing locations:" => () => Result.Piercings = text == "No" ? null : text,
 
                 _ => () => { }
             };

@@ -8,6 +8,7 @@ public class PersonParserTests
     [TestCase("Ariel Rebel", "Ariel", "Rebel")]
     [TestCase("Aletta Ocean", "Aletta", "Ocean")]
     [TestCase("Amber Sym", "Amber", "Sym")]
+    [TestCase("Have Middle Name", "Have", "Middle Name")]
     public void FindNameInText_Works(string? text, string? expectedFirst, string? expectedLast)
     {
         var (firstName, lastName) = PersonParser.FindNameInText(text);

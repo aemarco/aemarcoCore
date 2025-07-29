@@ -4,9 +4,14 @@
 
 Create a PersonCrawler for usage
 
-    await new PersonCrawler().CrawlPersonNames();
-	await new PersonCrawler().CrawlPerson("firstName", "lastName");
-	await new PersonCrawler().CrawlPerson("name");
+    //register
+    services.AddPersonCrawler();
+
+    //crawling
+    var svc = serviceProvider.GetRequiredService<IPersonCrawler>();
+    await svc.CrawlPersonNames();
+	await svc.CrawlPerson("firstName", "lastName");
+	await svc.CrawlPerson("name");
 
 
 

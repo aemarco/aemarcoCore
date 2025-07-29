@@ -1,34 +1,17 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
+﻿namespace aemarco.Crawler.Person.Common;
 
-namespace aemarco.Crawler.Person;
-
-public class PersonCrawler
+internal class PersonCrawler : IPersonCrawler
 {
 
-    private readonly IPersonCrawlerProvider _personCrawlerProvider;
+    private readonly ISiteCrawlerProvider _siteCrawlerProvider;
     private readonly ILogger<PersonCrawler> _logger;
-    public PersonCrawler(ILogger<PersonCrawler> logger)
+    public PersonCrawler(
+        ISiteCrawlerProvider siteCrawlerProvider,
+        ILogger<PersonCrawler> logger)
     {
-        _personCrawlerProvider = new PersonCrawlerProvider();
+        _siteCrawlerProvider = siteCrawlerProvider;
         _logger = logger;
     }
-
-    //without ioc
-    public PersonCrawler()
-    {
-        _personCrawlerProvider = new PersonCrawlerProvider();
-        _logger = NullLogger<PersonCrawler>.Instance;
-    }
-
-    //ctor for testing :(
-    internal PersonCrawler(IPersonCrawlerProvider personCrawlerProvider)
-    {
-        _personCrawlerProvider = personCrawlerProvider;
-        _logger = NullLogger<PersonCrawler>.Instance;
-    }
-
-
 
 
     //filtering
@@ -36,7 +19,7 @@ public class PersonCrawler
     /// <summary>
     /// list of crawler names, which are currently supported
     /// </summary>
-    public IEnumerable<string> AvailableCrawlers => _personCrawlerProvider.GetAvailableCrawlerNames();
+    public IEnumerable<string> AvailableCrawlers => _siteCrawlerProvider.GetAvailableCrawlerNames();
 
     private readonly List<string> _filterPersonSites = [];
     /// <summary>
@@ -64,7 +47,7 @@ public class PersonCrawler
     /// <returns>list of PersonNameInfo</returns>
     public async Task<PersonNameInfo[]> CrawlPersonNames(CancellationToken cancellationToken = default)
     {
-        var crawlers = _personCrawlerProvider.GetFilteredCrawlerInstances([.. _filterPersonSites]);
+        var crawlers = _siteCrawlerProvider.GetFilteredCrawlerInstances([.. _filterPersonSites]);
 
         //start all crawlers
         var tasks = crawlers
@@ -75,17 +58,16 @@ public class PersonCrawler
         List<PersonNameInfo> list = [];
         foreach (var (task, cr) in tasks)
         {
-            var crawlerInfo = cr.GetCrawlerInfo();
             try
             {
                 var names = await task;
                 list.AddRange(names);
 
-                _logger.LogDebug("Crawler {crawlerInfo} found {count} names {@names}", crawlerInfo, names.Length, names);
+                _logger.LogDebug("Crawler {crawlerType} found {count} names {@names}", cr.GetType().Name, names.Length, names);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Crawler {crawlerInfo} failed person names", crawlerInfo);
+                _logger.LogError(ex, "Crawler {crawlerType} failed person names", cr.GetType().Name);
             }
         }
 
@@ -115,7 +97,7 @@ public class PersonCrawler
         };
 
 
-        var crawlers = _personCrawlerProvider.GetFilteredCrawlerInstances([.. _filterPersonSites]);
+        var crawlers = _siteCrawlerProvider.GetFilteredCrawlerInstances([.. _filterPersonSites]);
 
         //start all crawlers
         var tasks = crawlers
@@ -126,18 +108,17 @@ public class PersonCrawler
         List<PersonInfo> entries = [];
         foreach (var (task, cr) in tasks)
         {
-            var crawlerInfo = cr.GetCrawlerInfo();
             try
             {
                 var personInfo = await task;
                 entries.Add(personInfo);
 
-                _logger.LogDebug("Crawler {crawlerInfo} found info {@personInfo}", crawlerInfo, personInfo);
+                _logger.LogDebug("Crawler {crawlerType} found info {@personInfo}", cr.GetType().Name, personInfo);
             }
             catch (Exception ex)
             {
                 result.Errors.Add(ex);
-                _logger.LogError(ex, "Crawler {crawlerInfo} failed person details", crawlerInfo);
+                _logger.LogError(ex, "Crawler {crawlerType} failed person details", cr.GetType().Name);
             }
         }
 

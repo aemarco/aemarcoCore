@@ -1,5 +1,5 @@
-﻿namespace aemarco.Crawler.PersonTests.Crawlers;
-internal class AnaldinTestsWithNaveenOra : PersonCrawlerTestsBase<Analdin>
+﻿namespace aemarco.Crawler.PersonTests.Crawlers_PersonInfo;
+internal class AnaldinTestsWithNaveenOra : PersonInfoTestsBase<Analdin>
 {
 
     //https://www.analdin.xxx/models/naveen-ora/

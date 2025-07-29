@@ -1,6 +1,6 @@
-﻿namespace aemarco.Crawler.PersonTests.Crawlers;
+﻿namespace aemarco.Crawler.PersonTests.Crawlers_PersonInfo;
 
-internal class NudevistaTestsWithAmberSym : PersonCrawlerTestsBase<Nudevista>
+internal class NudevistaTestsWithAmberSym : PersonInfoTestsBase<Nudevista>
 {
 
     //https://www.nudevista.at/?q=Amber+Sym&s=s

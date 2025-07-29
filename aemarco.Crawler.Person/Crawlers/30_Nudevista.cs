@@ -1,10 +1,17 @@
 ﻿namespace aemarco.Crawler.Person.Crawlers;
 
 [Crawler("Nudevista", 30)]
-internal class Nudevista : PersonCrawlerBase
+internal class Nudevista : SiteCrawlerBase
 {
 
     private readonly Uri _uri = new("https://www.nudevista.at");
+    public Nudevista(
+        ICountryService countryService,
+        ILogger<Nudevista> logger)
+        : base(countryService, logger)
+    {
+
+    }
 
     protected override PageUri GetGirlUri(string name)
     {
@@ -17,7 +24,7 @@ internal class Nudevista : PersonCrawlerBase
         return result;
     }
 
-    protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
+    protected override Task HandlePersonEntry(PageDocument girlPage, CancellationToken token)
     {
 
         //Name

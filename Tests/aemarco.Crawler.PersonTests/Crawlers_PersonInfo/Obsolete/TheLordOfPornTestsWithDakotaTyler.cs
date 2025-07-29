@@ -1,6 +1,6 @@
 ﻿//namespace aemarco.Crawler.PersonTests.Crawlers;
 
-//internal class TheLordOfPornTestsWithDakotaTyler : PersonCrawlerTestsBase<TheLordOfPorn>
+//internal class TheLordOfPornTestsWithDakotaTyler : PersonInfoTestsBase<TheLordOfPorn>
 //{
 
 //    //https://thelordofporn.com/pornstars/dakota-tyler

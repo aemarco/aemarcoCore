@@ -1,10 +1,21 @@
-﻿//namespace aemarco.Crawler.Person.Crawlers;
+﻿//using System.Net;
+
+//namespace aemarco.Crawler.Person.Crawlers;
+
 
 //[Crawler("TheLordOfPorn", 11)]
-//internal class TheLordOfPorn : PersonCrawlerBase
+//internal class TheLordOfPorn : SiteCrawlerBase
 //{
 
 //    private readonly Uri _uri = new("https://thelordofporn.com");
+//    public TheLordOfPorn(
+//        ICountryService countryService,
+//        ILogger<Freeones> logger)
+//        : base(countryService, logger)
+//    {
+
+//    }
+
 
 //    protected override PageUri GetGirlUri(string name)
 //    {
@@ -15,10 +26,18 @@
 //            .WithHref($"/pornstars/{name}");
 
 //        //https://thelordofporn.com/pornstars/dakota-tyler
+
+
+//        result = new PageUri(new Uri($"https://archive.ph/submit/?url={WebUtility.UrlEncode(result.Uri.AbsoluteUri)}"));
+
+
+//        //https://archive.ph/submit/?url=https%3A%2F%2Fthelordofporn.com%2Fpornstars%2Fdakota-tyler
+
+
 //        return result;
 //    }
 
-//    protected override Task HandleGirlPage(PageDocument girlPage, CancellationToken token)
+//    protected override Task HandlePersonEntry(PageDocument girlPage, CancellationToken token)
 //    {
 //        //Name
 //        var nameNode = girlPage.FindNode("//h1[@class='entry-title']");

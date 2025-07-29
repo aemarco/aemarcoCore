@@ -1,8 +1,4 @@
-﻿using aemarco.TestBasics;
-using NSubstitute;
-using System.Threading;
-
-namespace aemarco.Crawler.PersonTests;
+﻿namespace aemarco.Crawler.PersonTests.Common;
 
 internal class PersonCrawlerTests
 {
@@ -111,11 +107,9 @@ internal class PersonCrawlerTests
     }
 
     //mock
-    private static PersonCrawler GetPersonCrawler(bool withError = false)
+    private static IPersonCrawler GetPersonCrawler(bool withError = false)
     {
-        var crawler1 = Substitute.For<IPersonCrawler>();
-        crawler1.GetCrawlerInfo()
-            .Returns(new CrawlerInfo("Crawler1", 2));
+        var crawler1 = Substitute.For<ISiteCrawler>();
         crawler1.GetPersonEntry(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new PersonInfo
             {
@@ -131,9 +125,7 @@ internal class PersonCrawlerTests
             ]);
 
 
-        var crawler2 = Substitute.For<IPersonCrawler>();
-        crawler2.GetCrawlerInfo()
-            .Returns(new CrawlerInfo("Crawler2", 1));
+        var crawler2 = Substitute.For<ISiteCrawler>();
         crawler2.GetPersonEntry(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new PersonInfo
             {
@@ -148,9 +140,8 @@ internal class PersonCrawlerTests
                 new PersonNameInfo("Ariel", "Rebel")
             ]);
 
-        var crawler3 = Substitute.For<IPersonCrawler>();
-        crawler2.GetCrawlerInfo()
-            .Returns(new CrawlerInfo("Crawler3", 99));
+
+        var crawler3 = Substitute.For<ISiteCrawler>();
         crawler3.GetPersonEntry(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(Task.Run(async () =>
             {
@@ -172,7 +163,7 @@ internal class PersonCrawlerTests
             }));
 
 
-        var provider = Substitute.For<IPersonCrawlerProvider>();
+        var provider = Substitute.For<ISiteCrawlerProvider>();
         provider.GetAvailableCrawlerNames()
             .Returns(["Crawler1", "Crawler2"]);
         provider.GetFilteredCrawlerInstances(
@@ -180,7 +171,7 @@ internal class PersonCrawlerTests
             .Returns(call =>
             {
                 var names = call.Arg<string[]>();
-                List<IPersonCrawler> result = [crawler1, crawler2];
+                List<ISiteCrawler> result = [crawler1, crawler2];
                 if (withError)
                     result.Add(crawler3);
 
@@ -194,7 +185,13 @@ internal class PersonCrawlerTests
             });
 
 
-        var result = new PersonCrawler(provider);
+
+        var result = IocHelper.Resolve<IPersonCrawler>(sc =>
+        {
+            sc.RemoveAll<ISiteCrawlerProvider>();
+            sc.AddSingleton(provider);
+        });
+
         return result;
     }
 

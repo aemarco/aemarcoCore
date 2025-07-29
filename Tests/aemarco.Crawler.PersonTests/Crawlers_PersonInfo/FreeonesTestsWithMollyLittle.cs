@@ -1,6 +1,6 @@
-﻿namespace aemarco.Crawler.PersonTests.Crawlers;
+﻿namespace aemarco.Crawler.PersonTests.Crawlers_PersonInfo;
 
-internal class FreeonesTestsWithMollyLittle : PersonCrawlerTestsBase<Freeones>
+internal class FreeonesTestsWithMollyLittle : PersonInfoTestsBase<Freeones>
 {
 
     //https://www.freeones.at/molly-little
