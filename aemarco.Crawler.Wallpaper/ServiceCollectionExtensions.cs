@@ -4,7 +4,7 @@ namespace aemarco.Crawler.Wallpaper;
 public static class ServiceCollectionExtensions
 {
 
-    public static IServiceCollection AddPersonCrawler(this IServiceCollection services)
+    public static IServiceCollection AddWallCrawler(this IServiceCollection services)
     {
 
         services.AddCoreCrawler();
