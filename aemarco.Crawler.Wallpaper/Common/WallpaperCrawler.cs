@@ -6,30 +6,16 @@ public class WallpaperCrawler : IWallpaperCrawler
 {
 
     // ReSharper disable once InconsistentNaming
-    internal readonly List<WallpaperCrawlerBasis> _wallCrawlers;
-    public WallpaperCrawler(int? startPage = null, int? lastPage = null)
+    internal List<WallpaperCrawlerBasis> _wallCrawlers;
+    public WallpaperCrawler()
     {
-        if (startPage < 1)
-        {
-            throw new ArgumentOutOfRangeException(nameof(startPage), startPage, "Can´t be lower than 1");
-        }
-        var start = startPage ?? 1;
-        if (lastPage < start)
-        {
-            throw new ArgumentOutOfRangeException(nameof(lastPage), lastPage, "Can´t be smaller than startPage");
-        }
-        var end = lastPage ?? 10;
-        var news = !startPage.HasValue && !lastPage.HasValue;
-
-
-
         _wallCrawlers = [];
         foreach (var type in Assembly
                      .GetAssembly(typeof(WallpaperCrawlerBasis))!
                      .GetTypes()
                      .Where(x => x.IsSubclassOf(typeof(WallpaperCrawlerBasis))))
         {
-            var crawler = (WallpaperCrawlerBasis)(Activator.CreateInstance(type, start, end, news)
+            var crawler = (WallpaperCrawlerBasis)(Activator.CreateInstance(type, null, null, true)
                           ?? throw new Exception($"Could not activate {type.FullName}"));
             _wallCrawlers.Add(crawler);
         }
@@ -98,12 +84,41 @@ public class WallpaperCrawler : IWallpaperCrawler
     }
 
 
+    [Obsolete("Use CrawlWallpapers instead, this will be removed in a future version")]
+    public async Task<WallCrawlerResult> CrawlWallpapers(CancellationToken cancellationToken = default) =>
+        await CrawlWallpapers(null, null, cancellationToken);
 
-
-
-
-    public async Task<WallCrawlerResult> CrawlWallpapers(CancellationToken cancellationToken = default)
+    public async Task<WallCrawlerResult> CrawlWallpapers(int? startPage = null, int? lastPage = null, CancellationToken cancellationToken = default)
     {
+
+        //paging
+
+        if (startPage < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(startPage), startPage, "Can´t be lower than 1");
+        }
+        var start = startPage ?? 1;
+        if (lastPage < start)
+        {
+            throw new ArgumentOutOfRangeException(nameof(lastPage), lastPage, "Can´t be smaller than startPage");
+        }
+        var end = lastPage ?? 10;
+        var news = !startPage.HasValue && !lastPage.HasValue;
+
+
+
+        _wallCrawlers = [];
+        foreach (var type in Assembly
+                     .GetAssembly(typeof(WallpaperCrawlerBasis))!
+                     .GetTypes()
+                     .Where(x => x.IsSubclassOf(typeof(WallpaperCrawlerBasis))))
+        {
+            var crawler = (WallpaperCrawlerBasis)(Activator.CreateInstance(type, start, end, news)
+                                                  ?? throw new Exception($"Could not activate {type.FullName}"));
+            _wallCrawlers.Add(crawler);
+        }
+
+
         HandleFilters();
 
         //start all crawlers

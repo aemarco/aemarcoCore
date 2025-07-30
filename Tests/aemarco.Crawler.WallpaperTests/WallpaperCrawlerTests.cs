@@ -127,7 +127,7 @@ public class WallpaperCrawlerTests
         c.EntryFound += (_, _) => source.Cancel();
         try
         {
-            await crawler.CrawlWallpapers(source.Token);
+            await crawler.CrawlWallpapers(null, null, source.Token);
             Assert.Fail($"{site} - {cat} failed.");
         }
         catch (OperationCanceledException) { }
@@ -155,7 +155,7 @@ public class WallpaperCrawlerTests
 
     private static WallpaperCrawler GetCrawler()
     {
-        var result = new WallpaperCrawler(1, 1);
+        var result = new WallpaperCrawler();
         return result;
     }
 
