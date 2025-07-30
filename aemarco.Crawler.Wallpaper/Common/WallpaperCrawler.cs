@@ -1,8 +1,8 @@
 ﻿// ReSharper disable UnusedMethodReturnValue.Global
 
-namespace aemarco.Crawler.Wallpaper;
+namespace aemarco.Crawler.Wallpaper.Common;
 
-public class WallpaperCrawler
+public class WallpaperCrawler : IWallpaperCrawler
 {
 
     // ReSharper disable once InconsistentNaming
@@ -47,8 +47,8 @@ public class WallpaperCrawler
 
 
     //filter sites
-    private readonly List<string> _filterSourceSites = [];
-    public IEnumerable<string> GetAvailableSourceSites()
+    public IEnumerable<string> AvailableSourceSites => GetAvailableSourceSites();
+    internal IEnumerable<string> GetAvailableSourceSites()
     {
         foreach (var info in _wallCrawlers //those are all available ;)
                      .Select(x => CrawlerInfo.FromCrawlerType(x.GetType())))
@@ -56,13 +56,7 @@ public class WallpaperCrawler
             yield return info.FriendlyName;
         }
     }
-    /// <summary>
-    /// Used to filter which sites to limit to
-    /// Not using means all sites will be crawled
-    /// Using means only sites added will be crawled
-    /// use GetAvailableSourceSites() to know, which are available
-    /// </summary>
-    /// <param name="sourceSite"></param>
+    private readonly List<string> _filterSourceSites = [];
     public void AddSourceSiteFilter(string sourceSite)
     {
         if (!_filterSourceSites.Contains(sourceSite))
@@ -74,8 +68,8 @@ public class WallpaperCrawler
 
 
     //filter categories
-    private readonly List<string> _filterCategories = [];
-    public IEnumerable<string> GetAvailableCategories()
+    public IEnumerable<string> AvailableCategories => GetAvailableCategories();
+    internal IEnumerable<string> GetAvailableCategories()
     {
         var categories = new List<string>();
         foreach (var crawler in _wallCrawlers
@@ -93,11 +87,8 @@ public class WallpaperCrawler
             }
         }
     }
-    /// <summary>
-    /// Used to filter which results being of interest to crawl
-    /// Not using this means everything will be crawled
-    /// Using this means only added categories will be crawled
-    /// </summary>
+
+    private readonly List<string> _filterCategories = [];
     public void AddCategoryFilter(string category)
     {
         if (!_filterCategories.Contains(category))
@@ -111,12 +102,46 @@ public class WallpaperCrawler
 
 
 
+    public async Task<WallCrawlerResult> CrawlWallpapers(CancellationToken cancellationToken = default)
+    {
+        HandleFilters();
+
+        //start all crawlers
+        var known = _knownUrlsFunc?.Invoke() ?? [];
+        var tasks = new List<Task<WallCrawlerResult>>();
+        //creates all available crawlers and adds them if applicable
+        foreach (var crawler in _wallCrawlers)
+        {
+            var newTask = crawler.Start(known, cancellationToken);
+            tasks.Add(newTask);
+        }
 
 
-    /// <summary>
-    /// Do the crawling :)
-    /// events may be used for data and completion
-    /// </summary>
+        //wait for being done
+        await Task.WhenAll(tasks);
+        var entries = new List<WallCrawlerResult>();
+        foreach (var task in tasks)
+        {
+            var crawlResult = await task;
+            entries.Add(crawlResult);
+        }
+
+        //merge entries together
+        var result = new WallCrawlerResult
+        {
+            NumberOfCrawlersInvolved = entries.Sum(x => x.NumberOfCrawlersInvolved),
+            NewEntries = entries.SelectMany(x => x.NewEntries).ToList(),
+            KnownEntries = entries.SelectMany(x => x.KnownEntries).ToList(),
+            NewAlbums = entries.SelectMany(x => x.NewAlbums).ToList(),
+            KnownAlbums = entries.SelectMany(x => x.KnownAlbums).ToList(),
+            Warnings = entries.SelectMany(x => x.Warnings).ToList()
+        };
+        return result;
+    }
+
+
+
+    [Obsolete("Use CrawlWallpapers instead, this will be removed in a future version")]
     public async Task<WallCrawlerResult> StartAsync(CancellationToken cancellationToken = default)
     {
         HandleFilters();

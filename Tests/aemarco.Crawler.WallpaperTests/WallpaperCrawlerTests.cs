@@ -1,4 +1,5 @@
-﻿using aemarco.TestBasics;
+﻿using aemarco.Crawler.Wallpaper.Common;
+using aemarco.TestBasics;
 
 namespace aemarco.Crawler.WallpaperTests;
 
@@ -126,7 +127,7 @@ public class WallpaperCrawlerTests
         c.EntryFound += (_, _) => source.Cancel();
         try
         {
-            await crawler.StartAsync(source.Token);
+            await crawler.CrawlWallpapers(source.Token);
             Assert.Fail($"{site} - {cat} failed.");
         }
         catch (OperationCanceledException) { }
