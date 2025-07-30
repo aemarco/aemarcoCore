@@ -36,7 +36,4 @@ public interface IWallpaperCrawler
     /// </summary>
     Task<WallCrawlerResult> CrawlWallpapers(int? startPage = null, int? lastPage = null, CancellationToken cancellationToken = default);
 
-    [Obsolete("Use CrawlWallpapers instead, this will be removed in a future version")]
-    Task<WallCrawlerResult> CrawlWallpapers(CancellationToken cancellationToken = default);
-
 }

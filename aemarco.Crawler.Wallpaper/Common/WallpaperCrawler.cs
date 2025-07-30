@@ -83,11 +83,6 @@ public class WallpaperCrawler : IWallpaperCrawler
         }
     }
 
-
-    [Obsolete("Use CrawlWallpapers instead, this will be removed in a future version")]
-    public async Task<WallCrawlerResult> CrawlWallpapers(CancellationToken cancellationToken = default) =>
-        await CrawlWallpapers(null, null, cancellationToken);
-
     public async Task<WallCrawlerResult> CrawlWallpapers(int? startPage = null, int? lastPage = null, CancellationToken cancellationToken = default)
     {
 
@@ -153,47 +148,6 @@ public class WallpaperCrawler : IWallpaperCrawler
         };
         return result;
     }
-
-
-
-    [Obsolete("Use CrawlWallpapers instead, this will be removed in a future version")]
-    public async Task<WallCrawlerResult> StartAsync(CancellationToken cancellationToken = default)
-    {
-        HandleFilters();
-
-        //start all crawlers
-        var known = _knownUrlsFunc?.Invoke() ?? [];
-        var tasks = new List<Task<WallCrawlerResult>>();
-        //creates all available crawlers and adds them if applicable
-        foreach (var crawler in _wallCrawlers)
-        {
-            var newTask = crawler.Start(known, cancellationToken);
-            tasks.Add(newTask);
-        }
-
-
-        //wait for being done
-        await Task.WhenAll(tasks);
-        var entries = new List<WallCrawlerResult>();
-        foreach (var task in tasks)
-        {
-            var crawlResult = await task;
-            entries.Add(crawlResult);
-        }
-
-        //merge entries together
-        var result = new WallCrawlerResult
-        {
-            NumberOfCrawlersInvolved = entries.Sum(x => x.NumberOfCrawlersInvolved),
-            NewEntries = entries.SelectMany(x => x.NewEntries).ToList(),
-            KnownEntries = entries.SelectMany(x => x.KnownEntries).ToList(),
-            NewAlbums = entries.SelectMany(x => x.NewAlbums).ToList(),
-            KnownAlbums = entries.SelectMany(x => x.KnownAlbums).ToList(),
-            Warnings = entries.SelectMany(x => x.Warnings).ToList()
-        };
-        return result;
-    }
-
 
     internal void HandleFilters()
     {
