@@ -5,6 +5,7 @@ namespace aemarco.Crawler.Wallpaper.Common;
 public class WallpaperCrawler : IWallpaperCrawler
 {
 
+    internal event EventHandler? EntryFound;
     // ReSharper disable once InconsistentNaming
     internal List<WallpaperCrawlerBasis> _wallCrawlers;
     public WallpaperCrawler()
@@ -111,6 +112,7 @@ public class WallpaperCrawler : IWallpaperCrawler
             var crawler = (WallpaperCrawlerBasis)(Activator.CreateInstance(type, start, end, news)
                                                   ?? throw new Exception($"Could not activate {type.FullName}"));
             _wallCrawlers.Add(crawler);
+            crawler.EntryFound += (_, _) => EntryFound?.Invoke(this, EventArgs.Empty);
         }
 
 

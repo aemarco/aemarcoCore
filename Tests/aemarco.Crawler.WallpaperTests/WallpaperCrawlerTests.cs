@@ -123,16 +123,16 @@ public class WallpaperCrawlerTests
         crawler.HandleFilters();
 
         var source = new CancellationTokenSource();
-        var c = crawler._wallCrawlers.First();
-        c.EntryFound += (_, _) => source.Cancel();
+
+        crawler.EntryFound += (_, _) => source.Cancel();
         try
         {
-            await crawler.CrawlWallpapers(null, null, source.Token);
+            await crawler.CrawlWallpapers(1, 1, source.Token);
             Assert.Fail($"{site} - {cat} failed.");
         }
         catch (OperationCanceledException) { }
 
-
+        var c = crawler._wallCrawlers.First();
         if (c._result.Warnings.FirstOrDefault() is { } warning)
             Assert.Warn(warning.ToString());
         else if (c._result.NewEntries.FirstOrDefault() is { } wallEntry)
