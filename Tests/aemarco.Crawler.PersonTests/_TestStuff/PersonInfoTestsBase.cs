@@ -18,7 +18,7 @@ internal abstract class PersonInfoTestsBase<T>
     [OneTimeSetUp]
     public async Task Init()
     {
-        if (_crawlerInfo.SkipTesting)
+        if (typeof(T).GetCustomAttribute<SkipTestingAttribute>() is not null)
             return;
 
         var crawler = IocHelper.ResolveKeyed<ISiteCrawler>(typeof(T).Name);
@@ -35,7 +35,7 @@ internal abstract class PersonInfoTestsBase<T>
         if (Entry is null)
             return;
 
-        Entry.CrawlerInfos.FirstOrDefault().Should().Be(_crawlerInfo);
+        Entry.CrawlerInfos.FirstOrDefault()?.FriendlyName.Should().Be(_crawlerInfo.FriendlyName);
         TestHelper.PrintPassed(Entry.CrawlerInfos);
     }
 

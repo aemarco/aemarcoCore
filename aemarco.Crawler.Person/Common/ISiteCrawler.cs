@@ -36,6 +36,10 @@ internal abstract class SiteCrawlerBase : ISiteCrawler
         var name = $"{firstName} {lastName}";
         var girlUri = GetGirlUri(name);
         _logger.LogDebug("GetGirlUri resolved {uri} for {name}", girlUri.Uri.AbsoluteUri, name);
+
+        var ci = Result.CrawlerInfos.First();
+        ci.Url = girlUri.Uri.AbsoluteUri;
+
         var girlPage = await girlUri.NavigateAsync(token: token);
         await HandlePersonEntry(girlPage, token);
         return Result;

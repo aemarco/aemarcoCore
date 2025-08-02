@@ -7,8 +7,7 @@ internal abstract class PersonNameInfoCrawlerBase<T>
     private readonly ISiteCrawler? _crawler;
     protected PersonNameInfoCrawlerBase()
     {
-        var info = CrawlerInfo.FromCrawlerType(typeof(T));
-        if (info.SkipTesting)
+        if (typeof(T).GetCustomAttribute<SkipTestingAttribute>() is not null)
             return;
 
         _crawler = IocHelper.ResolveKeyed<ISiteCrawler>(typeof(T).Name);
