@@ -17,7 +17,7 @@ internal class WallCraft : WallpaperCrawlerBasis
     {
         var result = new List<CrawlOffer>();
 
-        var mainPage = new PageUri(_uri).Navigate(750, 2500);
+        var mainPage = new PageUri(_uri).Navigate(1000, 2500);
         var catNodes = mainPage.FindNodes("//ul[@class='filters__list JS-Filters']/li/a");
         foreach (var catNode in catNodes)
         {
@@ -88,7 +88,7 @@ internal class WallCraft : WallpaperCrawlerBasis
         if (pageNode
                 .FindNode("./a")?
                 .GetHref()?
-                .Navigate(750, 2500) is not { } detailsPage)
+                .Navigate(1000, 2500) is not { } detailsPage)
         {
             AddWarning(pageNode, "Could not find DetailsDoc");
             return false;
@@ -96,7 +96,7 @@ internal class WallCraft : WallpaperCrawlerBasis
         if (detailsPage
                 .FindNode("//div[@class='wallpaper-table__row']/span[@class='wallpaper-table__cell']/a")?
                 .GetHref()?
-                .Navigate(750, 2500) is not { } downloadPage)
+                .Navigate(1000, 2500) is not { } downloadPage)
         {
             AddWarning(detailsPage, "Could not find DownloadDoc");
             return false;

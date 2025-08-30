@@ -36,7 +36,7 @@ internal class BabepediaTestsWithChloeTemple : PersonInfoTestsBase<Babepedia>
         ExpectedCountry = "United States";
         ExpectedCity = "Cincinnati";
         ExpectedEthnicity = "Caucasian";
-        ExpectedProfession = "Adult Model, Escort, Internet Personality, Porn Star";
+        ExpectedProfession = "Adult Model, Influencer, Porn Star";
         ExpectedHairColor = "Blonde";
         ExpectedEyeColor = "Brown";
         ExpectedHeight = 160;
