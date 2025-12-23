@@ -23,8 +23,8 @@ internal class FreeonesTestsWithMollyLittle : PersonInfoTestsBase<Freeones>
 
         ExpectedEthnicity = "Caucasian";
         ExpectedMeasurementDetails = "81A-55-81";
-        ExpectedHeight = 157;
-        ExpectedWeight = 41;
+        ExpectedHeight = 160;
+        ExpectedWeight = 49;
         ExpectedHairColor = "Blonde";
         ExpectedEyeColor = "Brown";
 

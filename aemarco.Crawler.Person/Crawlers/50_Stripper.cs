@@ -15,11 +15,11 @@ internal class Stripper : SiteCrawlerBase
     }
 
 
-    protected override async Task<PersonNameInfo[]> HandlePersonNameEntries(CancellationToken token)
+    protected override async Task<PersonName[]> HandlePersonNameEntries(CancellationToken token)
     {
         var uri = new PageUri(_uri).WithHref("/models?sort=rating&search=");
         var page = await uri.NavigateAsync(token: token);
-        List<PersonNameInfo> result = [];
+        List<PersonName> result = [];
 
         //first page of performers
         // order: rating desc
@@ -31,7 +31,7 @@ internal class Stripper : SiteCrawlerBase
             if (fn is null || ln is null)
                 continue;
 
-            result.Add(new PersonNameInfo(fn, ln));
+            result.Add(new PersonName($"{fn} {ln}"));
         }
 
 

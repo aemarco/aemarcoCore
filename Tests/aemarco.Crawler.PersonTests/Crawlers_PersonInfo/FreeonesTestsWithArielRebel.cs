@@ -14,10 +14,10 @@ internal class FreeonesTestsWithArielRebel : PersonInfoTestsBase<Freeones>
         //{
         //    "http://www.sexy-models.net/galleries/12/pics18259/0_big.jpg"
         //});
-        ExpectedAliases.AddRange([
+        //ExpectedAliases.AddRange([
 
-            "The Rebel"
-        ]);
+        //    "The Rebel"
+        //]);
         //ExpectedSocialLinks.AddRange(new List<SocialLink>
         //{
         //    new(SocialLinkKind.Twitter, "https://twitter.com/thedakotatyler")

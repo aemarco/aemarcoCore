@@ -42,9 +42,9 @@ internal class PersonCrawlerTests
         var result = await sut.CrawlPersonNames(CancellationToken.None);
 
         result.Should().Equal(
-            new PersonNameInfo("Ariel", "Rebel"),
-            new PersonNameInfo("Foxi", "Di"),
-            new PersonNameInfo("Piper", "Perri"));
+            new PersonName("Ariel Rebel"),
+            new PersonName("Foxi Di"),
+            new PersonName("Piper Perri"));
 
         TestHelper.PrintPassed(result);
     }
@@ -120,8 +120,8 @@ internal class PersonCrawlerTests
         crawler1.GetPersonNameEntries(Arg.Any<CancellationToken>())
             .Returns(
             [
-                new PersonNameInfo("Foxi", "Di"),
-                new PersonNameInfo("Ariel", "Rebel")
+                new PersonName("Foxi Di"),
+                new PersonName("Ariel Rebel")
             ]);
 
 
@@ -136,8 +136,8 @@ internal class PersonCrawlerTests
         crawler2.GetPersonNameEntries(Arg.Any<CancellationToken>())
             .Returns(
             [
-                new PersonNameInfo("Piper", "Perri"),
-                new PersonNameInfo("Ariel", "Rebel")
+                new PersonName("Piper Perri"),
+                new PersonName("Ariel Rebel")
             ]);
 
 
@@ -158,7 +158,7 @@ internal class PersonCrawlerTests
                 await Task.Delay(100);
                 throw new Exception("Error");
 #pragma warning disable CS0162 // Unreachable code detected
-                return Array.Empty<PersonNameInfo>();
+                return Array.Empty<PersonName>();
 #pragma warning restore CS0162 // Unreachable code detected
             }));
 

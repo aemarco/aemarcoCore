@@ -13,11 +13,11 @@ internal class BabesAndStars : SiteCrawlerBase
 
     }
 
-    protected override async Task<PersonNameInfo[]> HandlePersonNameEntries(CancellationToken token)
+    protected override async Task<PersonName[]> HandlePersonNameEntries(CancellationToken token)
     {
         var uri = new PageUri(_uri).WithHref("/top-models/");
         var page = await uri.NavigateAsync(token: token);
-        List<PersonNameInfo> result = [];
+        List<PersonName> result = [];
 
         //first page of performers
         // order: rating desc
@@ -29,7 +29,7 @@ internal class BabesAndStars : SiteCrawlerBase
             if (fn is null || ln is null)
                 continue;
 
-            result.Add(new PersonNameInfo(fn, ln));
+            result.Add(new PersonName($"{fn} {ln}"));
         }
 
 

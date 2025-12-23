@@ -19,7 +19,7 @@ public interface IPersonCrawler
     /// Do the names crawling :)
     /// </summary>
     /// <returns>list of PersonNameInfo</returns>
-    Task<PersonNameInfo[]> CrawlPersonNames(CancellationToken cancellationToken = default);
+    Task<PersonName[]> CrawlPersonNames(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Do the details crawling :)

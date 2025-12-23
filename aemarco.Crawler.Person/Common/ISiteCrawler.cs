@@ -2,7 +2,7 @@
 
 internal interface ISiteCrawler
 {
-    Task<PersonNameInfo[]> GetPersonNameEntries(CancellationToken token);
+    Task<PersonName[]> GetPersonNameEntries(CancellationToken token);
     Task<PersonInfo> GetPersonEntry(string firstName, string lastName, CancellationToken token);
 }
 
@@ -26,7 +26,7 @@ internal abstract class SiteCrawlerBase : ISiteCrawler
 
 
     //IPersonCrawler
-    public async Task<PersonNameInfo[]> GetPersonNameEntries(CancellationToken token)
+    public async Task<PersonName[]> GetPersonNameEntries(CancellationToken token)
     {
         var result = await HandlePersonNameEntries(token);
         return result;
@@ -47,9 +47,9 @@ internal abstract class SiteCrawlerBase : ISiteCrawler
 
 
 
-    protected virtual Task<PersonNameInfo[]> HandlePersonNameEntries(CancellationToken token)
+    protected virtual Task<PersonName[]> HandlePersonNameEntries(CancellationToken token)
     {
-        PersonNameInfo[] result = [];
+        PersonName[] result = [];
         return Task.FromResult(result);
     }
 

@@ -45,7 +45,7 @@ internal class PersonCrawler : IPersonCrawler
     /// Do the names crawling :)
     /// </summary>
     /// <returns>list of PersonNameInfo</returns>
-    public async Task<PersonNameInfo[]> CrawlPersonNames(CancellationToken cancellationToken = default)
+    public async Task<PersonName[]> CrawlPersonNames(CancellationToken cancellationToken = default)
     {
         var crawlers = _siteCrawlerProvider.GetFilteredCrawlerInstances([.. _filterPersonSites]);
 
@@ -55,7 +55,7 @@ internal class PersonCrawler : IPersonCrawler
             .ToArray();
 
         //wait for being done
-        List<PersonNameInfo> list = [];
+        List<PersonName> list = [];
         foreach (var (task, cr) in tasks)
         {
             try
@@ -72,11 +72,10 @@ internal class PersonCrawler : IPersonCrawler
         }
 
         //remove duplicates and order
-        PersonNameInfo[] result = [
+        PersonName[] result = [
                 .. list
                     .Distinct()
-                    .OrderBy(x => x.FirstName)
-                    .ThenBy(x => x.LastName)
+                    .OrderBy(x => x.Name)
             ];
         _logger.LogInformation("CrawlPersonNames found {count} names {@names}", result.Length, result);
         return result;

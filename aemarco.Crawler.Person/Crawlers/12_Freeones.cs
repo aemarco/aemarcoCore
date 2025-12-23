@@ -14,11 +14,11 @@ internal class Freeones : SiteCrawlerBase
     }
 
 
-    protected override async Task<PersonNameInfo[]> HandlePersonNameEntries(CancellationToken token)
+    protected override async Task<PersonName[]> HandlePersonNameEntries(CancellationToken token)
     {
         var uri = new PageUri(_uri).WithHref("/de/performers??s=rank.currentRank&l=96&q=&f[performerType]=babe&r[age]=18,25&filter_mode[performerType]=and&filter_mode[global]=and");
         var page = await uri.NavigateAsync(token: token);
-        List<PersonNameInfo> result = [];
+        List<PersonName> result = [];
 
         //first page of performers
         // order: currentRank desc
@@ -33,7 +33,7 @@ internal class Freeones : SiteCrawlerBase
             if (fn is null || ln is null)
                 continue;
 
-            result.Add(new PersonNameInfo(fn, ln));
+            result.Add(new PersonName($"{fn} {ln}"));
         }
 
 
