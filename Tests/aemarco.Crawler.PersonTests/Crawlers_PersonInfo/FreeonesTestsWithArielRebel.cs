@@ -23,8 +23,8 @@ internal class FreeonesTestsWithArielRebel : PersonInfoTestsBase<Freeones>
         //    new(SocialLinkKind.Twitter, "https://twitter.com/thedakotatyler")
         //});
         ExpectedBirthday = new DateOnly(1985, 9, 23);
-        ExpectedProfession = "Porn Star";
-        ExpectedStillActive = true;
+        ExpectedProfession = "Porn Star,Adult Model,Cam Girl";
+        ExpectedStillActive = false;
         ExpectedCareerStart = new DateOnly(2005, 1, 1);
         ExpectedCity = "Montreal";
         ExpectedCountry = null;
