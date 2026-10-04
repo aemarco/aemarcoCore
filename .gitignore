@@ -272,3 +272,6 @@ __pycache__/
 
 .nuke/temp/
 build/output/
+
+# Junction to D:\Wiki\wiki (personal knowledge base, not project content)
+.wiki/
