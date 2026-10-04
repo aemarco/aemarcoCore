@@ -10,9 +10,13 @@ aemarcoCore is a set of .NET 9 NuGet libraries for crawling: people/model info a
 - `aemarco.Crawler.Person` (`aemarcoPersonCrawler`) — `IPersonCrawler` aggregating many site crawlers into a merged `PersonInfo`.
 - `aemarco.Crawler.Wallpaper` (`aemarcoWallpaperCrawler`) — wallpaper site crawlers mapped to an internal `Category` enum.
 
+## Conventions
+
+The general conventions (code style, test conventions, commit workflow, and the DO NOT rules, including the deploy stance) live in the aemarcoInternals `CLAUDE.md` and apply here as well: `../aemarcoCentral/aemarcoInternals/CLAUDE.md`. This file only describes what is specific to this repo; this repo's own `.editorconfig` is the style reference here.
+
 ## Commands
 
-Build/test/pack go through Nuke (`build/`), which is also what CI (Azure Pipelines, `./build.cmd Publish`) runs:
+Build/test/pack go through Nuke (`build/`), which is also what CI (Azure Pipelines, `./build.cmd Publish`) runs. The Nuke targets work on the whole solution; to verify a change, build or test only the project at hand (see below), as in the Internals file. Packages reach nuget.org outside this repo (the pipeline only produces the artifact), so the deploy stance of the Internals file applies to pushing and publishing here too:
 
 ```
 ./build.cmd Compile      # CountryUpdate -> Restore -> Compile
@@ -20,7 +24,7 @@ Build/test/pack go through Nuke (`build/`), which is also what CI (Azure Pipelin
 ./build.cmd Pack         # nupkgs into build/output/drop
 ```
 
-Plain dotnet works for day-to-day work (NUnit + FluentAssertions):
+Plain dotnet works for day-to-day work (the tests here use NUnit and FluentAssertions, where Internals uses Shouldly; use what the file you edit already uses):
 
 ```
 dotnet test Tests/aemarco.CrawlerTests
