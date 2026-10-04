@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.6.33829.357
+# Visual Studio Version 18
+VisualStudioVersion = 18.10.12224.181 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aemarco.Crawler.Person", "aemarco.Crawler.Person\aemarco.Crawler.Person.csproj", "{E0EAB8EE-D6CA-424D-846C-E32833605A36}"
 EndProject
@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_sol", "_sol", "{02EA681E-C
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		azure-pipelines.yml = azure-pipelines.yml
+		CLAUDE.md = CLAUDE.md
 		README.md = README.md
 		version.json = version.json
 	EndProjectSection
