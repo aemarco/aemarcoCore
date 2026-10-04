@@ -8,7 +8,7 @@ internal class NudevistaTestsWithAmberSym : PersonInfoTestsBase<Nudevista>
         : base("Amber", "Sym")
     {
         //first and last name expected automatically
-        ExpectedProfilePictures.Add("https://m99.nudevista.com/800/353800.webp");
+        ExpectedProfilePictures.Add("https://m95.nudevista.com/800/353800.webp");
         ExpectedAliases.AddRange([
             "Amber Symm", "Destiny 2", "Ohc Destiny", "Tara Dane", "Tara Marie", "Tara Marie 1", "Tara Marie Price", "Tara P", "Tara Price", "Tarra Marie", "Tarra Realitykings Com"
         ]);
@@ -22,7 +22,7 @@ internal class NudevistaTestsWithAmberSym : PersonInfoTestsBase<Nudevista>
         ExpectedMeasurementDetails = "86C-60-86";
         ExpectedHeight = 168;
         ExpectedWeight = 48;
-        ExpectedPiercings = "Navel, Ears";
+        ExpectedPiercings = "Belly Button, Ears, Has Piercing";
         ExpectedCareerStart = new DateOnly(2012, 1, 1);
         ExpectedStillActive = true;
         ExpectedSocialLinks.AddRange([

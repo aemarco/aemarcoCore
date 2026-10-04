@@ -25,7 +25,7 @@ internal class FreeonesTestsWithFoxyDi : PersonInfoTestsBase<Freeones>
             "Nensi B Medina"
         ]);
         ExpectedBirthday = new DateOnly(1994, 9, 14);
-        ExpectedProfession = "Adult Model,Porn Star";
+        ExpectedProfession = "Cover model,Adult Model,Porn Star";
         ExpectedStillActive = false;
         ExpectedCareerStart = new DateOnly(2013, 1, 1);
         ExpectedCity = "St. Petersburg";

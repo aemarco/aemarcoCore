@@ -7,7 +7,7 @@ internal class NudevistaTestsWithAlettaOcean : PersonInfoTestsBase<Nudevista>
         : base("Aletta", "Ocean")
     {
         //first and last name expected automatically
-        ExpectedProfilePictures.Add("https://m99.nudevista.com/721/353721.webp");
+        ExpectedProfilePictures.Add("https://m95.nudevista.com/721/353721.webp");
         ExpectedAliases.AddRange([
             "Aleta Ocean", "Aletta Alien", "Aletta Florancia", "Aletta Florencia", "Aletta Madison", "Aletta Nubiles", "Aletta Nubiles -", "Aletta Sapphic", "Artemis Gold", "Beatrice P", "Dora Varga", "Doris Alien", "Jessica Kline", "Nikita Charm"
         ]);
@@ -22,7 +22,7 @@ internal class NudevistaTestsWithAlettaOcean : PersonInfoTestsBase<Nudevista>
         ExpectedMeasurementDetails = "86F(fake)-68-106";
         ExpectedHeight = 173;
         ExpectedWeight = 57;
-        ExpectedPiercings = "Tongue, Navel, Clitoris";
+        ExpectedPiercings = "Tongue, Belly Button, Clitoris, Has Piercing";
         ExpectedCareerStart = new DateOnly(2007, 1, 1);
         ExpectedStillActive = null;
         ExpectedSocialLinks.AddRange([

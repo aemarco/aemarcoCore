@@ -16,7 +16,8 @@ internal class Boombo : WallpaperCrawlerBasis
     protected override List<CrawlOffer> GetCrawlsOffers()
     {
         var mainPage = new PageUri(new Uri(_uri, "en/")).Navigate();
-        var catNodes = mainPage.FindNodes("//div[@class='menu-popup']/ul/li/a");
+        //the categories of the mega menu, a link each, e.g. "Anal Sex" -> "https://boombo.biz/en/anal/"
+        var catNodes = mainPage.FindNodes("//div[@class='submenu mega-menu']//ul/li/a");
 
         var result = new List<CrawlOffer>();
         foreach (var catNode in catNodes)
@@ -42,7 +43,7 @@ internal class Boombo : WallpaperCrawlerBasis
     protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob) =>
         catJob.CategoryUri.WithHref($"page/{catJob.CurrentPage}");
     protected override string GetSearchStringGorEntryNodes() =>
-        "//div[@class='short3']/a";
+        "//div[@class='fonwall-item']/a";
     protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
 
@@ -55,7 +56,7 @@ internal class Boombo : WallpaperCrawlerBasis
             return false;
         }
         if (pageNode
-                .FindNode("./div[@class='reltit']")?
+                .FindNode(".//span[@class='fonwall-title']")?
                 .GetText() is not { Length: > 0 } albumName)
         {
             AddWarning(pageNode, "Could not find AlbumName");

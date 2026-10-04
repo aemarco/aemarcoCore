@@ -30,7 +30,7 @@ internal class FreeonesTestsWithArielRebel : PersonInfoTestsBase<Freeones>
         ExpectedCountry = null;
 
         ExpectedEthnicity = "Caucasian";
-        ExpectedMeasurementDetails = "A";
+        ExpectedMeasurementDetails = "91A-58-81";
         ExpectedHeight = 154;
         ExpectedHairColor = "Brown";
         ExpectedEyeColor = "Brown";
