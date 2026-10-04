@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿﻿using System.IO;
 using System.Text.Json;
 
 namespace aemarco.Crawler.Services;
@@ -11,58 +11,70 @@ public interface ICountryService
 internal class CountryService : ICountryService
 {
 
+    /// <summary>
+    /// Finds the country a text names. The whole text being a name, alias or ISO code wins; otherwise a name or
+    /// alias standing as whole words in the text counts, the longest first, so "South Sudan" is not "Sudan" and
+    /// "Romania" is not "Oman" (which it contains), and finally a region name as whole words.
+    /// </summary>
     public string? FindCountry(string? text)
     {
-        if (text is null)
+        if (string.IsNullOrWhiteSpace(text))
             return null;
+        text = text.Trim();
+        var countries = GetData().ToArray();
 
-
-        //by name
-        foreach (var entry in GetData())
+        //the whole text is a name, alias or code
+        foreach (var entry in countries)
         {
-            if (Regex.IsMatch(text, entry.Name, RegexOptions.IgnoreCase))
-            {
+            if (text.Equals(entry.Name, StringComparison.OrdinalIgnoreCase) ||
+                entry.Aliases.Any(x => text.Equals(x, StringComparison.OrdinalIgnoreCase)) ||
+                text.Equals(entry.TwoLetterIsoName, StringComparison.OrdinalIgnoreCase) ||
+                (entry.ThreeLetterIsoName is not null &&
+                 text.Equals(entry.ThreeLetterIsoName, StringComparison.OrdinalIgnoreCase)))
                 return entry.Name;
-            }
         }
 
-        //by alias
-        foreach (var entry in GetData()
-                     .Where(x => x.Aliases.Length > 0))
-        {
-            var pattern = string.Join('|', entry.Aliases);
-            if (Regex.IsMatch(text, pattern, RegexOptions.IgnoreCase))
-            {
-                return entry.Name;
-            }
-        }
-
-        //by 3code or 2code
-        foreach (var entry in GetData()
-                     .Where(x => x.ThreeLetterIsoName is not null))
-        {
-            if (text.Equals(entry.ThreeLetterIsoName, StringComparison.OrdinalIgnoreCase))
-            {
-                return entry.Name;
-            }
-            if (text.Equals(entry.TwoLetterIsoName, StringComparison.OrdinalIgnoreCase))
-            {
-                return entry.Name;
-            }
-        }
+        //a name or alias as whole words in the text, the longest wins
+        var byName = countries
+            .SelectMany(entry => entry.Aliases
+                .Append(entry.Name)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => (entry.Name, Word: x)))
+            .Where(x => ContainsWord(text, x.Word))
+            .OrderByDescending(x => x.Word.Length)
+            .FirstOrDefault();
+        if (byName.Name is not null)
+            return byName.Name;
 
         //by region
-        foreach (var entry in GetData()
-                     .Where(x => x.Regions.Length > 0))
+        foreach (var entry in countries)
         {
-            var pattern = string.Join('|', entry.Regions.Select(x => x.Name));
-            if (Regex.IsMatch(text, pattern, RegexOptions.IgnoreCase))
-            {
+            if (entry.Regions.Any(x => ContainsWord(text, x.Name)))
                 return entry.Name;
-            }
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// True when the word stands in the text on its own, not as a part of a longer word
+    /// ("oman" is not in "Romania" in this sense, but is in "Oman, Muscat").
+    /// </summary>
+    internal static bool ContainsWord(string text, string word)
+    {
+        if (string.IsNullOrWhiteSpace(word))
+            return false;
+
+        var start = 0;
+        while (text.IndexOf(word, start, StringComparison.OrdinalIgnoreCase) is var index and >= 0)
+        {
+            var end = index + word.Length;
+            if ((index == 0 || !char.IsLetterOrDigit(text[index - 1])) &&
+                (end == text.Length || !char.IsLetterOrDigit(text[end])))
+                return true;
+            start = index + 1;
+        }
+        return false;
     }
 
     private Country[]? _countries;

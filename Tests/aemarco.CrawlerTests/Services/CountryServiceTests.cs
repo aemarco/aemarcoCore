@@ -1,4 +1,4 @@
-﻿using aemarco.Crawler.Services;
+﻿﻿using aemarco.Crawler.Services;
 using aemarco.TestBasics;
 
 namespace aemarco.CrawlerTests.Services;
@@ -15,6 +15,32 @@ internal class CountryServiceTests
     [TestCase("Russian Federation", "Russia")]
     [TestCase("Russia", "Russia")]
     [TestCase("Russian", "Russia")]
+    //a name which is part of another name or word
+    [TestCase("Romania", "Romania")]
+    [TestCase("romania", "Romania")]
+    [TestCase("România", "Romania")]
+    [TestCase("Bucharest, Romania", "Romania")]
+    [TestCase("(Romania)", "Romania")]
+    [TestCase("Oman", "Oman")]
+    [TestCase("Muscat, Oman", "Oman")]
+    [TestCase("Nigeria", "Nigeria")]
+    [TestCase("Niger", "Niger")]
+    [TestCase("Somalia", "Somalia")]
+    [TestCase("Mali", "Mali")]
+    [TestCase("South Sudan", "South Sudan")]
+    [TestCase("Sudan", "Sudan")]
+    [TestCase("Papua New Guinea", "Papua New Guinea")]
+    [TestCase("Equatorial Guinea", "Equatorial Guinea")]
+    [TestCase("Guinea", "Guinea")]
+    [TestCase("Dominican Republic", "Dominican Republic")]
+    [TestCase("Dominica", "Dominica")]
+    [TestCase("American Samoa", "American Samoa")]
+    [TestCase("Samoa", "Samoa")]
+    [TestCase("Czech Republic", "Czechia")]
+    [TestCase("Born in Hungary", "Hungary")]
+    [TestCase("Woman", null)]
+    [TestCase("", null)]
+    [TestCase("   ", null)]
     public void FindCountry(string? text, string? expected)
     {
         var result = new CountryService().FindCountry(text);
