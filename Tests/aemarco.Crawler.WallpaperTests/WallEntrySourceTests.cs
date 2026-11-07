@@ -1,5 +1,4 @@
 using aemarco.Crawler.Common;
-using aemarco.Crawler.Model;
 using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Model;
 
