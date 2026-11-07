@@ -19,7 +19,7 @@ public class SiteCrawlerProviderTests
 
         result.Should().Equal(expected);
 
-        TestHelper.PrintPassed(result);
+        result.Dump();
     }
 
     [Test]
@@ -33,7 +33,7 @@ public class SiteCrawlerProviderTests
                 .HaveCount(1)
             .And.OnlyContain(x => CrawlerInfo.FromCrawlerType(x.GetType()).FriendlyName == "Nudevista");
 
-        TestHelper.PrintPassed(result.Select(x => CrawlerInfo.FromCrawlerType(x.GetType())));
+        result.Select(x => CrawlerInfo.FromCrawlerType(x.GetType())).Dump();
     }
 
     [Test]
@@ -55,7 +55,7 @@ public class SiteCrawlerProviderTests
             .And.OnlyHaveUniqueItems();
 
 
-        TestHelper.PrintPassed(result.Select(x => CrawlerInfo.FromCrawlerType(x.GetType())));
+        result.Select(x => CrawlerInfo.FromCrawlerType(x.GetType())).Dump();
     }
 
 }

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
       <OutputType>Exe</OutputType>
-      <TargetFramework>net10.0</TargetFramework>
+      <TargetFramework>$(DefaultNetVersion)</TargetFramework>
       <RootNamespace></RootNamespace>
 	  <NoWarn>CS0649;CS0169;CA1050;CA1822;CA2211;IDE1006</NoWarn>
       <NukeRootDirectory>..</NukeRootDirectory>
@@ -12,18 +12,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-	  <PackageReference Include="CountryData.Standard" Version="1.5.0" />
-	  <PackageReference Include="Nerdbank.GitVersioning">
-		  <PrivateAssets>all</PrivateAssets>
-		  <Version>3.10.94</Version>
-	  </PackageReference>
-	  <PackageReference Include="Nuke.Common" Version="10.1.0" />
-	  <!-- Nuke brings NuGet 6.12, the MSBuild of the SDK it evaluates projects with needs NuGet.Frameworks 7.9 -->
-	  <PackageReference Include="NuGet.Packaging" Version="7.9.0" />
+	  <PackageReference Include="CountryData.Standard" />
+	  <PackageReference Include="Nuke.Common" />
+	  <PackageReference Include="NuGet.Packaging" />
   </ItemGroup>
 
   <ItemGroup>
 	  <PackageDownload Include="ReportGenerator" Version="[5.5.12]" />
+	  <!-- the nbgv tool behind [NerdbankGitVersioning], keep in step with Nerdbank.GitVersioning in Directory.Packages.props -->
+	  <PackageDownload Include="nbgv" Version="[3.10.94]" />
   </ItemGroup>
 
 </Project>

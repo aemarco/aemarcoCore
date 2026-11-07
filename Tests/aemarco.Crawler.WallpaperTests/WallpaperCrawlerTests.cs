@@ -1,10 +1,9 @@
 ﻿using aemarco.Crawler.Wallpaper.Common;
-using aemarco.TestBasics;
 
 namespace aemarco.Crawler.WallpaperTests;
 
 [SingleThreaded]
-[Category(TestCategories.LiveSite)]
+[Category("LiveSite")] //CI excludes it, see build/Build.cs Tests
 public class WallpaperCrawlerTests
 {
 
@@ -12,13 +11,13 @@ public class WallpaperCrawlerTests
     public void GetAvailableSites_Delivers()
     {
         Sites.Count.Should().BeGreaterThan(0);
-        TestHelper.PrintPassed(Sites);
+        Sites.Dump();
     }
     [Test]
     public void GetAvailableCategories_Delivers()
     {
         Cats.Count.Should().BeGreaterThan(0);
-        TestHelper.PrintPassed(Cats);
+        Cats.Dump();
     }
 
     //sites
@@ -137,9 +136,9 @@ public class WallpaperCrawlerTests
         if (c._result.Warnings.FirstOrDefault() is { } warning)
             Assert.Warn(warning.ToString());
         else if (c._result.NewEntries.FirstOrDefault() is { } wallEntry)
-            TestHelper.PrintPassed(wallEntry);
+            wallEntry.Dump();
         else if (c._result.NewAlbums.FirstOrDefault() is { } albumEntry)
-            TestHelper.PrintPassed(albumEntry);
+            albumEntry.Dump();
         else
             Assert.Fail($"{site} - {cat} found no entry.");
     }
@@ -175,7 +174,7 @@ public class WallpaperCrawlerTests
     }
     private static void OutputOffers(WallpaperCrawler crawler)
     {
-        TestHelper.PrintPassed(crawler._wallCrawlers
+        crawler._wallCrawlers
             .Where(x => x._crawlOffers is not null)
             .SelectMany(x => x._crawlOffers!)
             .Select(x => new
@@ -183,7 +182,8 @@ public class WallpaperCrawlerTests
                 x.CategoryUri,
                 x.SiteCategoryName,
                 x.Category.Category
-            }));
+            })
+            .Dump();
     }
 
 }

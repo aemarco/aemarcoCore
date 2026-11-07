@@ -14,7 +14,7 @@ internal class PersonInfoTests
         sut.CrawlerInfos.Should().HaveCount(2);
         sut.CrawlerInfos.Select(x => x.Priority).Should().BeInAscendingOrder();
 
-        TestHelper.PrintPassed(sut.CrawlerInfos);
+        sut.CrawlerInfos.Dump();
     }
     [Test]
     public void Merge_CorrectInfos()
@@ -27,7 +27,7 @@ internal class PersonInfoTests
         sut.CrawlerInfos.Should().HaveCount(2);
         sut.CrawlerInfos.Select(x => x.FriendlyName).Should().Equal("First", "Middle");
 
-        TestHelper.PrintPassed(sut.CrawlerInfos);
+        sut.CrawlerInfos.Dump();
     }
 
     [Test]
@@ -41,7 +41,7 @@ internal class PersonInfoTests
         sut.FirstName.Should().Be("Foxi");
         sut.LastName.Should().Be("Di");
 
-        TestHelper.PrintPassed(sut);
+        sut.Dump();
     }
 
     [Test]
@@ -56,7 +56,7 @@ internal class PersonInfoTests
         sut.CrawlerInfos.Should().HaveCount(3);
         //because last "Foxy Di" is an alias match on earlier info
         sut.CrawlerInfos.Select(x => x.FriendlyName).Should().Contain("Last");
-        TestHelper.PrintPassed(sut.CrawlerInfos);
+        sut.CrawlerInfos.Dump();
     }
 
     [Test]
@@ -70,7 +70,7 @@ internal class PersonInfoTests
         sut.CrawlerInfos.Should().HaveCount(2);
         sut.CrawlerInfos.Select(x => x.FriendlyName).Should().NotContain("Last");
 
-        TestHelper.PrintPassed(sut.CrawlerInfos);
+        sut.CrawlerInfos.Dump();
     }
 
 
@@ -95,7 +95,7 @@ internal class PersonInfoTests
 
         sut.Merge(infos);
         sut.Rating.Should().Be(expected);
-        TestHelper.PrintPassed(sut.Rating);
+        sut.Rating.Dump();
     }
 
 
@@ -154,7 +154,7 @@ internal class PersonInfoTests
             .Select(x => x.Url)
             .Should().Equal("https://example.com/unknown", "https://example.com/official");
 
-        TestHelper.PrintPassed(sut);
+        sut.Dump();
     }
 
     private static PersonInfo GetSut()

@@ -2,6 +2,7 @@
 
 global using aemarco.Crawler.Model;
 global using aemarco.Crawler.Wallpaper;
+global using aemarcoCommons.ToolboxTesting;
 global using FluentAssertions;
 global using Microsoft.Extensions.DependencyInjection;
 global using Newtonsoft.Json;

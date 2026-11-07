@@ -13,7 +13,7 @@ internal class PersonCrawlerTests
 
         result.Should().Equal("Crawler1", "Crawler2");
 
-        TestHelper.PrintPassed(result);
+        result.Dump();
     }
 
     [Test]
@@ -28,7 +28,7 @@ internal class PersonCrawlerTests
         result.CrawlerInfos.Should().HaveCount(1);
         result.CrawlerInfos[0].FriendlyName.Should().Be("Crawler1");
 
-        TestHelper.PrintPassed(result.CrawlerInfos);
+        result.CrawlerInfos.Dump();
     }
 
     [Test]
@@ -46,7 +46,7 @@ internal class PersonCrawlerTests
             new PersonName("Foxi Di"),
             new PersonName("Piper Perri"));
 
-        TestHelper.PrintPassed(result);
+        result.Dump();
     }
 
     [Test]
@@ -61,7 +61,7 @@ internal class PersonCrawlerTests
         result.FirstName.Should().Be("Foxi");
         result.LastName.Should().Be("Di");
 
-        TestHelper.PrintPassed(result);
+        result.Dump();
     }
 
     [Test]
@@ -74,7 +74,7 @@ internal class PersonCrawlerTests
         result.CrawlerInfos.Should().HaveCount(2);
         result.CrawlerInfos.Select(x => x.FriendlyName).Should().BeEquivalentTo("Crawler1", "Crawler2");
 
-        TestHelper.PrintPassed(result.CrawlerInfos);
+        result.CrawlerInfos.Dump();
     }
 
     [Test]
@@ -88,7 +88,7 @@ internal class PersonCrawlerTests
         result.Errors.Should().HaveCount(1);
         result.Errors[0].Message.Should().Be("Error");
 
-        TestHelper.PrintPassed(result.Errors);
+        result.Errors.Select(x => x.Message).Dump();
     }
 
     [Test]
@@ -103,7 +103,7 @@ internal class PersonCrawlerTests
         result.CrawlerInfos[0].FriendlyName.Should().Be("Crawler2");
         result.CrawlerInfos[1].FriendlyName.Should().Be("Crawler1");
 
-        TestHelper.PrintPassed(result.CrawlerInfos);
+        result.CrawlerInfos.Dump();
     }
 
     //mock

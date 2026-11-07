@@ -1,6 +1,6 @@
 ﻿namespace aemarco.Crawler.PersonTests._TestStuff;
 
-[Category(TestCategories.LiveSite)]
+[Category("LiveSite")] //CI excludes it, see build/Build.cs Tests
 internal abstract class PersonInfoTestsBase<T>
     where T : ISiteCrawler
 {
@@ -37,7 +37,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
 
         Entry.CrawlerInfos.FirstOrDefault()?.FriendlyName.Should().Be(_crawlerInfo.FriendlyName);
-        TestHelper.PrintPassed(Entry.CrawlerInfos);
+        Entry.CrawlerInfos.Dump();
     }
 
     [Test]
@@ -47,7 +47,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
 
         Entry.Errors.Should().BeEmpty();
-        TestHelper.PrintPassed(Entry.Errors);
+        Entry.Errors.Dump();
     }
 
     protected bool? ExpectedRating { get; init; }
@@ -59,7 +59,7 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (ExpectedRating is null)
         {
-            TestHelper.NothingExpected(Entry.Rating);
+            TestOutput.NothingExpected(Entry.Rating);
             return;
         }
 
@@ -67,7 +67,7 @@ internal abstract class PersonInfoTestsBase<T>
             Entry.Rating.Should().BeInRange(0, 10);
         else
             Entry.Rating.Should().BeNull();
-        TestHelper.PrintPassed(Entry.Rating?.ToString());
+        (Entry.Rating?.ToString()).Dump();
     }
 
     protected Gender? ExpectedGender { get; init; }
@@ -79,12 +79,12 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (ExpectedGender is null)
         {
-            TestHelper.NothingExpected(Entry.Gender);
+            TestOutput.NothingExpected(Entry.Gender);
             return;
         }
 
         Entry.Gender.Should().Be(ExpectedGender);
-        TestHelper.PrintPassed(Entry.Gender?.ToString());
+        (Entry.Gender?.ToString()).Dump();
     }
 
     protected DateOnly? ExpectedBirthday { get; init; }
@@ -96,12 +96,12 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (!ExpectedBirthday.HasValue)
         {
-            TestHelper.NothingExpected(Entry.Birthday);
+            TestOutput.NothingExpected(Entry.Birthday);
             return;
         }
 
         Entry.Birthday.Should().Be(ExpectedBirthday);
-        TestHelper.PrintPassed(Entry.Birthday);
+        Entry.Birthday.Dump();
     }
 
     protected DateOnly? ExpectedCareerStart { get; init; }
@@ -113,12 +113,12 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (!ExpectedCareerStart.HasValue)
         {
-            TestHelper.NothingExpected(Entry.CareerStart);
+            TestOutput.NothingExpected(Entry.CareerStart);
             return;
         }
 
         Entry.CareerStart.Should().Be(ExpectedCareerStart);
-        TestHelper.PrintPassed(Entry.CareerStart);
+        Entry.CareerStart.Dump();
     }
 
     protected string? ExpectedCountry { get; init; }
@@ -130,12 +130,12 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (ExpectedCountry is null)
         {
-            TestHelper.NothingExpected(Entry.Country);
+            TestOutput.NothingExpected(Entry.Country);
             return;
         }
 
         Entry.Country.Should().Be(ExpectedCountry);
-        TestHelper.PrintPassed(Entry.Country);
+        Entry.Country.Dump();
     }
 
     protected string? ExpectedCity { get; init; }
@@ -147,12 +147,12 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (ExpectedCity is null)
         {
-            TestHelper.NothingExpected(Entry.City);
+            TestOutput.NothingExpected(Entry.City);
             return;
         }
 
         Entry.City.Should().Be(ExpectedCity);
-        TestHelper.PrintPassed(Entry.City);
+        Entry.City.Dump();
     }
 
     protected string? ExpectedProfession { get; init; }
@@ -164,12 +164,12 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (ExpectedProfession is null)
         {
-            TestHelper.NothingExpected(Entry.Profession);
+            TestOutput.NothingExpected(Entry.Profession);
             return;
         }
 
         Entry.Profession.Should().Be(ExpectedProfession);
-        TestHelper.PrintPassed(Entry.Profession);
+        Entry.Profession.Dump();
     }
 
     protected string? ExpectedEthnicity { get; init; }
@@ -181,12 +181,12 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (ExpectedEthnicity is null)
         {
-            TestHelper.NothingExpected(Entry.Ethnicity);
+            TestOutput.NothingExpected(Entry.Ethnicity);
             return;
         }
 
         Entry.Ethnicity.Should().Be(ExpectedEthnicity);
-        TestHelper.PrintPassed(Entry.Ethnicity);
+        Entry.Ethnicity.Dump();
     }
 
     protected string? ExpectedHairColor { get; init; }
@@ -198,12 +198,12 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (ExpectedHairColor is null)
         {
-            TestHelper.NothingExpected(Entry.HairColor);
+            TestOutput.NothingExpected(Entry.HairColor);
             return;
         }
 
         Entry.HairColor.Should().Be(ExpectedHairColor);
-        TestHelper.PrintPassed(Entry.HairColor);
+        Entry.HairColor.Dump();
     }
 
     protected string? ExpectedEyeColor { get; init; }
@@ -215,12 +215,12 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (ExpectedEyeColor is null)
         {
-            TestHelper.NothingExpected(Entry.EyeColor);
+            TestOutput.NothingExpected(Entry.EyeColor);
             return;
         }
 
         Entry.EyeColor.Should().Be(ExpectedEyeColor);
-        TestHelper.PrintPassed(Entry.EyeColor);
+        Entry.EyeColor.Dump();
     }
 
     protected int? ExpectedHeight { get; init; }
@@ -232,12 +232,12 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (!ExpectedHeight.HasValue)
         {
-            TestHelper.NothingExpected(Entry.Height);
+            TestOutput.NothingExpected(Entry.Height);
             return;
         }
 
         Entry.Height.Should().Be(ExpectedHeight);
-        TestHelper.PrintPassed(Entry.Height);
+        Entry.Height.Dump();
     }
 
     protected int? ExpectedWeight { get; init; }
@@ -249,12 +249,12 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (!ExpectedWeight.HasValue)
         {
-            TestHelper.NothingExpected(Entry.Weight);
+            TestOutput.NothingExpected(Entry.Weight);
             return;
         }
 
         Entry.Weight.Should().Be(ExpectedWeight);
-        TestHelper.PrintPassed(Entry.Weight);
+        Entry.Weight.Dump();
     }
 
     protected string? ExpectedMeasurementDetails { get; init; } = "";
@@ -266,12 +266,12 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (ExpectedMeasurementDetails is null)
         {
-            TestHelper.NothingExpected(Entry.MeasurementDetails);
+            TestOutput.NothingExpected(Entry.MeasurementDetails);
             return;
         }
 
         Entry.MeasurementDetails.ToString().Should().Be(ExpectedMeasurementDetails);
-        TestHelper.PrintPassed(Entry.MeasurementDetails);
+        Entry.MeasurementDetails.Dump();
     }
 
     protected string? ExpectedPiercings { get; init; }
@@ -283,12 +283,12 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (ExpectedPiercings is null)
         {
-            TestHelper.NothingExpected(Entry.Piercings);
+            TestOutput.NothingExpected(Entry.Piercings);
             return;
         }
 
         Entry.Piercings.Should().Be(ExpectedPiercings);
-        TestHelper.PrintPassed(Entry.Piercings);
+        Entry.Piercings.Dump();
     }
 
     protected bool? ExpectedStillActive { get; init; }
@@ -300,12 +300,12 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (ExpectedStillActive is null)
         {
-            TestHelper.NothingExpected(Entry.StillActive);
+            TestOutput.NothingExpected(Entry.StillActive);
             return;
         }
 
         Entry.StillActive.Should().Be(ExpectedStillActive);
-        TestHelper.PrintPassed(Entry.StillActive);
+        Entry.StillActive.Dump();
     }
 
     protected List<string> ExpectedProfilePictures { get; init; } = [];
@@ -317,11 +317,11 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (ExpectedProfilePictures.Count == 0)
         {
-            TestHelper.NothingExpected(null);
+            TestOutput.NothingExpected(null);
             return;
         }
         Entry.ProfilePictures.Select(x => x.Url).Should().BeEquivalentTo(ExpectedProfilePictures);
-        TestHelper.PrintPassed(Entry.ProfilePictures);
+        Entry.ProfilePictures.Dump();
     }
 
     protected int? ExpectedProfilePictureMinCount { get; init; }
@@ -333,12 +333,12 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (ExpectedProfilePictureMinCount is null)
         {
-            TestHelper.NothingExpected(null);
+            TestOutput.NothingExpected(null);
             return;
         }
 
         Entry.ProfilePictures.Count.Should().BeGreaterOrEqualTo(ExpectedProfilePictureMinCount.Value);
-        TestHelper.PrintPassed(Entry.ProfilePictures);
+        Entry.ProfilePictures.Dump();
     }
 
 
@@ -351,12 +351,12 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (ExpectedAliases.Count == 0)
         {
-            TestHelper.NothingExpected(Entry.Aliases.Count == 0 ? null : Entry.Aliases);
+            TestOutput.NothingExpected(Entry.Aliases.Count == 0 ? null : Entry.Aliases);
             return;
         }
 
         Entry.Aliases.Should().BeEquivalentTo(ExpectedAliases);
-        TestHelper.PrintPassed(Entry.Aliases);
+        Entry.Aliases.Dump();
     }
 
     protected List<SocialLink> ExpectedSocialLinks { get; init; } = [];
@@ -369,12 +369,12 @@ internal abstract class PersonInfoTestsBase<T>
 
         if (ExpectedSocialLinks.Count == 0)
         {
-            TestHelper.NothingExpected(Entry.SocialLinks.Count == 0 ? null : Entry.SocialLinks);
+            TestOutput.NothingExpected(Entry.SocialLinks.Count == 0 ? null : Entry.SocialLinks);
             return;
         }
 
         Entry.SocialLinks.Should().BeSubsetOf(ExpectedSocialLinks);
-        TestHelper.PrintPassed(Entry.SocialLinks);
+        Entry.SocialLinks.Dump();
     }
 
 

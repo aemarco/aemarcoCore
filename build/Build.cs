@@ -21,8 +21,8 @@ class Build : NukeBuild
     [Solution]
     readonly Solution Solution;
 
-    //[NerdbankGitVersioning]
-    //readonly NerdbankGitVersioning NerdbankVersioning;
+    [NerdbankGitVersioning]
+    readonly NerdbankGitVersioning NerdbankVersioning;
 
 
 
@@ -32,6 +32,7 @@ class Build : NukeBuild
         .Executes(() =>
         {
             Log.Information("Configuration = {Configuration}", Configuration);
+            Log.Information("Version = {Version}", NerdbankVersioning.NuGetPackageVersion);
 
             if (IsLocalBuild)
                 return;
@@ -93,13 +94,12 @@ class Build : NukeBuild
                 .SetDataCollector("XPlat Code Coverage")
                 .AddLoggers("trx", "GitHubActions") //GitHubActions: annotations + job summary, only active on GitHub
                 .SetResultsDirectory(TrxDir)
-                //sites block or reset calls from datacenter IPs, live-site tests run locally only (TestCategories.LiveSite)
+                //sites block or reset calls from datacenter IPs, live-site tests ([Category("LiveSite")]) run locally only
                 .When(_ => IsServerBuild, s => s
                     .SetFilter("TestCategory!=LiveSite")));
             ReportGeneratorTasks.ReportGenerator(new ReportGeneratorSettings()
                 .SetTargetDirectory(CobDir)
                 .SetReports($"{TrxDir}/**/coverage.cobertura.xml")
-                .SetAssemblyFilters("-aemarco.TestBasics")
                 .SetReportTypes(ReportTypes.Cobertura, ReportTypes.MarkdownSummaryGithub));
 
             //coverage table on the run page

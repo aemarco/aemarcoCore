@@ -1,6 +1,6 @@
 ﻿namespace aemarco.Crawler.PersonTests._TestStuff;
 
-[Category(TestCategories.LiveSite)]
+[Category("LiveSite")] //CI excludes it, see build/Build.cs Tests
 internal abstract class PersonNameInfoCrawlerBase<T>
     where T : ISiteCrawler
 {
@@ -19,13 +19,13 @@ internal abstract class PersonNameInfoCrawlerBase<T>
     {
         if (_crawler is null)
         {
-            TestHelper.NothingExpected(null);
+            TestOutput.NothingExpected(null);
             return;
         }
 
         var result = await _crawler.GetPersonNameEntries(CancellationToken.None);
         result.Length.Should().BeGreaterThan(0, "Expected at least 1 Entry");
-        TestHelper.PrintPassed(result);
+        result.Dump();
     }
 
 }

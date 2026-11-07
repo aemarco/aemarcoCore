@@ -1,16 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-	<!-- Test folder, this runs at the beginning -->
+	<!-- Test folder: everything from the root Directory.Build.props, plus the test setup below -->
+	<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
 	<PropertyGroup>
-		<Nullable>enable</Nullable>
 		<IsPackable>false</IsPackable>
 		<IsTestProject>true</IsTestProject>
 	</PropertyGroup>
 
-	<!-- the collector ships its targets in build/ only, so a transitive reference (via aemarco.TestBasics) never deploys it -->
+	<!-- nuget references, every test project gets the full test stack directly -->
+	<!-- (coverlet.collector ships its targets in build/ only, so a transitive reference would never deploy it) -->
 	<ItemGroup>
-		<PackageReference Include="coverlet.collector" Version="6.0.2" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" />
+		<PackageReference Include="coverlet.collector" />
+		<PackageReference Include="GitHubActionsTestLogger" />
+
+		<!-- brings NUnit along, plus Dump() for test output and fixture helpers -->
+		<PackageReference Include="aemarcoToolboxTesting" />
+		<PackageReference Include="NUnit.Analyzers" />
+		<PackageReference Include="NUnit3TestAdapter" />
+
+		<PackageReference Include="NSubstitute" />
+		<PackageReference Include="FluentAssertions" />
+
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
 	</ItemGroup>
 
 </Project>
