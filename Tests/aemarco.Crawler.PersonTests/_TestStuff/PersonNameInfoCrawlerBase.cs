@@ -1,5 +1,6 @@
 ﻿namespace aemarco.Crawler.PersonTests._TestStuff;
 
+[Category(TestCategories.LiveSite)]
 internal abstract class PersonNameInfoCrawlerBase<T>
     where T : ISiteCrawler
 {

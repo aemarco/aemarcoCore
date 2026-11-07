@@ -92,7 +92,10 @@ class Build : NukeBuild
                 .EnableNoBuild()
                 .SetDataCollector("XPlat Code Coverage")
                 .AddLoggers("trx", "GitHubActions") //GitHubActions: annotations + job summary, only active on GitHub
-                .SetResultsDirectory(TrxDir));
+                .SetResultsDirectory(TrxDir)
+                //sites block or reset calls from datacenter IPs, live-site tests run locally only (TestCategories.LiveSite)
+                .When(_ => IsServerBuild, s => s
+                    .SetFilter("TestCategory!=LiveSite")));
             ReportGeneratorTasks.ReportGenerator(new ReportGeneratorSettings()
                 .SetTargetDirectory(CobDir)
                 .SetReports($"{TrxDir}/**/coverage.cobertura.xml")

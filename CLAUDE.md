@@ -47,6 +47,7 @@ Note: the Nuke `CountryUpdate` target **rewrites** `aemarco.Crawler/Resources/Co
 
 ## Testing
 
+- Tests that hit the **live sites** carry `[Category(TestCategories.LiveSite)]` (`aemarco.TestBasics`; set on `PersonInfoTestsBase`, `PersonNameInfoCrawlerBase` and `WallpaperCrawlerTests`). The Nuke `Tests` target filters them out on a server build, because sites block or reset calls from GitHub's datacenter IPs; locally everything runs. A new live-site test class needs the category too. `WallpaperCrawlerTests` builds its cases from the live offers, so its discovery still calls sites even when filtered.
 - Person crawler tests hit the **live sites**. Per-site tests inherit `PersonInfoTestsBase<TCrawler>` (`Tests/aemarco.Crawler.PersonTests/_TestStuff`) and declare `Expected*` properties for one sample person; a null expectation just prints the actual value instead of asserting. `[SkipTesting]` on a crawler class makes its tests no-op. Failures are often site changes, not code bugs.
 - Tests resolve crawlers via `IocHelper` using the real `AddPersonCrawler()` registration with `NullLogger`.
 - `InternalsVisibleTo` for `<Project>Tests` is wired in `Directory.Build.props`, so tests can use internal types.

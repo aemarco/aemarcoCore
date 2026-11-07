@@ -4,6 +4,7 @@ using aemarco.TestBasics;
 namespace aemarco.Crawler.WallpaperTests;
 
 [SingleThreaded]
+[Category(TestCategories.LiveSite)]
 public class WallpaperCrawlerTests
 {
 

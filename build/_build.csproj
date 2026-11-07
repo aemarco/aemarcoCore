@@ -18,6 +18,8 @@
 		  <Version>3.10.94</Version>
 	  </PackageReference>
 	  <PackageReference Include="Nuke.Common" Version="10.1.0" />
+	  <!-- Nuke brings NuGet 6.12, the MSBuild of the SDK it evaluates projects with needs NuGet.Frameworks 7.9 -->
+	  <PackageReference Include="NuGet.Packaging" Version="7.9.0" />
   </ItemGroup>
 
   <ItemGroup>
