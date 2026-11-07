@@ -2,13 +2,14 @@
 namespace aemarco.Crawler.Wallpaper.Crawlers;
 
 [Crawler("Wallpaperscraft")]
-internal class WallCraft : WallpaperCrawlerBasis
+internal class WallCraft : HtmlCrawlerBasis
 {
 
     private readonly Uri _uri = new("https://wallpaperscraft.com");
     public WallCraft(
-        IHtmlClient htmlClient)
-        : base(htmlClient)
+        IHtmlClient htmlClient,
+        ILogger<WallCraft> logger)
+        : base(htmlClient, logger)
     { }
 
     protected override async Task<List<CrawlOffer>> GetCrawlOffers()
@@ -40,7 +41,7 @@ internal class WallCraft : WallpaperCrawlerBasis
         catJob.CurrentPage == 1
             ? catJob.CategoryUri.WithHref("date")
             : catJob.CategoryUri.WithHref($"date/page{catJob.CurrentPage}");
-    protected override string GetSearchStringGorEntryNodes() =>
+    protected override string GetSearchStringForEntryNodes() =>
         "//li[@class='wallpapers__item']";
     protected override ContentCategory? GetContentCategory(string? categoryName)
     {

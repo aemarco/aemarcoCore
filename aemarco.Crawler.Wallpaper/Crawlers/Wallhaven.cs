@@ -13,8 +13,8 @@ internal class Wallhaven : WallpaperCrawlerBasis
     public Wallhaven(
         WallCrawlerSettings settings,
         IWallhavenClient client,
-        IHtmlClient htmlClient)
-        : base(htmlClient)
+        ILogger<Wallhaven> logger)
+        : base(logger)
     {
         _settings = settings;
         _client = client;
@@ -73,39 +73,23 @@ internal class Wallhaven : WallpaperCrawlerBasis
                 new PageUri(WallhavenClient.GetSearchUri("001", "001")),
                 new ContentCategory(Category.Girls, 40, 69))
         ];
-        result.ForEach(x => x.CrawlMethod = CrawlMethod.Api);
         return Task.FromResult(result);
     }
 
 
-
-
-    //z.B. "https://wallhaven.cc/api/v1/search?categories=001&purity=100&sorting=date_added&order=desc&page=1"
-    protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob) =>
-        catJob.CategoryUri.WithParam("page", catJob.CurrentPage.ToString());
-
-    //the api delivers json, the html path of the base class is not used
-    protected override string GetSearchStringGorEntryNodes() => string.Empty;
-    protected override Task<bool> AddWallEntry(PageNode pageNode, CrawlOffer catJob) => Task.FromResult(false);
-
     protected override async Task<bool> HandlePage(CrawlOffer catJob)
     {
-        var pageUri = GetSiteUrlForCategory(catJob);
-        WallhavenSearchResult search;
-        try
-        {
-            search = await _client.Search(pageUri.Uri, CancellationToken);
-        }
-        catch (HttpRequestException ex)
-        {
-            AddWarning(pageUri, $"Search failed: {ex.Message}");
-            return false;
-        }
+        //z.B. "https://wallhaven.cc/api/v1/search?categories=001&purity=100&sorting=date_added&order=desc&page=1"
+        var pageUri = catJob.CategoryUri.WithParam("page", catJob.CurrentPage.ToString());
+        //a failed search is not the end of the pages, it fails the offer (see RunOffer): the entries of the
+        //pages before would be known at the next crawl, which then ends before the page which was missed
+        var search = await _client.Search(pageUri.Uri, CancellationToken);
 
         //no entries on page
         if (search.Data.Length == 0)
             return false;
 
+        Logger.LogDebug("Wallhaven offer {offer} page {page} delivers {count} walls", catJob.SiteCategoryName, catJob.CurrentPage, search.Data.Length);
         catJob.ReportNumberOfEntriesPerPage(search.Meta.PerPage);
         foreach (var item in search.Data)
         {
@@ -134,17 +118,19 @@ internal class Wallhaven : WallpaperCrawlerBasis
         };
 
         //tags cost a detail call each, only new walls need them
-        if (!IsKnown(item.Path))
+        if (!IsKnown(item.Path, catJob))
         {
             try
             {
                 var wallpaper = await _client.GetWallpaper(item.Id, CancellationToken);
                 source.Tags.AddRange(wallpaper.Tags.Select(x => x.ToTag()));
             }
-            catch (HttpRequestException ex)
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
-                //skipped, so it stays new and comes again with the next crawl
-                AddWarning(source.ImageUri, $"Details of {item.Id} failed: {ex.Message}");
+                //gone for good, so it is skipped (it asks again with every crawl, but never blocks the offer);
+                //any other failure is transient and fails the offer instead, a skipped wall would be
+                //left behind once ten known walls precede it
+                AddWarning(source.ImageUri!, $"Details of {item.Id} not found: {ex.Message}");
                 return;
             }
         }

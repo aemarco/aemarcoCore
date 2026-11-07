@@ -18,7 +18,7 @@ internal static class WallhavenClientExtensions
                 if (!string.IsNullOrWhiteSpace(settings.WallhavenApiKey))
                     client.DefaultRequestHeaders.Add("X-API-Key", settings.WallhavenApiKey);
             })
-            .AddCrawlerRateLimit();
+            .AddCrawlerPipeline();
         return services;
     }
 }

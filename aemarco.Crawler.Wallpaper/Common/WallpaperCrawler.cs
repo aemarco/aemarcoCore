@@ -6,21 +6,24 @@ internal class WallpaperCrawler : IWallpaperCrawler
 {
 
     private readonly IWallCrawlerProvider _wallCrawlerProvider;
+    private readonly ILogger<WallpaperCrawler> _logger;
 
     internal event EventHandler? EntryFound;
     // ReSharper disable once InconsistentNaming
     internal List<WallpaperCrawlerBasis> _wallCrawlers;
     public WallpaperCrawler(
-        IWallCrawlerProvider wallCrawlerProvider)
+        IWallCrawlerProvider wallCrawlerProvider,
+        ILogger<WallpaperCrawler> logger)
     {
         _wallCrawlerProvider = wallCrawlerProvider;
+        _logger = logger;
         _wallCrawlers = [.. _wallCrawlerProvider.GetCrawlerInstances()];
     }
 
 
     //configure
-    private Func<List<string>>? _knownUrlsFunc;
-    public void Configure(Func<List<string>>? knownUrlsFunc = null)
+    private Func<CancellationToken, Task<IEnumerable<string>>>? _knownUrlsFunc;
+    public void Configure(Func<CancellationToken, Task<IEnumerable<string>>>? knownUrlsFunc = null)
     {
         _knownUrlsFunc = knownUrlsFunc;
     }
@@ -104,7 +107,17 @@ internal class WallpaperCrawler : IWallpaperCrawler
         await HandleFilters();
 
         //start all crawlers
-        var known = _knownUrlsFunc?.Invoke() ?? [];
+        //one snapshot for all crawlers, they only read it
+        IReadOnlySet<string> known = _knownUrlsFunc is null
+            ? new HashSet<string>()
+            : new HashSet<string>(await _knownUrlsFunc(cancellationToken), StringComparer.Ordinal);
+        _logger.LogDebug(
+            "CrawlWallpapers starts {crawlers} with pages {startPage} to {lastPage} (only news {onlyNews}) and {knownUrls} known urls",
+            _wallCrawlers.Select(x => x.GetType().Name),
+            start,
+            end,
+            news,
+            known.Count);
         var tasks = new List<Task<WallCrawlerResult>>();
         //creates all available crawlers and adds them if applicable
         foreach (var crawler in _wallCrawlers)
@@ -133,6 +146,13 @@ internal class WallpaperCrawler : IWallpaperCrawler
             KnownAlbums = entries.SelectMany(x => x.KnownAlbums).ToList(),
             Warnings = entries.SelectMany(x => x.Warnings).ToList()
         };
+        _logger.LogInformation(
+            "CrawlWallpapers found {newEntries} new, {knownEntries} known entries, {newAlbums} new, {knownAlbums} known albums and {warnings} warnings",
+            result.NewEntries.Count,
+            result.KnownEntries.Count,
+            result.NewAlbums.Count,
+            result.KnownAlbums.Count,
+            result.Warnings.Count);
         return result;
     }
 

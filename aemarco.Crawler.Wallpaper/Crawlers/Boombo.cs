@@ -2,13 +2,14 @@
 namespace aemarco.Crawler.Wallpaper.Crawlers;
 
 [Crawler("Boombo")]
-internal class Boombo : WallpaperCrawlerBasis
+internal class Boombo : HtmlCrawlerBasis
 {
 
     private readonly Uri _uri = new("https://boombo.biz");
     public Boombo(
-        IHtmlClient htmlClient)
-        : base(htmlClient)
+        IHtmlClient htmlClient,
+        ILogger<Boombo> logger)
+        : base(htmlClient, logger)
     { }
 
     protected override async Task<List<CrawlOffer>> GetCrawlOffers()
@@ -41,7 +42,7 @@ internal class Boombo : WallpaperCrawlerBasis
     //z.B. "https://boombo.biz/en/nude/page/1/"
     protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob) =>
         catJob.CategoryUri.WithHref($"page/{catJob.CurrentPage}");
-    protected override string GetSearchStringGorEntryNodes() =>
+    protected override string GetSearchStringForEntryNodes() =>
         "//div[@class='fonwall-item']/a";
     protected override async Task<bool> AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {

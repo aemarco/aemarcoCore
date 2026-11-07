@@ -22,7 +22,6 @@ public class ContentCategory
         SuggestedMaxAdultLevel = maxAdult;
     }
 
-    [JsonIgnore]
     public string Category { get; }
 
 

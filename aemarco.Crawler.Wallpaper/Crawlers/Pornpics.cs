@@ -2,13 +2,14 @@
 namespace aemarco.Crawler.Wallpaper.Crawlers;
 
 [Crawler("Pornpics")]
-internal class Pornpics : WallpaperCrawlerBasis
+internal class Pornpics : HtmlCrawlerBasis
 {
 
     private readonly Uri _uri = new("https://www.pornpics.com");
     public Pornpics(
-        IHtmlClient htmlClient)
-        : base(htmlClient)
+        IHtmlClient htmlClient,
+        ILogger<Pornpics> logger)
+        : base(htmlClient, logger)
     { }
 
     protected override bool FirstPageOnly => true;
@@ -160,7 +161,7 @@ internal class Pornpics : WallpaperCrawlerBasis
     //z.B. "https://www.pornpics.com/asian/recent/" --> only 1 page
     protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob) =>
         catJob.CategoryUri;
-    protected override string GetSearchStringGorEntryNodes() =>
+    protected override string GetSearchStringForEntryNodes() =>
         "//li[@class='thumbwook']/a";
     protected override ContentCategory DefaultCategory => new(Category.Girls);
     protected override async Task<bool> AddWallEntry(PageNode pageNode, CrawlOffer catJob)

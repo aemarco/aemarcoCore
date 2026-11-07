@@ -25,19 +25,13 @@ public class CrawlerRateLimits
 }
 
 /// <summary>
-/// Permits calls per Window, spread evenly (one every Window / Permits, no bursts),
-/// each call waits a random 0-Jitter on top, so the pacing does not look mechanical
+/// Permits calls per Window, spread evenly: two sends are never closer than one interval (Window / Permits),
+/// no bursts. Each request first waits a random 0-Jitter, then its turn, so the pacing does not look mechanical.
 /// </summary>
 public record RateLimit(int Permits, TimeSpan Window, TimeSpan Jitter = default)
 {
-    //token bucket of size 1: the next permit comes one interval after the last, requests beyond wait in a queue
-    internal TokenBucketRateLimiterOptions ToLimiterOptions() => new()
-    {
-        TokenLimit = 1,
-        TokensPerPeriod = 1,
-        ReplenishmentPeriod = Window / Permits,
-        QueueLimit = int.MaxValue,
-        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-        AutoReplenishment = true
-    };
+    /// <summary>
+    /// the least time between two sends
+    /// </summary>
+    public TimeSpan Interval => Window / Permits;
 }

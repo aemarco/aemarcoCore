@@ -77,7 +77,8 @@ internal class WallEntrySource
             Extension ?? ExtensionFromUrl(ImageUri),
             _contentCategory,
             _siteCategory,
-            [.. Tags.DistinctBy(x => x.Text)],
+            //the first one wins, with its casing, category and aliases
+            [.. Tags.DistinctBy(x => x.Text, StringComparer.OrdinalIgnoreCase)],
             AlbumName);
 
         //extension must be allowed

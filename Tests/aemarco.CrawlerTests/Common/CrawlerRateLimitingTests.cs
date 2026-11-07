@@ -3,6 +3,8 @@ using aemarco.Crawler.Clients;
 using aemarco.Crawler.Common;
 using aemarco.Crawler.Configuration;
 using aemarco.Crawler.Contracts.Clients;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using System.Net;
@@ -27,6 +29,23 @@ internal class CrawlerRateLimitingTests
         //10 per second, so one every 100ms: the first goes at once, the next two wait an interval each
         sw.Elapsed.ShouldBeGreaterThan(TimeSpan.FromMilliseconds(180));
         sw.Elapsed.Dump();
+    }
+
+    [Test]
+    public async Task Navigate_LargeJitter_SendsNeverCloserThanTheInterval()
+    {
+        //100ms interval, jitter up to 300ms: the jitter must not let two sends come closer than the interval
+        var (sut, handler) = GetClient(x => x.Default = new RateLimit(10, TimeSpan.FromSeconds(1), TimeSpan.FromMilliseconds(300)));
+
+        for (var i = 0; i < 10; i++)
+            await sut.Navigate(new PageUri(new Uri($"https://example.com/{i}")), CancellationToken.None);
+
+        var gaps = handler.Timestamps
+            .Zip(handler.Timestamps.Skip(1), (first, second) => Stopwatch.GetElapsedTime(first, second))
+            .ToList();
+        //a little below 100ms for the timer's granularity
+        gaps.ShouldAllBe(x => x >= TimeSpan.FromMilliseconds(80));
+        gaps.Dump();
     }
 
     [Test]
@@ -80,6 +99,21 @@ internal class CrawlerRateLimitingTests
         result.ShouldNotBeNull().FindNode("//p")?.GetText().ShouldBe("stub page");
     }
 
+    [TestCase(HttpStatusCode.Forbidden)]
+    [TestCase(HttpStatusCode.TooManyRequests)]
+    [TestCase(HttpStatusCode.InternalServerError)]
+    [TestCase(HttpStatusCode.ServiceUnavailable)]
+    public async Task Navigate_ErrorStatus_ThrowsWithStatus(HttpStatusCode status)
+    {
+        var (sut, handler) = GetClient(x => x.Default = new RateLimit(100, TimeSpan.FromSeconds(1)));
+        handler.Status = status;
+
+        var request = sut.Navigate(new PageUri(new Uri("https://example.com/blocked")), CancellationToken.None);
+
+        var ex = await request.ShouldThrowAsync<HttpRequestException>();
+        ex.StatusCode.ShouldBe(status);
+    }
+
     [Test]
     public async Task Navigate_NullPageUri_ReturnsNullWithoutRequest()
     {
@@ -108,7 +142,9 @@ internal class CrawlerRateLimitingTests
         var handler = new StubHandler();
         var services = new ServiceCollection()
             .AddCoreCrawler(x => x.Default = new RateLimit(1, TimeSpan.FromHours(1)))
-            .AddCoreCrawler();
+            .AddCoreCrawler()
+            //tests always use the NullLogger
+            .AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
         services
             .AddHttpClient<IHtmlClient, HtmlClient>()
             .ConfigurePrimaryHttpMessageHandler(() => handler);
@@ -145,7 +181,11 @@ internal class CrawlerRateLimitingTests
     {
         var handler = new StubHandler();
         var services = new ServiceCollection()
-            .AddCoreCrawler(configure);
+            .AddCoreCrawler(configure)
+            //retries are tested apart, here they must not wait
+            .Configure<CrawlerRequestOptions>(x => x.Backoff = TimeSpan.FromMilliseconds(1))
+            //tests always use the NullLogger
+            .AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
         services
             .AddHttpClient<IHtmlClient, HtmlClient>()
             .ConfigurePrimaryHttpMessageHandler(() => handler);
@@ -160,10 +200,12 @@ internal class CrawlerRateLimitingTests
     {
         public HttpStatusCode Status { get; set; } = HttpStatusCode.OK;
         public List<HttpRequestMessage> Requests { get; } = [];
+        public List<long> Timestamps { get; } = [];
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             Requests.Add(request);
+            Timestamps.Add(Stopwatch.GetTimestamp());
             return Task.FromResult(new HttpResponseMessage(Status)
             {
                 Content = new StringContent("<html><body><p>stub page</p></body></html>")

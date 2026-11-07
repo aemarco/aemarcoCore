@@ -1,24 +1,22 @@
 using Microsoft.Extensions.Options;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace aemarco.Crawler.Common;
 
 /// <summary>
-/// singleton, the one rate limiting all crawler requests go through, one token bucket per domain
+/// singleton, the one rate limiting all crawler requests go through: per domain a gate which knows the next
+/// time a request may be sent, one interval (Window / Permits) after the last one. Requests wait in line for it.
 /// </summary>
-internal class CrawlerRateLimiter : IDisposable
+internal class CrawlerRateLimiter
 {
 
     private readonly CrawlerRateLimits _limits;
-    private readonly PartitionedRateLimiter<HttpRequestMessage> _limiter;
+    private readonly ConcurrentDictionary<string, DomainGate> _gates = new();
     public CrawlerRateLimiter(
         IOptions<CrawlerRateLimits> options)
     {
         _limits = options.Value;
-        _limiter = PartitionedRateLimiter.Create<HttpRequestMessage, string>(request =>
-        {
-            var domain = GetDomain(request.RequestUri);
-            return RateLimitPartition.GetTokenBucketLimiter(domain, x => GetLimit(x).ToLimiterOptions());
-        });
     }
 
     /// <summary>
@@ -37,11 +35,40 @@ internal class CrawlerRateLimiter : IDisposable
             ? limit
             : _limits.Default;
 
-    public async ValueTask<RateLimitLease> Acquire(HttpRequestMessage request, CancellationToken token)
+    /// <summary>
+    /// returns when it is the request's turn on its domain, so it can be sent right away
+    /// </summary>
+    public async Task WaitForTurn(HttpRequestMessage request, CancellationToken token)
     {
-        var result = await _limiter.AcquireAsync(request, 1, token).ConfigureAwait(false);
-        return result;
+        var domain = GetDomain(request.RequestUri);
+        var gate = _gates.GetOrAdd(domain, _ => new DomainGate());
+        await gate.WaitForTurn(GetLimit(domain).Interval, token).ConfigureAwait(false);
     }
 
-    public void Dispose() => _limiter.Dispose();
+
+    private sealed class DomainGate
+    {
+
+        private readonly SemaphoreSlim _line = new(1, 1);
+        //Stopwatch timestamp of the next allowed send, the default lies in the past
+        private long _nextAllowed;
+
+        public async Task WaitForTurn(TimeSpan interval, CancellationToken token)
+        {
+            await _line.WaitAsync(token).ConfigureAwait(false);
+            try
+            {
+                var wait = Stopwatch.GetElapsedTime(Stopwatch.GetTimestamp(), _nextAllowed);
+                if (wait > TimeSpan.Zero)
+                    await Task.Delay(wait, token).ConfigureAwait(false);
+
+                //the next one may go one interval after this one
+                _nextAllowed = Stopwatch.GetTimestamp() + (long)(interval.TotalSeconds * Stopwatch.Frequency);
+            }
+            finally
+            {
+                _line.Release();
+            }
+        }
+    }
 }

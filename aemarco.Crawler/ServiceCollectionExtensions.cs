@@ -27,10 +27,17 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// attaches the crawler rate limiting to an HttpClient, e.g. the one of an api
+    /// attaches the crawler request pipeline to an HttpClient, e.g. the one of an api:
+    /// retries outside (timeouts, 408/429/5xx), then the rate limiting (so every attempt takes its permit),
+    /// then the timeout of one attempt on the network
     /// </summary>
-    public static IHttpClientBuilder AddCrawlerRateLimit(this IHttpClientBuilder builder) =>
-        builder.AddHttpMessageHandler<RateLimitHandler>();
+    public static IHttpClientBuilder AddCrawlerPipeline(this IHttpClientBuilder builder) =>
+        builder
+            //the attempts time out themselves, the wait for a permit is not part of it
+            .ConfigureHttpClient(x => x.Timeout = Timeout.InfiniteTimeSpan)
+            .AddHttpMessageHandler<RetryHandler>()
+            .AddHttpMessageHandler<RateLimitHandler>()
+            .AddHttpMessageHandler<AttemptTimeoutHandler>();
 
 
     private static IServiceCollection AddHtmlClient(this IServiceCollection services)
@@ -38,9 +45,11 @@ public static class ServiceCollectionExtensions
 
         //the one rate limiting for all crawler requests, limits per domain from CrawlerRateLimits
         services.AddOptions<CrawlerRateLimits>();
+        services.AddOptions<CrawlerRequestOptions>();
         services.TryAddSingleton<CrawlerRateLimiter>();
+        services.TryAddTransient<RetryHandler>();
         services.TryAddTransient<RateLimitHandler>();
-        services.TryAddTransient<SiteRequestHandler>();
+        services.TryAddTransient<AttemptTimeoutHandler>();
 
         //AddHttpClient appends its handlers on every call, a second registration would rate limit and retry twice
         if (services.Any(x => x.ServiceType == typeof(IHtmlClient)))
@@ -54,9 +63,7 @@ public static class ServiceCollectionExtensions
                 AutomaticDecompression = DecompressionMethods.All,
                 UseCookies = false
             })
-            //outside: one permit per page load; inside: the site treatment per network attempt
-            .AddCrawlerRateLimit()
-            .AddHttpMessageHandler<SiteRequestHandler>();
+            .AddCrawlerPipeline();
         return services;
     }
 

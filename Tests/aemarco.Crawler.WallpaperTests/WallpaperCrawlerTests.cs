@@ -1,4 +1,6 @@
 ﻿using aemarco.Crawler.Wallpaper.Common;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace aemarco.Crawler.WallpaperTests;
 
@@ -124,12 +126,14 @@ public class WallpaperCrawlerTests
         }
         catch (OperationCanceledException) { }
 
+        //cancelled while the offer was running, so what it found is still with the offer
         var c = crawler._wallCrawlers.First();
+        var offers = c._crawlOffers!;
         if (c._result.Warnings.FirstOrDefault() is { } warning)
             Assert.Warn(warning.ToString());
-        else if (c._result.NewEntries.FirstOrDefault() is { } wallEntry)
+        else if (offers.SelectMany(x => x.NewEntries).FirstOrDefault() is { } wallEntry)
             wallEntry.Dump();
-        else if (c._result.NewAlbums.FirstOrDefault() is { } albumEntry)
+        else if (offers.SelectMany(x => x.NewAlbums).FirstOrDefault() is { } albumEntry)
             albumEntry.Dump();
         else
             Assert.Fail($"{site} - {cat} found no entry.");
@@ -150,6 +154,8 @@ public class WallpaperCrawlerTests
     private static readonly ServiceProvider Services = new ServiceCollection()
         .AddWallCrawler(x =>
             x.WallhavenApiKey = Environment.GetEnvironmentVariable("WALLHAVEN_APIKEY"))
+        //tests always use the NullLogger
+        .AddSingleton(typeof(ILogger<>), typeof(NullLogger<>))
         .BuildServiceProvider();
     private static WallpaperCrawler GetCrawler() =>
         (WallpaperCrawler)Services.GetRequiredService<IWallpaperCrawler>();

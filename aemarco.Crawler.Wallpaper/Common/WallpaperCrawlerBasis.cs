@@ -3,20 +3,14 @@
 internal abstract class WallpaperCrawlerBasis
 {
 
-    private readonly IHtmlClient _htmlClient;
+    protected ILogger Logger { get; }
 
     internal event EventHandler? EntryFound;
     protected WallpaperCrawlerBasis(
-        IHtmlClient htmlClient)
+        ILogger logger)
     {
-        _htmlClient = htmlClient;
+        Logger = logger;
     }
-
-    /// <summary>
-    /// loads a page through the crawler rate limiting; null in, null out
-    /// </summary>
-    protected async Task<PageDocument?> Navigate(PageUri? pageUri) =>
-        await _htmlClient.Navigate(pageUri, CancellationToken);
 
     #region Starting
 
@@ -44,97 +38,14 @@ internal abstract class WallpaperCrawlerBasis
             _crawlOffers ??= await GetCrawlOffers();
             return _crawlOffers;
         }
-        catch
+        catch (Exception ex)
         {
-            // ignored
+            //no offers means the crawler is left out, which must not go unnoticed
+            Logger.LogError(ex, "Crawler {crawlerType} failed to get its offers", GetType().Name);
         }
         return [];
     }
 
-
-    /// <summary>
-    /// Maps Site Category name to internal category
-    /// </summary>
-    /// <param name="categoryName">name of category on site</param>
-    /// <returns>internal category</returns>
-    protected virtual ContentCategory? GetContentCategory(string? categoryName)
-    {
-        if (string.IsNullOrWhiteSpace(categoryName))
-            return null;
-
-        return categoryName switch
-        {
-            "Blowjob" => new ContentCategory(Category.Girls_Blowjob, 90, 94),
-            "Erotic Wallpapers" => new ContentCategory(Category.Girls),
-            "Erotic Girls" => new ContentCategory(Category.Girls),
-            "Celebrities" => new ContentCategory(Category.Girls_Celebrities),
-            "Celebrity Fakes" => new ContentCategory(Category.Girls_CelebrityFakes),
-            "Girls & Cars" => new ContentCategory(Category.Girls_Cars),
-            "Girls & Bikes" => new ContentCategory(Category.Girls_Bikes),
-            "______Girls_Guns" => new ContentCategory(Category.Girls_Guns),
-            "Anime" => new ContentCategory(Category.Girls_Fantasy),
-            "Fantasy Girls" => new ContentCategory(Category.Girls_Fantasy),
-            "3D & Vector Girls" => new ContentCategory(Category.Girls_Fantasy),
-            "Cosplay" => new ContentCategory(Category.Girls_Cosplay),
-            "Lingerie" => new ContentCategory(Category.Girls_Lingerie),
-            "Lingerie Models" => new ContentCategory(Category.Girls_Lingerie),
-            "Lingerie Girls" => new ContentCategory(Category.Girls_Lingerie),
-            "lingerie" => new ContentCategory(Category.Girls_Lingerie),
-            "underwear" => new ContentCategory(Category.Girls_Lingerie),
-            "stockings" => new ContentCategory(Category.Girls_Lingerie),
-            "Ligerie beauty models" => new ContentCategory(Category.Girls_Lingerie),
-            "Lesbian" => new ContentCategory(Category.Girls_Lesbians),
-            "Lesbians" => new ContentCategory(Category.Girls_Lesbians),
-            "Beach" => new ContentCategory(Category.Girls_Beaches),
-            "Girls & Beaches" => new ContentCategory(Category.Girls_Beaches),
-            "Asian Girls" => new ContentCategory(Category.Girls_Asian),
-            "asian" => new ContentCategory(Category.Girls_Asian),
-            "Asian" => new ContentCategory(Category.Girls_Asian),
-            "Indian" => new ContentCategory(Category.Girls_Asian),
-            "Japanese" => new ContentCategory(Category.Girls_Asian),
-            "Thai" => new ContentCategory(Category.Girls_Asian),
-            "Holidays" => new ContentCategory(Category.Girls_Holidays),
-            "Christmas" => new ContentCategory(Category.Girls_Holidays),
-            "Fetish Girls" => new ContentCategory(Category.Girls_Fetish),
-            "Bondage" => new ContentCategory(Category.Girls_Fetish),
-            "Blindfold" => new ContentCategory(Category.Girls_Fetish),
-            "Latex" => new ContentCategory(Category.Girls_Fetish),
-            "BDSM" => new ContentCategory(Category.Girls_Fetish),
-            "______Girls_Blowjob" => new ContentCategory(Category.Girls_Blowjob),
-            "Hardcore" => new ContentCategory(Category.Girls_Hardcore),
-            "Homemade" => new ContentCategory(Category.Girls_Amateur),
-            "Amateur" => new ContentCategory(Category.Girls_Amateur),
-            "Gloryhole" => new ContentCategory(Category.Girls_Gloryhole),
-            "Selfie" => new ContentCategory(Category.Girls_Selfies),
-            "Selfpics" => new ContentCategory(Category.Girls_Selfies),
-            "Self Shot" => new ContentCategory(Category.Girls_Selfies),
-            "______Girls_Fun" => new ContentCategory(Category.Girls_Fun),
-
-            //some to be ignored
-            "Arab" => null,
-            "BBW" => null,
-            "CFNM" => null,
-            "Cougar" => null,
-            "Femdom" => null,
-            "Granny" => null,
-            "Housewife" => null,
-            "Ladyboy" => null,
-            "Mature" => null,
-            "MILF" => null,
-            "Mom" => null,
-            "Party" => null,
-            "Pegging" => null,
-            "Saggy Tits" => null,
-            "Shemale" => null,
-            "SSBBW" => null,
-            "Wife" => null,
-            "Chubby" => null,
-            "Gay" => null,
-            _ => DefaultCategory
-        };
-    }
-
-    protected virtual ContentCategory? DefaultCategory => null;
 
     /// <summary>
     /// creates a CrawlOffer which carries the limitation infos
@@ -162,7 +73,10 @@ internal abstract class WallpaperCrawlerBasis
     internal virtual bool IsAvailable => true;
 
 
-    private List<string> _knownUrls = [];
+    //the consumer's known urls, one snapshot shared by all crawlers of a crawl (read only, so no locking)
+    private IReadOnlySet<string> _knownUrls = new HashSet<string>();
+    //what the finished offers of this crawler found, so a repeat in a later offer counts as known
+    private readonly HashSet<string> _foundUrls = new(StringComparer.Ordinal);
     protected CancellationToken CancellationToken;
 
 
@@ -173,7 +87,7 @@ internal abstract class WallpaperCrawlerBasis
     /// </summary>
     /// <returns></returns>
     public async Task<WallCrawlerResult> Start(
-        List<string> knownUrls,
+        IReadOnlySet<string> knownUrls,
         int startPage,
         int lastPage,
         bool onlyNews,
@@ -191,6 +105,14 @@ internal abstract class WallpaperCrawlerBasis
         await HandleAll(startPage, lastPage, onlyNews);
         CancellationToken.ThrowIfCancellationRequested();
 
+        Logger.LogDebug(
+            "Crawler {crawlerType} done with {newEntries} new, {knownEntries} known entries, {newAlbums} new, {knownAlbums} known albums and {warnings} warnings",
+            GetType().Name,
+            _result.NewEntries.Count,
+            _result.KnownEntries.Count,
+            _result.NewAlbums.Count,
+            _result.KnownAlbums.Count,
+            _result.Warnings.Count);
         return _result;
     }
 
@@ -213,8 +135,48 @@ internal abstract class WallpaperCrawlerBasis
         foreach (var offer in _crawlOffers)
         {
             CancellationToken.ThrowIfCancellationRequested();
+            await RunOffer(offer);
+        }
+    }
+
+    /// <summary>
+    /// the offer is the unit: what it found joins the result only when it went through completely;
+    /// a failure drops all of it (and the urls it found), otherwise the entries of the pages before the failure
+    /// would be known at the next crawl, whose streak of known entries would end it before the missed pages
+    /// </summary>
+    private async Task RunOffer(CrawlOffer offer)
+    {
+        try
+        {
             await HandleOffer(offer);
         }
+        catch (OperationCanceledException) when (CancellationToken.IsCancellationRequested)
+        {
+            //the caller cancelled, the crawl delivers nothing
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var discarded = offer.Discard();
+            Logger.LogError(ex, "Offer {offer} of {crawlerType} failed on page {page}, its {discarded} entries are dropped",
+                offer.SiteCategoryName, GetType().Name, offer.CurrentPage, discarded);
+            AddWarning(offer.CategoryUri, $"Offer {offer.SiteCategoryName} failed on page {offer.CurrentPage}, its entries are dropped: {ex.Message}");
+            return;
+        }
+
+        Logger.LogDebug(
+            "Offer {offer} of {crawlerType} done with {newEntries} new, {knownEntries} known entries, {newAlbums} new, {knownAlbums} known albums",
+            offer.SiteCategoryName,
+            GetType().Name,
+            offer.NewEntries.Count,
+            offer.KnownEntries.Count,
+            offer.NewAlbums.Count,
+            offer.KnownAlbums.Count);
+        _result.NewEntries.AddRange(offer.NewEntries);
+        _result.KnownEntries.AddRange(offer.KnownEntries);
+        _result.NewAlbums.AddRange(offer.NewAlbums);
+        _result.KnownAlbums.AddRange(offer.KnownAlbums);
+        _foundUrls.UnionWith(offer.FoundUrls);
     }
     protected abstract Task<List<CrawlOffer>> GetCrawlOffers();
 
@@ -234,81 +196,14 @@ internal abstract class WallpaperCrawlerBasis
     }
 
 
-    private int _entriesPerPage;
     /// <summary>
-    /// handles current page of given offer (crawlers may override, with API for example)
+    /// handles current page of given offer
     /// </summary>
     /// <param name="catJob">job to get page for</param>
     /// <returns>true if page contained any entries</returns>
-    protected virtual async Task<bool> HandlePage(CrawlOffer catJob)
-    {
-        //site with wallpaper list
-        if (await Navigate(GetSiteUrlForCategory(catJob)) is not { } pageDoc)
-            return false;
-        var pageNodes = pageDoc.FindNodes(GetSearchStringGorEntryNodes());
-
-        //non entries on page
-        if (pageNodes.Count == 0)
-            return false;
-
-
-        //report count to all classic jobs
-        if (pageNodes.Count > _entriesPerPage)
-        {
-            _entriesPerPage = pageNodes.Count;
-            _crawlOffers!.ForEach(j =>
-            {
-                if (j.CrawlMethod == CrawlMethod.Classic)
-                    j.ReportNumberOfEntriesPerPage(_entriesPerPage);
-            });
-        }
-
-
-        var result = false;
-        //handle each node
-        foreach (var node in pageNodes)
-        {
-            CancellationToken.ThrowIfCancellationRequested();
-
-            if (catJob.ReachedMaximumStreak)
-            {
-                catJob.ReportEndReached();
-                return true;
-            }
-            if (await AddWallEntry(node, catJob))
-            {
-                result = true;
-            }
-        }
-        catJob.ReportPageDone();
-        //valid Page contains minimum 1 valid Entry
-        return result;
-    }
+    protected abstract Task<bool> HandlePage(CrawlOffer catJob);
 
     #endregion
-
-    //to be implemented
-
-    /// <summary>
-    /// Gets the url for the site containing the category
-    /// </summary>
-    /// <param name="catJob">current job</param>
-    /// <returns>Uri to navigate for category</returns>
-    protected abstract PageUri GetSiteUrlForCategory(CrawlOffer catJob);
-    /// <summary>
-    /// Gets search path for entry nodes
-    /// </summary>
-    /// <returns>search path</returns>
-    protected abstract string GetSearchStringGorEntryNodes();
-    /// <summary>
-    /// handles entry in a page
-    /// </summary>
-    /// <param name="pageNode">Html node for entry</param>
-    /// <param name="catJob">current job</param>
-    /// <returns>true if found a valid entry</returns>
-    protected abstract Task<bool> AddWallEntry(PageNode pageNode, CrawlOffer catJob);
-
-    //to be implemented END
 
 
 
@@ -321,26 +216,29 @@ internal abstract class WallpaperCrawlerBasis
     /// <summary>
     /// lets a crawler skip expensive work (detail calls) for walls which are known already
     /// </summary>
-    protected bool IsKnown(string url) => _knownUrls.Contains(url);
+    protected bool IsKnown(string url, CrawlOffer catJob) =>
+        _knownUrls.Contains(url) ||
+        _foundUrls.Contains(url) ||
+        catJob.FoundUrls.Contains(url);
 
     /// <summary>
-    /// adds the wall-entry to the crawl result, as new or known wall
+    /// adds the wall-entry to the offer, as new or known wall
     /// </summary>
     /// <param name="entry">entry to add</param>
     /// <param name="catJob">job leaded to entry</param>
     protected void AddEntry(WallEntry entry, CrawlOffer catJob)
     {
         //new Entry
-        if (!_knownUrls.Contains(entry.Url))
+        if (!IsKnown(entry.Url, catJob))
         {
-            _result.NewEntries.Add(entry);
+            catJob.NewEntries.Add(entry);
             catJob.ReportEntryDone(false);
-            _knownUrls.Add(entry.Url);
+            catJob.FoundUrls.Add(entry.Url);
         }
         //known Entry
         else
         {
-            _result.KnownEntries.Add(entry);
+            catJob.KnownEntries.Add(entry);
             catJob.ReportEntryDone(true);
         }
 
@@ -348,27 +246,27 @@ internal abstract class WallpaperCrawlerBasis
     }
 
     /// <summary>
-    /// adds the album-entry to the crawlresult, as new or known album
+    /// adds the album-entry to the offer, as new or known album
     /// </summary>
     /// <param name="entry">entry to add</param>
     /// <param name="catJob">job leaded to entry</param>
     protected void AddAlbum(AlbumEntry entry, CrawlOffer catJob)
     {
 
-        entry.HasNewEntries = entry.Entries.Any(x => !_knownUrls.Contains(x.Url));
+        entry.HasNewEntries = entry.Entries.Any(x => !IsKnown(x.Url, catJob));
 
         //known Album
         if (!entry.HasNewEntries)
         {
-            _result.KnownAlbums.Add(entry);
+            catJob.KnownAlbums.Add(entry);
             catJob.ReportEntryDone(true);
         }
         //new Album
         else
         {
-            _result.NewAlbums.Add(entry);
+            catJob.NewAlbums.Add(entry);
             catJob.ReportEntryDone(false);
-            _knownUrls.AddRange(entry.Entries.Select(x => x.Url));
+            catJob.FoundUrls.UnionWith(entry.Entries.Select(x => x.Url));
         }
         EntryFound?.Invoke(this, EventArgs.Empty);
     }

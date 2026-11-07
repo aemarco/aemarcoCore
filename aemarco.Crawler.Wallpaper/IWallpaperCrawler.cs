@@ -2,7 +2,10 @@
 
 public interface IWallpaperCrawler
 {
-    void Configure(Func<List<string>>? knownUrlsFunc = null);
+    /// <summary>
+    /// the urls which are known already (asked once per crawl), so they are reported as known entries
+    /// </summary>
+    void Configure(Func<CancellationToken, Task<IEnumerable<string>>>? knownUrlsFunc = null);
 
     //filter sites
     /// <summary>

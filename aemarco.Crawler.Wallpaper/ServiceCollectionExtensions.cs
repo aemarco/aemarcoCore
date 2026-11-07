@@ -21,7 +21,9 @@ public static class ServiceCollectionExtensions
         List<string> crawlerKeys = [];
         foreach (var crawlerType in typeof(WallpaperCrawlerBasis).Assembly
                      .GetTypes()
-                     .Where(x => x.IsSubclassOf(typeof(WallpaperCrawlerBasis))))
+                     .Where(x =>
+                         x.IsSubclassOf(typeof(WallpaperCrawlerBasis)) &&
+                         !x.IsAbstract))
         {
             //each crawler must declare a CrawlerAttribute
             if (crawlerType.GetCustomAttribute<CrawlerAttribute>() is null)

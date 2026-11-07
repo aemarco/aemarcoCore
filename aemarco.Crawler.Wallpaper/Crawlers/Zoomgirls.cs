@@ -2,13 +2,14 @@
 namespace aemarco.Crawler.Wallpaper.Crawlers;
 
 [Crawler("Zoomgirls")]
-internal class Zoomgirls : WallpaperCrawlerBasis
+internal class Zoomgirls : HtmlCrawlerBasis
 {
 
     private readonly Uri _uri = new("https://zoomgirls.net");
     public Zoomgirls(
-        IHtmlClient htmlClient)
-        : base(htmlClient)
+        IHtmlClient htmlClient,
+        ILogger<Zoomgirls> logger)
+        : base(htmlClient, logger)
     { }
 
     protected override Task<List<CrawlOffer>> GetCrawlOffers()
@@ -56,7 +57,7 @@ internal class Zoomgirls : WallpaperCrawlerBasis
     //z.B. "https://zoomgirls.net/latest_wallpapers/page/1"
     protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob) =>
         catJob.CategoryUri.WithHref($"page/{catJob.CurrentPage}");
-    protected override string GetSearchStringGorEntryNodes() =>
+    protected override string GetSearchStringForEntryNodes() =>
         "//div[@class='thumb']/a";
     protected override async Task<bool> AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
