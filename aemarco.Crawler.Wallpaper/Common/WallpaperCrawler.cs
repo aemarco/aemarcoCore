@@ -2,24 +2,19 @@
 
 namespace aemarco.Crawler.Wallpaper.Common;
 
-public class WallpaperCrawler : IWallpaperCrawler
+internal class WallpaperCrawler : IWallpaperCrawler
 {
+
+    private readonly IWallCrawlerProvider _wallCrawlerProvider;
 
     internal event EventHandler? EntryFound;
     // ReSharper disable once InconsistentNaming
     internal List<WallpaperCrawlerBasis> _wallCrawlers;
-    public WallpaperCrawler()
+    public WallpaperCrawler(
+        IWallCrawlerProvider wallCrawlerProvider)
     {
-        _wallCrawlers = [];
-        foreach (var type in Assembly
-                     .GetAssembly(typeof(WallpaperCrawlerBasis))!
-                     .GetTypes()
-                     .Where(x => x.IsSubclassOf(typeof(WallpaperCrawlerBasis))))
-        {
-            var crawler = (WallpaperCrawlerBasis)(Activator.CreateInstance(type, null, null, true)
-                          ?? throw new Exception($"Could not activate {type.FullName}"));
-            _wallCrawlers.Add(crawler);
-        }
+        _wallCrawlerProvider = wallCrawlerProvider;
+        _wallCrawlers = [.. _wallCrawlerProvider.GetCrawlerInstances()];
     }
 
 
@@ -103,15 +98,9 @@ public class WallpaperCrawler : IWallpaperCrawler
 
 
 
-        _wallCrawlers = [];
-        foreach (var type in Assembly
-                     .GetAssembly(typeof(WallpaperCrawlerBasis))!
-                     .GetTypes()
-                     .Where(x => x.IsSubclassOf(typeof(WallpaperCrawlerBasis))))
+        _wallCrawlers = [.. _wallCrawlerProvider.GetCrawlerInstances()];
+        foreach (var crawler in _wallCrawlers)
         {
-            var crawler = (WallpaperCrawlerBasis)(Activator.CreateInstance(type, start, end, news)
-                                                  ?? throw new Exception($"Could not activate {type.FullName}"));
-            _wallCrawlers.Add(crawler);
             crawler.EntryFound += (_, _) => EntryFound?.Invoke(this, EventArgs.Empty);
         }
 
@@ -124,7 +113,7 @@ public class WallpaperCrawler : IWallpaperCrawler
         //creates all available crawlers and adds them if applicable
         foreach (var crawler in _wallCrawlers)
         {
-            var newTask = crawler.Start(known, cancellationToken);
+            var newTask = crawler.Start(known, start, end, news, cancellationToken);
             tasks.Add(newTask);
         }
 

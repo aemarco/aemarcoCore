@@ -155,7 +155,10 @@ public class WallpaperCrawlerTests
 
     private static WallpaperCrawler GetCrawler()
     {
-        var result = new WallpaperCrawler();
+        var sp = new ServiceCollection()
+            .AddWallCrawler()
+            .BuildServiceProvider();
+        var result = (WallpaperCrawler)sp.GetRequiredService<IWallpaperCrawler>();
         return result;
     }
 

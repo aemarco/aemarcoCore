@@ -5,22 +5,25 @@ internal class CrawlOffer
     #region ctor
 
     public CrawlOffer(
-        int startPage,
-        int lastPage,
-        bool onlyNews,
         string siteCategoryName,
         PageUri categoryUri,
         ContentCategory category)
+    {
+        SiteCategoryName = siteCategoryName;
+        CategoryUri = categoryUri;
+        Category = category;
+    }
+
+    /// <summary>
+    /// offers exist before a crawl starts (filtering, available categories), paging comes with the start
+    /// </summary>
+    internal void SetPaging(int startPage, int lastPage, bool onlyNews)
     {
         _startPage = startPage;
         _lastPage = lastPage;
         _onlyNews = onlyNews;
 
         CurrentPage = _startPage;
-
-        SiteCategoryName = siteCategoryName;
-        CategoryUri = categoryUri;
-        Category = category;
     }
 
 
@@ -47,7 +50,7 @@ internal class CrawlOffer
     public bool ContainsPagesToDo => CurrentPage <= _lastPage;
 
 
-    private readonly bool _onlyNews;
+    private bool _onlyNews;
     public bool ReachedMaximumStreak => (_onlyNews && _numberOfEntriesKnownInSequence >= 10);
 
     #endregion
@@ -55,7 +58,7 @@ internal class CrawlOffer
     #region methods internal
 
 
-    private readonly int _startPage;
+    private int _startPage;
     private int _numberOfEntriesPerPage;
     internal void ReportNumberOfEntriesPerPage(int count)
     {

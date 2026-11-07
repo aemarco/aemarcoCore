@@ -2,9 +2,12 @@
 
 //https://nuke.build/
 
-[AzurePipelines(
-    AzurePipelinesImage.WindowsLatest,
+//the workflow .github/workflows/build.yml is maintained by hand, it invokes Publish
+[GitHubActions(
+    "build",
+    GitHubActionsImage.WindowsLatest,
     AutoGenerate = false,
+    FetchDepth = 0,
     InvokedTargets = [nameof(Info), nameof(Publish)])]
 class Build : NukeBuild
 {
@@ -88,12 +91,16 @@ class Build : NukeBuild
                 .EnableNoRestore()
                 .EnableNoBuild()
                 .SetDataCollector("XPlat Code Coverage")
-                .AddLoggers("trx")
+                .AddLoggers("trx", "GitHubActions") //GitHubActions: annotations + job summary, only active on GitHub
                 .SetResultsDirectory(TrxDir));
             ReportGeneratorTasks.ReportGenerator(new ReportGeneratorSettings()
                 .SetTargetDirectory(CobDir)
                 .SetReports($"{TrxDir}/**/coverage.cobertura.xml")
-                .SetReportTypes(ReportTypes.Cobertura));
+                .SetReportTypes(ReportTypes.Cobertura, ReportTypes.MarkdownSummaryGithub));
+
+            //coverage table on the run page
+            if (Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY") is { Length: > 0 } stepSummary)
+                File.AppendAllText(stepSummary, (CobDir / "SummaryGithub.md").ReadAllText());
         });
 
     Target Pack => _ => _

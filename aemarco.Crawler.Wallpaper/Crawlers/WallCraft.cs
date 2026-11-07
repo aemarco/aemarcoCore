@@ -6,13 +6,6 @@ internal class WallCraft : WallpaperCrawlerBasis
 {
 
     private readonly Uri _uri = new("https://wallpaperscraft.com");
-    public WallCraft(
-        int startPage,
-        int lastPage,
-        bool onlyNews)
-        : base(startPage, lastPage, onlyNews)
-    { }
-
     protected override List<CrawlOffer> GetCrawlsOffers()
     {
         var result = new List<CrawlOffer>();

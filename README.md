@@ -1,4 +1,4 @@
-# aemarcoCore [![Build Status](https://dev.azure.com/aemarco/aemarcoCentral/_apis/build/status%2Faemarco.aemarcoCore?branchName=master)](https://dev.azure.com/aemarco/aemarcoCentral/_build/latest?definitionId=9&branchName=master)
+# aemarcoCore [![Build](https://github.com/aemarco/aemarcoCore/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/aemarco/aemarcoCore/actions/workflows/build.yml)
 
 Crawling-Tools for Models and Wallpapers.
 

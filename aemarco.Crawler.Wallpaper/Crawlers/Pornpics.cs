@@ -6,16 +6,7 @@ internal class Pornpics : WallpaperCrawlerBasis
 {
 
     private readonly Uri _uri = new("https://www.pornpics.com");
-    public Pornpics(
-#pragma warning disable IDE0060
-        // ReSharper disable UnusedParameter.Local
-        int startPage,
-        int lastPage,
-        // ReSharper restore UnusedParameter.Local
-#pragma warning restore IDE0060
-        bool onlyNews)
-        : base(1, 1, onlyNews)
-    { }
+    protected override bool FirstPageOnly => true;
 
     protected override List<CrawlOffer> GetCrawlsOffers()
     {

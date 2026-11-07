@@ -5,19 +5,6 @@ internal abstract class WallpaperCrawlerBasis
 
     internal event EventHandler? EntryFound;
 
-    private readonly int _startPage;
-    private readonly int _lastPage;
-    private readonly bool _onlyNews;
-    internal WallpaperCrawlerBasis(
-        int startPage,
-        int lastPage,
-        bool onlyNews)
-    {
-        _startPage = startPage;
-        _lastPage = lastPage;
-        _onlyNews = onlyNews;
-    }
-
     #region Starting
 
     // ReSharper disable once InconsistentNaming
@@ -146,13 +133,15 @@ internal abstract class WallpaperCrawlerBasis
     protected CrawlOffer CreateCrawlOffer(string siteCategoryName, PageUri categoryUri, ContentCategory category)
     {
         return new CrawlOffer(
-            _startPage,
-            _lastPage,
-            _onlyNews,
             siteCategoryName,
             categoryUri,
             category);
     }
+
+    /// <summary>
+    /// crawlers which only ever look at the first page of an offer, regardless of the requested paging
+    /// </summary>
+    protected virtual bool FirstPageOnly => false;
 
 
     private List<string> _knownUrls = [];
@@ -167,14 +156,23 @@ internal abstract class WallpaperCrawlerBasis
     /// <returns></returns>
     public async Task<WallCrawlerResult> Start(
         List<string> knownUrls,
+        int startPage,
+        int lastPage,
+        bool onlyNews,
         CancellationToken cancellationToken)
     {
         _knownUrls = knownUrls;
         CancellationToken = cancellationToken;
 
+        if (FirstPageOnly)
+        {
+            startPage = 1;
+            lastPage = 1;
+        }
+
         await Task.Run(() =>
         {
-            HandleAll();
+            HandleAll(startPage, lastPage, onlyNews);
             CancellationToken.ThrowIfCancellationRequested();
         }, cancellationToken);
 
@@ -189,9 +187,14 @@ internal abstract class WallpaperCrawlerBasis
     /// <summary>
     /// handles the entire crawler by going through offers
     /// </summary>
-    private void HandleAll()
+    private void HandleAll(int startPage, int lastPage, bool onlyNews)
     {
         _crawlOffers ??= GetCrawlsOffers();
+        //all offers first, HandlePage reports the entries per page to every offer
+        foreach (var offer in _crawlOffers)
+        {
+            offer.SetPaging(startPage, lastPage, onlyNews);
+        }
         foreach (var offer in _crawlOffers)
         {
             CancellationToken.ThrowIfCancellationRequested();

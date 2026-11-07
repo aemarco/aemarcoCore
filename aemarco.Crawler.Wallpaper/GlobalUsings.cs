@@ -4,6 +4,7 @@ global using aemarco.Crawler.Common;
 global using aemarco.Crawler.Model;
 global using aemarco.Crawler.Wallpaper.Common;
 global using aemarco.Crawler.Wallpaper.Model;
+global using Microsoft.Extensions.DependencyInjection;
 global using Newtonsoft.Json;
 global using System;
 global using System.Collections.Generic;

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-aemarcoCore is a set of .NET 9 NuGet libraries for crawling: people/model info and wallpapers. Three packages plus tests and a Nuke build:
+aemarcoCore is a set of .NET 10 NuGet libraries for crawling: people/model info and wallpapers. Three packages plus tests and a Nuke build:
 
 - `aemarco.Crawler` (`aemarcoCrawler`) — shared core: HTML fetching/navigation (`HtmlHelper`, `PageUri`, `PageDocument`, `PageNode`), `CrawlerAttribute`, `SkipTestingAttribute`, `CountryService`, `CrawlerInfo`.
 - `aemarco.Crawler.Person` (`aemarcoPersonCrawler`) — `IPersonCrawler` aggregating many site crawlers into a merged `PersonInfo`.
@@ -16,7 +16,7 @@ The general conventions (code style, test conventions, commit workflow, and the 
 
 ## Commands
 
-Build/test/pack go through Nuke (`build/`), which is also what CI (Azure Pipelines, `./build.cmd Publish`) runs. The Nuke targets work on the whole solution; to verify a change, build or test only the project at hand (see below), as in the Internals file. Packages reach nuget.org outside this repo (the pipeline only produces the artifact), so the deploy stance of the Internals file applies to pushing and publishing here too:
+Build/test/pack go through Nuke (`build/`), which is also what CI (GitHub Actions, `.github/workflows/build.yml`, hand-written, runs `./build.cmd Publish` and uploads the `drop` and `test-results` artifacts) runs. On GitHub, test results show up as annotations and job summary (`GitHubActionsTestLogger`, referenced through `aemarco.TestBasics`), and the `Tests` target appends ReportGenerator's `SummaryGithub.md` coverage table to `$GITHUB_STEP_SUMMARY`. There is no `global.json`: the build uses the installed SDK, the workflow sets up `10.x`. The Nuke targets work on the whole solution; to verify a change, build or test only the project at hand (see below), as in the Internals file. Packages reach nuget.org outside this repo (the pipeline only produces the artifact), so the deploy stance of the Internals file applies to pushing and publishing here too:
 
 ```
 ./build.cmd Compile      # CountryUpdate -> Restore -> Compile
@@ -32,7 +32,7 @@ dotnet test Tests/aemarco.Crawler.PersonTests --filter "FullyQualifiedName~Freeo
 dotnet test --filter "Name=Crawler_Country"
 ```
 
-Note: the Nuke `CountryUpdate` target **rewrites** `aemarco.Crawler/Resources/CountryRegionData.json` (merges CultureInfo, CountryData.Standard and hardcoded data) on every Nuke build, so expect that file to show up as modified after a build. Versioning is automatic via Nerdbank.GitVersioning (`version.json`, 9.0).
+Note: the Nuke `CountryUpdate` target **rewrites** `aemarco.Crawler/Resources/CountryRegionData.json` (merges CultureInfo, CountryData.Standard and hardcoded data) on every Nuke build, so expect that file to show up as modified after a build. Versioning is automatic via Nerdbank.GitVersioning (`version.json`, 10.0).
 
 ## Architecture
 
@@ -41,7 +41,7 @@ Note: the Nuke `CountryUpdate` target **rewrites** `aemarco.Crawler/Resources/Co
 - Subclasses implement `GetGirlUri(name)` and `HandlePersonEntry(page, token)` (and optionally `HandlePersonNameEntries`), filling the base-class `Result` via helpers (`UpdateName`, `UpdateCountry`, `UpdateMeasurements`, `UpdateSocial`, `UpdateProfilePictures`, ...).
 - `PersonCrawler` runs all (optionally filtered via `AddPersonSiteFilter`) crawlers concurrently, collects failures into `PersonInfo.Errors` rather than throwing, then `PersonInfo.Merge`s results. `Crawlers/Obsolete/` holds dead sites kept for reference.
 
-**Wallpaper crawler** — `WallpaperCrawlerBasis` per site in `Crawlers/`, each mapping site category names to `ContentCategory` (internal `Category` enum plus suggested adult-level range) via `GetContentCategory`.
+**Wallpaper crawler** — `WallpaperCrawlerBasis` per site in `Crawlers/`, each mapping site category names to `ContentCategory` (internal `Category` enum plus suggested adult-level range) via `GetContentCategory`. `AddWallCrawler()` registers every `WallpaperCrawlerBasis` subclass as a **keyed transient** by type name; the key list lives in its own `WallCrawlerRegistry` type, so it does not collide with the person registrations in a shared container. Crawler instances hold the state of one crawl, `WallCrawlerProvider` hands out fresh ones per `CrawlWallpapers`. Paging comes with `Start`, not the constructor (`FirstPageOnly` for sites that only ever crawl page 1). Each site × internal category is a crawl row in aemarcoInternals, so changing which crawlers are found or their friendly names adds or drops rows there.
 
 **Country resolution** — `CountryService` (in core, backed by embedded `CountryRegionData.json`) matches whole words, longest name first; keep that invariant (a past bug matched "Oman" inside "Romania").
 

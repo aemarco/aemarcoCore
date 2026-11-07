@@ -6,13 +6,6 @@ internal class Wallhaven : WallpaperCrawlerBasis
 {
 
     private readonly Uri _uri = new("https://wallhaven.cc");
-    public Wallhaven(
-        int startPage,
-        int lastPage,
-        bool onlyNews)
-        : base(startPage, lastPage, onlyNews)
-    { }
-
     protected override List<CrawlOffer> GetCrawlsOffers()
     {
         var result = new List<CrawlOffer>

@@ -6,13 +6,6 @@ internal class Boombo : WallpaperCrawlerBasis
 {
 
     private readonly Uri _uri = new("https://boombo.biz");
-    public Boombo(
-        int startPage,
-        int lastPage,
-        bool onlyNews)
-        : base(startPage, lastPage, onlyNews)
-    { }
-
     protected override List<CrawlOffer> GetCrawlsOffers()
     {
         var mainPage = new PageUri(new Uri(_uri, "en/")).Navigate();
