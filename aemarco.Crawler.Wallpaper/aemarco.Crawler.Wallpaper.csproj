@@ -13,6 +13,10 @@
 	<!-- nuget references -->
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" />
+		<!-- source generator only, nothing of it ships -->
+		<PackageReference Include="Riok.Mapperly" ExcludeAssets="runtime" PrivateAssets="all">
+			<IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 
 	<!-- nuget build-->

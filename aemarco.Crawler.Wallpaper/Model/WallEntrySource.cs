@@ -43,16 +43,19 @@ internal class WallEntrySource
     private readonly string _siteCategory;
 
 
-    public List<string> Tags { get; set; } = [];
+    public List<Tag> Tags { get; set; } = [];
     public void AddTagsFromText(string? text, params char[] separators)
     {
-        Tags.AddRange(WebUtility.HtmlDecode(text).SplitList(separators));
+        Tags.AddRange(WebUtility.HtmlDecode(text)
+            .SplitList(separators)
+            .Select(x => new Tag(x)));
     }
     public void AddTagsFromInnerTexts(IEnumerable<PageNode> nodes)
     {
         var tags = nodes
             .Select(x => WebUtility.HtmlDecode(x.Node.InnerText).Trim())
-            .Where(x => !string.IsNullOrWhiteSpace(x));
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Select(x => new Tag(x));
         Tags.AddRange(tags);
     }
 
@@ -74,7 +77,7 @@ internal class WallEntrySource
             Extension ?? ExtensionFromUrl(ImageUri),
             _contentCategory,
             _siteCategory,
-            Tags.Distinct().ToList(),
+            [.. Tags.DistinctBy(x => x.Text)],
             AlbumName);
 
         //extension must be allowed

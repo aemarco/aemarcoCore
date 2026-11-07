@@ -315,7 +315,7 @@ internal abstract class WallpaperCrawlerBasis
 
 
     // ReSharper disable once InconsistentNaming
-    internal WallCrawlerResult _result = new();
+    internal readonly WallCrawlerResult _result = new();
 
 
     /// <summary>

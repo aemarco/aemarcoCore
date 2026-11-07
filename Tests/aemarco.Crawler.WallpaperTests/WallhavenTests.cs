@@ -57,9 +57,12 @@ public class WallhavenTests
         ]);
         result.KnownEntries.Count.ShouldBe(6);
         result.NewEntries[0].FileName.ShouldBe("wallhaven-vp3pd5");
-        result.NewEntries[0].ThumbnailUrl.ShouldBe("https://th.wallhaven.cc/small/vp/vp3pd5.jpg");
-        result.NewEntries[0].Tags.ShouldContain("redhead");
-        result.NewEntries[1].Tags.ShouldContain("science fiction");
+        result.NewEntries[0].ThumbnailUrl.ShouldBe("https://th.wallhaven.cc/orig/vp/vp3pd5.jpg");
+        result.NewEntries[0].Tags.Select(x => x.Text).ShouldContain("redhead");
+        result.NewEntries[1].Tags.Select(x => x.Text).ShouldContain("science fiction");
+        result.NewEntries[0].Tags.ShouldContain(x => x.Text == "Tsuki (Billlie)"
+            && x.Category == "Musicians"
+            && x.Aliases!.SequenceEqual(new[] { "Fukutomi Tsuki", "TARU", "福富 つき" }));
         handler.Requests.ShouldAllBe(x => x.Headers.GetValues("X-API-Key").Single() == "some-key");
         handler.Requests
             .Where(x => x.RequestUri!.AbsolutePath.EndsWith("/search"))

@@ -12,7 +12,7 @@ public class WallEntry
         string extension,
         ContentCategory contentCategory,
         string siteCategory,
-        List<string> tags,
+        List<Tag> tags,
         string? albumName)
     {
         Url = url;
@@ -32,7 +32,7 @@ public class WallEntry
     public string Extension { get; }
     public ContentCategory ContentCategory { get; }
     public string SiteCategory { get; }
-    public List<string> Tags { get; }
+    public List<Tag> Tags { get; }
     public string? AlbumName { get; }
     public string? FileContentAsBase64String { get; set; }
 }

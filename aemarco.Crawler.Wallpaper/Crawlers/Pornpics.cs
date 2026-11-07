@@ -179,7 +179,7 @@ internal class Pornpics : WallpaperCrawlerBasis
             return false;
         }
 
-        List<string>? tags = null;
+        List<Tag>? tags = null;
 
         var album = new AlbumEntry(albumName);
         var entryNodes = albumPage.FindNodes("//li[@class='thumbwook']/a");

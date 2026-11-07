@@ -130,7 +130,7 @@ internal class Wallhaven : WallpaperCrawlerBasis
         var source = new WallEntrySource(catJob.Category, catJob.SiteCategoryName)
         {
             ImageUri = new PageUri(new Uri(item.Path)),
-            ThumbnailUri = new PageUri(new Uri(item.Thumbs.Small))
+            ThumbnailUri = new PageUri(new Uri(item.Thumbs.Original))
         };
 
         //tags cost a detail call each, only new walls need them
@@ -139,7 +139,7 @@ internal class Wallhaven : WallpaperCrawlerBasis
             try
             {
                 var wallpaper = await _client.GetWallpaper(item.Id, CancellationToken);
-                source.Tags.AddRange(wallpaper.Tags.Select(x => x.Name));
+                source.Tags.AddRange(wallpaper.Tags.Select(x => x.ToTag()));
             }
             catch (HttpRequestException ex)
             {

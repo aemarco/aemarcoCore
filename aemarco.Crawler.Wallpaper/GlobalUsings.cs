@@ -7,6 +7,7 @@ global using aemarco.Crawler.Model;
 global using aemarco.Crawler.Wallpaper.Clients;
 global using aemarco.Crawler.Wallpaper.Common;
 global using aemarco.Crawler.Wallpaper.Contracts.Clients;
+global using aemarco.Crawler.Wallpaper.Mapping;
 global using aemarco.Crawler.Wallpaper.Model;
 global using aemarco.Crawler.Wallpaper.Model.Clients;
 global using Microsoft.Extensions.DependencyInjection;
