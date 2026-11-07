@@ -17,7 +17,7 @@ public class SiteCrawlerProviderTests
 
         var result = sut.GetAvailableCrawlerNames();
 
-        result.Should().Equal(expected);
+        result.ShouldBe(expected);
 
         result.Dump();
     }
@@ -29,9 +29,8 @@ public class SiteCrawlerProviderTests
 
         var result = sut.GetFilteredCrawlerInstances(["Nudevista"]);
 
-        result.Should()
-                .HaveCount(1)
-            .And.OnlyContain(x => CrawlerInfo.FromCrawlerType(x.GetType()).FriendlyName == "Nudevista");
+        result.ShouldHaveSingleItem();
+        result.ShouldAllBe(x => CrawlerInfo.FromCrawlerType(x.GetType()).FriendlyName == "Nudevista");
 
         result.Select(x => CrawlerInfo.FromCrawlerType(x.GetType())).Dump();
     }
@@ -50,9 +49,8 @@ public class SiteCrawlerProviderTests
 
         var result = sut.GetFilteredCrawlerInstances([]);
 
-        result.Should()
-                .HaveCount(expectedCount)
-            .And.OnlyHaveUniqueItems();
+        result.Length.ShouldBe(expectedCount);
+        result.ShouldBeUnique();
 
 
         result.Select(x => CrawlerInfo.FromCrawlerType(x.GetType())).Dump();

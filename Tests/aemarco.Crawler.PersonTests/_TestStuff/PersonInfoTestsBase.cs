@@ -36,7 +36,7 @@ internal abstract class PersonInfoTestsBase<T>
         if (Entry is null)
             return;
 
-        Entry.CrawlerInfos.FirstOrDefault()?.FriendlyName.Should().Be(_crawlerInfo.FriendlyName);
+        Entry.CrawlerInfos.FirstOrDefault()?.FriendlyName.ShouldBe(_crawlerInfo.FriendlyName);
         Entry.CrawlerInfos.Dump();
     }
 
@@ -46,7 +46,7 @@ internal abstract class PersonInfoTestsBase<T>
         if (Entry is null)
             return;
 
-        Entry.Errors.Should().BeEmpty();
+        Entry.Errors.ShouldBeEmpty();
         Entry.Errors.Dump();
     }
 
@@ -64,9 +64,9 @@ internal abstract class PersonInfoTestsBase<T>
         }
 
         if (ExpectedRating.Value)
-            Entry.Rating.Should().BeInRange(0, 10);
+            Entry.Rating.ShouldNotBeNull().ShouldBeInRange(0, 10);
         else
-            Entry.Rating.Should().BeNull();
+            Entry.Rating.ShouldBeNull();
         (Entry.Rating?.ToString()).Dump();
     }
 
@@ -83,7 +83,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
         }
 
-        Entry.Gender.Should().Be(ExpectedGender);
+        Entry.Gender.ShouldBe(ExpectedGender);
         (Entry.Gender?.ToString()).Dump();
     }
 
@@ -100,7 +100,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
         }
 
-        Entry.Birthday.Should().Be(ExpectedBirthday);
+        Entry.Birthday.ShouldBe(ExpectedBirthday);
         Entry.Birthday.Dump();
     }
 
@@ -117,7 +117,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
         }
 
-        Entry.CareerStart.Should().Be(ExpectedCareerStart);
+        Entry.CareerStart.ShouldBe(ExpectedCareerStart);
         Entry.CareerStart.Dump();
     }
 
@@ -134,7 +134,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
         }
 
-        Entry.Country.Should().Be(ExpectedCountry);
+        Entry.Country.ShouldBe(ExpectedCountry);
         Entry.Country.Dump();
     }
 
@@ -151,7 +151,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
         }
 
-        Entry.City.Should().Be(ExpectedCity);
+        Entry.City.ShouldBe(ExpectedCity);
         Entry.City.Dump();
     }
 
@@ -168,7 +168,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
         }
 
-        Entry.Profession.Should().Be(ExpectedProfession);
+        Entry.Profession.ShouldBe(ExpectedProfession);
         Entry.Profession.Dump();
     }
 
@@ -185,7 +185,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
         }
 
-        Entry.Ethnicity.Should().Be(ExpectedEthnicity);
+        Entry.Ethnicity.ShouldBe(ExpectedEthnicity);
         Entry.Ethnicity.Dump();
     }
 
@@ -202,7 +202,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
         }
 
-        Entry.HairColor.Should().Be(ExpectedHairColor);
+        Entry.HairColor.ShouldBe(ExpectedHairColor);
         Entry.HairColor.Dump();
     }
 
@@ -219,7 +219,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
         }
 
-        Entry.EyeColor.Should().Be(ExpectedEyeColor);
+        Entry.EyeColor.ShouldBe(ExpectedEyeColor);
         Entry.EyeColor.Dump();
     }
 
@@ -236,7 +236,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
         }
 
-        Entry.Height.Should().Be(ExpectedHeight);
+        Entry.Height.ShouldBe(ExpectedHeight);
         Entry.Height.Dump();
     }
 
@@ -253,7 +253,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
         }
 
-        Entry.Weight.Should().Be(ExpectedWeight);
+        Entry.Weight.ShouldBe(ExpectedWeight);
         Entry.Weight.Dump();
     }
 
@@ -270,7 +270,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
         }
 
-        Entry.MeasurementDetails.ToString().Should().Be(ExpectedMeasurementDetails);
+        Entry.MeasurementDetails.ToString().ShouldBe(ExpectedMeasurementDetails);
         Entry.MeasurementDetails.Dump();
     }
 
@@ -287,7 +287,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
         }
 
-        Entry.Piercings.Should().Be(ExpectedPiercings);
+        Entry.Piercings.ShouldBe(ExpectedPiercings);
         Entry.Piercings.Dump();
     }
 
@@ -304,7 +304,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
         }
 
-        Entry.StillActive.Should().Be(ExpectedStillActive);
+        Entry.StillActive.ShouldBe(ExpectedStillActive);
         Entry.StillActive.Dump();
     }
 
@@ -320,7 +320,7 @@ internal abstract class PersonInfoTestsBase<T>
             TestOutput.NothingExpected(null);
             return;
         }
-        Entry.ProfilePictures.Select(x => x.Url).Should().BeEquivalentTo(ExpectedProfilePictures);
+        Entry.ProfilePictures.Select(x => x.Url).ShouldBe(ExpectedProfilePictures, true);
         Entry.ProfilePictures.Dump();
     }
 
@@ -337,7 +337,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
         }
 
-        Entry.ProfilePictures.Count.Should().BeGreaterOrEqualTo(ExpectedProfilePictureMinCount.Value);
+        Entry.ProfilePictures.Count.ShouldBeGreaterThanOrEqualTo(ExpectedProfilePictureMinCount.Value);
         Entry.ProfilePictures.Dump();
     }
 
@@ -355,7 +355,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
         }
 
-        Entry.Aliases.Should().BeEquivalentTo(ExpectedAliases);
+        Entry.Aliases.ShouldBe(ExpectedAliases, true);
         Entry.Aliases.Dump();
     }
 
@@ -373,7 +373,7 @@ internal abstract class PersonInfoTestsBase<T>
             return;
         }
 
-        Entry.SocialLinks.Should().BeSubsetOf(ExpectedSocialLinks);
+        Entry.SocialLinks.ShouldBeSubsetOf(ExpectedSocialLinks);
         Entry.SocialLinks.Dump();
     }
 

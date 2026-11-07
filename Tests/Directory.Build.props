@@ -15,13 +15,12 @@
 		<PackageReference Include="coverlet.collector" />
 		<PackageReference Include="GitHubActionsTestLogger" />
 
-		<!-- brings NUnit along, plus Dump() for test output and fixture helpers -->
+		<!-- brings NUnit and Shouldly along, plus Dump() for test output and fixture helpers -->
 		<PackageReference Include="aemarcoToolboxTesting" />
 		<PackageReference Include="NUnit.Analyzers" />
 		<PackageReference Include="NUnit3TestAdapter" />
 
 		<PackageReference Include="NSubstitute" />
-		<PackageReference Include="FluentAssertions" />
 
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
 	</ItemGroup>

@@ -17,7 +17,7 @@ internal class MeasurementDetailsTests
 
         var result = sut.ToString();
 
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
 
@@ -39,7 +39,7 @@ internal class MeasurementDetailsTests
     public void Parse_Works(string text, string expected)
     {
         var result = MeasurementDetails.Parse(Regex.Unescape(text));
-        result.ToString().Should().Be(expected);
+        result.ToString().ShouldBe(expected);
     }
 
 
@@ -68,7 +68,7 @@ internal class MeasurementDetailsTests
         var format = new MeasurementFormatProvider(MeasurementSystem.Imperial);
         var result = MeasurementDetails.Parse(text, format);
 
-        result.ToString().Should().Be(expected);
+        result.ToString().ShouldBe(expected);
     }
 
 
@@ -79,11 +79,11 @@ internal class MeasurementDetailsTests
     public void TryParse_WorksUnSuccessfully(string? text)
     {
         var result = MeasurementDetails.TryParse(text, out var parsed);
-        result.Should().BeFalse();
-        parsed.Bust.Should().Be(null);
-        parsed.Cup.Should().Be(null);
-        parsed.Waist.Should().Be(null);
-        parsed.Hip.Should().Be(null);
+        result.ShouldBeFalse();
+        parsed.Bust.ShouldBe(null);
+        parsed.Cup.ShouldBe(null);
+        parsed.Waist.ShouldBe(null);
+        parsed.Hip.ShouldBe(null);
     }
 
 }

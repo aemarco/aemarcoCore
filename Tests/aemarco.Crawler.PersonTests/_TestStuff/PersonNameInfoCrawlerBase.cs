@@ -24,7 +24,7 @@ internal abstract class PersonNameInfoCrawlerBase<T>
         }
 
         var result = await _crawler.GetPersonNameEntries(CancellationToken.None);
-        result.Length.Should().BeGreaterThan(0, "Expected at least 1 Entry");
+        result.Length.ShouldBeGreaterThan(0, "Expected at least 1 Entry");
         result.Dump();
     }
 

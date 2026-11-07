@@ -16,7 +16,7 @@ The general conventions (code style, test conventions, commit workflow, and the 
 
 ## Commands
 
-Build/test/pack go through Nuke (`build/`), which is also what CI (GitHub Actions, `.github/workflows/build.yml`, hand-written, runs `./build.cmd Publish` and uploads the `drop` and `test-results` artifacts) runs. On GitHub, test results show up as annotations and job summary (`GitHubActionsTestLogger`), and the `Tests` target appends ReportGenerator's `SummaryGithub.md` coverage table to `$GITHUB_STEP_SUMMARY`. The whole test stack (test SDK, adapter, coverlet, the logger, `aemarcoToolboxTesting` which brings NUnit, NSubstitute, FluentAssertions, DI) is referenced in `Tests/Directory.Build.props`, so a test csproj only holds its project references. Keep `coverlet.collector` there in particular: its targets live in `build/` only, so a transitive reference never deploys the collector and coverage comes out empty. There is no `global.json`: the build uses the installed SDK, the workflow sets up `10.x`. The Nuke targets work on the whole solution; to verify a change, build or test only the project at hand (see below), as in the Internals file. A push to `main` publishes: the workflow's `publish` job pushes the `drop` packages to nuget.org (trusted publishing via OIDC, environment `push-to-nuget-org`, secret `NUGET_USER`, `--skip-duplicate`). So pushing to `main` is the deploy here, and the deploy stance of the Internals file applies to it:
+Build/test/pack go through Nuke (`build/`), which is also what CI (GitHub Actions, `.github/workflows/build.yml`, hand-written, runs `./build.cmd Publish` and uploads the `drop` and `test-results` artifacts) runs. On GitHub, test results show up as annotations and job summary (`GitHubActionsTestLogger`), and the `Tests` target appends ReportGenerator's `SummaryGithub.md` coverage table to `$GITHUB_STEP_SUMMARY`. The whole test stack (test SDK, adapter, coverlet, the logger, `aemarcoToolboxTesting` which brings NUnit and Shouldly, NSubstitute, DI) is referenced in `Tests/Directory.Build.props`, so a test csproj only holds its project references. Keep `coverlet.collector` there in particular: its targets live in `build/` only, so a transitive reference never deploys the collector and coverage comes out empty. There is no `global.json`: the build uses the installed SDK, the workflow sets up `10.x`. The Nuke targets work on the whole solution; to verify a change, build or test only the project at hand (see below), as in the Internals file. A push to `main` publishes: the workflow's `publish` job pushes the `drop` packages to nuget.org (trusted publishing via OIDC, environment `push-to-nuget-org`, secret `NUGET_USER`, `--skip-duplicate`). So pushing to `main` is the deploy here, and the deploy stance of the Internals file applies to it:
 
 ```
 ./build.cmd Compile      # CountryUpdate -> Restore -> Compile
@@ -24,7 +24,7 @@ Build/test/pack go through Nuke (`build/`), which is also what CI (GitHub Action
 ./build.cmd Pack         # nupkgs into build/output/drop
 ```
 
-Plain dotnet works for day-to-day work (the tests here use NUnit and FluentAssertions, where Internals uses Shouldly; use what the file you edit already uses):
+Plain dotnet works for day-to-day work (the tests use NUnit and Shouldly, as in Internals; an unordered collection compare is `ShouldBe(expected, true)` (`ignoreOrder`), `ShouldBeFalse()`/`ShouldBeInRange` take no nullables, so `bool?` uses `ShouldBe(false)` and `double?` goes through `ShouldNotBeNull()` first):
 
 ```
 dotnet test Tests/aemarco.CrawlerTests

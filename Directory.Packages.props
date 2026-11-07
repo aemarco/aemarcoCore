@@ -20,8 +20,12 @@
 		<PackageVersion Include="DotNet.ReproducibleBuilds" Version="2.0.5" />
 		<PackageVersion Include="CountryData.Standard" Version="1.5.0" />
 		<PackageVersion Include="Nuke.Common" Version="10.1.0" />
+		<!-- TODO pins for Nuke.Common 10.1.0 only: on a Nuke update, remove these three (here and in build/_build.csproj) and keep them only if the warnings come back -->
 		<!-- Nuke brings NuGet 6.12, the MSBuild of the SDK it evaluates projects with needs NuGet.Frameworks 7.9 -->
 		<PackageVersion Include="NuGet.Packaging" Version="7.9.0" />
+		<!-- Nuke brings vulnerable 9.0.x versions transitively, pinned to the patched ones (build project only) -->
+		<PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />
+		<PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.14" />
 	</ItemGroup>
 	<ItemGroup Label="Testing.props">
 		<!-- testing -->
@@ -32,6 +36,5 @@
 		<PackageVersion Include="NUnit.Analyzers" Version="4.4.0" />
 		<PackageVersion Include="NUnit3TestAdapter" Version="4.6.0" />
 		<PackageVersion Include="NSubstitute" Version="5.3.0" />
-		<PackageVersion Include="FluentAssertions" Version="6.12.2" />
 	</ItemGroup>
 </Project>

@@ -11,8 +11,8 @@ internal class PersonInfoTests
 
         sut.Merge(infos);
 
-        sut.CrawlerInfos.Should().HaveCount(2);
-        sut.CrawlerInfos.Select(x => x.Priority).Should().BeInAscendingOrder();
+        sut.CrawlerInfos.Count.ShouldBe(2);
+        sut.CrawlerInfos.Select(x => x.Priority).ShouldBeInOrder();
 
         sut.CrawlerInfos.Dump();
     }
@@ -24,8 +24,8 @@ internal class PersonInfoTests
 
         sut.Merge(infos);
 
-        sut.CrawlerInfos.Should().HaveCount(2);
-        sut.CrawlerInfos.Select(x => x.FriendlyName).Should().Equal("First", "Middle");
+        sut.CrawlerInfos.Count.ShouldBe(2);
+        sut.CrawlerInfos.Select(x => x.FriendlyName).ShouldBe(["First", "Middle"]);
 
         sut.CrawlerInfos.Dump();
     }
@@ -38,8 +38,8 @@ internal class PersonInfoTests
 
         sut.Merge(infos);
 
-        sut.FirstName.Should().Be("Foxi");
-        sut.LastName.Should().Be("Di");
+        sut.FirstName.ShouldBe("Foxi");
+        sut.LastName.ShouldBe("Di");
 
         sut.Dump();
     }
@@ -53,9 +53,9 @@ internal class PersonInfoTests
 
         sut.Merge(infos);
 
-        sut.CrawlerInfos.Should().HaveCount(3);
+        sut.CrawlerInfos.Count.ShouldBe(3);
         //because last "Foxy Di" is an alias match on earlier info
-        sut.CrawlerInfos.Select(x => x.FriendlyName).Should().Contain("Last");
+        sut.CrawlerInfos.Select(x => x.FriendlyName).ShouldContain("Last");
         sut.CrawlerInfos.Dump();
     }
 
@@ -67,8 +67,8 @@ internal class PersonInfoTests
 
         sut.Merge(infos);
 
-        sut.CrawlerInfos.Should().HaveCount(2);
-        sut.CrawlerInfos.Select(x => x.FriendlyName).Should().NotContain("Last");
+        sut.CrawlerInfos.Count.ShouldBe(2);
+        sut.CrawlerInfos.Select(x => x.FriendlyName).ShouldNotContain("Last");
 
         sut.CrawlerInfos.Dump();
     }
@@ -94,7 +94,7 @@ internal class PersonInfoTests
 
 
         sut.Merge(infos);
-        sut.Rating.Should().Be(expected);
+        sut.Rating.ShouldBe(expected);
         sut.Rating.Dump();
     }
 
@@ -132,27 +132,27 @@ internal class PersonInfoTests
 
         sut.Merge(infos);
 
-        sut.Gender.Should().Be(Gender.Female);
+        sut.Gender.ShouldBe(Gender.Female);
         sut.ProfilePictures
             .Select(x => x.Url)
-            .Should().Equal("https://example.com/1.jpg", "https://example.com/2.jpg");
-        sut.Birthday.Should().Be(new DateOnly(1990, 1, 1));
-        sut.Country.Should().Be("Germany");
-        sut.City.Should().Be("Berlin");
-        sut.Profession.Should().Be("DoStuff");
-        sut.CareerStart.Should().Be(new DateOnly(2010, 1, 1));
-        sut.StillActive.Should().BeFalse();
-        sut.Aliases.Should().Equal("1", "2");
-        sut.Ethnicity.Should().Be("Marsian");
-        sut.HairColor.Should().Be("Golden");
-        sut.EyeColor.Should().Be("Purple");
-        sut.MeasurementDetails.ToString().Should().Be("1B-2-3");
-        sut.Height.Should().Be(160);
-        sut.Weight.Should().Be(40);
-        sut.Piercings.Should().Be("Lip");
+            .ShouldBe(["https://example.com/1.jpg", "https://example.com/2.jpg"]);
+        sut.Birthday.ShouldBe(new DateOnly(1990, 1, 1));
+        sut.Country.ShouldBe("Germany");
+        sut.City.ShouldBe("Berlin");
+        sut.Profession.ShouldBe("DoStuff");
+        sut.CareerStart.ShouldBe(new DateOnly(2010, 1, 1));
+        sut.StillActive.ShouldBe(false);
+        sut.Aliases.ShouldBe(["1", "2"]);
+        sut.Ethnicity.ShouldBe("Marsian");
+        sut.HairColor.ShouldBe("Golden");
+        sut.EyeColor.ShouldBe("Purple");
+        sut.MeasurementDetails.ToString().ShouldBe("1B-2-3");
+        sut.Height.ShouldBe(160);
+        sut.Weight.ShouldBe(40);
+        sut.Piercings.ShouldBe("Lip");
         sut.SocialLinks
             .Select(x => x.Url)
-            .Should().Equal("https://example.com/unknown", "https://example.com/official");
+            .ShouldBe(["https://example.com/unknown", "https://example.com/official"]);
 
         sut.Dump();
     }

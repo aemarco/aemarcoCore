@@ -12,7 +12,7 @@ public class StringExtensionsTests
     public void Except_RemovesGivenStrings(string input, string expected, string[] except)
     {
         var result = input.Except(except);
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
 
@@ -24,7 +24,7 @@ public class StringExtensionsTests
     public void TitleCase_ReturnsExpectedResult(string input, string expected)
     {
         var result = input.TitleCase();
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
 
@@ -38,7 +38,7 @@ public class StringExtensionsTests
     public void SplitList_WorksWithComma(string? text, string expected)
     {
         var result = text.SplitList();
-        string.Join(';', result).Should().Be(expected);
+        string.Join(';', result).ShouldBe(expected);
     }
 
 
@@ -49,7 +49,7 @@ public class StringExtensionsTests
     public void SplitList_WorksWithMultiple(string input, string expected)
     {
         var result = input.SplitList(',', ';', '|');
-        string.Join(';', result).Should().Be(expected);
+        string.Join(';', result).ShouldBe(expected);
     }
 
     [TestCase(null, null, null, null)]
@@ -65,7 +65,7 @@ public class StringExtensionsTests
             ? null
             : new DateOnly(year.Value, month.Value, day.Value);
         var result = text.ToDateOnly();
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
 }

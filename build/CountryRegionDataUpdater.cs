@@ -1,7 +1,6 @@
 ﻿using CountryData.Standard;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text.Json;
 
@@ -233,7 +232,7 @@ class CountryRegionDataUpdater
         { "Tanzania, United Republic of", ["Tanzania", "Tansania"] },
         { "Trinidad & Tobago", ["Trinidad und Tobago"] },
         { "Tunisia", ["Tunesien"] },
-        { "Turkey", ["Türkei"] },
+        { "Türkiye", ["Türkei"] }, //ICU names it Türkiye, "Turkey" comes in as alias
         { "Ukraine", [  "Ukrainian"] },
         { "United Arab Emirates", ["Vereinigte Arabische Emirate", "UAE"] },
         { "United Kingdom", ["Vereinigtes Königreich", "UK", "British"] },

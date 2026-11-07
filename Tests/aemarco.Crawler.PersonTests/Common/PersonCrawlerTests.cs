@@ -11,7 +11,7 @@ internal class PersonCrawlerTests
         var result = sut.AvailableCrawlers
             .ToArray();
 
-        result.Should().Equal("Crawler1", "Crawler2");
+        result.ShouldBe(["Crawler1", "Crawler2"]);
 
         result.Dump();
     }
@@ -25,8 +25,8 @@ internal class PersonCrawlerTests
 
         //we check indirectly if StartAsync uses the filter
         var result = await sut.CrawlPerson("foxi", "di");
-        result.CrawlerInfos.Should().HaveCount(1);
-        result.CrawlerInfos[0].FriendlyName.Should().Be("Crawler1");
+        result.CrawlerInfos.Count.ShouldBe(1);
+        result.CrawlerInfos[0].FriendlyName.ShouldBe("Crawler1");
 
         result.CrawlerInfos.Dump();
     }
@@ -41,10 +41,10 @@ internal class PersonCrawlerTests
 
         var result = await sut.CrawlPersonNames(CancellationToken.None);
 
-        result.Should().Equal(
+        result.ShouldBe([
             new PersonName("Ariel Rebel"),
             new PersonName("Foxi Di"),
-            new PersonName("Piper Perri"));
+            new PersonName("Piper Perri")]);
 
         result.Dump();
     }
@@ -57,9 +57,9 @@ internal class PersonCrawlerTests
 
         var result = await sut.CrawlPerson("foxi", "di");
 
-        result.CrawlerInfos.Should().HaveCount(0);
-        result.FirstName.Should().Be("Foxi");
-        result.LastName.Should().Be("Di");
+        result.CrawlerInfos.Count.ShouldBe(0);
+        result.FirstName.ShouldBe("Foxi");
+        result.LastName.ShouldBe("Di");
 
         result.Dump();
     }
@@ -71,8 +71,8 @@ internal class PersonCrawlerTests
 
         var result = await sut.CrawlPerson("foxi", "di");
 
-        result.CrawlerInfos.Should().HaveCount(2);
-        result.CrawlerInfos.Select(x => x.FriendlyName).Should().BeEquivalentTo("Crawler1", "Crawler2");
+        result.CrawlerInfos.Count.ShouldBe(2);
+        result.CrawlerInfos.Select(x => x.FriendlyName).ShouldBe(["Crawler1", "Crawler2"], true);
 
         result.CrawlerInfos.Dump();
     }
@@ -84,9 +84,9 @@ internal class PersonCrawlerTests
 
         var result = await sut.CrawlPerson("foxi", "di");
 
-        result.CrawlerInfos.Should().HaveCount(2);
-        result.Errors.Should().HaveCount(1);
-        result.Errors[0].Message.Should().Be("Error");
+        result.CrawlerInfos.Count.ShouldBe(2);
+        result.Errors.Count.ShouldBe(1);
+        result.Errors[0].Message.ShouldBe("Error");
 
         result.Errors.Select(x => x.Message).Dump();
     }
@@ -98,10 +98,10 @@ internal class PersonCrawlerTests
 
         var result = await sut.CrawlPerson("foxi", "di");
 
-        result.CrawlerInfos.Should().HaveCount(2);
+        result.CrawlerInfos.Count.ShouldBe(2);
         //order check as well
-        result.CrawlerInfos[0].FriendlyName.Should().Be("Crawler2");
-        result.CrawlerInfos[1].FriendlyName.Should().Be("Crawler1");
+        result.CrawlerInfos[0].FriendlyName.ShouldBe("Crawler2");
+        result.CrawlerInfos[1].FriendlyName.ShouldBe("Crawler1");
 
         result.CrawlerInfos.Dump();
     }

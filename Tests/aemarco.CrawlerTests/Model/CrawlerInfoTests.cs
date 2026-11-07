@@ -12,14 +12,14 @@ public class CrawlerInfoTests
 
         var result = candidate.ToString();
 
-        result.Should().Be("Test");
+        result.ShouldBe("Test");
     }
 
     [Test]
     public void FromCrawlerType_Delivers()
     {
         var result = CrawlerInfo.FromCrawlerType(typeof(TestClass));
-        result.Should().Be(new CrawlerInfo("Test", 0));
+        result.ShouldBe(new CrawlerInfo("Test", 0));
     }
 
 

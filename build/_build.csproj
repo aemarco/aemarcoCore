@@ -14,7 +14,10 @@
   <ItemGroup>
 	  <PackageReference Include="CountryData.Standard" />
 	  <PackageReference Include="Nuke.Common" />
+	  <!-- TODO pins for Nuke.Common 10.1.0 only, see Directory.Packages.props: drop on a Nuke update unless the warnings come back -->
 	  <PackageReference Include="NuGet.Packaging" />
+	  <PackageReference Include="System.Security.Cryptography.Pkcs" />
+	  <PackageReference Include="System.Security.Cryptography.Xml" />
   </ItemGroup>
 
   <ItemGroup>

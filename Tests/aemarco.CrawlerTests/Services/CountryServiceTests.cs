@@ -43,7 +43,7 @@ internal class CountryServiceTests
     public void FindCountry(string? text, string? expected)
     {
         var result = new CountryService().FindCountry(text);
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
         result.Dump();
     }
 
@@ -52,7 +52,7 @@ internal class CountryServiceTests
     public void GetData_DeliversAtLeastOne()
     {
         Country[] result = [.. new CountryService().GetData()];
-        result.Length.Should().BeGreaterThan(0);
+        result.Length.ShouldBeGreaterThan(0);
         result.Dump();
     }
 

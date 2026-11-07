@@ -3,10 +3,10 @@
 global using aemarco.Crawler.Model;
 global using aemarco.Crawler.Wallpaper;
 global using aemarcoCommons.ToolboxTesting;
-global using FluentAssertions;
 global using Microsoft.Extensions.DependencyInjection;
 global using Newtonsoft.Json;
 global using NUnit.Framework;
+global using Shouldly;
 global using System;
 global using System.Collections;
 global using System.Collections.Generic;

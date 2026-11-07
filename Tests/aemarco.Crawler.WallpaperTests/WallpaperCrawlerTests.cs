@@ -10,13 +10,13 @@ public class WallpaperCrawlerTests
     [Test]
     public void GetAvailableSites_Delivers()
     {
-        Sites.Count.Should().BeGreaterThan(0);
+        Sites.Count.ShouldBeGreaterThan(0);
         Sites.Dump();
     }
     [Test]
     public void GetAvailableCategories_Delivers()
     {
-        Cats.Count.Should().BeGreaterThan(0);
+        Cats.Count.ShouldBeGreaterThan(0);
         Cats.Dump();
     }
 
@@ -37,7 +37,7 @@ public class WallpaperCrawlerTests
         var c = GetCrawler();
         c.AddSourceSiteFilter(site);
         c.HandleFilters();
-        c._wallCrawlers.Select(x => CrawlerInfo.FromCrawlerType(x.GetType()).FriendlyName).Should().BeEquivalentTo(site);
+        c._wallCrawlers.Select(x => CrawlerInfo.FromCrawlerType(x.GetType()).FriendlyName).ShouldBe([site], true);
 
         OutputOffers(c);
     }
@@ -47,8 +47,7 @@ public class WallpaperCrawlerTests
         //no filter does not filter
         var all = GetCrawler();
         all.HandleFilters();
-        all._wallCrawlers.Select(x => CrawlerInfo.FromCrawlerType(x.GetType()).FriendlyName).Should()
-            .BeEquivalentTo(Sites);
+        all._wallCrawlers.Select(x => CrawlerInfo.FromCrawlerType(x.GetType()).FriendlyName).ShouldBe(Sites, true);
 
         OutputOffers(all);
     }
@@ -74,8 +73,7 @@ public class WallpaperCrawlerTests
         c._wallCrawlers
             .All(x => x._crawlOffers is not null && x._crawlOffers
                 .All(o => o.Category.Category == cat))
-            .Should()
-            .BeTrue();
+            .ShouldBeTrue();
         OutputOffers(c);
     }
     [Test]
@@ -87,8 +85,7 @@ public class WallpaperCrawlerTests
 
         all._wallCrawlers
             .All(x => x._crawlOffers is not null && x._crawlOffers.Count > 0)
-            .Should()
-            .BeTrue();
+            .ShouldBeTrue();
         OutputOffers(all);
     }
 

@@ -12,8 +12,8 @@ public class PersonParserTests
     public void FindNameInText_Works(string? text, string? expectedFirst, string? expectedLast)
     {
         var (firstName, lastName) = PersonParser.FindNameInText(text);
-        firstName.Should().Be(expectedFirst);
-        lastName.Should().Be(expectedLast);
+        firstName.ShouldBe(expectedFirst);
+        lastName.ShouldBe(expectedLast);
     }
 
 
@@ -34,7 +34,7 @@ public class PersonParserTests
     public void FindRatingInText_Works(string? text, bool hundredBased, double? expected)
     {
         var result = PersonParser.FindRatingInText(text, hundredBased);
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
 
@@ -47,7 +47,7 @@ public class PersonParserTests
     {
         Gender? expected = asText is null ? null : Enum.Parse<Gender>(asText);
         var result = PersonParser.FindGenderInText(text);
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [TestCase(null, null)]
@@ -59,7 +59,7 @@ public class PersonParserTests
     {
         DateOnly? expected = asText is null ? null : DateOnly.Parse(asText);
         var result = PersonParser.FindCareerStartInText(text);
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [TestCase(null, null)]
@@ -74,7 +74,7 @@ public class PersonParserTests
     public void FindHeightInText_Works(string? text, int? expected)
     {
         var result = PersonParser.FindHeightInText(text);
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [TestCase(null, null)]
@@ -88,7 +88,7 @@ public class PersonParserTests
     public void FindWeightInText_Works(string? text, int? expected)
     {
         var result = PersonParser.FindWeightInText(text);
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
 
@@ -101,7 +101,7 @@ public class PersonParserTests
     public void FindStillActiveInText_Works(string? text, bool? expected)
     {
         var result = PersonParser.FindStillActiveInText(text);
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
 }
