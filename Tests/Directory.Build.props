@@ -25,4 +25,18 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
 	</ItemGroup>
 
+	<!-- global usings for the test stack above and the common System namespaces; project-specific ones stay in the project's GlobalUsings.cs -->
+	<ItemGroup>
+		<Using Include="aemarcoCommons.ToolboxTesting" />
+		<Using Include="Microsoft.Extensions.DependencyInjection" />
+		<Using Include="NSubstitute" />
+		<Using Include="NUnit.Framework" />
+		<Using Include="Shouldly" />
+		<Using Include="System" />
+		<Using Include="System.Collections.Generic" />
+		<Using Include="System.Linq" />
+		<Using Include="System.Threading" />
+		<Using Include="System.Threading.Tasks" />
+	</ItemGroup>
+
 </Project>

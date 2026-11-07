@@ -14,13 +14,14 @@ public static class HtmlHelper
 
     public static async Task<HtmlDocument> GetHtmlDocumentAsync(Uri uri, int? minDelay = null, int? maxDelay = null, CancellationToken token = default)
     {
-        await Gate.WaitAsync(token);
-
-        if (minDelay.HasValue && maxDelay.HasValue)
-            await Task.Delay(Random.Next(minDelay.Value, maxDelay.Value), token);
-
+        //ConfigureAwait(false): GetHtmlDocument blocks on this, a captured context (UI, NUnit SingleThreaded) would deadlock
+        await Gate.WaitAsync(token).ConfigureAwait(false);
         try
         {
+            //inside try, a cancelled delay must release the gate too
+            if (minDelay.HasValue && maxDelay.HasValue)
+                await Task.Delay(Random.Next(minDelay.Value, maxDelay.Value), token).ConfigureAwait(false);
+
             return TryGetHtmlDocument(uri);
         }
         finally

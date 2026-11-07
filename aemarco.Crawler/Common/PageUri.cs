@@ -54,7 +54,7 @@ public record PageUri(Uri Uri)
     }
     public async Task<PageDocument> NavigateAsync(int? minDelay = null, int? maxDelay = null, CancellationToken token = default)
     {
-        var document = await HtmlHelper.GetHtmlDocumentAsync(Uri, minDelay, maxDelay, token);
+        var document = await HtmlHelper.GetHtmlDocumentAsync(Uri, minDelay, maxDelay, token).ConfigureAwait(false);
         return new PageDocument(this, document);
     }
 
