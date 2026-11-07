@@ -1,0 +1,125 @@
+{
+  "data": {
+    "id": "lyryk2",
+    "url": "https://wallhaven.cc/w/lyryk2",
+    "short_url": "https://whvn.cc/lyryk2",
+    "uploader": {
+      "username": "rosho",
+      "group": "User",
+      "avatar": {
+        "200px": "https://wallhaven.cc/images/user/avatar/200/default-avatar.jpg",
+        "128px": "https://wallhaven.cc/images/user/avatar/128/default-avatar.jpg",
+        "32px": "https://wallhaven.cc/images/user/avatar/32/default-avatar.jpg",
+        "20px": "https://wallhaven.cc/images/user/avatar/20/default-avatar.jpg"
+      }
+    },
+    "views": 103,
+    "favorites": 5,
+    "source": "",
+    "purity": "sfw",
+    "category": "people",
+    "dimension_x": 2752,
+    "dimension_y": 1536,
+    "resolution": "2752x1536",
+    "ratio": "1.79",
+    "file_size": 2211090,
+    "file_type": "image/jpeg",
+    "created_at": "2026-11-07 04:33:01",
+    "colors": [
+      "#000000",
+      "#663300",
+      "#996633",
+      "#cc6633",
+      "#ffcc33"
+    ],
+    "path": "https://w.wallhaven.cc/full/ly/wallhaven-lyryk2.jpg",
+    "thumbs": {
+      "large": "https://th.wallhaven.cc/lg/ly/lyryk2.jpg",
+      "original": "https://th.wallhaven.cc/orig/ly/lyryk2.jpg",
+      "small": "https://th.wallhaven.cc/small/ly/lyryk2.jpg"
+    },
+    "tags": [
+      {
+        "id": 75,
+        "name": "CGI",
+        "alias": "3D, 3D Animation, 3dartwork, 3d design, 3d effect, 3D Environment, 3D graphics, 3dmax, 3D model, 3d object, 3d render, 3D renders, 3D visualization, CG, CG render, GFX, Graphical Effects, render, Rendered scene, rendering, renders",
+        "category_id": 25,
+        "category": "Digital",
+        "purity": "sfw",
+        "created_at": "2014-02-02 22:44:08"
+      },
+      {
+        "id": 44715,
+        "name": "screen shot",
+        "alias": "Geam Screenshots, in-game, in-game screenshot, screenshot, Screenshot of the game, screenshots, 屏幕截图",
+        "category_id": 30,
+        "category": "Games",
+        "purity": "sfw",
+        "created_at": "2016-04-16 10:11:38"
+      },
+      {
+        "id": 75437,
+        "name": "video game art",
+        "alias": "game art, Game  Screenshots, Game screenshots",
+        "category_id": 30,
+        "category": "Games",
+        "purity": "sfw",
+        "created_at": "2018-05-30 12:49:04"
+      },
+      {
+        "id": 166888,
+        "name": "Cronos: The New Dawn",
+        "alias": "",
+        "category_id": 30,
+        "category": "Games",
+        "purity": "sfw",
+        "created_at": "2025-06-24 18:45:47"
+      },
+      {
+        "id": 333,
+        "name": "Fallout",
+        "alias": "",
+        "category_id": 30,
+        "category": "Games",
+        "purity": "sfw",
+        "created_at": "2014-02-11 18:38:01"
+      },
+      {
+        "id": 464,
+        "name": "fog",
+        "alias": "foggy",
+        "category_id": 4,
+        "category": "Miscellaneous",
+        "purity": "sfw",
+        "created_at": "2014-02-16 20:55:43"
+      },
+      {
+        "id": 631,
+        "name": "helmet",
+        "alias": "helmets",
+        "category_id": 35,
+        "category": "Clothing",
+        "purity": "sfw",
+        "created_at": "2014-02-25 19:38:22"
+      },
+      {
+        "id": 4049,
+        "name": "pistol",
+        "alias": "Handgun, Pistola semiautomática, pistols",
+        "category_id": 60,
+        "category": "Military & Weapons",
+        "purity": "sfw",
+        "created_at": "2014-09-09 08:06:01"
+      },
+      {
+        "id": 14,
+        "name": "science fiction",
+        "alias": "Sci-Fi, sci-fi artwork, sci-fy, sci fi, scifi, scify",
+        "category_id": 3,
+        "category": "Entertainment",
+        "purity": "sfw",
+        "created_at": "2014-02-02 12:43:15"
+      }
+    ]
+  }
+}

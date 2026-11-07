@@ -152,8 +152,9 @@ public class WallpaperCrawlerTests
 
     private static WallpaperCrawler GetCrawler()
     {
+        //Wallhaven takes part only with a key, set it locally as environment variable (never in the repo)
         var sp = new ServiceCollection()
-            .AddWallCrawler()
+            .AddWallCrawler(x => x.WallhavenApiKey = Environment.GetEnvironmentVariable("WALLHAVEN_APIKEY"))
             .BuildServiceProvider();
         var result = (WallpaperCrawler)sp.GetRequiredService<IWallpaperCrawler>();
         return result;

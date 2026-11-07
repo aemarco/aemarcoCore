@@ -10,4 +10,9 @@
 		<ProjectReference Include="..\..\aemarco.Crawler.Wallpaper\aemarco.Crawler.Wallpaper.csproj" />
 	</ItemGroup>
 
+	<!-- test fixtures -->
+	<ItemGroup>
+		<None Include="Resources\TestData\**" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
+
 </Project>

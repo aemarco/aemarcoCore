@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace aemarco.Crawler.Common;
+﻿namespace aemarco.Crawler.Common;
 
 public static class HtmlHelper
 {

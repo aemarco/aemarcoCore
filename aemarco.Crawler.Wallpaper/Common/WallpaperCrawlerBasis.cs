@@ -143,6 +143,11 @@ internal abstract class WallpaperCrawlerBasis
     /// </summary>
     protected virtual bool FirstPageOnly => false;
 
+    /// <summary>
+    /// crawlers which need configuration (an api key for example) are left out while it is missing
+    /// </summary>
+    internal virtual bool IsAvailable => true;
+
 
     private List<string> _knownUrls = [];
     protected CancellationToken CancellationToken;
@@ -303,6 +308,10 @@ internal abstract class WallpaperCrawlerBasis
     internal WallCrawlerResult _result = new();
 
 
+    /// <summary>
+    /// lets a crawler skip expensive work (detail calls) for walls which are known already
+    /// </summary>
+    protected bool IsKnown(string url) => _knownUrls.Contains(url);
 
     /// <summary>
     /// adds the wall-entry to the crawl result, as new or known wall

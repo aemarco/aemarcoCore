@@ -1,0 +1,102 @@
+{
+  "data": [
+    {
+      "id": "vp3pd5",
+      "url": "https://wallhaven.cc/w/vp3pd5",
+      "short_url": "https://whvn.cc/vp3pd5",
+      "views": 209,
+      "favorites": 8,
+      "source": "",
+      "purity": "sfw",
+      "category": "people",
+      "dimension_x": 3072,
+      "dimension_y": 4096,
+      "resolution": "3072x4096",
+      "ratio": "0.75",
+      "file_size": 1362214,
+      "file_type": "image/jpeg",
+      "created_at": "2026-11-07 08:30:01",
+      "colors": [
+        "#999999",
+        "#424153",
+        "#cccccc",
+        "#000000",
+        "#996633"
+      ],
+      "path": "https://w.wallhaven.cc/full/vp/wallhaven-vp3pd5.jpg",
+      "thumbs": {
+        "large": "https://th.wallhaven.cc/lg/vp/vp3pd5.jpg",
+        "original": "https://th.wallhaven.cc/orig/vp/vp3pd5.jpg",
+        "small": "https://th.wallhaven.cc/small/vp/vp3pd5.jpg"
+      }
+    },
+    {
+      "id": "lyryk2",
+      "url": "https://wallhaven.cc/w/lyryk2",
+      "short_url": "https://whvn.cc/lyryk2",
+      "views": 101,
+      "favorites": 5,
+      "source": "",
+      "purity": "sfw",
+      "category": "people",
+      "dimension_x": 2752,
+      "dimension_y": 1536,
+      "resolution": "2752x1536",
+      "ratio": "1.79",
+      "file_size": 2211090,
+      "file_type": "image/jpeg",
+      "created_at": "2026-11-07 04:33:01",
+      "colors": [
+        "#000000",
+        "#663300",
+        "#996633",
+        "#cc6633",
+        "#ffcc33"
+      ],
+      "path": "https://w.wallhaven.cc/full/ly/wallhaven-lyryk2.jpg",
+      "thumbs": {
+        "large": "https://th.wallhaven.cc/lg/ly/lyryk2.jpg",
+        "original": "https://th.wallhaven.cc/orig/ly/lyryk2.jpg",
+        "small": "https://th.wallhaven.cc/small/ly/lyryk2.jpg"
+      }
+    },
+    {
+      "id": "gwvw9d",
+      "url": "https://wallhaven.cc/w/gwvw9d",
+      "short_url": "https://whvn.cc/gwvw9d",
+      "views": 116,
+      "favorites": 6,
+      "source": "",
+      "purity": "sfw",
+      "category": "people",
+      "dimension_x": 2752,
+      "dimension_y": 1536,
+      "resolution": "2752x1536",
+      "ratio": "1.79",
+      "file_size": 2746060,
+      "file_type": "image/jpeg",
+      "created_at": "2026-11-07 04:33:01",
+      "colors": [
+        "#660000",
+        "#000000",
+        "#990000",
+        "#cc3333",
+        "#663300"
+      ],
+      "path": "https://w.wallhaven.cc/full/gw/wallhaven-gwvw9d.jpg",
+      "thumbs": {
+        "large": "https://th.wallhaven.cc/lg/gw/gwvw9d.jpg",
+        "original": "https://th.wallhaven.cc/orig/gw/gwvw9d.jpg",
+        "small": "https://th.wallhaven.cc/small/gw/gwvw9d.jpg"
+      }
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "last_page": 1,
+    "per_page": 24,
+    "total": 3,
+    "query": null,
+    "seed": null
+  }
+}

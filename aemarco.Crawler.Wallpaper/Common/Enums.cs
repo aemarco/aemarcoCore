@@ -4,6 +4,10 @@
 public enum Category
 {
     // ReSharper disable InconsistentNaming
+
+    //no category known, the consumer's default category (sorted later)
+    None,
+
     Men,
     Girls,
 

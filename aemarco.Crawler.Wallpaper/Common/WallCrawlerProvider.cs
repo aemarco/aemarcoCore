@@ -25,10 +25,12 @@ internal class WallCrawlerProvider : IWallCrawlerProvider
     }
 
     //crawlers hold the state of one crawl, so each call delivers fresh instances
+    //unavailable ones (missing configuration) are left out, as if they did not exist
     public WallpaperCrawlerBasis[] GetCrawlerInstances()
     {
         var result = _registry.CrawlerKeys
             .Select(x => _serviceProvider.GetRequiredKeyedService<WallpaperCrawlerBasis>(x))
+            .Where(x => x.IsAvailable)
             .ToArray();
         return result;
     }

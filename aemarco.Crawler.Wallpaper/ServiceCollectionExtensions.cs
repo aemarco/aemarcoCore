@@ -1,13 +1,21 @@
 ﻿using System.Diagnostics;
 
 namespace aemarco.Crawler.Wallpaper;
+
 public static class ServiceCollectionExtensions
 {
 
-    public static IServiceCollection AddWallCrawler(this IServiceCollection services)
+    public static IServiceCollection AddWallCrawler(
+        this IServiceCollection services,
+        Action<WallCrawlerSettings>? configure = null)
     {
 
         services.AddCoreCrawler();
+
+        //settings
+        var settings = new WallCrawlerSettings();
+        configure?.Invoke(settings);
+        services.AddSingleton(settings);
 
         //crawlers
         List<string> crawlerKeys = [];
@@ -24,10 +32,9 @@ public static class ServiceCollectionExtensions
         }
         services.AddSingleton(new WallCrawlerRegistry([.. crawlerKeys]));
 
-
         //internal
+        services.AddWallhavenClient();
         services.AddTransient<IWallCrawlerProvider, WallCrawlerProvider>();
-
 
         //public
         services.AddTransient<IWallpaperCrawler, WallpaperCrawler>();
