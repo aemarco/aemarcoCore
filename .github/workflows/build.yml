@@ -3,10 +3,10 @@ name: Build
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
   workflow_dispatch:
 
 env:
@@ -45,3 +45,40 @@ jobs:
           path: |
             build/output/trx
             build/output/cob
+
+  publish:
+    needs: build
+    runs-on: windows-latest
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: push-to-nuget-org
+    permissions:
+      id-token: write  # OIDC token for the trusted publishing policy on nuget.org
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.x'
+
+      - name: Download packages
+        uses: actions/download-artifact@v7
+        with:
+          name: drop
+          path: ./drop
+
+      - name: NuGet login (OIDC -> temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Push packages to NuGet.org
+        shell: pwsh
+        run: |
+          Get-ChildItem ./drop -Filter *.nupkg | ForEach-Object {
+            Write-Host "Pushing $($_.Name)"
+            dotnet nuget push $_.FullName `
+              --source https://api.nuget.org/v3/index.json `
+              --api-key ${{ steps.login.outputs.NUGET_API_KEY }} `
+              --skip-duplicate
+          }

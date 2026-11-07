@@ -99,6 +99,7 @@ class Build : NukeBuild
             ReportGeneratorTasks.ReportGenerator(new ReportGeneratorSettings()
                 .SetTargetDirectory(CobDir)
                 .SetReports($"{TrxDir}/**/coverage.cobertura.xml")
+                .SetAssemblyFilters("-aemarco.TestBasics")
                 .SetReportTypes(ReportTypes.Cobertura, ReportTypes.MarkdownSummaryGithub));
 
             //coverage table on the run page
