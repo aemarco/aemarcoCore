@@ -6,11 +6,17 @@ internal class WallCraft : WallpaperCrawlerBasis
 {
 
     private readonly Uri _uri = new("https://wallpaperscraft.com");
-    protected override List<CrawlOffer> GetCrawlsOffers()
+    public WallCraft(
+        IHtmlClient htmlClient)
+        : base(htmlClient)
+    { }
+
+    protected override async Task<List<CrawlOffer>> GetCrawlOffers()
     {
         var result = new List<CrawlOffer>();
 
-        var mainPage = new PageUri(_uri).Navigate(1000, 2500);
+        if (await Navigate(new PageUri(_uri)) is not { } mainPage)
+            return [];
         var catNodes = mainPage.FindNodes("//ul[@class='filters__list JS-Filters']/li/a");
         foreach (var catNode in catNodes)
         {
@@ -75,21 +81,19 @@ internal class WallCraft : WallpaperCrawlerBasis
             _ => DefaultCategory
         };
     }
-    protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
+    protected override async Task<bool> AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
         //navigate
-        if (pageNode
+        if (await Navigate(pageNode
                 .FindNode("./a")?
-                .GetHref()?
-                .Navigate(1000, 2500) is not { } detailsPage)
+                .GetHref()) is not { } detailsPage)
         {
             AddWarning(pageNode, "Could not find DetailsDoc");
             return false;
         }
-        if (detailsPage
+        if (await Navigate(detailsPage
                 .FindNode("//div[@class='wallpaper-table__row']/span[@class='wallpaper-table__cell']/a")?
-                .GetHref()?
-                .Navigate(1000, 2500) is not { } downloadPage)
+                .GetHref()) is not { } downloadPage)
         {
             AddWarning(detailsPage, "Could not find DownloadDoc");
             return false;

@@ -1,23 +1,28 @@
 namespace aemarco.Crawler.Common;
 
 /// <summary>
-/// waits for a permit of the given limiter before every request of the HttpClient it is attached to
+/// waits for a permit of the domain, then the random jitter of its limit, before every request
 /// </summary>
-public class RateLimitHandler : DelegatingHandler
+internal class RateLimitHandler : DelegatingHandler
 {
 
-    private readonly RateLimiter _limiter;
+    private readonly CrawlerRateLimiter _rateLimiter;
     public RateLimitHandler(
-        RateLimiter limiter)
+        CrawlerRateLimiter rateLimiter)
     {
-        _limiter = limiter;
+        _rateLimiter = rateLimiter;
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        using var lease = await _limiter.AcquireAsync(1, cancellationToken).ConfigureAwait(false);
+        //waits (queued) until the domain's next permit; a lease without one only comes from a full queue, which RateLimit never has
+        using var lease = await _rateLimiter.Acquire(request, cancellationToken).ConfigureAwait(false);
         if (!lease.IsAcquired)
             throw new HttpRequestException($"Rate limit queue exceeded for {request.RequestUri}");
+
+        var jitter = _rateLimiter.GetLimit(CrawlerRateLimiter.GetDomain(request.RequestUri)).Jitter;
+        if (jitter > TimeSpan.Zero)
+            await Task.Delay(Random.Shared.Next((int)jitter.TotalMilliseconds), cancellationToken).ConfigureAwait(false);
 
         var result = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
         return result;

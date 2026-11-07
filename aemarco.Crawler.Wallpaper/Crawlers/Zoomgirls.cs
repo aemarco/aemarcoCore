@@ -6,7 +6,12 @@ internal class Zoomgirls : WallpaperCrawlerBasis
 {
 
     private readonly Uri _uri = new("https://zoomgirls.net");
-    protected override List<CrawlOffer> GetCrawlsOffers()
+    public Zoomgirls(
+        IHtmlClient htmlClient)
+        : base(htmlClient)
+    { }
+
+    protected override Task<List<CrawlOffer>> GetCrawlOffers()
     {
         var result = new List<CrawlOffer>
         {
@@ -46,19 +51,17 @@ internal class Zoomgirls : WallpaperCrawlerBasis
                 new ContentCategory(Category.Girls)),
         };
 
-        return result;
+        return Task.FromResult(result);
     }
     //z.B. "https://zoomgirls.net/latest_wallpapers/page/1"
     protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob) =>
         catJob.CategoryUri.WithHref($"page/{catJob.CurrentPage}");
     protected override string GetSearchStringGorEntryNodes() =>
         "//div[@class='thumb']/a";
-    protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
+    protected override async Task<bool> AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
         //navigate
-        if (pageNode
-                .GetHref()?
-                .Navigate() is not { } detailsPage)
+        if (await Navigate(pageNode.GetHref()) is not { } detailsPage)
         {
             AddWarning(pageNode, "Could not find DetailsDoc");
             return false;
@@ -85,7 +88,7 @@ internal class Zoomgirls : WallpaperCrawlerBasis
                 .Select(x => x.GetText())
                 .ToList();
             if (categories.Count > 0 &&
-                GetCrawlsOffers().FirstOrDefault(o => categories.Contains(o.SiteCategoryName)) is { } match)
+                (await GetCrawlOffers()).FirstOrDefault(o => categories.Contains(o.SiteCategoryName)) is { } match)
             {
                 source.OverrideCategory(match.Category);
             }

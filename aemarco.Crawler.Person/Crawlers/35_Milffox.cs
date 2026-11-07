@@ -7,8 +7,9 @@ internal class Milffox : SiteCrawlerBase
     private readonly Uri _uri = new("https://www.milffox.com");
     public Milffox(
         ICountryService countryService,
+        IHtmlClient htmlClient,
         ILogger<Milffox> logger)
-        : base(countryService, logger)
+        : base(countryService, htmlClient, logger)
     {
 
     }

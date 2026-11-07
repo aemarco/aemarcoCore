@@ -7,8 +7,9 @@ internal class BabesAndStars : SiteCrawlerBase
     private readonly Uri _uri = new("https://www.babesandstars.com");
     public BabesAndStars(
         ICountryService countryService,
+        IHtmlClient htmlClient,
         ILogger<BabesAndStars> logger)
-        : base(countryService, logger)
+        : base(countryService, htmlClient, logger)
     {
 
     }
@@ -16,7 +17,8 @@ internal class BabesAndStars : SiteCrawlerBase
     protected override async Task<PersonName[]> HandlePersonNameEntries(CancellationToken token)
     {
         var uri = new PageUri(_uri).WithHref("/top-models/");
-        var page = await uri.NavigateAsync(token: token);
+        if (await Navigate(uri, token) is not { } page)
+            return [];
         List<PersonName> result = [];
 
         //first page of performers

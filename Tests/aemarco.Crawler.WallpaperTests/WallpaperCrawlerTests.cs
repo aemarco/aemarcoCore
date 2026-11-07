@@ -2,7 +2,6 @@
 
 namespace aemarco.Crawler.WallpaperTests;
 
-[SingleThreaded]
 [Category("LiveSite")] //CI excludes it, see build/Build.cs Tests
 public class WallpaperCrawlerTests
 {
@@ -14,10 +13,14 @@ public class WallpaperCrawlerTests
         Sites.Dump();
     }
     [Test]
-    public void GetAvailableCategories_Delivers()
+    public async Task GetAvailableCategories_Delivers()
     {
-        Cats.Count.ShouldBeGreaterThan(0);
-        Cats.Dump();
+        var crawler = GetCrawler();
+
+        var cats = await crawler.GetAvailableCategories();
+
+        cats.Count.ShouldBeGreaterThan(0);
+        cats.Dump();
     }
 
     //sites
@@ -31,44 +34,43 @@ public class WallpaperCrawlerTests
         }
     }
     [TestCaseSource(nameof(Sites))]
-    public void HandleFilter_SiteFilter(string site)
+    public async Task HandleFilter_SiteFilter(string site)
     {
         //filter does filter
         var c = GetCrawler();
         c.AddSourceSiteFilter(site);
-        c.HandleFilters();
+        await c.HandleFilters();
         c._wallCrawlers.Select(x => CrawlerInfo.FromCrawlerType(x.GetType()).FriendlyName).ShouldBe([site], true);
 
         OutputOffers(c);
     }
     [Test]
-    public void HandleFilter_NoSiteFilter()
+    public async Task HandleFilter_NoSiteFilter()
     {
         //no filter does not filter
         var all = GetCrawler();
-        all.HandleFilters();
+        await all.HandleFilters();
         all._wallCrawlers.Select(x => CrawlerInfo.FromCrawlerType(x.GetType()).FriendlyName).ShouldBe(Sites, true);
 
         OutputOffers(all);
     }
 
     //cats
-    private static List<string> Cats
+    private static async IAsyncEnumerable<string> Cats()
     {
-        get
-        {
-            var crawler = GetCrawler();
-            var sc = crawler.GetAvailableCategories().ToList();
-            return sc;
-        }
+        var crawler = GetCrawler();
+        foreach (var cat in await crawler.GetAvailableCategories())
+            yield return cat;
     }
+    //NUnit 4 takes async enumerables as sources, the ReSharper inspection does not know that yet
+    // ReSharper disable once NUnit.TestCaseSourceShouldImplementIEnumerable
     [TestCaseSource(nameof(Cats))]
-    public void HandleFilter_CatFilter(string cat)
+    public async Task HandleFilter_CatFilter(string cat)
     {
         //filter does filter
         var c = GetCrawler();
         c.AddCategoryFilter(cat);
-        c.HandleFilters();
+        await c.HandleFilters();
 
         c._wallCrawlers
             .All(x => x._crawlOffers is not null && x._crawlOffers
@@ -77,11 +79,11 @@ public class WallpaperCrawlerTests
         OutputOffers(c);
     }
     [Test]
-    public void HandleFilter_NoCatFilter()
+    public async Task HandleFilter_NoCatFilter()
     {
         //no filter does not filter
         var all = GetCrawler();
-        all.HandleFilters();
+        await all.HandleFilters();
 
         all._wallCrawlers
             .All(x => x._crawlOffers is not null && x._crawlOffers.Count > 0)
@@ -90,34 +92,27 @@ public class WallpaperCrawlerTests
     }
 
     //combinations
-    private static List<object> CrawlerCombinations
+    private static async IAsyncEnumerable<object[]> CrawlerCombinations()
     {
-        get
+        foreach (var site in Sites)
         {
-            var result = new List<object>();
-            foreach (var site in Sites)
-            {
-                var crawler = GetCrawler();
-                crawler.AddSourceSiteFilter(site);
-                crawler.HandleFilters();
+            var crawler = GetCrawler();
+            crawler.AddSourceSiteFilter(site);
+            await crawler.HandleFilters();
 
-                foreach (var cat in crawler.GetAvailableCategories())
-                {
-                    result.Add(new object[] { site, cat });
-                }
-            }
-            return result;
+            foreach (var cat in await crawler.GetAvailableCategories())
+                yield return [site, cat];
         }
     }
+    //NUnit 4 takes async enumerables as sources, the ReSharper inspection does not know that yet
+    // ReSharper disable once NUnit.TestCaseSourceShouldImplementIEnumerable
     [TestCaseSource(nameof(CrawlerCombinations))]
     public async Task Crawler_DoesWork(string site, string cat)
     {
-        await WaitForSite(site);
-
         var crawler = GetCrawler();
         crawler.AddSourceSiteFilter(site);
         crawler.AddCategoryFilter(cat);
-        crawler.HandleFilters();
+        await crawler.HandleFilters();
 
         var source = new CancellationTokenSource();
 
@@ -150,26 +145,18 @@ public class WallpaperCrawlerTests
 
 
 
-    private static WallpaperCrawler GetCrawler()
-    {
-        //Wallhaven takes part only with a key, set it locally as environment variable (never in the repo)
-        var sp = new ServiceCollection()
-            .AddWallCrawler(x => x.WallhavenApiKey = Environment.GetEnvironmentVariable("WALLHAVEN_APIKEY"))
-            .BuildServiceProvider();
-        var result = (WallpaperCrawler)sp.GetRequiredService<IWallpaperCrawler>();
-        return result;
-    }
+    //one provider for all tests, so tests running in parallel share one rate limiting (one pace per domain);
+    //Wallhaven takes part only with a key, set it locally as environment variable (never in the repo)
+    private static readonly ServiceProvider Services = new ServiceCollection()
+        .AddWallCrawler(x =>
+            x.WallhavenApiKey = Environment.GetEnvironmentVariable("WALLHAVEN_APIKEY"))
+        .BuildServiceProvider();
+    private static WallpaperCrawler GetCrawler() =>
+        (WallpaperCrawler)Services.GetRequiredService<IWallpaperCrawler>();
 
-    private readonly Random _random = new();
-    private async Task WaitForSite(string site)
-    {
-        var delay = 100;
-        if (site is "Wallpaperscraft" or "Wallhaven")
-        {
-            delay = _random.Next(750, 2500);
-        }
-        await Task.Delay(delay);
-    }
+    [OneTimeTearDown]
+    public async Task DisposeServices() => await Services.DisposeAsync();
+
     private static void OutputOffers(WallpaperCrawler crawler)
     {
         crawler._wallCrawlers

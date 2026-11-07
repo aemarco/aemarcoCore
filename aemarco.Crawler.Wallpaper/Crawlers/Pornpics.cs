@@ -6,9 +6,14 @@ internal class Pornpics : WallpaperCrawlerBasis
 {
 
     private readonly Uri _uri = new("https://www.pornpics.com");
+    public Pornpics(
+        IHtmlClient htmlClient)
+        : base(htmlClient)
+    { }
+
     protected override bool FirstPageOnly => true;
 
-    protected override List<CrawlOffer> GetCrawlsOffers()
+    protected override Task<List<CrawlOffer>> GetCrawlOffers()
     {
         //categories are filled by js :(
         var cats = new List<string>
@@ -150,7 +155,7 @@ internal class Pornpics : WallpaperCrawlerBasis
                     : null)
             .OfType<CrawlOffer>()
             .ToList();
-        return result;
+        return Task.FromResult(result);
     }
     //z.B. "https://www.pornpics.com/asian/recent/" --> only 1 page
     protected override PageUri GetSiteUrlForCategory(CrawlOffer catJob) =>
@@ -158,12 +163,10 @@ internal class Pornpics : WallpaperCrawlerBasis
     protected override string GetSearchStringGorEntryNodes() =>
         "//li[@class='thumbwook']/a";
     protected override ContentCategory DefaultCategory => new(Category.Girls);
-    protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
+    protected override async Task<bool> AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
         //navigate
-        if (pageNode
-                .GetHref()?
-                .Navigate() is not { } albumPage)
+        if (await Navigate(pageNode.GetHref()) is not { } albumPage)
         {
             AddWarning(pageNode, "Could not find AlbumDoc");
             return false;

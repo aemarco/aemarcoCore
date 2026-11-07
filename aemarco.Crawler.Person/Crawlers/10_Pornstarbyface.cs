@@ -7,8 +7,9 @@ internal class Pornstarbyface : SiteCrawlerBase
     private readonly Uri _uri = new("https://pornstarbyface.com");
     public Pornstarbyface(
         ICountryService countryService,
+        IHtmlClient htmlClient,
         ILogger<Pornstarbyface> logger)
-        : base(countryService, logger)
+        : base(countryService, htmlClient, logger)
     {
 
     }

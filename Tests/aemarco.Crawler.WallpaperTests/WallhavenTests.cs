@@ -1,3 +1,4 @@
+using aemarco.Crawler.Configuration;
 using aemarco.Crawler.Wallpaper.Clients;
 using aemarco.Crawler.Wallpaper.Common;
 using aemarco.Crawler.Wallpaper.Contracts.Clients;
@@ -25,12 +26,12 @@ public class WallhavenTests
     }
 
     [Test]
-    public void AvailableCategories_Wallhaven_GeneralGoesToNone()
+    public async Task AvailableCategories_Wallhaven_GeneralGoesToNone()
     {
         var sut = GetCrawler("some-key", null);
         sut.AddSourceSiteFilter("Wallhaven");
 
-        var result = sut.AvailableCategories;
+        var result = await sut.GetAvailableCategories();
 
         //each internal category is one crawl row at the consumer
         result.ShouldBe(["None", "Girls_Fantasy", "Girls"], true);
@@ -86,7 +87,9 @@ public class WallhavenTests
 
     private static WallpaperCrawler GetCrawler(string? apiKey, HttpMessageHandler? handler)
     {
+        //the stub needs no pacing, rate limiting is tested with the core pipeline
         var services = new ServiceCollection()
+            .AddCoreCrawler(x => x.Domains["wallhaven.cc"] = new RateLimit(1000, TimeSpan.FromSeconds(1)))
             .AddWallCrawler(x => x.WallhavenApiKey = apiKey);
         if (handler is not null)
             services

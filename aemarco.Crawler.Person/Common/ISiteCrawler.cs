@@ -10,12 +10,15 @@ internal abstract class SiteCrawlerBase : ISiteCrawler
 {
 
     private readonly ICountryService _countryService;
+    private readonly IHtmlClient _htmlClient;
     private readonly ILogger _logger;
     internal SiteCrawlerBase(
         ICountryService countryService,
+        IHtmlClient htmlClient,
         ILogger logger)
     {
         _countryService = countryService;
+        _htmlClient = htmlClient;
         _logger = logger;
 
 
@@ -40,10 +43,16 @@ internal abstract class SiteCrawlerBase : ISiteCrawler
         var ci = Result.CrawlerInfos.First();
         ci.Url = girlUri.Uri.AbsoluteUri;
 
-        var girlPage = await girlUri.NavigateAsync(token: token);
-        await HandlePersonEntry(girlPage, token);
+        if (await Navigate(girlUri, token) is { } girlPage)
+            await HandlePersonEntry(girlPage, token);
         return Result;
     }
+
+    /// <summary>
+    /// loads a page through the crawler rate limiting; null in, null out
+    /// </summary>
+    protected async Task<PageDocument?> Navigate(PageUri? pageUri, CancellationToken token) =>
+        await _htmlClient.Navigate(pageUri, token);
 
 
 

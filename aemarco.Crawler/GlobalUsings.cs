@@ -1,8 +1,13 @@
 // Global using directives
 
 global using aemarco.Crawler.Common;
+global using aemarco.Crawler.Configuration;
+global using aemarco.Crawler.Contracts.Clients;
 global using aemarco.Crawler.Extensions;
+global using aemarco.Crawler.Model;
 global using HtmlAgilityPack;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using System;
 global using System.Collections.Generic;
 global using System.Globalization;

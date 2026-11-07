@@ -3,20 +3,33 @@
 internal abstract class WallpaperCrawlerBasis
 {
 
+    private readonly IHtmlClient _htmlClient;
+
     internal event EventHandler? EntryFound;
+    protected WallpaperCrawlerBasis(
+        IHtmlClient htmlClient)
+    {
+        _htmlClient = htmlClient;
+    }
+
+    /// <summary>
+    /// loads a page through the crawler rate limiting; null in, null out
+    /// </summary>
+    protected async Task<PageDocument?> Navigate(PageUri? pageUri) =>
+        await _htmlClient.Navigate(pageUri, CancellationToken);
 
     #region Starting
 
     // ReSharper disable once InconsistentNaming
     internal List<CrawlOffer>? _crawlOffers;
     /// <summary>
-    /// null or empty list means no limitation, otherwise this crawler will be 
+    /// null or empty list means no limitation, otherwise this crawler will be
     /// limited to offers which matching searchedCategories
     /// </summary>
     /// <param name="searchedCategories">strings of internal Category (enum)</param>
-    internal void LimitAsPerFilterList(List<string> searchedCategories)
+    internal async Task LimitAsPerFilterList(List<string> searchedCategories)
     {
-        _crawlOffers ??= GetCrawlsOffers();
+        _crawlOffers ??= await GetCrawlOffers();
         _crawlOffers = _crawlOffers
             .Where(o =>
                 searchedCategories.Count == 0 || // no filtering = allOffers
@@ -24,11 +37,11 @@ internal abstract class WallpaperCrawlerBasis
             .ToList();
     }
 
-    internal IEnumerable<CrawlOffer> GetOffers()
+    internal async Task<IReadOnlyList<CrawlOffer>> GetOffers()
     {
         try
         {
-            _crawlOffers ??= GetCrawlsOffers();
+            _crawlOffers ??= await GetCrawlOffers();
             return _crawlOffers;
         }
         catch
@@ -175,11 +188,8 @@ internal abstract class WallpaperCrawlerBasis
             lastPage = 1;
         }
 
-        await Task.Run(() =>
-        {
-            HandleAll(startPage, lastPage, onlyNews);
-            CancellationToken.ThrowIfCancellationRequested();
-        }, cancellationToken);
+        await HandleAll(startPage, lastPage, onlyNews);
+        CancellationToken.ThrowIfCancellationRequested();
 
         return _result;
     }
@@ -192,9 +202,9 @@ internal abstract class WallpaperCrawlerBasis
     /// <summary>
     /// handles the entire crawler by going through offers
     /// </summary>
-    private void HandleAll(int startPage, int lastPage, bool onlyNews)
+    private async Task HandleAll(int startPage, int lastPage, bool onlyNews)
     {
-        _crawlOffers ??= GetCrawlsOffers();
+        _crawlOffers ??= await GetCrawlOffers();
         //all offers first, HandlePage reports the entries per page to every offer
         foreach (var offer in _crawlOffers)
         {
@@ -203,21 +213,21 @@ internal abstract class WallpaperCrawlerBasis
         foreach (var offer in _crawlOffers)
         {
             CancellationToken.ThrowIfCancellationRequested();
-            HandleOffer(offer);
+            await HandleOffer(offer);
         }
     }
-    protected abstract List<CrawlOffer> GetCrawlsOffers();
+    protected abstract Task<List<CrawlOffer>> GetCrawlOffers();
 
     /// <summary>
     /// handles an entire offer by going through pages
     /// </summary>
     /// <param name="catJob">CrawlOffer</param>
-    protected virtual void HandleOffer(CrawlOffer catJob)
+    protected virtual async Task HandleOffer(CrawlOffer catJob)
     {
         do
         {
             CancellationToken.ThrowIfCancellationRequested();
-            if (!HandlePage(catJob))
+            if (!await HandlePage(catJob))
                 catJob.ReportEndReached();
         }
         while (catJob.ContainsPagesToDo);
@@ -230,11 +240,11 @@ internal abstract class WallpaperCrawlerBasis
     /// </summary>
     /// <param name="catJob">job to get page for</param>
     /// <returns>true if page contained any entries</returns>
-    protected virtual bool HandlePage(CrawlOffer catJob)
+    protected virtual async Task<bool> HandlePage(CrawlOffer catJob)
     {
         //site with wallpaper list
-        var pageUri = GetSiteUrlForCategory(catJob);
-        var pageDoc = pageUri.Navigate();
+        if (await Navigate(GetSiteUrlForCategory(catJob)) is not { } pageDoc)
+            return false;
         var pageNodes = pageDoc.FindNodes(GetSearchStringGorEntryNodes());
 
         //non entries on page
@@ -265,7 +275,7 @@ internal abstract class WallpaperCrawlerBasis
                 catJob.ReportEndReached();
                 return true;
             }
-            if (AddWallEntry(node, catJob))
+            if (await AddWallEntry(node, catJob))
             {
                 result = true;
             }
@@ -296,7 +306,7 @@ internal abstract class WallpaperCrawlerBasis
     /// <param name="pageNode">Html node for entry</param>
     /// <param name="catJob">current job</param>
     /// <returns>true if found a valid entry</returns>
-    protected abstract bool AddWallEntry(PageNode pageNode, CrawlOffer catJob);
+    protected abstract Task<bool> AddWallEntry(PageNode pageNode, CrawlOffer catJob);
 
     //to be implemented END
 

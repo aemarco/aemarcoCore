@@ -6,9 +6,15 @@ internal class Boombo : WallpaperCrawlerBasis
 {
 
     private readonly Uri _uri = new("https://boombo.biz");
-    protected override List<CrawlOffer> GetCrawlsOffers()
+    public Boombo(
+        IHtmlClient htmlClient)
+        : base(htmlClient)
+    { }
+
+    protected override async Task<List<CrawlOffer>> GetCrawlOffers()
     {
-        var mainPage = new PageUri(new Uri(_uri, "en/")).Navigate();
+        if (await Navigate(new PageUri(new Uri(_uri, "en/"))) is not { } mainPage)
+            return [];
         //the categories of the mega menu, a link each, e.g. "Anal Sex" -> "https://boombo.biz/en/anal/"
         var catNodes = mainPage.FindNodes("//div[@class='submenu mega-menu']//ul/li/a");
 
@@ -37,13 +43,11 @@ internal class Boombo : WallpaperCrawlerBasis
         catJob.CategoryUri.WithHref($"page/{catJob.CurrentPage}");
     protected override string GetSearchStringGorEntryNodes() =>
         "//div[@class='fonwall-item']/a";
-    protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob)
+    protected override async Task<bool> AddWallEntry(PageNode pageNode, CrawlOffer catJob)
     {
 
         //navigate
-        if (pageNode
-                .GetHref()?
-                .Navigate() is not { } albumPage)
+        if (await Navigate(pageNode.GetHref()) is not { } albumPage)
         {
             AddWarning(pageNode, "Could not find AlbumDoc");
             return false;

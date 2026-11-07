@@ -1,6 +1,7 @@
 // Global using directives
 
 global using aemarco.Crawler.Common;
+global using aemarco.Crawler.Contracts.Clients;
 global using aemarco.Crawler.Extensions;
 global using aemarco.Crawler.Model;
 global using aemarco.Crawler.Person.Common;

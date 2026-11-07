@@ -8,10 +8,6 @@ internal static class WallhavenClientExtensions
 {
     internal static IServiceCollection AddWallhavenClient(this IServiceCollection services)
     {
-        //the rate limit sits in the pipeline of the client; handlers are transient, so the limiter is a keyed singleton
-        services.AddKeyedSingleton<RateLimiter>(
-            nameof(WallhavenClient),
-            (sp, _) => sp.GetRequiredService<WallCrawlerSettings>().WallhavenRateLimit.CreateLimiter());
         services
             .AddHttpClient<IWallhavenClient, WallhavenClient>((sp, client) =>
             {
@@ -22,8 +18,7 @@ internal static class WallhavenClientExtensions
                 if (!string.IsNullOrWhiteSpace(settings.WallhavenApiKey))
                     client.DefaultRequestHeaders.Add("X-API-Key", settings.WallhavenApiKey);
             })
-            .AddHttpMessageHandler(sp =>
-                new RateLimitHandler(sp.GetRequiredKeyedService<RateLimiter>(nameof(WallhavenClient))));
+            .AddCrawlerRateLimit();
         return services;
     }
 }

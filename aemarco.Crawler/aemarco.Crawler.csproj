@@ -9,6 +9,7 @@
 	<ItemGroup>
 		<PackageReference Include="HtmlAgilityPack" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+		<PackageReference Include="Microsoft.Extensions.Http" />
 		<PackageReference Include="System.Threading.RateLimiting" />
 	</ItemGroup>
 	

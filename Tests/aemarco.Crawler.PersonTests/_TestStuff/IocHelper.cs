@@ -21,7 +21,14 @@ internal static class IocHelper
         return result;
     }
 
-    private static IServiceProvider GetTestContainer(Action<IServiceCollection>? beforeResolve = null)
+    //one provider for all plain resolves, so tests running in parallel share one rate limiting (one pace per domain)
+    private static readonly IServiceProvider SharedContainer = BuildContainer(null);
+    private static IServiceProvider GetTestContainer(Action<IServiceCollection>? beforeResolve) =>
+        beforeResolve is null
+            ? SharedContainer
+            : BuildContainer(beforeResolve);
+
+    private static IServiceProvider BuildContainer(Action<IServiceCollection>? beforeResolve)
     {
         var sc = new ServiceCollection()
             //tests register the real thing

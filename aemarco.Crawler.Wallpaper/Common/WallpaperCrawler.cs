@@ -50,24 +50,20 @@ internal class WallpaperCrawler : IWallpaperCrawler
 
 
     //filter categories
-    public IEnumerable<string> AvailableCategories => GetAvailableCategories();
-    internal IEnumerable<string> GetAvailableCategories()
+    public async Task<IReadOnlyList<string>> GetAvailableCategories()
     {
-        var categories = new List<string>();
+        var result = new List<string>();
         foreach (var crawler in _wallCrawlers
                      .Where(x => _filterSourceSites.Count == 0 || _filterSourceSites.Contains(CrawlerInfo.FromCrawlerType(x.GetType()).FriendlyName)))
         {
-            foreach (var offer in crawler.GetOffers())
+            foreach (var offer in await crawler.GetOffers())
             {
                 //skip those already given
-                if (categories.Contains(offer.Category.Category))
-                    continue;
-                categories.Add(offer.Category.Category);
-
-
-                yield return offer.Category.Category;
+                if (!result.Contains(offer.Category.Category))
+                    result.Add(offer.Category.Category);
             }
         }
+        return result;
     }
 
     private readonly List<string> _filterCategories = [];
@@ -105,7 +101,7 @@ internal class WallpaperCrawler : IWallpaperCrawler
         }
 
 
-        HandleFilters();
+        await HandleFilters();
 
         //start all crawlers
         var known = _knownUrlsFunc?.Invoke() ?? [];
@@ -140,7 +136,7 @@ internal class WallpaperCrawler : IWallpaperCrawler
         return result;
     }
 
-    internal void HandleFilters()
+    internal async Task HandleFilters()
     {
         //handle wallpaper site filter
         _wallCrawlers.RemoveAll(c =>
@@ -155,20 +151,21 @@ internal class WallpaperCrawler : IWallpaperCrawler
 
         });
 
-        //handle wallpaper category filter
-        _wallCrawlers.RemoveAll(c =>
+        //handle wallpaper category filter, only those stay which have a remaining offer
+        if (_filterCategories.Count > 0)
         {
-            //we don´t filter on categories, so all stay
-            if (_filterCategories.Count == 0)
-                return false;
-
-            //we filter on categories, so only those stay, which have a remaining offer
-            c.LimitAsPerFilterList(_filterCategories);
-            return !c.GetOffers().Any();
-        });
+            foreach (var crawler in _wallCrawlers)
+                await crawler.LimitAsPerFilterList(_filterCategories);
+        }
 
         //even if no filter, we remove all which offer nothing
-        _wallCrawlers.RemoveAll(c => !c.GetOffers().Any());
+        List<WallpaperCrawlerBasis> withoutOffers = [];
+        foreach (var crawler in _wallCrawlers)
+        {
+            if ((await crawler.GetOffers()).Count == 0)
+                withoutOffers.Add(crawler);
+        }
+        _wallCrawlers.RemoveAll(withoutOffers.Contains);
     }
 
 }

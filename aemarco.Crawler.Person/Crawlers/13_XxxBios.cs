@@ -7,8 +7,9 @@ internal class XxxBios : SiteCrawlerBase
     private readonly Uri _uri = new("https://xxxbios.com");
     public XxxBios(
         ICountryService countryService,
+        IHtmlClient htmlClient,
         ILogger<XxxBios> logger)
-        : base(countryService, logger)
+        : base(countryService, htmlClient, logger)
     {
 
     }

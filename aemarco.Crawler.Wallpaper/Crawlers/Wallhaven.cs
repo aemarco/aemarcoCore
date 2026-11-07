@@ -12,7 +12,9 @@ internal class Wallhaven : WallpaperCrawlerBasis
     private readonly IWallhavenClient _client;
     public Wallhaven(
         WallCrawlerSettings settings,
-        IWallhavenClient client)
+        IWallhavenClient client,
+        IHtmlClient htmlClient)
+        : base(htmlClient)
     {
         _settings = settings;
         _client = client;
@@ -21,7 +23,7 @@ internal class Wallhaven : WallpaperCrawlerBasis
     internal override bool IsAvailable => !string.IsNullOrWhiteSpace(_settings.WallhavenApiKey);
 
     //categories: general/anime/people, purity: sfw/sketchy/nsfw
-    protected override List<CrawlOffer> GetCrawlsOffers()
+    protected override Task<List<CrawlOffer>> GetCrawlOffers()
     {
         List<CrawlOffer> result =
         [
@@ -72,7 +74,7 @@ internal class Wallhaven : WallpaperCrawlerBasis
                 new ContentCategory(Category.Girls, 40, 69))
         ];
         result.ForEach(x => x.CrawlMethod = CrawlMethod.Api);
-        return result;
+        return Task.FromResult(result);
     }
 
 
@@ -84,16 +86,15 @@ internal class Wallhaven : WallpaperCrawlerBasis
 
     //the api delivers json, the html path of the base class is not used
     protected override string GetSearchStringGorEntryNodes() => string.Empty;
-    protected override bool AddWallEntry(PageNode pageNode, CrawlOffer catJob) => false;
+    protected override Task<bool> AddWallEntry(PageNode pageNode, CrawlOffer catJob) => Task.FromResult(false);
 
-    //the crawl runs on a pool thread (Task.Run in Start), blocking on the client is safe there
-    protected override bool HandlePage(CrawlOffer catJob)
+    protected override async Task<bool> HandlePage(CrawlOffer catJob)
     {
         var pageUri = GetSiteUrlForCategory(catJob);
         WallhavenSearchResult search;
         try
         {
-            search = _client.Search(pageUri.Uri, CancellationToken).GetAwaiter().GetResult();
+            search = await _client.Search(pageUri.Uri, CancellationToken);
         }
         catch (HttpRequestException ex)
         {
@@ -115,7 +116,7 @@ internal class Wallhaven : WallpaperCrawlerBasis
                 catJob.ReportEndReached();
                 return true;
             }
-            AddApiEntry(item, catJob);
+            await AddApiEntry(item, catJob);
         }
         catJob.ReportPageDone();
 
@@ -124,7 +125,7 @@ internal class Wallhaven : WallpaperCrawlerBasis
         return true;
     }
 
-    private void AddApiEntry(WallhavenListItem item, CrawlOffer catJob)
+    private async Task AddApiEntry(WallhavenListItem item, CrawlOffer catJob)
     {
         var source = new WallEntrySource(catJob.Category, catJob.SiteCategoryName)
         {
@@ -137,7 +138,7 @@ internal class Wallhaven : WallpaperCrawlerBasis
         {
             try
             {
-                var wallpaper = _client.GetWallpaper(item.Id, CancellationToken).GetAwaiter().GetResult();
+                var wallpaper = await _client.GetWallpaper(item.Id, CancellationToken);
                 source.Tags.AddRange(wallpaper.Tags.Select(x => x.Name));
             }
             catch (HttpRequestException ex)

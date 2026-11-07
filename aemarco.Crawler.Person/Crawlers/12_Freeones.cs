@@ -7,8 +7,9 @@ internal class Freeones : SiteCrawlerBase
     private readonly Uri _uri = new("https://www.freeones.com");
     public Freeones(
         ICountryService countryService,
+        IHtmlClient htmlClient,
         ILogger<Freeones> logger)
-        : base(countryService, logger)
+        : base(countryService, htmlClient, logger)
     {
 
     }
@@ -17,7 +18,8 @@ internal class Freeones : SiteCrawlerBase
     protected override async Task<PersonName[]> HandlePersonNameEntries(CancellationToken token)
     {
         var uri = new PageUri(_uri).WithHref("/de/performers??s=rank.currentRank&l=96&q=&f[performerType]=babe&r[age]=18,25&filter_mode[performerType]=and&filter_mode[global]=and");
-        var page = await uri.NavigateAsync(token: token);
+        if (await Navigate(uri, token) is not { } page)
+            return [];
         List<PersonName> result = [];
 
         //first page of performers

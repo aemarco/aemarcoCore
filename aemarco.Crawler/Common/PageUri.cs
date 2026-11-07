@@ -45,18 +45,6 @@ public record PageUri(Uri Uri)
         return new PageUri(new Uri(url));
     }
 
-    public PageDocument Navigate(int? minDelay = null, int? maxDelay = null)
-    {
-        var document = HtmlHelper.GetHtmlDocument(Uri, minDelay, maxDelay);
-        return new PageDocument(this, document);
-    }
-    public async Task<PageDocument> NavigateAsync(int? minDelay = null, int? maxDelay = null, CancellationToken token = default)
-    {
-        var document = await HtmlHelper.GetHtmlDocumentAsync(Uri, minDelay, maxDelay, token).ConfigureAwait(false);
-        return new PageDocument(this, document);
-    }
-
-
     public static implicit operator Uri(PageUri x) => x.Uri;
     public static implicit operator PageUri?(Uri? x) => x is null ? null : new PageUri(x);
 }

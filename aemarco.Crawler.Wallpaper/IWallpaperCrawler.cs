@@ -20,9 +20,10 @@ public interface IWallpaperCrawler
 
     //filter categories
     /// <summary>
-    /// Gets the available categories for filtering wallpapers.
+    /// Gets the available categories for filtering wallpapers
+    /// (async, some sites deliver their categories only from their pages)
     /// </summary>
-    IEnumerable<string> AvailableCategories { get; }
+    Task<IReadOnlyList<string>> GetAvailableCategories();
     /// <summary>
     /// Used to filter which results being of interest to crawl
     /// Not using this means everything will be crawled

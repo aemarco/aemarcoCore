@@ -7,8 +7,9 @@ internal class Nudevista : SiteCrawlerBase
     private readonly Uri _uri = new("https://www.nudevista.at");
     public Nudevista(
         ICountryService countryService,
+        IHtmlClient htmlClient,
         ILogger<Nudevista> logger)
-        : base(countryService, logger)
+        : base(countryService, htmlClient, logger)
     {
 
     }
