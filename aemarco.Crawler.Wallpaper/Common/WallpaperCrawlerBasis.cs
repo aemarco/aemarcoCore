@@ -68,6 +68,14 @@ internal abstract class WallpaperCrawlerBasis
     protected virtual bool FirstPageOnly => false;
 
     /// <summary>
+    /// crawlers of sites listing in an order other than newest first: news can be anywhere,
+    /// so a news crawl goes through all pages (until one has no entries) instead of stopping at the known streak
+    /// </summary>
+    protected virtual bool ListsNewestFirst => true;
+    //bounds the paging of such a news crawl, beyond any site's real page count
+    private const int AllPages = 10_000;
+
+    /// <summary>
     /// crawlers which need configuration (an api key for example) are left out while it is missing
     /// </summary>
     internal virtual bool IsAvailable => true;
@@ -100,6 +108,12 @@ internal abstract class WallpaperCrawlerBasis
         {
             startPage = 1;
             lastPage = 1;
+        }
+        else if (onlyNews && !ListsNewestFirst)
+        {
+            startPage = 1;
+            lastPage = AllPages;
+            onlyNews = false;
         }
 
         await HandleAll(startPage, lastPage, onlyNews);

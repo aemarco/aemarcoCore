@@ -67,7 +67,7 @@ internal abstract class PersonInfoTestsBase<T>
             Entry.Rating.ShouldNotBeNull().ShouldBeInRange(0, 10);
         else
             Entry.Rating.ShouldBeNull();
-        (Entry.Rating?.ToString()).Dump();
+        (Entry.Rating?.ToString(CultureInfo.InvariantCulture)).Dump();
     }
 
     protected Gender? ExpectedGender { get; init; }

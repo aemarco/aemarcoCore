@@ -25,7 +25,7 @@ internal class CrawlerRateLimiter
     public static string GetDomain(Uri? uri)
     {
         var host = uri?.Host.ToLowerInvariant() ?? string.Empty;
-        return host.StartsWith("www.")
+        return host.StartsWith("www.", StringComparison.Ordinal)
             ? host[4..]
             : host;
     }

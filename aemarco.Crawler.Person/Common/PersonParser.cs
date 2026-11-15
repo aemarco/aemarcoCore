@@ -13,7 +13,7 @@ public static partial class PersonParser
         if (string.IsNullOrWhiteSpace(text) || !text.Contains(' '))
             return (null, null);
 
-        text = text.ToLower().TitleCase();
+        text = text.ToLowerInvariant().TitleCase();
         var split = text.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         return split.Length >= 2
                 ? (split[0], string.Join(' ', split.Skip(1)))

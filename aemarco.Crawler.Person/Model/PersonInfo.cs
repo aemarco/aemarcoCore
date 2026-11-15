@@ -68,7 +68,7 @@ public record PersonInfo
         StillActive ??= info.StillActive;
         Aliases.AddRange(info.Aliases.Where(x => !Aliases.Contains(x)));
         Aliases.RemoveAll(x => x == $"{FirstName} {LastName}");
-        Aliases.Sort();
+        Aliases.Sort(StringComparer.Ordinal);
         Ethnicity ??= info.Ethnicity;
         HairColor ??= info.HairColor;
         EyeColor ??= info.EyeColor;

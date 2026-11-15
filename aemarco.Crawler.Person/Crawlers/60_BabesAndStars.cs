@@ -42,7 +42,7 @@ internal class BabesAndStars : SiteCrawlerBase
     {
         name = name
             .Replace(' ', '-')
-            .ToLower();
+            .ToLowerInvariant();
         var result = new PageUri(_uri).WithHref($"/{name[0]}/{name}/");
 
         //https://www.babesandstars.com/a/ariel-rebel/
@@ -82,23 +82,23 @@ internal class BabesAndStars : SiteCrawlerBase
             token.ThrowIfCancellationRequested();
 
             var text = node.GetText().TitleCase();
-            if (text.StartsWith("Country:"))
+            if (text.StartsWith("Country:", StringComparison.Ordinal))
                 UpdateCountry(text.Except("Country:"));
-            else if (text.StartsWith("Ethnicity:"))
+            else if (text.StartsWith("Ethnicity:", StringComparison.Ordinal))
                 Result.Ethnicity = text.Except("Ethnicity:");
-            else if (text.StartsWith("Measurements:"))
+            else if (text.StartsWith("Measurements:", StringComparison.Ordinal))
                 UpdateMeasurements(text.Except("Measurements:"), true);
-            else if (text.StartsWith("Birthday:"))
+            else if (text.StartsWith("Birthday:", StringComparison.Ordinal))
                 Result.Birthday = text.Except("Birthday:").ToDateOnly();
-            else if (text.StartsWith("Eyes:"))
+            else if (text.StartsWith("Eyes:", StringComparison.Ordinal))
                 Result.EyeColor = text.Except("Eyes:");
-            else if (text.StartsWith("Cup:"))
+            else if (text.StartsWith("Cup:", StringComparison.Ordinal))
                 UpdateMeasurements(text.Except("Cup:"), true);
-            else if (text.StartsWith("Weight:"))
+            else if (text.StartsWith("Weight:", StringComparison.Ordinal))
                 Result.Weight = PersonParser.FindWeightInText(text);
-            else if (text.StartsWith("Height:"))
+            else if (text.StartsWith("Height:", StringComparison.Ordinal))
                 Result.Height = PersonParser.FindHeightInText(text);
-            else if (text.StartsWith("Hair:"))
+            else if (text.StartsWith("Hair:", StringComparison.Ordinal))
                 Result.HairColor = text.Except("Hair:");
         }
         return Task.CompletedTask;

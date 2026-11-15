@@ -36,7 +36,7 @@ internal class Nudevista : SiteCrawlerBase
         var picNode = girlPage
             .FindNode("//img[@class='mthumb']")?
             .GetSrc(x =>
-                x.StartsWith("http")
+                x.StartsWith("http", StringComparison.Ordinal)
                     ? x
                     : $"https:{x}");
         UpdateProfilePictures(picNode);
@@ -84,35 +84,35 @@ internal class Nudevista : SiteCrawlerBase
             token.ThrowIfCancellationRequested();
 
             var text = node.GetText().TitleCase();
-            if (text.StartsWith("Geschlecht:"))
+            if (text.StartsWith("Geschlecht:", StringComparison.Ordinal))
                 Result.Gender = PersonParser.FindGenderInText(text); // female male tranny
-            else if (text.StartsWith("Geburtstag:"))
+            else if (text.StartsWith("Geburtstag:", StringComparison.Ordinal))
                 Result.Birthday = text.Except("Geburtstag:").ToDateOnly();
-            else if (text.StartsWith("Land:"))
+            else if (text.StartsWith("Land:", StringComparison.Ordinal))
                 UpdateCountry(text.Except("Land:"));
-            else if (text.StartsWith("Geburtsort:"))
+            else if (text.StartsWith("Geburtsort:", StringComparison.Ordinal))
                 Result.City = text.Except("Geburtsort:");
-            else if (text.StartsWith("Beruf:"))
+            else if (text.StartsWith("Beruf:", StringComparison.Ordinal))
                 Result.Profession = text.Except("Beruf:");
-            else if (text.StartsWith("Karrierestart:"))
+            else if (text.StartsWith("Karrierestart:", StringComparison.Ordinal))
                 Result.CareerStart = PersonParser.FindCareerStartInText(text.Except("Karrierestart:"));
-            else if (text.StartsWith("Karrierestatus:"))
+            else if (text.StartsWith("Karrierestatus:", StringComparison.Ordinal))
                 Result.StillActive = PersonParser.FindStillActiveInText(text.Except("Karrierestatus:"));
-            else if (text.StartsWith("Rasse:"))
+            else if (text.StartsWith("Rasse:", StringComparison.Ordinal))
                 Result.Ethnicity = text.Except("Rasse:");
-            else if (text.StartsWith("Haare:"))
+            else if (text.StartsWith("Haare:", StringComparison.Ordinal))
                 Result.HairColor = text.Except("Haare:");
-            else if (text.StartsWith("Augen:"))
+            else if (text.StartsWith("Augen:", StringComparison.Ordinal))
                 Result.EyeColor = text.Except("Augen:");
-            else if (text.StartsWith("Maße:"))
+            else if (text.StartsWith("Maße:", StringComparison.Ordinal))
                 UpdateMeasurements(text.Except("Maße:"), true);
-            else if (text.StartsWith("Körbchengröße:"))
+            else if (text.StartsWith("Körbchengröße:", StringComparison.Ordinal))
                 UpdateMeasurements(text.Except("Körbchengröße:"), true);
-            else if (text.StartsWith("Größe:"))
+            else if (text.StartsWith("Größe:", StringComparison.Ordinal))
                 Result.Height = PersonParser.FindHeightInText(text);
-            else if (text.StartsWith("Gewicht:"))
+            else if (text.StartsWith("Gewicht:", StringComparison.Ordinal))
                 Result.Weight = PersonParser.FindWeightInText(text);
-            else if (text.StartsWith("Piercings:"))
+            else if (text.StartsWith("Piercings:", StringComparison.Ordinal))
                 Result.Piercings = text.Except("Piercings:", "None");
         }
         return Task.CompletedTask;

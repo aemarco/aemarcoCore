@@ -80,7 +80,7 @@ internal class Wallhaven : WallpaperCrawlerBasis
     protected override async Task<bool> HandlePage(CrawlOffer catJob)
     {
         //z.B. "https://wallhaven.cc/api/v1/search?categories=001&purity=100&sorting=date_added&order=desc&page=1"
-        var pageUri = catJob.CategoryUri.WithParam("page", catJob.CurrentPage.ToString());
+        var pageUri = catJob.CategoryUri.WithParam("page", catJob.CurrentPage.ToString(CultureInfo.InvariantCulture));
         //a failed search is not the end of the pages, it fails the offer (see RunOffer): the entries of the
         //pages before would be known at the next crawl, which then ends before the page which was missed
         var search = await _client.Search(pageUri.Uri, CancellationToken);

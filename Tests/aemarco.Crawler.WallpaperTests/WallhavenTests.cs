@@ -67,7 +67,7 @@ public class WallhavenTests
             && x.Aliases.SequenceEqual(new[] { "Fukutomi Tsuki", "TARU", "福富 つき" }));
         handler.Requests.ShouldAllBe(x => x.Headers.GetValues("X-API-Key").Single() == "some-key");
         handler.Requests
-            .Where(x => x.RequestUri!.AbsolutePath.EndsWith("/search"))
+            .Where(x => x.RequestUri!.AbsolutePath.EndsWith("/search", StringComparison.Ordinal))
             .Select(x => HttpUtility.ParseQueryString(x.RequestUri!.Query)["purity"])
             .ShouldBe(["100", "010", "001"]);
         result.Dump();
@@ -167,7 +167,7 @@ public class WallhavenTests
     {
         var handler = new FixtureHandler
         {
-            Fail = x => x.RequestUri!.AbsolutePath.EndsWith("/w/vp3pd5")
+            Fail = x => x.RequestUri!.AbsolutePath.EndsWith("/w/vp3pd5", StringComparison.Ordinal)
                 ? HttpStatusCode.NotFound
                 : null
         };
@@ -187,7 +187,7 @@ public class WallhavenTests
     {
         var handler = new FixtureHandler
         {
-            Fail = x => x.RequestUri!.AbsolutePath.EndsWith("/w/lyryk2")
+            Fail = x => x.RequestUri!.AbsolutePath.EndsWith("/w/lyryk2", StringComparison.Ordinal)
                 ? HttpStatusCode.InternalServerError
                 : null
         };
@@ -243,7 +243,7 @@ public class WallhavenTests
                 return new HttpResponseMessage(status);
 
             var path = request.RequestUri!.AbsolutePath;
-            var fixture = path.EndsWith("/search")
+            var fixture = path.EndsWith("/search", StringComparison.Ordinal)
                 ? GetFixture("search.json")
                 : GetFixture($"w_{path[(path.LastIndexOf('/') + 1)..]}.json");
             if (!fixture.Exists)

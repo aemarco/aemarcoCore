@@ -82,7 +82,7 @@ internal class WallEntrySource
             AlbumName);
 
         //extension must be allowed
-        if (!AllowedExtensions.Contains(entry.Extension.ToLower()))
+        if (!AllowedExtensions.Contains(entry.Extension.ToLowerInvariant()))
             return null;
 
 

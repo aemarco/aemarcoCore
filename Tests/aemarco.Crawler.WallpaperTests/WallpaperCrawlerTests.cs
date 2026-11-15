@@ -1,4 +1,5 @@
 ﻿using aemarco.Crawler.Wallpaper.Common;
+using aemarco.Crawler.Wallpaper.Contracts.Clients;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -121,7 +122,9 @@ public class WallpaperCrawlerTests
         crawler.EntryFound += (_, _) => source.Cancel();
         try
         {
-            await crawler.CrawlWallpapers(1, 1, source.Token);
+            //a few pages, an offer may keep only some albums of a listing (Boombo's english archives),
+            //the first entry found ends it anyway
+            await crawler.CrawlWallpapers(1, 5, source.Token);
             Assert.Fail($"{site} - {cat} failed.");
         }
         catch (OperationCanceledException) { }
@@ -146,6 +149,30 @@ public class WallpaperCrawlerTests
 
 
 
+
+
+
+    //Boom's details: the site's tags (here the performer), a gone wallpaper is null
+    [Test]
+    public async Task BoomClient_GetWallpaper_HasSiteTags()
+    {
+        var client = Services.GetRequiredService<IBoomClient>();
+
+        var result = await client.GetWallpaper(127309, CancellationToken.None);
+
+        result.ShouldNotBeNull();
+        result.Tags.Select(x => x.Name).ShouldContain("Sunny Leone");
+        result.Dump();
+    }
+    [Test]
+    public async Task BoomClient_GetWallpaper_GoneIsNull()
+    {
+        var client = Services.GetRequiredService<IBoomClient>();
+
+        var result = await client.GetWallpaper(999999999, CancellationToken.None);
+
+        result.ShouldBeNull();
+    }
 
 
 

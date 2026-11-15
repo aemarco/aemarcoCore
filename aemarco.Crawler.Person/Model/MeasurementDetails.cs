@@ -4,7 +4,7 @@ public partial record MeasurementDetails(int? Bust, string? Cup, bool FakeTits, 
 {
 
     public static MeasurementDetails Empty => new(null, null, false, null, null);
-    public string? Cup { get; init; } = Cup?.ToUpper();
+    public string? Cup { get; init; } = Cup?.ToUpperInvariant();
     public MeasurementDetails Combine(MeasurementDetails? other)
     {
         if (other is null)
@@ -111,7 +111,7 @@ public partial record MeasurementDetails(int? Bust, string? Cup, bool FakeTits, 
         static string? MetricCup(string? c)
         {
             return c?
-                .ToUpper()
+                .ToUpperInvariant()
                 //us
                 .Replace("DDDDD", "H")
                 .Replace("DDDD", "G")

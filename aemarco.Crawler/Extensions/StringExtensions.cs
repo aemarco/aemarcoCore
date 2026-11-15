@@ -80,7 +80,7 @@ public static partial class StringExtensions
         // 14 Mar 1988
         if (DayMonthTextYearRegex().Match(text) is { Success: true } doted)
         {
-            return DateOnly.Parse(doted.Groups[0].Value);
+            return DateOnly.Parse(doted.Groups[0].Value, CultureInfo.InvariantCulture);
         }
 
 

@@ -30,6 +30,7 @@ public enum Category
     Girls_Gloryhole,
     Girls_Selfies,
     Girls_Fun,
+    Girls_Ai,
 
 
     Vehicle,

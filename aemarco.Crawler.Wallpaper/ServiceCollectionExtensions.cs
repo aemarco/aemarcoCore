@@ -36,6 +36,7 @@ public static class ServiceCollectionExtensions
 
         //internal
         services.AddWallhavenClient();
+        services.AddBoomClient();
         services.AddTransient<IWallCrawlerProvider, WallCrawlerProvider>();
 
         //public

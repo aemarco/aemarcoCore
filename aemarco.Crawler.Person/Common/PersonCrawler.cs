@@ -75,7 +75,7 @@ internal class PersonCrawler : IPersonCrawler
         PersonName[] result = [
                 .. list
                     .Distinct()
-                    .OrderBy(x => x.Name)
+                    .OrderBy(x => x.Name, StringComparer.Ordinal)
             ];
         _logger.LogInformation("CrawlPersonNames found {count} names {@names}", result.Length, result);
         return result;

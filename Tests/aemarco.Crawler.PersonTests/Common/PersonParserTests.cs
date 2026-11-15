@@ -57,7 +57,7 @@ public class PersonParserTests
     [TestCase("Karrierestart: 2007", "01.01.2007")]
     public void FindCareerStartInText_Works(string? text, string? asText)
     {
-        DateOnly? expected = asText is null ? null : DateOnly.Parse(asText);
+        DateOnly? expected = asText is null ? null : DateOnly.Parse(asText, CultureInfo.InvariantCulture);
         var result = PersonParser.FindCareerStartInText(text);
         result.ShouldBe(expected);
     }

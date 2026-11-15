@@ -144,8 +144,8 @@ internal class Zoomgirls : HtmlCrawlerBasis
 
         //z.B. "/view-jana-jordan--1920x1200.html"
         if (best?.GetAttribute("href") is not { } href ||
-            !href.StartsWith("/view-") ||
-            !href.EndsWith(".html"))
+            !href.StartsWith("/view-", StringComparison.Ordinal) ||
+            !href.EndsWith(".html", StringComparison.Ordinal))
             return null;
 
         //z.B. "jana-jordan--1920x1200.html"
