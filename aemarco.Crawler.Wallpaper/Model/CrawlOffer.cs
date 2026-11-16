@@ -17,11 +17,12 @@ internal class CrawlOffer
     /// <summary>
     /// offers exist before a crawl starts (filtering, available categories), paging comes with the start
     /// </summary>
-    internal void SetPaging(int startPage, int lastPage, bool onlyNews)
+    internal void SetPaging(int startPage, int lastPage, bool onlyNews, int? newEntryLimit)
     {
         _startPage = startPage;
         _lastPage = lastPage;
         _onlyNews = onlyNews;
+        _newEntryLimit = newEntryLimit;
 
         CurrentPage = _startPage;
     }
@@ -50,6 +51,14 @@ internal class CrawlOffer
 
     private bool _onlyNews;
     public bool ReachedMaximumStreak => (_onlyNews && _numberOfEntriesKnownInSequence >= 10);
+
+    //null means no limit
+    private int? _newEntryLimit;
+    public bool ReachedNewEntryLimit => _newEntryLimit is { } limit &&
+                                        NewEntries.Count + NewAlbums.Sum(x => x.Entries.Count) >= limit;
+
+    //the offer ends before the next entry
+    public bool ReachedStop => ReachedMaximumStreak || ReachedNewEntryLimit;
 
     #endregion
 

@@ -40,13 +40,37 @@ public class WallpaperCrawlerBasisTests
         sut.HandledPages.ShouldBe([2, 3, 4]);
     }
 
+    [Test]
+    public async Task Start_NewsWithNewEntryLimit_StopsAtLimit()
+    {
+        var sut = new FakeCrawler(listsNewestFirst: false, newEntryLimit: 50);
 
-    private class FakeCrawler(bool listsNewestFirst) : WallpaperCrawlerBasis(NullLogger.Instance)
+        var result = await sut.Start(new HashSet<string>(), 1, 10, true, CancellationToken.None);
+
+        //20 per page, the limit is reached within page 3
+        result.NewEntries.Count.ShouldBe(50);
+        sut.HandledPages.ShouldBe([1, 2, 3]);
+    }
+
+    [Test]
+    public async Task Start_PagingWithNewEntryLimit_IsNotLimited()
+    {
+        var sut = new FakeCrawler(listsNewestFirst: false, newEntryLimit: 50);
+
+        var result = await sut.Start(new HashSet<string>(), 1, 4, false, CancellationToken.None);
+
+        result.NewEntries.Count.ShouldBe(80);
+        sut.HandledPages.ShouldBe([1, 2, 3, 4]);
+    }
+
+
+    private class FakeCrawler(bool listsNewestFirst, int? newEntryLimit = null) : WallpaperCrawlerBasis(NullLogger.Instance)
     {
         private const int Pages = 25;
         private const int EntriesPerPage = 20;
 
         protected override bool ListsNewestFirst => listsNewestFirst;
+        protected override int? NewEntryLimit => newEntryLimit;
 
         public HashSet<string> KnownUrls { get; } = Enumerable.Range(1, Pages)
             .SelectMany(page => Enumerable.Range(1, EntriesPerPage).Select(entry => Url(page, entry)))
@@ -57,7 +81,7 @@ public class WallpaperCrawlerBasisTests
             Task.FromResult<List<CrawlOffer>>(
                 [CreateCrawlOffer("Fake", new PageUri(new Uri("https://fake.site/")), new ContentCategory(Category.Girls))]);
 
-        //like HtmlCrawlerBasis: the streak is checked per entry
+        //like HtmlCrawlerBasis: the stop is checked per entry
         protected override Task<bool> HandlePage(CrawlOffer catJob)
         {
             HandledPages.Add(catJob.CurrentPage);
@@ -67,7 +91,7 @@ public class WallpaperCrawlerBasisTests
             catJob.ReportNumberOfEntriesPerPage(EntriesPerPage);
             for (var entry = 1; entry <= EntriesPerPage; entry++)
             {
-                if (catJob.ReachedMaximumStreak)
+                if (catJob.ReachedStop)
                 {
                     catJob.ReportEndReached();
                     return Task.FromResult(true);

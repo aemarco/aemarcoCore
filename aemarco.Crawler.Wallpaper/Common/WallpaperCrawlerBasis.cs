@@ -76,6 +76,12 @@ internal abstract class WallpaperCrawlerBasis
     private const int AllPages = 10_000;
 
     /// <summary>
+    /// crawlers whose new entries are expensive (a detail call each) take at most this many new entries per offer
+    /// in a news crawl, the next crawl continues with the rest; null means no limit, requested paging is never limited
+    /// </summary>
+    protected virtual int? NewEntryLimit => null;
+
+    /// <summary>
     /// crawlers which need configuration (an api key for example) are left out while it is missing
     /// </summary>
     internal virtual bool IsAvailable => true;
@@ -104,6 +110,8 @@ internal abstract class WallpaperCrawlerBasis
         _knownUrls = knownUrls;
         CancellationToken = cancellationToken;
 
+        //decided before onlyNews may turn into all pages below
+        var newEntryLimit = onlyNews ? NewEntryLimit : null;
         if (FirstPageOnly)
         {
             startPage = 1;
@@ -116,7 +124,7 @@ internal abstract class WallpaperCrawlerBasis
             onlyNews = false;
         }
 
-        await HandleAll(startPage, lastPage, onlyNews);
+        await HandleAll(startPage, lastPage, onlyNews, newEntryLimit);
         CancellationToken.ThrowIfCancellationRequested();
 
         Logger.LogDebug(
@@ -138,13 +146,13 @@ internal abstract class WallpaperCrawlerBasis
     /// <summary>
     /// handles the entire crawler by going through offers
     /// </summary>
-    private async Task HandleAll(int startPage, int lastPage, bool onlyNews)
+    private async Task HandleAll(int startPage, int lastPage, bool onlyNews, int? newEntryLimit)
     {
         _crawlOffers ??= await GetCrawlOffers();
         //all offers first, HandlePage reports the entries per page to every offer
         foreach (var offer in _crawlOffers)
         {
-            offer.SetPaging(startPage, lastPage, onlyNews);
+            offer.SetPaging(startPage, lastPage, onlyNews, newEntryLimit);
         }
         foreach (var offer in _crawlOffers)
         {

@@ -18,6 +18,8 @@ internal class Boom : HtmlCrawlerBasis
 
     //a fixed order, but not by date (checked: no date, id or popularity order; robots.txt disallows sorting)
     protected override bool ListsNewestFirst => false;
+    //a detail call per new wall (about a second), a first crawl through all pages ran for hours
+    protected override int? NewEntryLimit => 1000;
 
     private readonly (string Name, Uri Uri, string Extension, Category Category)[] _categories =
     [

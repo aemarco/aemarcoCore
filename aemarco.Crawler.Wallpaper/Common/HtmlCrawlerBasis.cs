@@ -137,7 +137,7 @@ internal abstract class HtmlCrawlerBasis : WallpaperCrawlerBasis
         {
             CancellationToken.ThrowIfCancellationRequested();
 
-            if (catJob.ReachedMaximumStreak)
+            if (catJob.ReachedStop)
             {
                 catJob.ReportEndReached();
                 return true;

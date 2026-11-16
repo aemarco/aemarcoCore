@@ -95,7 +95,7 @@ internal class Wallhaven : WallpaperCrawlerBasis
         {
             CancellationToken.ThrowIfCancellationRequested();
 
-            if (catJob.ReachedMaximumStreak)
+            if (catJob.ReachedStop)
             {
                 catJob.ReportEndReached();
                 return true;
