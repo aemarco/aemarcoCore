@@ -20,6 +20,8 @@ internal class Boom : HtmlCrawlerBasis
     protected override bool ListsNewestFirst => false;
     //a detail call per new wall (about a second), a first crawl through all pages ran for hours
     protected override int? NewEntryLimit => 1000;
+    //every crawl goes through all pages, so the known walls would come back each time
+    protected override bool CollectsKnownEntries => false;
 
     private readonly (string Name, Uri Uri, string Extension, Category Category)[] _categories =
     [

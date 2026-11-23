@@ -64,13 +64,62 @@ public class WallpaperCrawlerBasisTests
     }
 
 
-    private class FakeCrawler(bool listsNewestFirst, int? newEntryLimit = null) : WallpaperCrawlerBasis(NullLogger.Instance)
+    [Test]
+    public async Task Start_FailingPageNotNewestFirst_KeepsEntriesBeforeIt()
+    {
+        var sut = new FakeCrawler(listsNewestFirst: false, failOnPage: 3);
+
+        var result = await sut.Start(new HashSet<string>(), 1, 10, true, CancellationToken.None);
+
+        result.NewEntries.Count.ShouldBe(40);
+        result.Warnings.Count.ShouldBe(1);
+    }
+
+    [Test]
+    public async Task Start_FailingPageNewestFirst_DropsTheOffer()
+    {
+        var sut = new FakeCrawler(listsNewestFirst: true, failOnPage: 3);
+
+        var result = await sut.Start(new HashSet<string>(), 1, 10, false, CancellationToken.None);
+
+        result.NewEntries.ShouldBeEmpty();
+        result.Warnings.Count.ShouldBe(1);
+    }
+
+    [Test]
+    public async Task Start_CollectsKnownEntries_ByDefault()
+    {
+        var sut = new FakeCrawler(listsNewestFirst: true);
+
+        var result = await sut.Start(sut.KnownUrls, 1, 1, false, CancellationToken.None);
+
+        result.KnownEntries.Count.ShouldBe(20);
+    }
+
+    [Test]
+    public async Task Start_NotCollectingKnownEntries_LeavesThemOut()
+    {
+        var sut = new FakeCrawler(listsNewestFirst: true, collectsKnownEntries: false);
+
+        var result = await sut.Start(sut.KnownUrls, 1, 1, false, CancellationToken.None);
+
+        result.KnownEntries.ShouldBeEmpty();
+    }
+
+
+    [Crawler("Fake")]
+    private class FakeCrawler(
+        bool listsNewestFirst,
+        int? newEntryLimit = null,
+        int? failOnPage = null,
+        bool collectsKnownEntries = true) : WallpaperCrawlerBasis(NullLogger.Instance)
     {
         private const int Pages = 25;
         private const int EntriesPerPage = 20;
 
         protected override bool ListsNewestFirst => listsNewestFirst;
         protected override int? NewEntryLimit => newEntryLimit;
+        protected override bool CollectsKnownEntries => collectsKnownEntries;
 
         public HashSet<string> KnownUrls { get; } = Enumerable.Range(1, Pages)
             .SelectMany(page => Enumerable.Range(1, EntriesPerPage).Select(entry => Url(page, entry)))
@@ -85,6 +134,8 @@ public class WallpaperCrawlerBasisTests
         protected override Task<bool> HandlePage(CrawlOffer catJob)
         {
             HandledPages.Add(catJob.CurrentPage);
+            if (catJob.CurrentPage == failOnPage)
+                throw new TimeoutException("fake");
             if (catJob.CurrentPage > Pages)
                 return Task.FromResult(false);
 

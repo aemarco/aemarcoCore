@@ -82,6 +82,12 @@ internal abstract class WallpaperCrawlerBasis
     protected virtual int? NewEntryLimit => null;
 
     /// <summary>
+    /// crawlers which go through all pages on every news crawl would deliver every known entry again,
+    /// false leaves them out of the result (they still count for the known streak)
+    /// </summary>
+    protected virtual bool CollectsKnownEntries => true;
+
+    /// <summary>
     /// crawlers which need configuration (an api key for example) are left out while it is missing
     /// </summary>
     internal virtual bool IsAvailable => true;
@@ -179,11 +185,22 @@ internal abstract class WallpaperCrawlerBasis
         }
         catch (Exception ex)
         {
-            var discarded = offer.Discard();
-            Logger.LogError(ex, "Offer {offer} of {crawlerType} failed on page {page}, its {discarded} entries are dropped",
-                offer.SiteCategoryName, GetType().Name, offer.CurrentPage, discarded);
-            AddWarning(offer.CategoryUri, $"Offer {offer.SiteCategoryName} failed on page {offer.CurrentPage}, its entries are dropped: {ex.Message}");
-            return;
+            //a site in no date order has no streak of known entries to end a crawl before a gap: what the pages
+            //before the failure delivered stays (the next crawl goes through all pages again and finds the rest)
+            if (!ListsNewestFirst)
+            {
+                Logger.LogError(ex, "Offer {offer} of {crawlerType} failed on page {page}, its {kept} new entries are kept",
+                    offer.SiteCategoryName, GetType().Name, offer.CurrentPage, offer.NewEntries.Count + offer.NewAlbums.Count);
+                AddWarning(offer.CategoryUri, $"Offer {offer.SiteCategoryName} failed on page {offer.CurrentPage}, the entries before it are kept: {ex.Message}");
+            }
+            else
+            {
+                var discarded = offer.Discard();
+                Logger.LogError(ex, "Offer {offer} of {crawlerType} failed on page {page}, its {discarded} entries are dropped",
+                    offer.SiteCategoryName, GetType().Name, offer.CurrentPage, discarded);
+                AddWarning(offer.CategoryUri, $"Offer {offer.SiteCategoryName} failed on page {offer.CurrentPage}, its entries are dropped: {ex.Message}");
+                return;
+            }
         }
 
         Logger.LogDebug(
@@ -260,7 +277,8 @@ internal abstract class WallpaperCrawlerBasis
         //known Entry
         else
         {
-            catJob.KnownEntries.Add(entry);
+            if (CollectsKnownEntries)
+                catJob.KnownEntries.Add(entry);
             catJob.ReportEntryDone(true);
         }
 

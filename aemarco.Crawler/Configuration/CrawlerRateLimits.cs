@@ -20,7 +20,8 @@ public class CrawlerRateLimits
         //wallpaperscraft was crawled with 1-2.5s between its pages
         ["wallpaperscraft.com"] = new RateLimit(60, TimeSpan.FromMinutes(1), TimeSpan.FromMilliseconds(1500)),
         //the wallhaven api allows 45 calls per minute, evenly spread with some headroom, no jitter for an api
-        ["wallhaven.cc"] = new RateLimit(40, TimeSpan.FromMinutes(1))
+        ["wallhaven.cc"] = new RateLimit(40, TimeSpan.FromMinutes(1)),
+        ["boom.boombo.biz"] = new RateLimit(30, TimeSpan.FromMinutes(1), TimeSpan.FromMilliseconds(1000)),
     };
 }
 
