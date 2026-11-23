@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
 
 namespace aemarco.Crawler.Common;
 
@@ -21,14 +22,28 @@ internal class AttemptTimeoutHandler : DelegatingHandler
     {
         using var attemptCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         attemptCts.CancelAfter(_options.AttemptTimeout);
+        var start = Stopwatch.GetTimestamp();
+        HttpResponseMessage? result = null;
+        Exception? error = null;
         try
         {
-            var result = await base.SendAsync(request, attemptCts.Token).ConfigureAwait(false);
+            result = await base.SendAsync(request, attemptCts.Token).ConfigureAwait(false);
             return result;
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
-            throw new TimeoutException($"No answer from {request.RequestUri} within {_options.AttemptTimeout}");
+            error = new TimeoutException($"No answer from {request.RequestUri} within {_options.AttemptTimeout}");
+            throw error;
+        }
+        catch (Exception ex)
+        {
+            error = ex;
+            throw;
+        }
+        finally
+        {
+            CrawlerMetrics.RecordHttp(CrawlerMetrics.AttemptDuration, start,
+                CrawlerRateLimiter.GetDomain(request.RequestUri), result, error);
         }
     }
 }

@@ -177,6 +177,7 @@ internal abstract class WallpaperCrawlerBasis
         try
         {
             await HandleOffer(offer);
+            WallCrawlerMetrics.RecordStop(GetType(), offer);
         }
         catch (OperationCanceledException) when (CancellationToken.IsCancellationRequested)
         {

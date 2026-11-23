@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
 
 namespace aemarco.Crawler.Common;
 
@@ -33,6 +34,28 @@ internal class RetryHandler : DelegatingHandler
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        var start = Stopwatch.GetTimestamp();
+        HttpResponseMessage? result = null;
+        Exception? error = null;
+        try
+        {
+            result = await SendWithRetries(request, cancellationToken).ConfigureAwait(false);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            error = ex;
+            throw;
+        }
+        finally
+        {
+            CrawlerMetrics.RecordHttp(CrawlerMetrics.RequestDuration, start,
+                CrawlerRateLimiter.GetDomain(request.RequestUri), result, error);
+        }
+    }
+
+    private async Task<HttpResponseMessage> SendWithRetries(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         for (var attempt = 1; ; attempt++)
         {

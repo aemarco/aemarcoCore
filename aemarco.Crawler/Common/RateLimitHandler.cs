@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace aemarco.Crawler.Common;
 
 /// <summary>
@@ -16,12 +18,15 @@ internal class RateLimitHandler : DelegatingHandler
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var jitter = _rateLimiter.GetLimit(CrawlerRateLimiter.GetDomain(request.RequestUri)).Jitter;
+        var domain = CrawlerRateLimiter.GetDomain(request.RequestUri);
+        var start = Stopwatch.GetTimestamp();
+        var jitter = _rateLimiter.GetLimit(domain).Jitter;
         if (jitter > TimeSpan.Zero)
             await Task.Delay(Random.Shared.Next((int)jitter.TotalMilliseconds), cancellationToken).ConfigureAwait(false);
 
         //waits in line until it is this request's turn on the domain
         await _rateLimiter.WaitForTurn(request, cancellationToken).ConfigureAwait(false);
+        CrawlerMetrics.RecordWait(start, domain);
 
         var result = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
         return result;
